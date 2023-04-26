@@ -2,12 +2,12 @@ package org.openmrs.module.ohrireports.reports.datasetevaluator.datim;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.Calendar;
+import java.util.Date;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
@@ -33,7 +33,8 @@ public class TbPrevNumeratorAutoCalculateDataSetDefinitionEvaluator implements D
 	private TbPrevNumeratorAutoCalculateDataSetDefinition hdsd;
 	
 	// HashMap<Integer, Concept> patientStatus = new HashMap<>();
-	private String title = "Number of ART patients who were started on TB treatment during the reporting period";
+	
+	Date prevSixMonth = new Date();
 	
 	@Autowired
 	private ConceptService conceptService;
@@ -46,24 +47,27 @@ public class TbPrevNumeratorAutoCalculateDataSetDefinitionEvaluator implements D
 		
 		hdsd = (TbPrevNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
 		context = evalContext;
-		
+		Calendar subSixMonth = Calendar.getInstance();
+		subSixMonth.setTime(hdsd.getStartDate());
+		subSixMonth.add(Calendar.MONTH, -6);
+		prevSixMonth = subSixMonth.getTime();
 		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
-		    getTBstartedInReportingPeriod());
+		dataSet.addColumnValue(new DataSetColumn("TPTPREVEnrolled", "Numerator", Integer.class),
+		    getTPTreatmentEndDateInLastSixMonths());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;
 	}
 	
-	public int getTBstartedInReportingPeriod(){
+	public int getTPTreatmentEndDateInLastSixMonths(){
 		List<Integer> tbstarted = new ArrayList<>();
 		List<Obs> obstbstarted = new ArrayList<>();
-		List<Integer> dispense = getDatimValidTreatmentEndDatePatients();
-		if (dispense == null || dispense.size()==0){
+		List<Integer> tptstarteddate = getTPTreatmentStartedDateInLastSixMonths();
+		if (tptstarteddate == null || tptstarteddate.size()==0){
 			return tbstarted.size();
 		}
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(TPT_START_DATE)).and().whereGreater("obs.valueDatetime", hdsd.getStartDate()).and().whereLess("obs.valueDatetime",hdsd.getStartDate()).orderDesc("obs.personId, obs.obsDatetime");
+		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(TPT_COMPLETED_DATE)).and().whereGreater("obs.valueDatetime", prevSixMonth).and().whereLess("obs.valueDatetime",hdsd.getStartDate()).and().whereIdIn("obs.personId", tptstarteddate).orderDesc("obs.personId, obs.obsDatetime");
 		obstbstarted=evaluationService.evaluateToList(queryBuilder,Obs.class,context);
 		for (Obs obs:obstbstarted){
 			if (!tbstarted.contains(obs.getPersonId())){
@@ -73,6 +77,23 @@ public class TbPrevNumeratorAutoCalculateDataSetDefinitionEvaluator implements D
 		return tbstarted.size();
 	}
 	
+	public List<Integer> getTPTreatmentStartedDateInLastSixMonths(){
+		List<Integer> tbstarted = new ArrayList<>();
+		List<Obs> obstbstarted = new ArrayList<>();
+		List<Integer> dispense = getDatimValidTreatmentEndDatePatients();
+		if (dispense == null || dispense.size()==0){
+			return tbstarted;
+		}
+		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
+		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(TPT_START_DATE)).and().whereGreater("obs.valueDatetime", prevSixMonth).and().whereLess("obs.valueDatetime",hdsd.getStartDate()).and().whereIdIn("obs.personId", dispense).orderDesc("obs.personId, obs.obsDatetime");
+		obstbstarted=evaluationService.evaluateToList(queryBuilder,Obs.class,context);
+		for (Obs obs:obstbstarted){
+			if (!tbstarted.contains(obs.getPersonId())){
+				tbstarted.add(obs.getPersonId());
+			}
+		}
+		return tbstarted;
+	}
 	
 	private List<Integer> getDatimValidTreatmentEndDatePatients() {
 
@@ -87,9 +108,9 @@ public class TbPrevNumeratorAutoCalculateDataSetDefinitionEvaluator implements D
         .and()
         .whereEqual("obs.concept", conceptService.getConceptByUuid(TREATMENT_END_DATE))
         .and()
-        .whereGreater("obs.valueDatetime", hdsd.getEndDate())
+        .whereGreater("obs.valueDatetime", prevSixMonth)
         .and()
-        .whereLess("obs.obsDatetime", hdsd.getEndDate())
+        .whereLess("obs.obsDatetime", hdsd.getStartDate())
         .whereIdIn("obs.personId", patientsId)
         .orderDesc("obs.personId,obs.obsDatetime");
         for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
@@ -115,7 +136,7 @@ public class TbPrevNumeratorAutoCalculateDataSetDefinitionEvaluator implements D
 				.whereEqual("obs.concept", conceptService.getConceptByUuid(PATIENT_STATUS))
 				.and()
 				.whereIn("obs.valueCoded", Arrays.asList(conceptService.getConceptByUuid(ALIVE),conceptService.getConceptByUuid(RESTART)))
-				.and().whereLess("obs.obsDatetime", hdsd.getEndDate());
+				.and().whereLess("obs.obsDatetime", hdsd.getStartDate());
 		queryBuilder.orderDesc("obs.personId,obs.obsDatetime");
 
 		List<Obs> liveObs = evaluationService.evaluateToList(queryBuilder, Obs.class, context);

@@ -156,8 +156,10 @@ public class OHRIReportsConstants {
 	public final static String CXCA_TYPE_OF_SCREENING_RESCREENING = "13c3ee77-4e7c-4224-ae40-0b2727932a0f";
 	
 	public final static String CXCA_TYPE_OF_SCREENING_POST_TREATMENT = "3f4a6148-39c1-4980-81c6-6d703367c4a6";
-
+	
 	public final static String TPT_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	/**
 	 * Reports
