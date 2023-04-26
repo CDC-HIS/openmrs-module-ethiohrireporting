@@ -63,10 +63,10 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition
-		        .setDescription("Among those who started a course of TPT in thepreviousreporting period, the number that completed a full course of therapy (for continuous IPT programs, this includes the patients who have completed the first 6 months of isoniazid preventive therapy (IPT), or any other standard course of TPT such as 3 months of weekly isoniazid and rifapentine, or 3-HP)");
+		        .setDescription("Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy (for continuous IPT programs, this includes the patients who have completed the first 6 months of isoniazid preventive therapy (IPT), or any other standard course of TPT such as 3 months of weekly isoniazid and rifapentine, or 3-HP)");
 		reportDefinition
 		        .addDataSetDefinition(
-		            "Auto-Calculate : Among those who started a course of TPT in thepreviousreporting period, the number that completed a full course of therapy (for continuous IPT programs, this includes the patients who have completed the first 6 months of isoniazid preventive therapy (IPT), or any other standard course of TPT such as 3 months of weekly isoniazid and rifapentine, or 3-HP)",
+		            "Auto-Calculate : Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy",
 		            map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		TbPrevNumeratorARTByAgeAndSexDataSetDefinition cDefinition = new TbPrevNumeratorARTByAgeAndSexDataSetDefinition();
