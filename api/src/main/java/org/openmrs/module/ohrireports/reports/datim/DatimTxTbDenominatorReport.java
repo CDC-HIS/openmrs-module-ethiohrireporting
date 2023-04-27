@@ -7,11 +7,11 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.TxTbDenominatorAutoCalculateDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.TxTbDenominatorSpecimenSentDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.TxTbDenominatorPositiveResultReturnedDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.TxTbDenominatorDiagnosticTestDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorDiagnosticTestDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorPositiveResultReturnedDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorSpecimenSentDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -28,7 +28,7 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "752txtbd-e57c-47d3-9dc3-57c4ad9e28bf";
+		return "3172dd1a-ca9b-4146-9053-b48b3428dd21";
 	}
 	
 	@Override
@@ -114,7 +114,7 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("752txtbd-0c07-44c6-a4f5-0201fcb2d55d", reportDefinition);
+		ReportDesign design = ReportManagerUtil.createExcelDesign("006145f4-a8bb-4876-ad6d-f2a020778534", reportDefinition);
 		
 		return Arrays.asList(design);
 		
