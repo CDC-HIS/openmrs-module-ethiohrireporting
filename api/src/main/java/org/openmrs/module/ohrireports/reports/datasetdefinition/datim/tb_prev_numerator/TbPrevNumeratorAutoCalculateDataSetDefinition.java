@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetdefinition.datim;
+package org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_numerator;
 
 import java.util.Date;
 

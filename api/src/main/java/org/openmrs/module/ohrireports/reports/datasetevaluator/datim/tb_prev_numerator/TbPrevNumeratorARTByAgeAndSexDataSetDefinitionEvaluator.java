@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetevaluator.datim;
+package org.openmrs.module.ohrireports.reports.datasetevaluator.datim.tb_prev_numerator;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -13,7 +13,7 @@ import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.TbPrevNumeratorARTByAgeAndSexDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
