@@ -151,7 +151,7 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TYPE_OF_SCREENING_FIRST_TIME = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
-	public final static String CXCA_TYPE_OF_SCREENING_RESCREENING = "13c3ee77-4e7c-4224-ae40-0b2727932a0f";
+	public final static String CXCA_TYPE_OF_SCREENING_RESCREEN = "13c3ee77-4e7c-4224-ae40-0b2727932a0f";
 	
 	public final static String CXCA_TYPE_OF_SCREENING_POST_TREATMENT = "3f4a6148-39c1-4980-81c6-6d703367c4a6";
 	

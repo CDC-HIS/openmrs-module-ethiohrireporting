@@ -167,13 +167,16 @@ public class CxCaTxRescreenedDataSetDefinitionEvaluator implements DataSetEvalua
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 
 		queryBuilder.select("obs")
-        .from(Obs.class, "obs")
-        .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-        .and()
-        .whereEqual("obs.concept", conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING))
-        .and()
-        .whereEqual("obs.valueCoded", conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING_RESCREENING)).and().whereIdIn("obs.personId", patientsId)
-        .and().whereLess("obs.obsDatetime", hdsd.getEndDate());
+                    .from(Obs.class, "obs")
+                    .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
+                    .and()
+                    .whereEqual("obs.concept", conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING))
+                    .and()
+                    .whereEqual("obs.valueCoded", conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING_RESCREEN))
+                    .and()
+                    .whereIdIn("obs.personId", patientsId)
+                    .and()
+                    .whereLess("obs.obsDatetime", hdsd.getEndDate());
 		queryBuilder.orderDesc("obs.personId,obs.obsDatetime");
 
 		List<Obs> liveObs = evaluationService.evaluateToList(queryBuilder, Obs.class, context);

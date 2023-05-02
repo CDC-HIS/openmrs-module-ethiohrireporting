@@ -30,7 +30,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.ohrireports.helper.EthiopianDateConverter;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.TXCurrDataSetDefinition;
-import org.openmrs.module.reporting.data.patient.definition.PatientObjectDataDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
