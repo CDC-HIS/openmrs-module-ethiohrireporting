@@ -1,7 +1,9 @@
 package org.openmrs.module.ohrireports.reports.datasetdefinition.datim.cxca_scrn;
 
 import java.util.Date;
+import java.util.List;
 
+import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
@@ -16,6 +18,17 @@ public class CXCADatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private EncounterType encounterType;
+	
+	@ConfigurationProperty
+	private Concept screeningType;
+	
+	public Concept getScreeningType() {
+		return screeningType;
+	}
+	
+	public void setScreeningType(Concept screeningType) {
+		this.screeningType = screeningType;
+	}
 	
 	public Date getStartDate() {
 		return startDate;

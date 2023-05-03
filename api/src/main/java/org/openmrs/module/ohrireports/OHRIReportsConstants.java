@@ -9,6 +9,10 @@
  */
 package org.openmrs.module.ohrireports;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
+
+import ca.uhn.hl7v2.conf.classes.abs.FiniteList;
+
 public class OHRIReportsConstants {
 	
 	/**
@@ -133,7 +137,7 @@ public class OHRIReportsConstants {
 	
 	public final static String SPECIMEN_SENT = "161934AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String CXCA_TREATMENT_TYPE = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
+	public final static String CXCA_FIRST_TIME_SCREENING = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
 	public final static String CXCA_TREATMENT_TYPE_NO_TREATMENT = "1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -154,6 +158,28 @@ public class OHRIReportsConstants {
 	public final static String CXCA_TYPE_OF_SCREENING_RESCREEN = "13c3ee77-4e7c-4224-ae40-0b2727932a0f";
 	
 	public final static String CXCA_TYPE_OF_SCREENING_POST_TREATMENT = "3f4a6148-39c1-4980-81c6-6d703367c4a6";
+	
+	public final static String SCREENING_STRATEGY = "53ff5cd0-0f37-4190-87b1-9eb439a15e94";
+	
+	public final static String HPV_DNA_SCREENING_RESULT = "159859AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String VIA_SCREENING_RESULT = "ff6b60e4-7310-4ddc-98ce-a2910c32a7a0";
+	
+	public final static String VIA_NEGATIVE = "a08ab377-30bc-4ef6-bb9d-4cf6a0564ccc";
+	
+	public final static String VIA_POSITIVE = "7bc7c4f3-a636-478d-8a3f-65116093e37a";
+	
+	public final static String VIA_SUSPICIOUS_RESULT = "159008AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String CXCA_SCREENING_ACCEPTED_DATE = "8cb69148-cdce-448e-90c6-f582b5c169da";
+	
+	public final static String CYTOLOGY_RESULT = "9e5c5bd8-276c-497b-9ea1-9a5c9f94faa7";
+	
+	public final static String CYTOLOGY_NEGATIVE = "5e4fc757-0b14-49ae-b3b7-419666f41e15";
+	
+	public final static String CYTOLOGY_ASCUS_POSITIVE = "145822AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String CYTOLOGY_GREATER_ASCUS_SUSPICIOUS = "912a5c48-8b07-4fd7-b2c3-ccb94fde7c68";
 	
 	/**
 	 * Reports
