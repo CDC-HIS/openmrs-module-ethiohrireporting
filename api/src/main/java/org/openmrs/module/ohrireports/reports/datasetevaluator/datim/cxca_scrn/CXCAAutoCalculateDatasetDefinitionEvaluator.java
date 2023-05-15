@@ -144,7 +144,7 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                                 .and()
                                 .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                                 .and()
-                                .whereEqual("Obs.concept", cxcaScreenedConcept)
+                                .whereEqual("obs.concept", cxcaScreenedConcept)
                                 .and()
                                 .whereBetweenInclusive("obs.valueDatetime", cxcaDatasetDefinition.getStartDate(),
                                                 cxcaDatasetDefinition.getEndDate())

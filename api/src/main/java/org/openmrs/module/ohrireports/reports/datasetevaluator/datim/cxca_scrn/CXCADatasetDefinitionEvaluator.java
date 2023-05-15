@@ -16,12 +16,8 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_NEGAT
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_GREATER_ASCUS_SUSPICIOUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_SCREENING_ACCEPTED_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_POST_TREATMENT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_FIRST_TIME_SCREENING;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_RESCREEN;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -84,41 +80,57 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         cxcaDatasetDefinition = (CXCADatasetDefinition) dataSetDefinition;
         loadConcepts();
         SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-        DataSetRow dataSetRow = new DataSetRow();
         List<Integer> personIdList = getCXCAScreened();
         List<Integer> personFirstScreeningList = getPatientByScreeningType(personIdList);
-            
-            Set<Integer> negativePatient = new HashSet<>();
-            negativePatient.addAll(getScreeningTypeCohort(personFirstScreeningList,hpvAndDNAScreeningResultConcept,negativeConcept));
-            negativePatient.addAll(getScreeningTypeCohort(personFirstScreeningList,viaScreeningResultConcept,viaNegativeConcept));
-            negativePatient.addAll(getScreeningTypeCohort(personFirstScreeningList,cytologyResultConcept,cytologyNegativeConcept));
-            
-            persons = getPatients(new ArrayList<>(negativePatient));
-           
-            buildDataSet(dataSetRow,"Negative");
-                
-            Set<Integer> positivePatient = new HashSet<>();
-            positivePatient.addAll(getScreeningTypeCohort(personFirstScreeningList,hpvAndDNAScreeningResultConcept,positiveConcept));
-            positivePatient.addAll(getScreeningTypeCohort(personFirstScreeningList,viaScreeningResultConcept,viaPositiveConcept));
-            positivePatient.addAll(getScreeningTypeCohort(personFirstScreeningList,cytologyResultConcept,cytologyASCUSPositiveConcept));
-            
-            persons = getPatients(new ArrayList<>(positivePatient));
-           
-            buildDataSet(dataSetRow,"Positive");
 
-            Set<Integer> suspectedPatient = new HashSet<>();
-            suspectedPatient.addAll(getScreeningTypeCohort(personFirstScreeningList,hpvAndDNAScreeningResultConcept,unknownConcept));
-            suspectedPatient.addAll(getScreeningTypeCohort(personFirstScreeningList,viaScreeningResultConcept,viaSuspiciousConcept));
-            suspectedPatient.addAll(getScreeningTypeCohort(personFirstScreeningList,cytologyResultConcept,cytologyGreaterASCUSSuspiciousConcept));
-            
-            persons = getPatients(new ArrayList<>(suspectedPatient));
-           
-            buildDataSet(dataSetRow,"Suspected");
+        Set<Integer> negativePatient = new HashSet<>();
+        negativePatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, negativeConcept));
+        negativePatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaNegativeConcept));
+        negativePatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyNegativeConcept));
+
+        persons = getPatients(new ArrayList<>(negativePatient));
+        
+        DataSetRow negativeDataSetRow = new DataSetRow();
+        buildDataSet(negativeDataSetRow, "Negative");
+        dataSet.addRow(negativeDataSetRow);
+
+        Set<Integer> positivePatient = new HashSet<>();
+        positivePatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, positiveConcept));
+        positivePatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaPositiveConcept));
+        positivePatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyASCUSPositiveConcept));
+
+        persons = getPatients(new ArrayList<>(positivePatient));
+        
+        DataSetRow positiveDataset = new DataSetRow();
+        buildDataSet(positiveDataset, "Positive");
+        dataSet.addRow(positiveDataset);
+
+        Set<Integer> suspectedPatient = new HashSet<>();
+        suspectedPatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, unknownConcept));
+        suspectedPatient.addAll(
+                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaSuspiciousConcept));
+        suspectedPatient.addAll(getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept,
+                cytologyGreaterASCUSSuspiciousConcept));
+
+        persons = getPatients(new ArrayList<>(suspectedPatient));
+        
+        DataSetRow suspectedDataSetRow = new DataSetRow();        
+        buildDataSet(suspectedDataSetRow, "Suspected");
+        dataSet.addRow(suspectedDataSetRow);
 
         return dataSet;
     }
 
     private List<Integer> getPatientByScreeningType(List<Integer> personIdList) {
+        if (personIdList.size() == 0)
+            return new ArrayList<>();
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("obs.personId")
                 .from(Obs.class, "obs")
@@ -152,16 +164,16 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         cytologyASCUSPositiveConcept = conceptService.getConceptByUuid(CYTOLOGY_ASCUS_POSITIVE);
         cytologyGreaterASCUSSuspiciousConcept = conceptService.getConceptByUuid(CYTOLOGY_GREATER_ASCUS_SUSPICIOUS);
         cxcaScreeningTypeConcept = conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING);
-       
+
     }
 
     private List<Integer> getCXCAScreened() {
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("distinct obs.personId");
-        
+
         currentPatients = getCurrentPatients();
-        if(currentPatients.size()==0)
-        return new ArrayList<>();
+        if (currentPatients.size() == 0)
+            return new ArrayList<>();
 
         queryBuilder.from(Obs.class, "obs")
                 .whereEqual("obs.person.gender", "F")
@@ -197,8 +209,8 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("distinct obv.personId");
         onArtFemalePatients = getOnArtFemalePatients();
-        if(onArtFemalePatients.size() == 0)
-        return new ArrayList<>();
+        if (onArtFemalePatients.size() == 0)
+            return new ArrayList<>();
         queryBuilder.from(Obs.class, "obv")
                 .whereEqual("obv.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                 .and()
@@ -213,7 +225,9 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         return patientIds;
     }
 
-    private List<Integer> getScreeningTypeCohort(List<Integer> personIds,Concept strategy, Concept expectedResult) {
+    private List<Integer> getScreeningTypeCohort(List<Integer> personIds, Concept strategy, Concept expectedResult) {
+        if(personIds.size() == 0 )
+        return new ArrayList<>();
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("distinct obs.personId")
                 .from(Obs.class, "obs")
@@ -231,11 +245,11 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         return personIdList;
     }
 
-    private void buildDataSet(DataSetRow dataSet,String name) {
+    private void buildDataSet(DataSetRow dataSet, String name) {
         total = 0;
         minCount = 15;
         maxCount = 19;
-        dataSet.addColumnValue(new DataSetColumn("title", " ", String.class), "Cervical Cancer Screen: "+name);
+        dataSet.addColumnValue(new DataSetColumn("title", " ", String.class), "Cervical Cancer Screen: " + name);
         dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
                 getEnrolledByUnknownAge());
 
@@ -256,7 +270,8 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
     }
 
     private List<Person> getPatients(List<Integer> personIds) {
-
+        if (personIds.size() == 0)
+            return new ArrayList<>();
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("person")
                 .from(Person.class, "person")
