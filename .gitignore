@@ -15,7 +15,7 @@ openmrs-runtime.properties
 *.war
 *.ear
 *.iml
-
+.vscode
 .settings/*
 **/bin
 **/.classpath

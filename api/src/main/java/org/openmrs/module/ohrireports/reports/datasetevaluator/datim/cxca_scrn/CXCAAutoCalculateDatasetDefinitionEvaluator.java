@@ -1,23 +1,28 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator.datim.cxca_scrn;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_FIRST_TIME_SCREENING;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_SCREENING_ACCEPTED_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_POST_TREATMENT;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_RESCREEN;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_ASCUS_POSITIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_GREATER_ASCUS_SUSPICIOUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_NEGATIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_RESULT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HPV_DNA_SCREENING_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.POSITIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.NEGATIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.POSITIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_SCREENING_RESULT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_NEGATIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_POSITIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_SCREENING_RESULT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_SUSPICIOUS_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_ASCUS_POSITIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_NEGATIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_GREATER_ASCUS_SUSPICIOUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_SCREENING_ACCEPTED_DATE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,6 +80,10 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                         cytologyResultConcept,
                         cytologyNegativeConcept,
                         cytologyASCUSPositiveConcept,
+                        cxcaFirstTimeScreeningConcept,
+                        cxcaScreeningTypeConcept,
+                        cxcaRescreeningAfterNegativeResultOneYear,
+                        cxcaPostScreeningAfterTreatmentConcept,
                         cytologyGreaterASCUSSuspiciousConcept;
 
         @Autowired
@@ -84,7 +93,6 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
         private EvaluationService evaluationService;
         private List<Integer> onArtFemalePatients;
         private List<Integer> currentPatients;
-        private List<Integer> cxcaScreened;
 
         @Override
         public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
@@ -117,18 +125,50 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                 cytologyASCUSPositiveConcept = conceptService.getConceptByUuid(CYTOLOGY_ASCUS_POSITIVE);
                 cytologyGreaterASCUSSuspiciousConcept = conceptService
                                 .getConceptByUuid(CYTOLOGY_GREATER_ASCUS_SUSPICIOUS);
+        cxcaScreeningTypeConcept = conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING);
+
+                cxcaFirstTimeScreeningConcept = conceptService.getConceptByUuid(CXCA_FIRST_TIME_SCREENING);
+                cxcaPostScreeningAfterTreatmentConcept = conceptService
+                                .getConceptByUuid(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
+                cxcaRescreeningAfterNegativeResultOneYear = conceptService
+                                .getConceptByUuid(CXCA_TYPE_OF_SCREENING_RESCREEN);
         }
 
         private int GetAllCount() {
-                List<Integer> hpvScreenPatientId = getHPVANDDNVScreeningPatients();
-                List<Integer> viaScreenPatientId = getVIAScreeningPatients();
-                List<Integer> cytologyPatientId = getCytologyScreeningPatients();
+                List<Integer> screenedPatient = getCXCAScreened();
+                screenedPatient = getPatientByScreeningType(screenedPatient);
+                if(screenedPatient.size()==0)
+                return 0;
+                List<Integer> hpvScreenPatientId = getHPVANDDNVScreeningPatients(screenedPatient);
+                List<Integer> viaScreenPatientId = getVIAScreeningPatients(screenedPatient);
+                List<Integer> cytologyPatientId = getCytologyScreeningPatients(screenedPatient);
 
                 Set<Integer> allMap = new HashSet<Integer>();
                 allMap.addAll(hpvScreenPatientId);
                 allMap.addAll(cytologyPatientId);
                 allMap.addAll(viaScreenPatientId);
                 return allMap.size();
+        }
+
+        private List<Integer> getPatientByScreeningType(List<Integer> personIdList) {
+                if (personIdList.size() == 0)
+                        return new ArrayList<>();
+                HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
+                queryBuilder.select("obs.personId")
+                                .from(Obs.class, "obs")
+                                .whereEqual("obs.concept", cxcaScreeningTypeConcept)
+                                .and()
+                                .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
+                                .and()
+                                .whereIn("obs.valueCoded", Arrays.asList(cxcaFirstTimeScreeningConcept,
+                                                cxcaPostScreeningAfterTreatmentConcept,
+                                                cxcaRescreeningAfterNegativeResultOneYear))
+                                .and()
+                                .whereBetweenInclusive("obs.obsDatetime", cxcaDatasetDefinition.getStartDate(),
+                                                cxcaDatasetDefinition.getEndDate())
+                                .whereIn("obs.personId", personIdList);
+
+                return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
         }
 
         private List<Integer> getCXCAScreened() {
@@ -157,12 +197,16 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
 
         private List<Integer> getOnArtFemalePatients() {
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
+                Calendar now = Calendar.getInstance();
+                 now.add(Calendar.YEAR, -15);
                 queryBuilder.select("distinct obs.personId").from(Obs.class, "obs")
                                 .whereEqual("obs.concept", artConcept)
                                 .and()
                                 .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                                 .and()
                                 .whereEqual("obs.person.gender", "F")
+                                .and()
+                                .whereLessOrEqualToOrNull("obs.person.birthdate", now.getTime())
                                 .and()
                                 .whereLessOrEqualTo("obs.valueDatetime", cxcaDatasetDefinition.getEndDate());
 
@@ -186,22 +230,18 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                                 .and()
                                 .whereGreaterOrEqualTo("obv.valueDatetime", cxcaDatasetDefinition.getEndDate())
                                 .and()
-                                .whereLess("obv.obsDatetime", cxcaDatasetDefinition.getEndDate())
+                                .whereLessOrEqualTo("obv.obsDatetime", cxcaDatasetDefinition.getEndDate())
                                 .whereIn("obv.personId", onArtFemalePatients);
                 List<Integer> patientIds = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
                 return patientIds;
         }
 
-        private List<Integer> getHPVANDDNVScreeningPatients() {
+        private List<Integer> getHPVANDDNVScreeningPatients(List<Integer> cxcaScreened) {
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-                
-                cxcaScreened = getCXCAScreened();              
-                if (cxcaScreened.size() == 0)
-                        return new ArrayList<>();
-             
-                        queryBuilder.select("distinct obs.personId")
+
+                queryBuilder.select("distinct obs.personId")
                                 .from(Obs.class, "obs")
-                                .whereEqual("Obs.concept", hpvAndDNAScreeningResultConcept)
+                                .whereEqual("obs.concept", hpvAndDNAScreeningResultConcept)
                                 .and()
                                 .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                                 .and()
@@ -218,16 +258,13 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                 return personIdList;
         }
 
-        private List<Integer> getVIAScreeningPatients() {
+        private List<Integer> getVIAScreeningPatients(List<Integer> cxcaScreened) {
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 
-                cxcaScreened = getCXCAScreened();              
-                if (cxcaScreened.size() == 0)
-                        return new ArrayList<>();
 
                 queryBuilder.select("distinct obs.personId")
                                 .from(Obs.class, "obs")
-                                .whereEqual("Obs.concept", viaScreeningResultConcept)
+                                .whereEqual("obs.concept", viaScreeningResultConcept)
                                 .and()
                                 .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                                 .and()
@@ -244,16 +281,12 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                 return personIdList;
         }
 
-        private List<Integer> getCytologyScreeningPatients() {
+        private List<Integer> getCytologyScreeningPatients(List<Integer> cxcaScreened) {
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-
-                cxcaScreened = getCXCAScreened();              
-                if (cxcaScreened.size() == 0)
-                        return new ArrayList<>();
 
                 queryBuilder.select("distinct obs.personId")
                                 .from(Obs.class, "obs")
-                                .whereEqual("Obs.concept", cytologyResultConcept)
+                                .whereEqual("obs.concept", cytologyResultConcept)
                                 .and()
                                 .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                                 .and()

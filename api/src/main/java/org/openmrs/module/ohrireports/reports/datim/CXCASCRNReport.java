@@ -4,7 +4,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_FIRST_TIME_SCREENING;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_POST_TREATMENT;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_RESCREEN;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;

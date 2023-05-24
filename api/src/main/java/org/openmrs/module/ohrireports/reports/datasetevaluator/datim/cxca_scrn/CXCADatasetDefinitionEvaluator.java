@@ -43,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { CXCADatasetDefinition.class })
 public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
-    private EvaluationContext context;
     private int total = 0;
     private int minCount = 0;
     private int maxCount = 4;
@@ -71,6 +70,8 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
 
     @Autowired
     private EvaluationService evaluationService;
+
+    private EvaluationContext context;
     private List<Integer> onArtFemalePatients;
     private List<Integer> currentPatients;
 
@@ -78,6 +79,7 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
         cxcaDatasetDefinition = (CXCADatasetDefinition) dataSetDefinition;
+        context = evalContext;
         loadConcepts();
         SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
         List<Integer> personIdList = getCXCAScreened();
@@ -91,8 +93,8 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         negativePatient.addAll(
                 getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyNegativeConcept));
 
-        persons = getPatients(new ArrayList<>(negativePatient));
-        
+        persons.addAll(getPatients(new ArrayList<>(negativePatient)));
+
         DataSetRow negativeDataSetRow = new DataSetRow();
         buildDataSet(negativeDataSetRow, "Negative");
         dataSet.addRow(negativeDataSetRow);
@@ -105,8 +107,8 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         positivePatient.addAll(
                 getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyASCUSPositiveConcept));
 
-        persons = getPatients(new ArrayList<>(positivePatient));
-        
+        persons.addAll(getPatients(new ArrayList<>(positivePatient)));
+
         DataSetRow positiveDataset = new DataSetRow();
         buildDataSet(positiveDataset, "Positive");
         dataSet.addRow(positiveDataset);
@@ -119,9 +121,9 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         suspectedPatient.addAll(getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept,
                 cytologyGreaterASCUSSuspiciousConcept));
 
-        persons = getPatients(new ArrayList<>(suspectedPatient));
-        
-        DataSetRow suspectedDataSetRow = new DataSetRow();        
+        persons.addAll(getPatients(new ArrayList<>(suspectedPatient)));
+
+        DataSetRow suspectedDataSetRow = new DataSetRow();
         buildDataSet(suspectedDataSetRow, "Suspected");
         dataSet.addRow(suspectedDataSetRow);
 
@@ -169,21 +171,22 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
 
     private List<Integer> getCXCAScreened() {
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-        queryBuilder.select("distinct obs.personId");
 
         currentPatients = getCurrentPatients();
         if (currentPatients.size() == 0)
             return new ArrayList<>();
 
+        queryBuilder.select("distinct obs.personId");
         queryBuilder.from(Obs.class, "obs")
                 .whereEqual("obs.person.gender", "F")
                 .and()
                 .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                 .and()
-                .whereEqual("Obs.concept", cxcaScreenedConcept)
+                .whereEqual("obs.concept", cxcaScreenedConcept)
                 .and()
                 .whereBetweenInclusive("obs.valueDatetime", cxcaDatasetDefinition.getStartDate(),
                         cxcaDatasetDefinition.getEndDate())
+                .and()
                 .whereIn("obs.personId", currentPatients);
         List<Integer> personId = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
         return personId;
@@ -219,19 +222,19 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
                 .and()
                 .whereGreaterOrEqualTo("obv.valueDatetime", cxcaDatasetDefinition.getEndDate())
                 .and()
-                .whereLess("obv.obsDatetime", cxcaDatasetDefinition.getEndDate())
+                .whereLessOrEqualTo("obv.obsDatetime", cxcaDatasetDefinition.getEndDate())
                 .whereIn("obv.personId", onArtFemalePatients);
         List<Integer> patientIds = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
         return patientIds;
     }
 
     private List<Integer> getScreeningTypeCohort(List<Integer> personIds, Concept strategy, Concept expectedResult) {
-        if(personIds.size() == 0 )
-        return new ArrayList<>();
+        if (personIds.size() == 0)
+            return new ArrayList<>();
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("distinct obs.personId")
                 .from(Obs.class, "obs")
-                .whereEqual("Obs.concept", strategy)
+                .whereEqual("obs.concept", strategy)
                 .and()
                 .whereEqual("obs.encounter.encounterType", cxcaDatasetDefinition.getEncounterType())
                 .and()
