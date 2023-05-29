@@ -177,6 +177,12 @@ public class OHRIReportsConstants {
 	public final static String TRANSFERRED_UUID = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String ALIVE = "160429AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+	public final static String DEAD = "160432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+	public final static String STOP = "1260AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+	public final static String TRANSFER_OUT = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String RESTART = "ee957295-85b9-4433-bf12-45886cdc7dd1";
 	
