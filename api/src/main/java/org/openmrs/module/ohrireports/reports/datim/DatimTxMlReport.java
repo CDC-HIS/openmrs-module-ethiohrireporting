@@ -128,7 +128,7 @@ public class DatimTxMlReport implements ReportManager {
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("2283c1d0-c04a-4159-b19e-ded411b0d749", reportDefinition);
+		ReportDesign design = ReportManagerUtil.createExcelDesign("2283ctxml-c04a-4159-b19e-ded411b0d749", reportDefinition);
 		
 		return Arrays.asList(design);
 		

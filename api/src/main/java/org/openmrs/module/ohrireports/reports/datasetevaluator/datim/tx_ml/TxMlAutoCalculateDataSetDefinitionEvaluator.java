@@ -33,7 +33,6 @@ public class TxMlAutoCalculateDataSetDefinitionEvaluator implements DataSetEvalu
 	
 	private Concept artConcept;
 	
-	
 	@Autowired
 	private ConceptService conceptService;
 	
@@ -49,12 +48,12 @@ public class TxMlAutoCalculateDataSetDefinitionEvaluator implements DataSetEvalu
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
-		getDatimTxMlTreatmentStoped());
+		    getDatimTxMlTreatmentStoped());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;
 	}
-
+	
 	private Integer getDatimTxMlTreatmentStoped(){
 		List<Integer> patientsTreatmentEnd = getDatimTxMlTreatmentEndDate();
 		List<Integer> patients = new ArrayList<>();
@@ -87,9 +86,7 @@ public class TxMlAutoCalculateDataSetDefinitionEvaluator implements DataSetEvalu
 		}
 			
 		return stopedPatients.size();
-	}	
-	
-	private List<Integer> getDatimTxMlTreatmentEndDate() {
+	}	private List<Integer> getDatimTxMlTreatmentEndDate() {
 
 		List<Integer> patients = new ArrayList<>();
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
@@ -113,6 +110,4 @@ public class TxMlAutoCalculateDataSetDefinitionEvaluator implements DataSetEvalu
 				
 		return patients;
 	}
-	
-	
 }
