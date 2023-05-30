@@ -1,9 +1,6 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator.datim.tx_ml;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PATIENT_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import java.util.ArrayList;
 import java.util.Arrays;
