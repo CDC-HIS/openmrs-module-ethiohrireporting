@@ -91,7 +91,7 @@ public class DatimTxMlReport implements ReportManager {
 		    "Conditional - Interruption in Treatment After being on Treatment for 3-5 months",
 		    map(tDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
-		TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition sDefinition = new TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition();
+		TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinition sDefinition = new TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinition();
 		sDefinition.addParameters(getParameters());
 		sDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		sDefinition.setDescription("Interruption in Treatment After being on Treatment for 6+ months");
