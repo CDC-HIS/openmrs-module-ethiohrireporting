@@ -61,9 +61,12 @@ public class DatimTxMlReport implements ReportManager {
 		TxMlAutoCalculateDataSetDefinition aDefinition = new TxMlAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		aDefinition.setDescription("Number of ART patients (who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period) and then had no clinical contact since their last expected contact");
-		reportDefinition.addDataSetDefinition("Auto-Calculate - Number of ART patients (who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period) and then had no clinical contact since their last expected contact",
-		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		aDefinition
+		        .setDescription("Number of ART patients (who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period) and then had no clinical contact since their last expected contact");
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Auto-Calculate - Number of ART patients (who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period) and then had no clinical contact since their last expected contact",
+		            map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		TxMlDiedByAgeAndSexDataSetDefinition dDefinition = new TxMlDiedByAgeAndSexDataSetDefinition();
 		dDefinition.addParameters(getParameters());
@@ -76,37 +79,39 @@ public class DatimTxMlReport implements ReportManager {
 		cDefinition.addParameters(getParameters());
 		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Interruption in Treatment After being on Treatment for < 3 months");
-		reportDefinition.addDataSetDefinition("Conditional - Interruption in Treatment After being on Treatment for < 3 months",
+		reportDefinition.addDataSetDefinition(
+		    "Conditional - Interruption in Treatment After being on Treatment for < 3 months",
 		    map(cDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition tDefinition = new TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition();
 		tDefinition.addParameters(getParameters());
 		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		tDefinition.setDescription("Interruption in Treatment After being on Treatment for 3-5 months");
-		reportDefinition.addDataSetDefinition("Conditional - Interruption in Treatment After being on Treatment for 3-5 months",
+		reportDefinition.addDataSetDefinition(
+		    "Conditional - Interruption in Treatment After being on Treatment for 3-5 months",
 		    map(tDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-
+		
 		TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition sDefinition = new TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition();
 		sDefinition.addParameters(getParameters());
 		sDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		sDefinition.setDescription("Interruption in Treatment After being on Treatment for 6+ months");
-		reportDefinition.addDataSetDefinition("Conditional - Interruption in Treatment After being on Treatment for 6+ months",
-			map(sDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-
+		reportDefinition.addDataSetDefinition(
+		    "Conditional - Interruption in Treatment After being on Treatment for 6+ months",
+		    map(sDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
 		TxMlTransferOutByAgeAndSexDataSetDefinition oDefinition = new TxMlTransferOutByAgeAndSexDataSetDefinition();
 		oDefinition.addParameters(getParameters());
 		oDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		oDefinition.setDescription("Transferred out");
 		reportDefinition.addDataSetDefinition("Conditional - Transferred out",
-			map(oDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-
+		    map(oDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
 		TxMlRefusedByAgeAndSexDataSetDefinition rDefinition = new TxMlRefusedByAgeAndSexDataSetDefinition();
 		rDefinition.addParameters(getParameters());
 		rDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		rDefinition.setDescription("Refused(Stopped) Treatment");
 		reportDefinition.addDataSetDefinition("Conditional - Refused(Stopped) Treatment",
-			map(rDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-		
+		    map(rDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}
@@ -123,7 +128,7 @@ public class DatimTxMlReport implements ReportManager {
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("2283c1d0-c04a-4159-b19e-ded411b0d749", reportDefinition);
+		ReportDesign design = ReportManagerUtil.createExcelDesign("2283ctxml-c04a-4159-b19e-ded411b0d749", reportDefinition);
 		
 		return Arrays.asList(design);
 		

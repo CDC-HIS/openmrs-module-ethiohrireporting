@@ -83,14 +83,6 @@ public class DatimTxCurrReport implements ReportManager {
 		reportDefinition.addDataSetDefinition("Conditional Disaggregated by Age/Sex (Coarse disaggregated)",
 		    map(cDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
-		// TxCurrBreastFeedingStatusDataSetDefinition bDefinition = new TxCurrBreastFeedingStatusDataSetDefinition();
-		// bDefinition.addParameters(getParameters());
-		// bDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		// bDefinition.setDescription("Disaggregated by Breastfeeding Status at ART Initiation");
-		
-		// reportDefinition.addDataSetDefinition("Breast-Feeding-Status",
-		//     map(bDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-		
 		TxCurrARVDataSetDefinition arvDefinition = new TxCurrARVDataSetDefinition();
 		arvDefinition.addParameters(getParameters());
 		arvDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
