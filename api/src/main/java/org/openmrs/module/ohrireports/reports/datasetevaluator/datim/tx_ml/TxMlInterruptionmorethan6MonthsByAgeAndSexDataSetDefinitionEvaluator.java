@@ -131,7 +131,7 @@ public class TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinitionEvaluato
 			return greaterthan6;
 		queryBuilder.select("obs").from(Obs.class, "obs")
 		.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType()).and()
-		.whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE)).and().whereIdIn("obs.personId", patientsTreatmentStoped).whereEqual("obs.person.gender", gender);
+		.whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE)).and().whereIdIn("obs.personId", patientsTreatmentStoped).whereEqual("obs.person.gender", gender).and().orderDesc("obs.personId,obs.obsDatetime");
 		
 		for(Obs obs: evaluationService.evaluateToList(queryBuilder, Obs.class, context)){
             if (!p.contains(obs.getPersonId())){
