@@ -1,5 +1,5 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator.datim.tx_ml;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +49,7 @@ public class TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinitionEvaluato
 		hdsd = (TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinition) dataSetDefinition;
 		context = evalContext;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-
+        patientTreatmentEndDate = new HashMap<>();
         DataSetRow femaleDateSet = new DataSetRow();
         obses = getStartedARTMorethan6Months("F");
         femaleDateSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender",
@@ -63,6 +63,7 @@ public class TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinitionEvaluato
         buildDataSet(femaleDateSet, "F");
 
         set.addRow(femaleDateSet);
+        patientTreatmentEndDate = new HashMap<>();
         obses = getStartedARTMorethan6Months("M");
         DataSetRow maleDataSet = new DataSetRow();
         maleDataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender",
@@ -124,36 +125,50 @@ public class TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinitionEvaluato
 	private List<Obs> getARTstartedDate(String gender) {
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 		List<Integer> patientsTreatmentStoped = getDatimTxMlTreatmentStoped();
-		List<Obs> lessThan6 = new ArrayList<>();
+        List<Integer> p = new ArrayList<>();
+		List<Obs> greaterthan6 = new ArrayList<>();
 		if (patientsTreatmentStoped == null || patientsTreatmentStoped.size() == 0)
-			return lessThan6;
+			return greaterthan6;
 		queryBuilder.select("obs").from(Obs.class, "obs")
 		.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType()).and()
-		.whereEqual("obs.concept", artConcept).and().whereIdIn("obs.personId", patientsTreatmentStoped).whereEqual("obs.person.gender", gender);
+		.whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE)).and().whereIdIn("obs.personId", patientsTreatmentStoped).whereEqual("obs.person.gender", gender).and().orderDesc("obs.personId,obs.obsDatetime");
 		
-		lessThan6 = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-		return lessThan6;
+		for(Obs obs: evaluationService.evaluateToList(queryBuilder, Obs.class, context)){
+            if (!p.contains(obs.getPersonId())){
+                greaterthan6.add(obs);
+                p.add(obs.getPersonId()); 
+            }
+        }
+		return greaterthan6;
 	}
 
     private List<Obs> getStartedARTMorethan6Months(String gender){
         List<Obs> patientARTstartedDate = getARTstartedDate(gender);
         List<Obs> startedARTlessthan6Months = new ArrayList<>();
+        if (patientARTstartedDate == null || patientARTstartedDate.size() == 0)
+                return startedARTlessthan6Months;
         for (Obs obs : patientARTstartedDate){
             Calendar subSixMonth = Calendar.getInstance();
-            subSixMonth.setTime(patientTreatmentEndDate.get(obs.getPersonId()));
+            Date treatEnd=patientTreatmentEndDate.get(obs.getPersonId());
+            if (treatEnd!=null){
+            subSixMonth.setTime(treatEnd);
             subSixMonth.add(Calendar.MONTH, -6);
             prevSixMonth = subSixMonth.getTime();
             if(obs.getValueDatetime().before(prevSixMonth)){
                 startedARTlessthan6Months.add(obs);
             } 
+            }
         }
         return startedARTlessthan6Months;
     }
 	
 	
+	
 	private List<Integer> getDatimTxMlTreatmentStoped(){
-		List<Integer> patientsTend = getDatimTxMlTreatmentEndDate();
+		List<Integer> patientsTend = getDatimTxMlTreatmentEndDate();  
 		List<Integer> patients = new ArrayList<>();
+        if (patientsTend == null || patientsTend.size() == 0)
+			return patients;
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("obs");
         queryBuilder.from(Obs.class, "obs")
@@ -178,7 +193,7 @@ public class TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinitionEvaluato
 		List<Integer> stopedPatients = new ArrayList<>();
 		for (Integer tr : patientsTend){
 			if (!patients.contains(tr)){
-				stopedPatients.add(tr);
+				stopedPatients.add(tr);        
 			}
             else{
                 patientTreatmentEndDate.remove(tr);
