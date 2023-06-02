@@ -45,7 +45,7 @@ public class TxRttAutoCalculateDataSetDefinitionEvaluator implements DataSetEval
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
-		getDatimTxRttTreatmentRestarted());
+		    getDatimTxRttTreatmentRestarted());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;
@@ -77,9 +77,7 @@ public class TxRttAutoCalculateDataSetDefinitionEvaluator implements DataSetEval
         }
 			
 		return patients.size();
-	}	
-	
-	private List<Integer> getDatimTxrttPrevTreatmentEndDate() {
+	}	private List<Integer> getDatimTxrttPrevTreatmentEndDate() {
 
 		List<Integer> patients = new ArrayList<>();
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();

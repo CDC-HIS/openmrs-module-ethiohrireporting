@@ -49,9 +49,10 @@ public class TxRttIITDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		hdsd = (TxRttIITDataSetDefinition) dataSetDefinition;
 		context = evalContext;
+        patientTreatmentEndDate = new HashMap<>();
         obses = getDatimTxRttTreatmentRestarted();
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-        patientTreatmentEndDate = new HashMap<>();
+        
         DataSetRow belowThreeDateSet = new DataSetRow();
         belowThreeDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "",
                 String.class), "Experienced treatment interruption of <3 months before returning to treatment ");
@@ -91,12 +92,13 @@ public class TxRttIITDataSetDefinitionEvaluator implements DataSetEvaluator {
                 Calendar subThreeMonth = Calendar.getInstance();
                 subThreeMonth.setTime(restartedDate);
                 subThreeMonth.add(Calendar.MONTH, -3);
+                prevThreeMonth = subThreeMonth.getTime();
                 if (range==("five")){
                     Calendar subFiveMonth = Calendar.getInstance();
                     subFiveMonth.setTime(restartedDate);
                     subFiveMonth.add(Calendar.MONTH, -5);
                     prevFiveMonth = subFiveMonth.getTime();         
-                    prevThreeMonth = subThreeMonth.getTime();
+                    
                     if(treatEnd.before(prevThreeMonth) && treatEnd.after(prevFiveMonth)){
                         aggr.add(obs.getPersonId());
                     } 

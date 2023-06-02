@@ -68,23 +68,19 @@ public class DatimTxRttReport implements ReportManager {
 		            "Number of ART patients who experienced IIT during any previous reporting period, who successfully restarted ARVs within the reporting period and remained on treatment until the end of the reporting period.",
 		            map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
-		
 		TxRttByAgeAndSexDataSetDefinition cDefinition = new TxRttByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());
 		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Disaggregated by Age/Sex");
-		reportDefinition.addDataSetDefinition(
-		    "Required - Disaggregated by Age/Sex",
+		reportDefinition.addDataSetDefinition("Required - Disaggregated by Age/Sex",
 		    map(cDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		TxRttIITDataSetDefinition tDefinition = new TxRttIITDataSetDefinition();
 		tDefinition.addParameters(getParameters());
 		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		tDefinition.setDescription("Disaggregated by IIT");
-		reportDefinition.addDataSetDefinition(
-		    "Conditional Required - Disaggregated by IIT",
+		reportDefinition.addDataSetDefinition("Conditional Required - Disaggregated by IIT",
 		    map(tDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-		
 		
 		TxRttKeyPopulationTypeDataSetDefinition oDefinition = new TxRttKeyPopulationTypeDataSetDefinition();
 		oDefinition.addParameters(getParameters());
@@ -92,8 +88,6 @@ public class DatimTxRttReport implements ReportManager {
 		oDefinition.setDescription("Disaggregated by key population type");
 		reportDefinition.addDataSetDefinition("Required Disaggregated by key population type",
 		    map(oDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-		
-
 		
 		return reportDefinition;
 	}
