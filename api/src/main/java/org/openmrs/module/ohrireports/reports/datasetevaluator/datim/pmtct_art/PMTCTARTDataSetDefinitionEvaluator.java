@@ -201,7 +201,6 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
     
 
     private List<Integer> getPregnantPatients() {
-        //TODO: update the query for the  pregnant patients
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("obs").from(Obs.class, "obs")
                 .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())

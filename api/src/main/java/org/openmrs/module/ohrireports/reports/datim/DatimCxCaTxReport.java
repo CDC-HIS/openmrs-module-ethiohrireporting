@@ -10,7 +10,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxAutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxByAgeandTreatmentTypeandScreeningVisitTypeDataSetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxPostTreatmentFollowupDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxRescreenedDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxRescreenDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -77,7 +77,7 @@ public class DatimCxCaTxReport implements ReportManager {
 		    "Required Disaggregated by Age/Treatment Type/Screening Visit Type, First time screened for cervical cancer",
 		    map(fDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
-		CxCaTxRescreenedDataSetDefinition rDefinition = new CxCaTxRescreenedDataSetDefinition();
+		CxCaTxRescreenDataSetDefinition rDefinition = new CxCaTxRescreenDataSetDefinition();
 		rDefinition.addParameters(getParameters());
 		rDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		rDefinition.setDescription("Rescreened after previous negative or suspected cancer");

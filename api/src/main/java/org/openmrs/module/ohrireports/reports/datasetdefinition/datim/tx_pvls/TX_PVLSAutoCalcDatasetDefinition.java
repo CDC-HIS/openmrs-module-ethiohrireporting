@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca;
+package org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_pvls;
 
 import java.util.Date;
 
@@ -8,7 +8,7 @@ import org.openmrs.module.reporting.definition.configuration.ConfigurationProper
 import org.springframework.stereotype.Component;
 
 @Component
-public class CxCaTxRescreenedDataSetDefinition extends BaseDataSetDefinition {
+public class TX_PVLSAutoCalcDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;
@@ -18,6 +18,17 @@ public class CxCaTxRescreenedDataSetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private EncounterType encounterType;
+	
+	@ConfigurationProperty
+	private Boolean includeUnSuppressed;
+	
+	public Boolean getIncludeUnSuppressed() {
+		return includeUnSuppressed;
+	}
+	
+	public void setIncludeUnSuppressed(Boolean includeUnSuppressed) {
+		this.includeUnSuppressed = includeUnSuppressed;
+	}
 	
 	public Date getStartDate() {
 		return startDate;
@@ -42,5 +53,4 @@ public class CxCaTxRescreenedDataSetDefinition extends BaseDataSetDefinition {
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
 	}
-	
 }

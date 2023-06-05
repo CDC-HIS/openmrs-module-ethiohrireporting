@@ -259,7 +259,7 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         while (minCount <= 50) {
             if (minCount == 50) {
                 dataSet.addColumnValue(new DataSetColumn("50+", "50+", Integer.class),
-                        getEnrolledByAgeAndGender(65, 200));
+                        getEnrolledByAgeAndGender(50, 200));
             } else {
                 dataSet.addColumnValue(
                         new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),

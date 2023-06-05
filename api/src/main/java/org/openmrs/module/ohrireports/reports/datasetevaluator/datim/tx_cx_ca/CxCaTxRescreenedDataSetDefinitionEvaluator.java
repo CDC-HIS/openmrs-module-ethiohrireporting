@@ -10,7 +10,7 @@ import java.util.Objects;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxRescreenedDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxRescreenDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -23,12 +23,12 @@ import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Handler(supports = { CxCaTxRescreenedDataSetDefinition.class })
+@Handler(supports = { CxCaTxRescreenDataSetDefinition.class })
 public class CxCaTxRescreenedDataSetDefinitionEvaluator implements DataSetEvaluator {
 
     private EvaluationContext context;
 
-    private CxCaTxRescreenedDataSetDefinition hdsd;
+    private CxCaTxRescreenDataSetDefinition hdsd;
     private String title = "Number of adults and children Currently enrolling on antiretroviral therapy (ART)";
     @Autowired
     private ConceptService conceptService;
@@ -43,7 +43,7 @@ public class CxCaTxRescreenedDataSetDefinitionEvaluator implements DataSetEvalua
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
 
-        hdsd = (CxCaTxRescreenedDataSetDefinition) dataSetDefinition;
+        hdsd = (CxCaTxRescreenDataSetDefinition) dataSetDefinition;
         context = evalContext;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 
@@ -276,7 +276,7 @@ public class CxCaTxRescreenedDataSetDefinitionEvaluator implements DataSetEvalua
 				.from(Obs.class, "obs")
 				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
 				.and()
-				.whereEqual("obs.concept", conceptService.getConceptByUuid(PATIENT_STATUS))
+				.whereEqual("obs.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
 				.and()
                 .whereEqual("obs.person.gender", "F")
 				.and()

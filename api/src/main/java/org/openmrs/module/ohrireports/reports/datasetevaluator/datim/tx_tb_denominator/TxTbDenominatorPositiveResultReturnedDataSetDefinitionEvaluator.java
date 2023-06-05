@@ -1,7 +1,7 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator.datim.tx_tb_denominator;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PATIENT_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
@@ -161,7 +161,7 @@ public class TxTbDenominatorPositiveResultReturnedDataSetDefinitionEvaluator imp
 				.from(Obs.class, "obs")
 				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
                 .and()
-				.whereEqual("obs.concept", conceptService.getConceptByUuid(PATIENT_STATUS))
+				.whereEqual("obs.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
 				.and()
 				.whereIn("obs.valueCoded", Arrays.asList(conceptService.getConceptByUuid(ALIVE),conceptService.getConceptByUuid(RESTART)))
 				.and().whereLess("obs.obsDatetime", hdsd.getEndDate());

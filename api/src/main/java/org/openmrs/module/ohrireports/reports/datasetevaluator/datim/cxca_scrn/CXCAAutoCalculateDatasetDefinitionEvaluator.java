@@ -191,7 +191,7 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                                 .and()
                                 .whereIn("obs.personId", currentPatients);
                 List<Integer> personId = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-
+               
                 return personId;
         }
 

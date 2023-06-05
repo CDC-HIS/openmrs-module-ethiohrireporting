@@ -1,7 +1,7 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PATIENT_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 
@@ -166,7 +166,7 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 				.from(Obs.class, "obv")
 				.whereEqual("obv.encounter.encounterType", hdsd.getEncounterType())
 				.and()
-				.whereEqual("obv.concept", conceptService.getConceptByUuid(PATIENT_STATUS))
+				.whereEqual("obv.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
 				.and()
 				.whereIn("obv.valueCoded", Arrays.asList(conceptService.getConceptByUuid(ALIVE),
 						conceptService.getConceptByUuid(RESTART)))
