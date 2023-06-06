@@ -63,6 +63,10 @@ public class OHRIReportsConstants {
 	
 	public final static String UNKNOWN = "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String TPT_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	/**
 	 * Associated Concepts
 	 */
