@@ -2,7 +2,7 @@ package org.openmrs.module.ohrireports.reports.datasetevaluator.datim.tx_tb_nume
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PATIENT_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
@@ -244,7 +244,7 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 				.and()
 				.whereEqual("obs.person.gender", gender)
                 .and()
-				.whereEqual("obs.concept", conceptService.getConceptByUuid(PATIENT_STATUS))
+				.whereEqual("obs.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
 				.and()
 				.whereIn("obs.valueCoded", Arrays.asList(conceptService.getConceptByUuid(ALIVE),conceptService.getConceptByUuid(RESTART)))
 				.and().whereLess("obs.obsDatetime", hdsd.getEndDate());

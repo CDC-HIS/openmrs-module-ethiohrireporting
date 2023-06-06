@@ -1,7 +1,7 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PATIENT_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REGIMEN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MRN_PATIENT_IDENTIFIERS;
@@ -30,7 +30,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.ohrireports.helper.EthiopianDateConverter;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.TXCurrDataSetDefinition;
-import org.openmrs.module.reporting.data.patient.definition.PatientObjectDataDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -178,7 +177,7 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 				.from(Obs.class, "obv")
 				.whereEqual("obv.encounter.encounterType", hdsd.getEncounterType())
 				.and()
-				.whereEqual("obv.concept", conceptService.getConceptByUuid(PATIENT_STATUS))
+				.whereEqual("obv.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
 				.and()
 				.whereIn("obv.valueCoded", concepts);
 

@@ -133,7 +133,7 @@ public class OHRIReportsConstants {
 	
 	public final static String SPECIMEN_SENT = "161934AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String CXCA_TREATMENT_TYPE = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
+	public final static String CXCA_FIRST_TIME_SCREENING = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
 	public final static String CXCA_TREATMENT_TYPE_NO_TREATMENT = "1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -151,14 +151,50 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TYPE_OF_SCREENING_FIRST_TIME = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
-	public final static String CXCA_TYPE_OF_SCREENING_RESCREENING = "13c3ee77-4e7c-4224-ae40-0b2727932a0f";
+	public final static String CXCA_TYPE_OF_SCREENING_RESCREEN = "13c3ee77-4e7c-4224-ae40-0b2727932a0f";
 	
 	public final static String CXCA_TYPE_OF_SCREENING_POST_TREATMENT = "3f4a6148-39c1-4980-81c6-6d703367c4a6";
 	
-	public final static String TPT_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String SCREENING_STRATEGY = "53ff5cd0-0f37-4190-87b1-9eb439a15e94";
 	
-	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String HPV_DNA_SCREENING_RESULT = "159859AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String VIA_SCREENING_RESULT = "ff6b60e4-7310-4ddc-98ce-a2910c32a7a0";
+	
+	public final static String VIA_NEGATIVE = "a08ab377-30bc-4ef6-bb9d-4cf6a0564ccc";
+	
+	public final static String VIA_POSITIVE = "7bc7c4f3-a636-478d-8a3f-65116093e37a";
+	
+	public final static String VIA_SUSPICIOUS_RESULT = "159008AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String CXCA_SCREENING_ACCEPTED_DATE = "8cb69148-cdce-448e-90c6-f582b5c169da";
+	
+	public final static String CYTOLOGY_RESULT = "9e5c5bd8-276c-497b-9ea1-9a5c9f94faa7";
+	
+	public final static String CYTOLOGY_NEGATIVE = "5e4fc757-0b14-49ae-b3b7-419666f41e15";
+	
+	public final static String CYTOLOGY_ASCUS_POSITIVE = "145822AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String CYTOLOGY_GREATER_ASCUS_SUSPICIOUS = "912a5c48-8b07-4fd7-b2c3-ccb94fde7c68";
+	
+	/**
+	 * Viral Load Constant
+	 */
+	public final static String HIV_VIRAL_LOAD_COUNT = "856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String HIV_ROUTINE_VIRAL_LOAD_COUNT = "9b8cef86-9093-4737-a641-3b8399618c85";
+	
+	public final static String HIV_TARGET_VIRAL_LOAD_COUNT = "8f75ce27-29fa-4a67-bc8a-295c94323220";
+	
+	public final static String HIV_VIRAL_LOAD_STATUS = "2dc9ee04-4d12-4606-ae0f-86895bf14a44";
+	
+	public final static String HIV_VIRAL_LOAD_SUPPRESSED = "5d5e42cc-acc4-4069-b3a8-7163e0db5d96";
+	
+	public final static String HIV_VIRAL_LOAD_UNSUPPRESSED = "a6768be6-c08e-464d-8f53-5f4229508e54";
+	
+	/*
+	 * End Of Viral Load Constant
+	 */
 	/**
 	 * Reports
 	 */
@@ -173,6 +209,8 @@ public class OHRIReportsConstants {
 	public final static String COVID19_REPORT_DESIGN_UUID = "4e33bb15-ac1c-4e82-a863-77cb705c6512";
 	
 	public final static String PATIENT_STATUS = "160433AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String FOLLOW_UP_STATUS = "222f64a8-a603-4d2e-b70e-2d90b622bb04";
 	
 	public final static String TRANSFERRED_UUID = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

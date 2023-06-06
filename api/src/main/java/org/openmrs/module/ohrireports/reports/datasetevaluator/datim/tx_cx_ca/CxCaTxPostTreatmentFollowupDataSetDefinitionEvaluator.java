@@ -275,7 +275,7 @@ public class CxCaTxPostTreatmentFollowupDataSetDefinitionEvaluator implements Da
         .from(Obs.class, "obs")
         .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
         .and()
-        .whereEqual("obs.concept", conceptService.getConceptByUuid(PATIENT_STATUS))
+        .whereEqual("obs.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
         .and()
         .whereEqual("obs.person.gender", "F")
         .and()

@@ -10,7 +10,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.POSITIVE;
 
-import org.joda.time.chrono.IslamicChronology;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
