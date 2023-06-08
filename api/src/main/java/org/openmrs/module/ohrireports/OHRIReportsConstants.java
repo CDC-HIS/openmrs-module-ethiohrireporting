@@ -261,4 +261,15 @@ public class OHRIReportsConstants {
 	// #endregion
 	
 	public final static String REPORT_VERSION = "1.0.0-SNAPSHOT";
-}
+
+	// Regimens
+	public final static String R1a30_D4T_30_3TC_NVP = "2798d3bc-2e0a-459c-b249-9516b380a69e";
+	public final static String R1a40_D4T_40_3TC_NVP = "3495d89f-4d46-44d8-b1c9-d101bc9f15d4";
+	public final static String R1b30_D4T_30_3TC_EFV = "ae0dc59c-eb3d-421b-913b-ee5a06ec6182";
+	public final static String R1b40_D4T_40_3TC_EFV = "c5995b5c-19bb-42f6-895b-0b4627bc9dd1";
+
+	public final static String R1c_AZT_3TC_NVP = "a9da3e97-3916-4834-854c-6bcbc5142aca";
+	public final static String R1d_AZT_3TC_EFV = "b5951dd9-6bb2-4b63-af20-0707500108ea";
+	public final static String R1e_TDF_3TC_EFV = "1f735bdd-4ccd-40ce-8746-28f031f38675";
+	public final static String R1f_TDF_3TC_NVP = "8b727274-4a3c-4a81-ae50-9f759a87358d";
+}	
