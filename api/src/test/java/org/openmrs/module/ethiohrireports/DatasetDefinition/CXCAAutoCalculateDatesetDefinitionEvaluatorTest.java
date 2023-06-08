@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.DatasetDefinition;
+package org.openmrs.module.ethiohrireports.DatasetDefinition;
 
 import java.util.Arrays;
 import java.util.Date;

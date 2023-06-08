@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.cohorts.manager;
+package org.openmrs.module.ethiohrireports.cohorts.manager;
 
 import org.junit.Assert;
 import org.junit.Test;

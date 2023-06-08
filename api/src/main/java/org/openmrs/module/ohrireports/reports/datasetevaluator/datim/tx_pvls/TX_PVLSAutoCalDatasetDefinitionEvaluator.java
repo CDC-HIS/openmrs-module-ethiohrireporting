@@ -15,10 +15,13 @@ import java.util.List;
 
 import org.joda.time.LocalDate;
 import org.joda.time.Months;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.query.PatientQuery;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -39,6 +42,9 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	
 	@Autowired
 	private ConceptService conceptService;
+	
+	@Autowired
+	private PatientQuery artPatientQuery;
 	
 	@Autowired
 	private EvaluationService evaluationService;
@@ -154,7 +160,8 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	private List<Integer> getListOfALiveORRestartPatientObs() {
 
                 List<Integer> personIdList = new ArrayList<>();
-                List<Integer> personIdOnArt = getPatientsOnArt();
+                Cohort personIdOnArt = artPatientQuery.getOnArtCohorts(null, txDatasetDefinition.getEndDate(),null);
+                //getPatientsOnArt();
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 
                 queryBuilder.select("distinct obs.personId")
@@ -169,7 +176,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
                                 .and()
                                 .whereLess("obs.obsDatetime", txDatasetDefinition.getEndDate())
                                 .and()
-                                .whereIdIn("obs.personId", personIdOnArt);
+                                .whereIdIn("obs.personId", personIdOnArt.getMemberIds());
 
                 personIdList = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
 
