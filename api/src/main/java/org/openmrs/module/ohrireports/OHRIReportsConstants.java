@@ -258,6 +258,8 @@ public class OHRIReportsConstants {
 	
 	public final static String TDF_3TC_DRUG = "97d14de6-89c4-49cb-9553-55de5cbc9b03";
 	
+	public final static String PREGNANCY_STATUS = "5272AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	// #endregion
 	
 	public final static String REPORT_VERSION = "1.0.0-SNAPSHOT";

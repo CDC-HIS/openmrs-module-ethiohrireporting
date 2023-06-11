@@ -32,13 +32,11 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	ConceptService conceptService;
 
 	HashMap<Integer, Concept> patientStatus = new HashMap<>();
-	List<Obs> obses = new ArrayList<>(); 
+	List<Obs> obses = new ArrayList<>();
+	List<Obs> sub_obses = new ArrayList<>();
+
 	private HmisTXCurrDataSetDefinition hdsd;
 	private EvaluationContext context;
-
-	
-	
-
 
 	List<String> children_first_line = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV, R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4h_OTHER_CHILD_1ST_LINE_REGIMEN, R4i_TDF_3TC_DTG, R4j_ABC_3TC_DTG, R4L_ABC_3TC_EFV);
 	List<String> children_second_line = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV, R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr, R5g_TDF_3TC_EFV, R5h_ABC_3TC_EFV, R5i_TDF_3TC_LPVr, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC);
@@ -59,52 +57,88 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		data.addData(new DataSetColumn("HIV_HIV_Treatement.","Does health facility provide Monthly PMTCT / ART Treatment Service?",Integer.class)
 		," ");
-		obses = getTxCurrPatients(0,150);
+		obses = getTxCurrPatients();
 		data.addData(new DataSetColumn("HIV_TX_CURR_ALL","Number of adults and children who are currently on ART by age, sex and regimen category",Integer.class)
 		,obses.size());
 		data.addData(new DataSetColumn("HIV_TX_CURR_U15","Number of children (<15) who are currently on ART",Integer.class) ,getPersonByAge(0,15).size());
 		
 		data.addData(new DataSetColumn("HIV_TX_CURR_U1","Children currently on ART aged <1 yr",Integer.class),getPersonByAge(0, 1).size());
+	
+		buildDataSet("HIV_TX_CURR_U1",data,0,1,"Children");
 
-		
-		buildDataSet("HIV_TX_CURR_U1",data,0,1);
-		// obses=getByRegimen(children_first_line,getPersonByAge(0, 1));
+		Integer minCount = 1;
+        Integer maxCount = 4;
+        while (minCount <= 50) {
+			String category = "Children";
+			if (maxCount > 15){
+				category = "Adult";
+				if(maxCount==19){
+					data.addData(new DataSetColumn("HIV_TX_CURR_ADULT","Number of adults who are currently on ART (>=15)",Integer.class) ,getPersonByAge(15,150).size());
+				}
+			}
+            if (minCount == 50) {
+				data.addData(new DataSetColumn("HIV_TX_CURR_U50","Adult currently on ART aged 50+",Integer.class),getPersonByAge(minCount, maxCount).size());
+				buildDataSet("HIV_TX_CURR_U50", data, minCount, maxCount, category);            
+            } 
+			else {
+				data.addData(new DataSetColumn("HIV_TX_CURR_U"+maxCount,category+" currently on ART aged "+minCount+"-"+maxCount+" yr",Integer.class),getPersonByAge(minCount, maxCount).size());
+				buildDataSet("HIV_TX_CURR_U"+maxCount,data,minCount,maxCount, category);
+            }
 
-		// data.addData(new DataSetColumn("HIV_TX_CURR_U1_1","Children currently on ART aged <1 yr on First line regimen by sex",Integer.class)
-		// ,obses.size());
+            minCount=1+maxCount;
+            maxCount = minCount + 4;
+        }
 
-		// data.addData(new DataSetColumn("HIV_TX_CURR_U1_1.1","Male",Integer.class)
-		// ,getPersonByAgeandSex(0,1,Gender.Male));
+		data.addData(new DataSetColumn("HIV_TX_CURR_PREG","Currently on ART by pregnancy status",Integer.class),getPersonByAgeandSex(0, 1,Gender.Female).size());
+		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.1","Pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 1,Gender.Female), conceptService.getConceptByUuid(YES)).size());
+		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.2","Non pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 1,Gender.Female), conceptService.getConceptByUuid(NO)).size());
 
-		// data.addData(new DataSetColumn("HIV_TX_CURR_U1_1.2","FeMale",Integer.class)
-		// ,getPersonByAgeandSex(0,1,Gender.Female));
 		return data;
 
 	}
 
-	private void buildDataSet(String name, MapDataSet data, int minAge, int maxAge) {
+	private List<List<String>> getListofLevels(Integer age){
+		
 		List<List<String>> listOfLevels = new ArrayList<List<String>>();
 		listOfLevels.add(children_first_line);
 		listOfLevels.add(children_second_line);
 		listOfLevels.add(children_third_line);
-		int i=0;
+		if (age > 15){
+			listOfLevels = new ArrayList<List<String>>();
+			listOfLevels.add(adult_first_line);
+			listOfLevels.add(adult_second_line);
+			listOfLevels.add(adult_third_line);
+
+		}
+		return listOfLevels;
 		
-		obses=getTxCurrPatients(minAge,maxAge);
+	}
+
+	private void buildDataSet(String name, MapDataSet data, int minAge, int maxAge, String category) {
+		List<List<String>> listOfLevels = new ArrayList<List<String>>();
+		listOfLevels=getListofLevels(maxAge);
+		int i=0;
 		for (List<String> level : listOfLevels) {
 			i=i+1;
-			obses=getByRegimen(level,getPersonByAge(minAge, maxAge));
-			name=name+"."+i;
-			if (maxAge == 1){
-				data.addData(new DataSetColumn(name,"Children currently on ART aged <1 yr on "+getLevel(i)+"-line regimen by sex",Integer.class),obses.size());
+			sub_obses=getByRegimen(level,getPersonByAge(minAge, maxAge));
+			String cname=name+"."+i;
+			if (maxAge == 1){		
+				data.addData(new DataSetColumn(cname,"Children currently on ART aged <1 yr on "+getLevel(i)+"-line regimen by sex",Integer.class),sub_obses.size());
 			}
 			else{
-				data.addData(new DataSetColumn(name,"Children currently on ART aged "+minAge+"-"+maxAge+" yr on "+getLevel(i)+"-line regimen by sex",Integer.class),obses.size());
+				if(maxAge > 50){
+					data.addData(new DataSetColumn(cname,category+" currently on ART aged 50+ on "+getLevel(i)+"-line regimen by sex",Integer.class),sub_obses.size());
+				}
+				else{
+				data.addData(new DataSetColumn(cname,category+" currently on ART aged "+minAge+"-"+maxAge+" yr on "+getLevel(i)+"-line regimen by sex",Integer.class),sub_obses.size());
+				}
 			}
-			data.addData(new DataSetColumn(name+".1","Male",Integer.class)
-			,getPersonByAgeandSex(minAge,maxAge,Gender.Male));
+			
+			data.addData(new DataSetColumn(cname+".1","Male",Integer.class)
+			,getPersonByAgeandSex(minAge,maxAge,Gender.Male).size());
 
-			data.addData(new DataSetColumn(name+".2","FeMale",Integer.class)
-			,getPersonByAgeandSex(minAge,maxAge,Gender.Female));
+			data.addData(new DataSetColumn(cname+".2","Female",Integer.class)
+			,getPersonByAgeandSex(minAge,maxAge,Gender.Female).size());
 		}
            
     }
@@ -113,7 +147,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (i==2){
 			lev = "Second";
 		}
-		if (i==3){
+		else if (i==3){
 			lev = "Third";
 		}
 		return lev;
@@ -121,11 +155,14 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private List<Integer> getPersonByAge(int minAge, int maxAge){
 		int _age = 0;
 		List<Integer> patients = new ArrayList<>();
+		if (maxAge > 1){
+				maxAge=maxAge+1;
+			}
 
 		for (Obs obs :obses) {
 			_age =obs.getPerson().getAge();
 			if (!patients.contains(obs.getPersonId()) 
-			 && (_age>minAge && _age< maxAge)) {
+			 && (_age>=minAge && _age< maxAge)) {
 				
 				patients.add(obs.getPersonId());
 
@@ -135,27 +172,30 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 
 
-	private int getPersonByAgeandSex(int minAge, int maxAge, Gender gender){
+	private List<Integer> getPersonByAgeandSex(int minAge, int maxAge, Gender gender){
 		int _age = 0;
 		List<Integer> patients = new ArrayList<>();
-			String _gender=gender.equals(Gender.Female)?"f":"m";
+		String _gender=gender.equals(Gender.Female)?"f":"m";
+		if (maxAge > 1){
+				maxAge=maxAge+1;
+			}
 		for (Obs obs :obses) {
 			_age =obs.getPerson().getAge();
 			if (!patients.contains(obs.getPersonId()) 
-			 && (_age>minAge && _age< maxAge)
+			 && (_age>=minAge && _age< maxAge)
 			 && (obs.getPerson().getGender().toLowerCase().equals(_gender))) {
 				
 				patients.add(obs.getPersonId());
 
 			}
 		}
-		return patients.size();
+		return patients;
 	}
 
 	
-	private List<Obs> getTxCurrPatients(int minAge, int maxAge) {
+	private List<Obs> getTxCurrPatients() {
 
-		List<Integer> patientsId = getListOfALiveORRestartPatientObservertions();
+		List<Integer> patientsId = getListOfALiveORRestartPatient();
 		List<Integer> patients = new ArrayList<>();
 		List<Obs> localObs = new ArrayList<>();
 		if (patientsId == null || patientsId.size() == 0)
@@ -170,7 +210,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			.whereGreater("obs.valueDatetime", hdsd.getEndDate())
 			.and()
 			.whereLess("obs.obsDatetime", hdsd.getEndDate())
-			.whereIdIn("obs.personId", patientsId).and().whereBetweenInclusive("obs.person.age", minAge, maxAge)
+			.whereIdIn("obs.personId", patientsId).and()
 			.orderDesc("obs.personId,obs.obsDatetime");
 				for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
 					if(!patients.contains(obs.getPersonId()))
@@ -184,7 +224,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 
 	
-	private List<Integer> getListOfALiveORRestartPatientObservertions() {
+	private List<Integer> getListOfALiveORRestartPatient() {
 
 			List<Integer> uniqiObs = new ArrayList<>();
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
@@ -211,7 +251,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		return uniqiObs;
 	}
 
-	private List<Obs> getByRegimen(List<String> children_first_line, List<Integer> patientsId) {
+	private List<Obs> getByRegimen(List<String> _line, List<Integer> patientsId) {
 		List<Integer> patients = new ArrayList<>();
 		List<Obs> localObs = new ArrayList<>();
 		if (patientsId == null || patientsId.size() == 0)
@@ -220,7 +260,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		queryBuilder.select("obs").from(Obs.class, "obs")
 				.whereInAny("obs.concept", conceptService.getConceptByUuid(REGIMEN))
 				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-				.and().whereIdIn("obv.personId", patientsId).and().whereIn("obs.valueCoded", children_first_line)
+				.and().whereIdIn("obv.personId", patientsId).and().whereIn("obs.valueCoded", _line)
 				.orderDesc("obs.obsDatetime");
 		for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
 					if(!patients.contains(obs.getPersonId()))
@@ -232,8 +272,44 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		return localObs;
 	}
+	public List<Obs> getByPregnancyStatus(List<Integer> patientsId, Concept concept_answer){
+		List<Obs> pregObs = getAllPregnancyStatus(patientsId);
+		List<Obs> patientBypregStatus = new ArrayList<>();
+		for(Obs preg: pregObs){
+			if(preg.getValueCoded()==concept_answer)
+					  {	
+						patientBypregStatus.add(preg);
+					  }
+			}
+		return patientBypregStatus;
+	}
+
+	public List<Obs> getAllPregnancyStatus(List<Integer> patientsId){
+		List<Integer> patients = new ArrayList<>();
+		List<Obs> pregObs = new ArrayList<>();
+		if (patientsId == null || patientsId.size() == 0)
+			return pregObs;
+		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
+		queryBuilder.select("obs").from(Obs.class, "obs")
+				.whereInAny("obs.concept", conceptService.getConceptByUuid(PREGNANCY_STATUS))
+				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
+				.and().whereIdIn("obv.personId", patientsId)
+				.orderDesc("obs.obsDatetime");
+		for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
+					if(!patients.contains(obs.getPersonId()))
+					  {
+						patients.add(obs.getPersonId());
+						pregObs.add(obs);
+					  }
+				}
+		
+		return pregObs;
 
 }
+
+}
+
+
 
 enum Gender {
 	Female,

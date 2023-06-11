@@ -28,7 +28,7 @@ public class HMISReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return HMIS_REPORT + "TX CURR";
+		return HMIS_REPORT + "-TX CURR";
 	}
 	
 	@Override
