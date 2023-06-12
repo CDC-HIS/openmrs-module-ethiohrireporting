@@ -346,6 +346,8 @@ public class OHRIReportsConstants {
 	public final static String R4i_TDF_3TC_DTG = "0dbe6b49-7356-4cf0-b489-890e18c38465";
 	
 	public final static String R4j_ABC_3TC_DTG = "eae01634-65ec-4174-a95c-622456663727";
+
+	public final static String R4k_AZT_3TC_DTG = "dabcfa6d-56e5-4e5d-a2f2-faf4e18b9211";
 	
 	public final static String R4L_ABC_3TC_EFV = "c94ca2da-8066-42f7-b4c9-582dae83e552";
 	

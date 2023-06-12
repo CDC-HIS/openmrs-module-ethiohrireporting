@@ -38,7 +38,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private HmisTXCurrDataSetDefinition hdsd;
 	private EvaluationContext context;
 
-	List<String> children_first_line = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV, R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4h_OTHER_CHILD_1ST_LINE_REGIMEN, R4i_TDF_3TC_DTG, R4j_ABC_3TC_DTG, R4L_ABC_3TC_EFV);
+	List<String> children_first_line = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV, R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4h_OTHER_CHILD_1ST_LINE_REGIMEN, R4i_TDF_3TC_DTG, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG, R4L_ABC_3TC_EFV);
 	List<String> children_second_line = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV, R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr, R5g_TDF_3TC_EFV, R5h_ABC_3TC_EFV, R5i_TDF_3TC_LPVr, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC);
 	List<String> children_third_line = Arrays.asList(R6a_DRVr_RAL_AZT_3TC, R6b_DRVr_RAL_TDF_3TC, R6c_DRVr_DTG_AZT_3TC, R6d_DRVr_DTG_TDF_3TC, R6e_OTHER_CHILD_3RD_LINE_REGIMEN, R6f_DRVr_DTG_ABC_3TC, R6g_DRVr_ABC_3TC_EFV, R6h_DRVr_AZT_3TC_EFV);
 
@@ -92,33 +92,51 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		data.addData(new DataSetColumn("HIV_TX_CURR_PREG","Currently on ART by pregnancy status",Integer.class),getPersonByAgeandSex(0, 1,Gender.Female).size());
 		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.1","Pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 1,Gender.Female), conceptService.getConceptByUuid(YES)).size());
 		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.2","Non pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 1,Gender.Female), conceptService.getConceptByUuid(NO)).size());
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U19","Number of children (<19) who are currently on ART by regimen type",String.class),"");
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1","Children currently on ART aged <1 yr by regimen type",String.class),"");
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1","Children currently on ART aged <1 yr on First line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr,R4h_OTHER_CHILD_1ST_LINE_REGIMEN, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG)),getPersonByAge(0, 1)));
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4f_AZT_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4f_AZT_3TC_LPVr)),getPersonByAge(0, 1)));
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4g_ABC_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4g_ABC_3TC_LPVr)),getPersonByAge(0, 1)));
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4j_ABC_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4j_ABC_3TC_DTG)),getPersonByAge(0, 1)));
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4k_AZT_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4k_AZT_3TC_DTG)),getPersonByAge(0, 1)));
 
 		return data;
 
 	}
 
-	private List<List<String>> getListofLevels(Integer age){
+	private List<List<Concept>> getListofLevels(Integer age){
 		
-		List<List<String>> listOfLevels = new ArrayList<List<String>>();
-		listOfLevels.add(children_first_line);
-		listOfLevels.add(children_second_line);
-		listOfLevels.add(children_third_line);
+		List<List<Concept>> listOfLevels = new ArrayList<List<Concept>>();
+		
 		if (age > 15){
-			listOfLevels = new ArrayList<List<String>>();
-			listOfLevels.add(adult_first_line);
-			listOfLevels.add(adult_second_line);
-			listOfLevels.add(adult_third_line);
+			listOfLevels.add(getConceptByuuid(adult_first_line));
+			listOfLevels.add(getConceptByuuid(adult_second_line));
+			listOfLevels.add(getConceptByuuid(adult_third_line));
+
+		}
+		else{
+			listOfLevels.add(getConceptByuuid(children_first_line));
+			listOfLevels.add(getConceptByuuid(children_second_line));
+			listOfLevels.add(getConceptByuuid(children_third_line));
 
 		}
 		return listOfLevels;
 		
 	}
+	private List<Concept> getConceptByuuid(List<String> conceptUuids){
+		List<Concept> conceptList = new ArrayList<Concept>();
+		for (String uuid: conceptUuids){
+			conceptList.add(conceptService.getConceptByUuid(uuid));
+		}
+		return conceptList;
+	}
+
 
 	private void buildDataSet(String name, MapDataSet data, int minAge, int maxAge, String category) {
-		List<List<String>> listOfLevels = new ArrayList<List<String>>();
+		List<List<Concept>> listOfLevels = new ArrayList<List<Concept>>();
 		listOfLevels=getListofLevels(maxAge);
 		int i=0;
-		for (List<String> level : listOfLevels) {
+		for (List<Concept> level : listOfLevels) {
 			i=i+1;
 			sub_obses=getByRegimen(level,getPersonByAge(minAge, maxAge));
 			String cname=name+"."+i;
@@ -251,7 +269,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		return uniqiObs;
 	}
 
-	private List<Obs> getByRegimen(List<String> _line, List<Integer> patientsId) {
+	private List<Obs> getByRegimen(List<Concept> _line, List<Integer> patientsId) {
 		List<Integer> patients = new ArrayList<>();
 		List<Obs> localObs = new ArrayList<>();
 		if (patientsId == null || patientsId.size() == 0)
