@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openmrs.Concept;
 import org.openmrs.Obs;
@@ -94,15 +96,36 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.2","Non pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 1,Gender.Female), conceptService.getConceptByUuid(NO)).size());
 		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U19","Number of children (<19) who are currently on ART by regimen type",String.class),"");
 		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1","Children currently on ART aged <1 yr by regimen type",String.class),"");
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1","Children currently on ART aged <1 yr on First line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr,R4h_OTHER_CHILD_1ST_LINE_REGIMEN, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG)),getPersonByAge(0, 1)));
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4f_AZT_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4f_AZT_3TC_LPVr)),getPersonByAge(0, 1)));
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4g_ABC_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4g_ABC_3TC_LPVr)),getPersonByAge(0, 1)));
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4j_ABC_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4j_ABC_3TC_DTG)),getPersonByAge(0, 1)));
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4k_AZT_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4k_AZT_3TC_DTG)),getPersonByAge(0, 1)));
+
+
+		List<String> temp_regimens = Arrays.asList(R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG);
+		List<String> temp_regimens_others = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV,R4h_OTHER_CHILD_1ST_LINE_REGIMEN,R4i_TDF_3TC_DTG, R4L_ABC_3TC_EFV );
+		temp_regimens_others.addAll(adult_first_line);
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1","Children currently on ART aged <1 yr on First line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(0,1)));
+		buildRowByRegimenType(data, "HIV_TX_CURR_REG_U1.1."+temp_regimens.size()+1, temp_regimens, 0, 1);
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1","4h=other first line",Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAge(0,1)));
+		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4f_AZT_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4f_AZT_3TC_LPVr)),getPersonByAge(0, 1)));
+		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.2",conceptService.getConceptByUuid(R4g_ABC_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4g_ABC_3TC_LPVr)),getPersonByAge(0, 1)));
+		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.3",conceptService.getConceptByUuid(R4j_ABC_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4j_ABC_3TC_DTG)),getPersonByAge(0, 1)));
+		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.4",conceptService.getConceptByUuid(R4k_AZT_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4k_AZT_3TC_DTG)),getPersonByAge(0, 1)));
+		
 
 		return data;
 
 	}
+
+	private void buildRowByRegimenType(MapDataSet data, String serial_no_prefix, List<String> regimens, int minAge, int maxAge){
+		int i = 0;
+
+		for (String reg: regimens){
+			i+=1;
+		data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getPersonByAge(minAge, maxAge)));
+		}
+
+		
+
+	}
+
 
 	private List<List<Concept>> getListofLevels(Integer age){
 		
