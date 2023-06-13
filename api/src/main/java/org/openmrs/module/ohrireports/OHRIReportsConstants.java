@@ -346,7 +346,7 @@ public class OHRIReportsConstants {
 	public final static String R4i_TDF_3TC_DTG = "0dbe6b49-7356-4cf0-b489-890e18c38465";
 	
 	public final static String R4j_ABC_3TC_DTG = "eae01634-65ec-4174-a95c-622456663727";
-
+	
 	public final static String R4k_AZT_3TC_DTG = "dabcfa6d-56e5-4e5d-a2f2-faf4e18b9211";
 	
 	public final static String R4L_ABC_3TC_EFV = "c94ca2da-8066-42f7-b4c9-582dae83e552";
@@ -374,6 +374,12 @@ public class OHRIReportsConstants {
 	public final static String R5k_RAL_AZT_3TC = "2e58ef33-d019-4bd9-97b8-553e39e12646";
 	
 	public final static String R5L_RAL_ABC_3TC = "8feb33db-71db-4fd0-a0e7-c02f81fcc76f";
+	
+	public final static String R5m_ABC_3TC_DTG = "3ed5d8a0-c957-4439-8f86-6c2538e69d3a";
+	
+	public final static String R5n_AZT_3TC_DTG = "10c0f78a-cd78-40cd-9824-8d24dc95bb90";
+	
+	public final static String R5o_TDF_3TC_DTG = "d34b5c26-c70d-4720-9784-cf8a0673d6b0";
 	
 	public final static String R6a_DRVr_RAL_AZT_3TC = "5415f1b1-a680-4870-89c5-3324d42da408";
 	

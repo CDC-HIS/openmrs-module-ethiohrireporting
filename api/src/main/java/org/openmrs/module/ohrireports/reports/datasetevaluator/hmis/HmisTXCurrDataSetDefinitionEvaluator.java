@@ -41,11 +41,15 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private EvaluationContext context;
 
 	List<String> children_first_line = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV, R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4h_OTHER_CHILD_1ST_LINE_REGIMEN, R4i_TDF_3TC_DTG, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG, R4L_ABC_3TC_EFV);
-	List<String> children_second_line = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV, R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr, R5g_TDF_3TC_EFV, R5h_ABC_3TC_EFV, R5i_TDF_3TC_LPVr, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC);
+
+	List<String> children_second_line = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV, R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr, R5g_TDF_3TC_EFV, R5h_ABC_3TC_EFV, R5i_TDF_3TC_LPVr, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC, R5m_ABC_3TC_DTG, R5n_AZT_3TC_DTG,R5o_TDF_3TC_DTG);
+
 	List<String> children_third_line = Arrays.asList(R6a_DRVr_RAL_AZT_3TC, R6b_DRVr_RAL_TDF_3TC, R6c_DRVr_DTG_AZT_3TC, R6d_DRVr_DTG_TDF_3TC, R6e_OTHER_CHILD_3RD_LINE_REGIMEN, R6f_DRVr_DTG_ABC_3TC, R6g_DRVr_ABC_3TC_EFV, R6h_DRVr_AZT_3TC_EFV);
 
 	List<String> adult_first_line = Arrays.asList(R1a30_D4T_30_3TC_NVP, R1a40_D4T_40_3TC_NVP, R1b30_D4T_30_3TC_EFV, R1b40_D4T_40_3TC_EFV, R1c_AZT_3TC_NVP, R1d_AZT_3TC_EFV, R1e_TDF_3TC_EFV, R1f_TDF_3TC_NVP, R1g_ABC_3TC_EFV, R1h_ABC_3TC_NVP, R1j_TDF_3TC_DTG, R1i_OTHER_ADULT_1ST_LINE_REGIMEN, R1k_AZT_3TC_DTG);
-	List<String> adult_second_line = Arrays.asList(R2a_ABC_DDL_LPV, R2b_ABC_DDL_NFV, R2c_TDF_DDL_LPV, R2d_TDF_DDL_NFV, R2e_AZT_3TC_LPVr, R2f_AZT_3TC_ATVr, R2g_TDF_3TC_LPVr, R2h_TDF_3TC_ATVr, R2i_ABC_3TC_LPVr, R2j_TDF_3TC_DTG, R2L_OTHER_ADULT_2ND_LINE_REGIMEN);
+
+	List<String> adult_second_line = Arrays.asList(R2a_ABC_DDL_LPV, R2b_ABC_DDL_NFV, R2c_TDF_DDL_LPV, R2d_TDF_DDL_NFV, R2e_AZT_3TC_LPVr, R2f_AZT_3TC_ATVr, R2g_TDF_3TC_LPVr, R2h_TDF_3TC_ATVr, R2i_ABC_3TC_LPVr, R2j_TDF_3TC_DTG, R2k_AZT_3TC_DTG, R2L_OTHER_ADULT_2ND_LINE_REGIMEN);
+
 	List<String> adult_third_line = Arrays.asList(R3a_DRVr_DTG_AZT_3TC, R3b_DRVr_DTG_TDF_3TC, R3c_DRVr_ABC_3TC_DTG, R3d_OTHER_ADULT_3RD_LINE_REGIMEN, R3e_DRVr_TDF_3TC_EFV, R3f_DRVr_AZT_3TC_EFV);
 
 	@Override
@@ -100,17 +104,118 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		List<String> temp_regimens = Arrays.asList(R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG);
 		List<String> temp_regimens_others = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV,R4h_OTHER_CHILD_1ST_LINE_REGIMEN,R4i_TDF_3TC_DTG, R4L_ABC_3TC_EFV );
-		temp_regimens_others.addAll(adult_first_line);
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1","Children currently on ART aged <1 yr on First line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(0,1)));
-		buildRowByRegimenType(data, "HIV_TX_CURR_REG_U1.1."+temp_regimens.size()+1, temp_regimens, 0, 1);
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1","4h=other first line",Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAge(0,1)));
-		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.1",conceptService.getConceptByUuid(R4f_AZT_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4f_AZT_3TC_LPVr)),getPersonByAge(0, 1)));
-		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.2",conceptService.getConceptByUuid(R4g_ABC_3TC_LPVr).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4g_ABC_3TC_LPVr)),getPersonByAge(0, 1)));
-		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.3",conceptService.getConceptByUuid(R4j_ABC_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4j_ABC_3TC_DTG)),getPersonByAge(0, 1)));
-		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1.4",conceptService.getConceptByUuid(R4k_AZT_3TC_DTG).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(R4k_AZT_3TC_DTG)),getPersonByAge(0, 1)));
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_first_line).flatMap(x -> x.stream()).collect(Collectors.toList());
 		
+		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1","Children currently on ART aged <1 yr on First line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(0,1)).size());
+		// buildRowByRegimenType(data, "HIV_TX_CURR_REG_U1.1.", temp_regimens, 0, 1);
+
+		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1.1."+(temp_regimens.size()+1),"4h=other first line",Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAge(0,1)).size());
+
+		buildBysection(data, "HIV_TX_CURR_REG_U1.1", temp_regimens, temp_regimens_others, 0, 1, "first", "4h=other first line", "Children");
+		
+		temp_regimens = Arrays.asList(R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr,R5m_ABC_3TC_DTG, R5n_AZT_3TC_DTG);
+		temp_regimens_others = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV,R5g_TDF_3TC_EFV, R5h_ABC_3TC_EFV, R5i_TDF_3TC_LPVr, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC,R5o_TDF_3TC_DTG);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_second_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+
+		buildBysection(data, "HIV_TX_CURR_REG_U1.2", temp_regimens, temp_regimens_others, 0, 1, "second", "5j=other second line", "Children");
+
+
+		temp_regimens = Arrays.asList(R6c_DRVr_DTG_AZT_3TC, R6f_DRVr_DTG_ABC_3TC);
+		temp_regimens_others = Arrays.asList(R6a_DRVr_RAL_AZT_3TC, R6b_DRVr_RAL_TDF_3TC, R6d_DRVr_DTG_TDF_3TC, R6e_OTHER_CHILD_3RD_LINE_REGIMEN, R6g_DRVr_ABC_3TC_EFV, R6h_DRVr_AZT_3TC_EFV);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_third_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+
+		buildBysection(data, "HIV_TX_CURR_REG_U1.3", temp_regimens, temp_regimens_others, 0, 1, "third", "6e=other third line", "Children");
+
+
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U4","Children currently on ART aged 1-4 yr by regimen type",String.class),"");
+
+		temp_regimens = Arrays.asList(R4d_AZT_3TC_EFV,R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG,R4L_ABC_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4e_TDF_3TC_EFV,R4h_OTHER_CHILD_1ST_LINE_REGIMEN,R4i_TDF_3TC_DTG);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_first_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U4.1", temp_regimens, temp_regimens_others, 1, 4, "first", "4h=other first line", "Children");
+
+		temp_regimens = Arrays.asList(R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr,R5h_ABC_3TC_EFV, R5m_ABC_3TC_DTG, R5n_AZT_3TC_DTG);
+		temp_regimens_others = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV, R5g_TDF_3TC_EFV, R5i_TDF_3TC_LPVr, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC,R5o_TDF_3TC_DTG);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_second_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+
+		buildBysection(data, "HIV_TX_CURR_REG_U4.2", temp_regimens, temp_regimens_others, 1, 4, "second", "5j=other second line", "Children");
+
+		temp_regimens = Arrays.asList(R6c_DRVr_DTG_AZT_3TC, R6f_DRVr_DTG_ABC_3TC, R6g_DRVr_ABC_3TC_EFV, R6h_DRVr_AZT_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R6a_DRVr_RAL_AZT_3TC, R6b_DRVr_RAL_TDF_3TC, R6d_DRVr_DTG_TDF_3TC, R6e_OTHER_CHILD_3RD_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_third_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+
+		buildBysection(data, "HIV_TX_CURR_REG_U4.3", temp_regimens, temp_regimens_others, 1, 4, "third", "6e=other third line", "Children");
+
+
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U9","Children currently on ART aged 5-9 yr by regimen type",String.class),"");
+
+		temp_regimens = Arrays.asList(R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV, R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4i_TDF_3TC_DTG, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG, R4L_ABC_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4h_OTHER_CHILD_1ST_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_first_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U9.1", temp_regimens, temp_regimens_others, 5, 9, "first", "4h=other first line", "Children");
+
+		temp_regimens = Arrays.asList(R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr, R5g_TDF_3TC_EFV, R5h_ABC_3TC_EFV, R5i_TDF_3TC_LPVr, R5m_ABC_3TC_DTG, R5n_AZT_3TC_DTG, R5o_TDF_3TC_DTG);
+		temp_regimens_others = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_second_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U9.2", temp_regimens, temp_regimens_others, 5, 9, "second", "5j=other second line", "Children");
+
+		temp_regimens = Arrays.asList(R6c_DRVr_DTG_AZT_3TC, R6d_DRVr_DTG_TDF_3TC, R6f_DRVr_DTG_ABC_3TC, R6g_DRVr_ABC_3TC_EFV, R6h_DRVr_AZT_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R6a_DRVr_RAL_AZT_3TC, R6b_DRVr_RAL_TDF_3TC, R6e_OTHER_CHILD_3RD_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_third_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+
+		buildBysection(data, "HIV_TX_CURR_REG_U9.3", temp_regimens, temp_regimens_others, 5, 9, "third", "6e=other third line", "Children");
+
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U14","Children currently on ART aged 10-14 yr by regimen type",String.class),"");
+
+		temp_regimens = Arrays.asList(R4d_AZT_3TC_EFV, R4e_TDF_3TC_EFV, R4f_AZT_3TC_LPVr, R4g_ABC_3TC_LPVr, R4i_TDF_3TC_DTG, R4j_ABC_3TC_DTG, R4k_AZT_3TC_DTG, R4L_ABC_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R4a_D4T_3TC_NVP, R4b_D4T_3TC_EFV, R4c_AZT_3TC_NVP, R4h_OTHER_CHILD_1ST_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_first_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U14.1", temp_regimens, temp_regimens_others, 10, 14, "first", "4h=other first line", "Children");
+
+		temp_regimens = Arrays.asList(R5e_ABC_3TC_LPVr, R5f_AZT_3TC_LPVr, R5g_TDF_3TC_EFV, R5h_ABC_3TC_EFV, R5i_TDF_3TC_LPVr, R5m_ABC_3TC_DTG, R5n_AZT_3TC_DTG, R5o_TDF_3TC_DTG);
+		temp_regimens_others = Arrays.asList(R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV, R5d_TDF_DDL_NFV, R5j_OTHER_CHILD_2ND_LINE_REGIMEN, R5k_RAL_AZT_3TC, R5L_RAL_ABC_3TC);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_second_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U14.2", temp_regimens, temp_regimens_others, 10, 14, "second", "5j=other second line", "Children");
+
+		temp_regimens = Arrays.asList(R6c_DRVr_DTG_AZT_3TC, R6d_DRVr_DTG_TDF_3TC, R6f_DRVr_DTG_ABC_3TC, R6g_DRVr_ABC_3TC_EFV, R6h_DRVr_AZT_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R6a_DRVr_RAL_AZT_3TC, R6b_DRVr_RAL_TDF_3TC, R6e_OTHER_CHILD_3RD_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, adult_third_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+
+		buildBysection(data, "HIV_TX_CURR_REG_U14.3", temp_regimens, temp_regimens_others, 10, 14, "third", "6e=other third line", "Children");
+
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U19","Adult currently on ART aged 15-19 yr by regimen type",String.class),"");
+
+		temp_regimens = Arrays.asList(R1d_AZT_3TC_EFV, R1e_TDF_3TC_EFV, R1g_ABC_3TC_EFV, R1j_TDF_3TC_DTG, R1k_AZT_3TC_DTG );
+		temp_regimens_others = Arrays.asList(R1a30_D4T_30_3TC_NVP, R1a40_D4T_40_3TC_NVP, R1b30_D4T_30_3TC_EFV, R1b40_D4T_40_3TC_EFV, R1c_AZT_3TC_NVP, R1f_TDF_3TC_NVP, R1h_ABC_3TC_NVP, R1i_OTHER_ADULT_1ST_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, children_first_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U19.1", temp_regimens, temp_regimens_others, 15, 19, "first", "1i=other first line", "Adult");
+
+		temp_regimens = Arrays.asList(R2e_AZT_3TC_LPVr, R2f_AZT_3TC_ATVr, R2g_TDF_3TC_LPVr, R2h_TDF_3TC_ATVr, R2i_ABC_3TC_LPVr, R2j_TDF_3TC_DTG, R2k_AZT_3TC_DTG);
+		temp_regimens_others = Arrays.asList(R2a_ABC_DDL_LPV, R2b_ABC_DDL_NFV, R2c_TDF_DDL_LPV, R2d_TDF_DDL_NFV, R2L_OTHER_ADULT_2ND_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, children_second_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U19.2", temp_regimens, temp_regimens_others, 15, 19, "second", "2L=other second line", "Adult");
+
+		temp_regimens = Arrays.asList(R3a_DRVr_DTG_AZT_3TC, R3b_DRVr_DTG_TDF_3TC, R3c_DRVr_ABC_3TC_DTG, R3e_DRVr_TDF_3TC_EFV, R3f_DRVr_AZT_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R3d_OTHER_ADULT_3RD_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, children_third_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysection(data, "HIV_TX_CURR_REG_U19.3", temp_regimens, temp_regimens_others, 15, 19, "third", "3d=other third line", "Adult");
+
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_20","Adults >=20 years currently on ART by regimen type",String.class),"");
 
 		return data;
+
+	}
+
+	private void buildBysection(MapDataSet data, String serial_no, List<String> temp_regimens,List<String> temp_regimens_others, int start_age, int end_age, String line, String otherlines, String category){
+		String aged=start_age+"-"+end_age;
+		if (end_age==1){
+			 aged="<1";
+		}
+		
+		data.addData(new DataSetColumn(serial_no,category + " currently on ART aged "+aged+" yr on "+line+" line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(start_age,end_age)).size());
+		buildRowByRegimenType(data, serial_no+".", temp_regimens, start_age, end_age);
+
+		data.addData(new DataSetColumn(serial_no+"."+(temp_regimens.size()+1),otherlines,Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAge(start_age,end_age)).size());
 
 	}
 
@@ -119,7 +224,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		for (String reg: regimens){
 			i+=1;
-		data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getPersonByAge(minAge, maxAge)));
+		data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getPersonByAge(minAge, maxAge)).size());
 		}
 
 		
