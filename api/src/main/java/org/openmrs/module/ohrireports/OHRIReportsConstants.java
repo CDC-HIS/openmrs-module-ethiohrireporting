@@ -57,6 +57,8 @@ public class OHRIReportsConstants {
 	
 	public final static String CURRENTLY_BREAST_FEEDING_CHILD = "5632AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String PREGNANT_STATUS = "5272AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String YES = "1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String NO = "1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -245,7 +247,7 @@ public class OHRIReportsConstants {
 	// #region Report Group
 	public final static String DATIM_REPORT = "DATIM";
 	
-	public final static String HISM_REPORT = "HISM";
+	public final static String HMIS_REPORT = "HMIS";
 	
 	public final static String LINE_LIST_REPORT = "LINELIST";
 	

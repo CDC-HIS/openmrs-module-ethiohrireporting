@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.query;
+package org.openmrs.module.ohrireports.api.query;
 
 import java.util.Collection;
 

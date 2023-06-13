@@ -1,11 +1,13 @@
 package org.openmrs.module.ohrireports.reports.hmis;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.HMIS_REPORT;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -27,13 +29,12 @@ public class HMISReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return "06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)";
+		return HMIS_REPORT + "-HMIS/DHIS";
 	}
 	
 	@Override
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getDescription'");
+		return "06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)";
 	}
 	
 	@Override
@@ -51,8 +52,16 @@ public class HMISReport implements ReportManager {
 	
 	@Override
 	public ReportDefinition constructReportDefinition() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'constructReportDefinition'");
+		ReportDefinition reportDefinition = new ReportDefinition();
+		reportDefinition.setUuid(getUuid());
+		reportDefinition.setName(getName());
+		reportDefinition.setDescription(getDescription());
+		reportDefinition.setParameters(getParameters());
+		HIVTXNewDatasetDefinition txNewDataset = new HIVTXNewDatasetDefinition();
+		txNewDataset.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children with HIV infection newly started on ART",
+		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		return reportDefinition;
 	}
 	
 	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {

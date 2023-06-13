@@ -21,7 +21,7 @@ import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.query.PatientQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQuery;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -42,9 +42,6 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	
 	@Autowired
 	private ConceptService conceptService;
-	
-	@Autowired
-	private PatientQuery artPatientQuery;
 	
 	@Autowired
 	private EvaluationService evaluationService;
@@ -160,7 +157,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	private List<Integer> getListOfALiveORRestartPatientObs() {
 
                 List<Integer> personIdList = new ArrayList<>();
-                Cohort personIdOnArt = artPatientQuery.getOnArtCohorts(null, txDatasetDefinition.getEndDate(),null);
+                Cohort personIdOnArt = Context.getService(PatientQuery.class).getOnArtCohorts(null,null, txDatasetDefinition.getEndDate(),null);
                 //getPatientsOnArt();
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 
