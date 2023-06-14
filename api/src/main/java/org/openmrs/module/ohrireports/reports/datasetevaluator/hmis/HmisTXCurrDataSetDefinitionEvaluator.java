@@ -95,9 +95,9 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
             maxCount = minCount + 4;
         }
 
-		data.addData(new DataSetColumn("HIV_TX_CURR_PREG","Currently on ART by pregnancy status",Integer.class),getPersonByAgeandSex(0, 1,Gender.Female).size());
-		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.1","Pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 1,Gender.Female), conceptService.getConceptByUuid(YES)).size());
-		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.2","Non pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 1,Gender.Female), conceptService.getConceptByUuid(NO)).size());
+		data.addData(new DataSetColumn("HIV_TX_CURR_PREG","Currently on ART by pregnancy status",Integer.class),getPersonByAgeandSex(0, 150,Gender.Female).size());
+		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.1","Pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 150,Gender.Female), conceptService.getConceptByUuid(YES)).size());
+		data.addData(new DataSetColumn("HIV_TX_CURR_PREG.2","Non pregnant",Integer.class),getByPregnancyStatus(getPersonByAgeandSex(0, 150,Gender.Female), conceptService.getConceptByUuid(NO)).size());
 		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U19","Number of children (<19) who are currently on ART by regimen type",String.class),"");
 		data.addData(new DataSetColumn("HIV_TX_CURR_REG_U1","Children currently on ART aged <1 yr by regimen type",String.class),"");
 
@@ -201,8 +201,26 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		buildBysection(data, "HIV_TX_CURR_REG_U19.3", temp_regimens, temp_regimens_others, 15, 19, "third", "3d=other third line", "Adult");
 
 		data.addData(new DataSetColumn("HIV_TX_CURR_REG_20","Adults >=20 years currently on ART by regimen type",String.class),"");
+		data.addData(new DataSetColumn("HIV_TX_CURR_REG_20.1","Adults >=20 years currently on First line regimen by regimen type",String.class),"");
+		temp_regimens = Arrays.asList(R1d_AZT_3TC_EFV, R1e_TDF_3TC_EFV, R1g_ABC_3TC_EFV, R1j_TDF_3TC_DTG, R1k_AZT_3TC_DTG );
+		temp_regimens_others = Arrays.asList(R1a30_D4T_30_3TC_NVP, R1a40_D4T_40_3TC_NVP, R1b30_D4T_30_3TC_EFV, R1b40_D4T_40_3TC_EFV, R1c_AZT_3TC_NVP, R1f_TDF_3TC_NVP, R1h_ABC_3TC_NVP, R1i_OTHER_ADULT_1ST_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, children_first_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysectionandGender(data, "HIV_TX_CURR_REG_20.1", temp_regimens, temp_regimens_others, 15, 19, "first", "1k=other first line", "Adult");
 
 		return data;
+
+	}
+
+	private void buildBysectionandGender(MapDataSet data, String serial_no, List<String> temp_regimens,List<String> temp_regimens_others, int start_age, int end_age, String line, String otherlines, String category){
+		String aged=start_age+"-"+end_age;
+		if (end_age==1){
+			 aged="<1";
+		}
+		
+		data.addData(new DataSetColumn(serial_no,category + " currently on ART aged "+aged+" yr on "+line+" line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(start_age,end_age)).size());
+		buildRowByRegimenType(data, serial_no+".", temp_regimens, start_age, end_age, "A");
+
+		data.addData(new DataSetColumn(serial_no+"."+(temp_regimens.size()+1),otherlines,Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAge(start_age,end_age)).size());
 
 	}
 
@@ -213,19 +231,30 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		
 		data.addData(new DataSetColumn(serial_no,category + " currently on ART aged "+aged+" yr on "+line+" line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(start_age,end_age)).size());
-		buildRowByRegimenType(data, serial_no+".", temp_regimens, start_age, end_age);
+		buildRowByRegimenType(data, serial_no+".", temp_regimens, start_age, end_age, "B");
 
 		data.addData(new DataSetColumn(serial_no+"."+(temp_regimens.size()+1),otherlines,Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAge(start_age,end_age)).size());
 
 	}
 
-	private void buildRowByRegimenType(MapDataSet data, String serial_no_prefix, List<String> regimens, int minAge, int maxAge){
+	private void buildRowByRegimenType(MapDataSet data, String serial_no_prefix, List<String> regimens, int minAge, int maxAge, String type){
 		int i = 0;
-
+		if (type=="B"){
 		for (String reg: regimens){
 			i+=1;
 		data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName(),Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getPersonByAge(minAge, maxAge)).size());
 		}
+	}
+		else{
+			for (String reg: regimens){
+			i+=1;
+			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Male",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getPersonByAgeandSex(minAge, maxAge, Gender.Male)).size());
+			i+=1;
+			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Female - pregnant",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getByPregnancyStatus(getPersonByAgeandSex(20, 150,Gender.Female), conceptService.getConceptByUuid(YES))).size());
+			i+=1;
+			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Female - non-pregnant",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getByPregnancyStatus(getPersonByAgeandSex(20, 150,Gender.Female), conceptService.getConceptByUuid(NO))).size());
+
+		}}
 
 		
 
@@ -418,13 +447,13 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		return localObs;
 	}
-	public List<Obs> getByPregnancyStatus(List<Integer> patientsId, Concept concept_answer){
+	public List<Integer> getByPregnancyStatus(List<Integer> patientsId, Concept concept_answer){
 		List<Obs> pregObs = getAllPregnancyStatus(patientsId);
-		List<Obs> patientBypregStatus = new ArrayList<>();
+		List<Integer> patientBypregStatus = new ArrayList<>();
 		for(Obs preg: pregObs){
 			if(preg.getValueCoded()==concept_answer)
 					  {	
-						patientBypregStatus.add(preg);
+						patientBypregStatus.add(preg.getPersonId());
 					  }
 			}
 		return patientBypregStatus;
