@@ -201,26 +201,41 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		buildBysection(data, "HIV_TX_CURR_REG_U19.3", temp_regimens, temp_regimens_others, 15, 19, "third", "3d=other third line", "Adult");
 
 		data.addData(new DataSetColumn("HIV_TX_CURR_REG_20","Adults >=20 years currently on ART by regimen type",String.class),"");
-		data.addData(new DataSetColumn("HIV_TX_CURR_REG_20.1","Adults >=20 years currently on First line regimen by regimen type",String.class),"");
+		// data.addData(new DataSetColumn("HIV_TX_CURR_REG_20.1","Adults >=20 years currently on First line regimen by regimen type",String.class),"");
+
 		temp_regimens = Arrays.asList(R1d_AZT_3TC_EFV, R1e_TDF_3TC_EFV, R1g_ABC_3TC_EFV, R1j_TDF_3TC_DTG, R1k_AZT_3TC_DTG );
 		temp_regimens_others = Arrays.asList(R1a30_D4T_30_3TC_NVP, R1a40_D4T_40_3TC_NVP, R1b30_D4T_30_3TC_EFV, R1b40_D4T_40_3TC_EFV, R1c_AZT_3TC_NVP, R1f_TDF_3TC_NVP, R1h_ABC_3TC_NVP, R1i_OTHER_ADULT_1ST_LINE_REGIMEN);
 		temp_regimens_others = Stream.of(temp_regimens_others, children_first_line).flatMap(x -> x.stream()).collect(Collectors.toList());
-		buildBysectionandGender(data, "HIV_TX_CURR_REG_20.1", temp_regimens, temp_regimens_others, 15, 19, "first", "1k=other first line", "Adult");
+		buildBysectionandGender(data, "HIV_TX_CURR_REG_20.1", temp_regimens, temp_regimens_others, 20, 150, "first", "1i = Other first line");
+
+		temp_regimens = Arrays.asList(R2e_AZT_3TC_LPVr, R2f_AZT_3TC_ATVr, R2g_TDF_3TC_LPVr, R2h_TDF_3TC_ATVr, R2i_ABC_3TC_LPVr, R2j_TDF_3TC_DTG, R2k_AZT_3TC_DTG);
+		temp_regimens_others = Arrays.asList(R2a_ABC_DDL_LPV, R2b_ABC_DDL_NFV, R2c_TDF_DDL_LPV, R2d_TDF_DDL_NFV, R2L_OTHER_ADULT_2ND_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, children_second_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysectionandGender(data, "HIV_TX_CURR_REG_20.2", temp_regimens, temp_regimens_others, 20, 150, "second", "2l = Other second line");
+
+		temp_regimens = Arrays.asList(R3a_DRVr_DTG_AZT_3TC, R3b_DRVr_DTG_TDF_3TC, R3c_DRVr_ABC_3TC_DTG, R3e_DRVr_TDF_3TC_EFV, R3f_DRVr_AZT_3TC_EFV);
+		temp_regimens_others = Arrays.asList(R3d_OTHER_ADULT_3RD_LINE_REGIMEN);
+		temp_regimens_others = Stream.of(temp_regimens_others, children_third_line).flatMap(x -> x.stream()).collect(Collectors.toList());
+		buildBysectionandGender(data, "HIV_TX_CURR_REG_20.3", temp_regimens, temp_regimens_others, 20, 150, "third", "3d = Other third line");
+
+
 
 		return data;
 
 	}
 
-	private void buildBysectionandGender(MapDataSet data, String serial_no, List<String> temp_regimens,List<String> temp_regimens_others, int start_age, int end_age, String line, String otherlines, String category){
-		String aged=start_age+"-"+end_age;
-		if (end_age==1){
-			 aged="<1";
-		}
+	private void buildBysectionandGender(MapDataSet data, String serial_no, List<String> temp_regimens,List<String> temp_regimens_others, int start_age, int end_age, String line, String otherlines){
 		
-		data.addData(new DataSetColumn(serial_no,category + " currently on ART aged "+aged+" yr on "+line+" line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(start_age,end_age)).size());
+		data.addData(new DataSetColumn(serial_no,"Adults >=20 years currently on "+line+" line regimen by regimen type",Integer.class),getByRegimen(getConceptByuuid(Stream.of(temp_regimens, temp_regimens_others).flatMap(x -> x.stream()).collect(Collectors.toList())),getPersonByAge(start_age,end_age)).size());
 		buildRowByRegimenType(data, serial_no+".", temp_regimens, start_age, end_age, "A");
 
-		data.addData(new DataSetColumn(serial_no+"."+(temp_regimens.size()+1),otherlines,Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAge(start_age,end_age)).size());
+		data.addData(new DataSetColumn(serial_no+"."+((temp_regimens.size()*3)+1),otherlines+", Male",Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getPersonByAgeandSex(start_age, end_age, Gender.Male)).size());
+		
+		data.addData(new DataSetColumn(serial_no+"."+((temp_regimens.size()*3)+2),otherlines+", Female - pregnant",Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getByPregnancyStatus(getPersonByAgeandSex(start_age, end_age,Gender.Female), conceptService.getConceptByUuid(YES))).size());
+	
+		data.addData(new DataSetColumn(serial_no+"."+((temp_regimens.size()*3)+3),otherlines+", Female - non-pregnant",Integer.class),getByRegimen(getConceptByuuid(temp_regimens_others),getByPregnancyStatus(getPersonByAgeandSex(start_age, end_age,Gender.Female), conceptService.getConceptByUuid(NO))).size());
+
+
 
 	}
 
@@ -250,9 +265,9 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			i+=1;
 			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Male",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getPersonByAgeandSex(minAge, maxAge, Gender.Male)).size());
 			i+=1;
-			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Female - pregnant",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getByPregnancyStatus(getPersonByAgeandSex(20, 150,Gender.Female), conceptService.getConceptByUuid(YES))).size());
+			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Female - pregnant",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getByPregnancyStatus(getPersonByAgeandSex(minAge, maxAge,Gender.Female), conceptService.getConceptByUuid(YES))).size());
 			i+=1;
-			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Female - non-pregnant",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getByPregnancyStatus(getPersonByAgeandSex(20, 150,Gender.Female), conceptService.getConceptByUuid(NO))).size());
+			data.addData(new DataSetColumn(serial_no_prefix+i,conceptService.getConceptByUuid(reg).getName().getName()+", Female - non-pregnant",Integer.class),getByRegimen(getConceptByuuid(Arrays.asList(reg)),getByPregnancyStatus(getPersonByAgeandSex(minAge, maxAge,Gender.Female), conceptService.getConceptByUuid(NO))).size());
 
 		}}
 
