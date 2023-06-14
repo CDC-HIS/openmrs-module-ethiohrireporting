@@ -435,7 +435,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		queryBuilder.select("obs").from(Obs.class, "obs")
 				.whereInAny("obs.concept", conceptService.getConceptByUuid(REGIMEN))
 				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-				.and().whereIdIn("obv.personId", patientsId).and().whereIn("obs.valueCoded", _line)
+				.and().whereIdIn("obv.personId", patientsId).and().whereIn("obs.valueCoded", _line).and().whereLess("obs.obsDatetime", hdsd.getEndDate())
 				.orderDesc("obs.obsDatetime");
 		for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
 					if(!patients.contains(obs.getPersonId()))
@@ -468,7 +468,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		queryBuilder.select("obs").from(Obs.class, "obs")
 				.whereInAny("obs.concept", conceptService.getConceptByUuid(PREGNANCY_STATUS))
 				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-				.and().whereIdIn("obv.personId", patientsId)
+				.and().whereIdIn("obv.personId", patientsId).and().whereLess("obs.obsDatetime", hdsd.getEndDate())
 				.orderDesc("obs.obsDatetime");
 		for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
 					if(!patients.contains(obs.getPersonId()))
