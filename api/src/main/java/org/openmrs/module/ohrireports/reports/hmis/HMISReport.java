@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
+import org.openmrs.api.context.Context;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.HmisTXCurrDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -61,6 +64,15 @@ public class HMISReport implements ReportManager {
 		txNewDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children with HIV infection newly started on ART",
 		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HmisTXCurrDataSetDefinition aDefinition = new HmisTXCurrDataSetDefinition();
+		aDefinition.addParameters(getParameters());
+		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		aDefinition.setDescription("06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)");
+		reportDefinition.addDataSetDefinition(
+		    "06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)",
+		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
 		return reportDefinition;
 	}
 	
