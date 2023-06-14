@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -57,10 +58,18 @@ public class HMISReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
 		HIVTXNewDatasetDefinition txNewDataset = new HIVTXNewDatasetDefinition();
 		txNewDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children with HIV infection newly started on ART",
 		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HIVARTRETDatasetDefinition hivArtRetDatasetDefinition = new HIVARTRETDatasetDefinition();
+		hivArtRetDatasetDefinition.addParameters(getParameters());
+		reportDefinition.addDataSetDefinition(
+		    "HMIS:Number of adults and children who are still on treatment at 12 months after\n" + //
+		            "initiating ART", map(hivArtRetDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
 		return reportDefinition;
 	}
 	

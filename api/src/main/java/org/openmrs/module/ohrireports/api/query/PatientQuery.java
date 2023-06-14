@@ -15,11 +15,11 @@ public interface PatientQuery extends OpenmrsService {
 	
 	Cohort getActiveOnCohort();
 	
-	Cohort getActiveOnCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort);
+	Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort);
 	
 	Cohort getCurrentOnTreatmentCohort();
 	
-	Cohort getCurrentOnTreatmentCohort(String gender, Date endOnOrBefore, Cohort cohort);
+	Cohort getCurrentOnTreatmentCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort);
 	
 	List<Person> getPersons(Cohort cohort);
 	

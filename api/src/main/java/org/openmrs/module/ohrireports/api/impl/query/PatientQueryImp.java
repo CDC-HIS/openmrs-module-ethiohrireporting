@@ -39,12 +39,12 @@ public class PatientQueryImp extends BaseOpenmrsService implements PatientQuery 
 	
 	@Override
 	public Cohort getActiveOnCohort() {
-		return patientQueryDao.getActiveOnCohort();
+		return patientQueryDao.getActiveOnArtCohort();
 	}
 	
 	@Override
-	public Cohort getActiveOnCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
-		return patientQueryDao.getActiveOnCohort(gender, startOnOrAfter, endOnOrBefore, cohort);
+	public Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
+		return patientQueryDao.getActiveOnArtCohort(gender, startOnOrAfter, endOnOrBefore, cohort);
 		
 	}
 	
@@ -54,8 +54,8 @@ public class PatientQueryImp extends BaseOpenmrsService implements PatientQuery 
 	}
 	
 	@Override
-	public Cohort getCurrentOnTreatmentCohort(String gender, Date endOnOrBefore, Cohort cohort) {
-		return patientQueryDao.getCurrentOnTreatmentCohort(gender, endOnOrBefore, cohort);
+	public Cohort getCurrentOnTreatmentCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
+		return patientQueryDao.getCurrentOnTreatmentCohort(gender, startOnOrAfter, endOnOrBefore, cohort);
 	}
 	
 	@Override
