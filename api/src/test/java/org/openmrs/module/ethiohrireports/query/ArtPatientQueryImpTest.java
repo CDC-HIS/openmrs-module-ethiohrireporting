@@ -19,17 +19,18 @@ public class ArtPatientQueryImpTest extends BaseModuleContextSensitiveTest {
 	
 	private Cohort cohort;
 	
-	@Before
-	public void setupDataset() throws Exception {
-		executeDataSet(XML_DATASET_PATH);
-	}
+	// @Before
+	// public void setupDataset() throws Exception {
+	// executeDataSet(XML_DATASET_PATH);
+	// }
 	
 	@Before
 	public void Setup() {
 		startDate = Calendar.getInstance();
-		startDate.set(2023, 5, 1);
+		startDate.add(Calendar.MONTH, -12);
+		//startDate.set(2023, 01, 01);
 		endDate = Calendar.getInstance();
-		endDate.set(2023, 5, 30);
+		// endDate.set(2023, 12, 30);
 		
 		cohort = new Cohort(1);
 		cohort.addMember(5);
@@ -40,8 +41,11 @@ public class ArtPatientQueryImpTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void QueryShouldFetchAllPatientOnArt() throws Exception {
-		Cohort result = Context.getService(PatientQuery.class).getOnArtCohorts("F", startDate.getTime(), endDate.getTime(),
-		    new Cohort(0));
+		Calendar startDate1 = Calendar.getInstance();
+		startDate1.add(Calendar.MONTH, -12);
+		
+		Cohort result = Context.getService(PatientQuery.class).getActiveOnArtCohort("", startDate1.getTime(),
+		    endDate.getTime(), null);
 		Assert.assertEquals(cohort.getMemberIds().size(), result.getMemberIds().size());
 		
 	}
