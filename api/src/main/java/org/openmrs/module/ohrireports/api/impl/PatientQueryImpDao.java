@@ -136,9 +136,9 @@ public class PatientQueryImpDao implements PatientQueryDao {
 		if (gender != null && !gender.trim().isEmpty())
 			sql.append("and p.gender = '" + gender + "' ");
 		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime >= :startOnOrAfter ");
+			sql.append(" and " + OBS_ALIAS + "obs_datetime >= :startOnOrAfter ");
 		if (endOnOrBefore != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime <= :endOnOrBefore ");
+			sql.append(" and " + OBS_ALIAS + "obs_datetime <= :endOnOrBefore ");
 		if (cohort != null && cohort.size() != 0)
 			sql.append("and p.person_id in (:personIds) ");
 		
@@ -203,7 +203,6 @@ public class PatientQueryImpDao implements PatientQueryDao {
 		criteria.setCacheable(false);
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.in("personId", pIntegers));
-		String st = criteria.toString();
 		return criteria.list();
 		
 	}
@@ -214,9 +213,9 @@ public class PatientQueryImpDao implements PatientQueryDao {
 		sql.append(" and " + OBS_ALIAS + "value_coded = (select c.concept_id from concept where uuid='" + conceptUUID + "')");
 		
 		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime >= :startOnOrAfter ");
+			sql.append(" and " + OBS_ALIAS + "obs_datetime >= :startOnOrAfter ");
 		if (endOnOrBefore != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime <= :endOnOrBefore ");
+			sql.append(" and " + OBS_ALIAS + "obs_datetime <= :endOnOrBefore ");
 		if (patient != null && patient.size() != 0)
 			sql.append("and p.person_id in (:personIds) ");
 		

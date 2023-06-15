@@ -29,7 +29,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private HIVARTRETDatasetDefinition _datasetDefinition;
-	private String baseName = "HIV_ART_RET ";
+	private String baseName = "HIV_ART_RET.1 ";
 	private String column_3_name = "Tir 15";
 	private PatientQuery patientQuery;
 
@@ -176,7 +176,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 			Calendar startDate = Calendar.getInstance();
 			startDate.setTime(_datasetDefinition.getStartDate());
 			startDate.add(Calendar.MONTH, -12);
-			startDate.set(startDate.get(Calendar.YEAR),startDate.get(Calendar.MONTH) ,startDate.get(Calendar.DATE));
+			int diff  = startDate.compareTo(Calendar.getInstance());
 			cohort = patientQuery.getActiveOnArtCohort(parameter.gender, startDate.getTime(),
 					_datasetDefinition.getEndDate(), cohort);
 			persons = patientQuery.getPersons(cohort);

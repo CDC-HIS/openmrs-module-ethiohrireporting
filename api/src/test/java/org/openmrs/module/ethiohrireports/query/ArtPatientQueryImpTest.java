@@ -41,7 +41,10 @@ public class ArtPatientQueryImpTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void QueryShouldFetchAllPatientOnArt() throws Exception {
-		Cohort result = Context.getService(PatientQuery.class).getActiveOnArtCohort("", startDate.getTime(),
+		Calendar startDate1 = Calendar.getInstance();
+		startDate1.add(Calendar.MONTH, -12);
+		
+		Cohort result = Context.getService(PatientQuery.class).getActiveOnArtCohort("", startDate1.getTime(),
 		    endDate.getTime(), null);
 		Assert.assertEquals(cohort.getMemberIds().size(), result.getMemberIds().size());
 		
