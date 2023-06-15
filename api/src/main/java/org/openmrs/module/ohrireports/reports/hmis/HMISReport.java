@@ -67,7 +67,6 @@ public class HMISReport implements ReportManager {
 		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children with HIV infection newly started on ART",
 		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
-<<<<<<< HEAD
 		HmisTXCurrDataSetDefinition aDefinition = new HmisTXCurrDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
@@ -75,13 +74,11 @@ public class HMISReport implements ReportManager {
 		reportDefinition.addDataSetDefinition(
 		    "06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)",
 		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-=======
 		HIVARTRETDatasetDefinition hivArtRetDatasetDefinition = new HIVARTRETDatasetDefinition();
 		hivArtRetDatasetDefinition.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Number of adults and children who are still on treatment at 12 months after\n" + //
 		            "initiating ART", map(hivArtRetDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
->>>>>>> hmis_hiv_art
 		
 		return reportDefinition;
 	}
