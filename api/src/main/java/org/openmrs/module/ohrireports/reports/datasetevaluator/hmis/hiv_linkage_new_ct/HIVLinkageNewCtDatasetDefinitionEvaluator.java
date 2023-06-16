@@ -5,11 +5,8 @@ import static org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.HMISC
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.query.PatientQuery;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
