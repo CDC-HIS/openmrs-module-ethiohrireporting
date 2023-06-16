@@ -1,13 +1,11 @@
 package org.openmrs.module.ohrireports.reports.hmis;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HMIS_REPORT;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.api.context.Context;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -66,13 +64,17 @@ public class HMISReport implements ReportManager {
 		txNewDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children with HIV infection newly started on ART",
 		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
-		
+		HIVLinkageNewCtDatasetDefinition linkageNewDataset = new HIVLinkageNewCtDatasetDefinition();
+		linkageNewDataset.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition(
+		    "HMIS:Linkage outcome of newly identified Hiv positive individuals in the reporting period",
+		    map(linkageNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		HmisTXCurrDataSetDefinition aDefinition = new HmisTXCurrDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition.setDescription("06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)");
 		reportDefinition.addDataSetDefinition(
-		    "06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)",
+		    "HMIS:06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)",
 		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		HIVARTRETDatasetDefinition hivArtRetDatasetDefinition = new HIVARTRETDatasetDefinition();
 		hivArtRetDatasetDefinition.addParameters(getParameters());

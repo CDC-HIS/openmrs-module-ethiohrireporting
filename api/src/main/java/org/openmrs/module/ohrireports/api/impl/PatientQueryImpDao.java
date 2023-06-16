@@ -38,7 +38,6 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		this.sessionFactory = sessionFactory;
 	}
 	
-	
 	private DbSession getSession() {
 		return getSessionFactory().getCurrentSession();
 	}
@@ -80,8 +79,6 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		
 		return new Cohort(q.list());
 	}
-	
-	
 	
 	@Override
 	public Cohort getActiveOnArtCohort() {
