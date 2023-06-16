@@ -3,7 +3,6 @@ package org.openmrs.module.ohrireports.api.impl;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.PREGNANT_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN;
@@ -18,14 +17,13 @@ import java.util.Set;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.profile.Fetch;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
 
-public class PatientQueryImpDao implements PatientQueryDao {
+public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQueryDao {
 	
 	private DbSessionFactory sessionFactory;
 	
@@ -40,7 +38,6 @@ public class PatientQueryImpDao implements PatientQueryDao {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	private String OBS_ALIAS = "ob.";
 	
 	private DbSession getSession() {
 		return getSessionFactory().getCurrentSession();
@@ -84,19 +81,7 @@ public class PatientQueryImpDao implements PatientQueryDao {
 		return new Cohort(q.list());
 	}
 	
-	private StringBuilder baseQuery(String conceptQuestionUUid) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("select " + OBS_ALIAS + "person_id from obs as ob ");
-		sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");
-		sql.append("inner join person as p on pa.patient_id = p.person_id ");
-		sql.append("inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id ");
-		sql.append("and c.uuid= '" + conceptQuestionUUid + "' ");
-		sql.append("inner join encounter as e on e.encounter_id = " + OBS_ALIAS + "encounter_id ");
-		sql.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
-		sql.append("and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append("where pa.voided = false and " + OBS_ALIAS + "voided = false ");
-		return sql;
-	}
+	
 	
 	@Override
 	public Cohort getActiveOnArtCohort() {
