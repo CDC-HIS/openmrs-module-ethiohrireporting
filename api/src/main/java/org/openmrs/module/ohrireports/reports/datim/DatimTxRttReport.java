@@ -29,7 +29,7 @@ public class DatimTxRttReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-Tx_Rtt";
+		return DATIM_REPORT + "-TX_RTT";
 	}
 	
 	@Override

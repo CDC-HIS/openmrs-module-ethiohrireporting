@@ -29,7 +29,7 @@ public class DatimTxMlReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-Tx_Ml";
+		return DATIM_REPORT + "-TX_ML";
 	}
 	
 	@Override

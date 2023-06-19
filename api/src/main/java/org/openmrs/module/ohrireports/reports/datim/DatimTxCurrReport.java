@@ -33,7 +33,7 @@ public class DatimTxCurrReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-Tx_Curr";
+		return DATIM_REPORT + "-TX_CURR";
 	}
 	
 	@Override

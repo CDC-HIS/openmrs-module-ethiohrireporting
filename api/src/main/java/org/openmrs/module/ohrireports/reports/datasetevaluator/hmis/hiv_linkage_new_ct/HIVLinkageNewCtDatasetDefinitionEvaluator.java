@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.hiv_linkage_new_ct;
 
-import static org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.HMISConstant.*;
+import static org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
+import static org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,20 +85,20 @@ public class HIVLinkageNewCtDatasetDefinitionEvaluator implements DataSetEvaluat
 				count = hivLinkageNewCtQuery.getTotalOnHivePatient();
 				break;
 			case LINKED_TO_CARE_TREATMENT:
-				count = hivLinkageNewCtQuery.getLinkedToCareCohort().getActiveMemberships().size();
+				count = hivLinkageNewCtQuery.getLinkedToCareCohort().size();
 				break;
 			case KNOWN_ON_ART:
-				count = hivLinkageNewCtQuery.getKnownCohort().getActiveMemberships().size();
+				count = hivLinkageNewCtQuery.getKnownCohort().size();
 				break;
 			case LOST_TO_FOLLOW_UP:
-				count = hivLinkageNewCtQuery.getLostToFollowUpCohort().getActiveMemberships().size();
+				count = hivLinkageNewCtQuery.getLostToFollowUpCohort().size();
 				break;
 			case REFERRED_TO_OTHER_FACILITY:
-				count = hivLinkageNewCtQuery.getReferToOtherCohort().getActiveMemberships().size();
+				count = hivLinkageNewCtQuery.getReferToOtherCohort().size();
 
 				break;
 			case DIED:
-				count = hivLinkageNewCtQuery.getDiedCohort().getMemberIds().size();
+				count = hivLinkageNewCtQuery.getDiedCohort().size();
 				break;
 			default:
 				count = hivLinkageNewCtQuery.getOthersCohort();

@@ -38,8 +38,7 @@ public class OHRIReportsActivator extends BaseModuleActivator {
 			ReportManagerUtil.setupReport(reportManager);
 		}
 		
-		log.info("Setting up HTS static cohorts...");
-		HtsStaticCohortsUtil.setupHtsCohorts();
+		
 	}
 	
 	/**

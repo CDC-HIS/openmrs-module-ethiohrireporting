@@ -59,16 +59,6 @@ public class HMISReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
-		
-		HIVTXNewDatasetDefinition txNewDataset = new HIVTXNewDatasetDefinition();
-		txNewDataset.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children with HIV infection newly started on ART",
-		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
-		HIVLinkageNewCtDatasetDefinition linkageNewDataset = new HIVLinkageNewCtDatasetDefinition();
-		linkageNewDataset.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition(
-		    "HMIS:Linkage outcome of newly identified Hiv positive individuals in the reporting period",
-		    map(linkageNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		HmisTXCurrDataSetDefinition aDefinition = new HmisTXCurrDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
@@ -76,11 +66,23 @@ public class HMISReport implements ReportManager {
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry Of Health)",
 		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HIVTXNewDatasetDefinition txNewDataset = new HIVTXNewDatasetDefinition();
+		txNewDataset.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children with HIV infection newly started on ART",
+		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
 		HIVARTRETDatasetDefinition hivArtRetDatasetDefinition = new HIVARTRETDatasetDefinition();
 		hivArtRetDatasetDefinition.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Number of adults and children who are still on treatment at 12 months after\n" + //
 		            "initiating ART", map(hivArtRetDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HIVLinkageNewCtDatasetDefinition linkageNewDataset = new HIVLinkageNewCtDatasetDefinition();
+		linkageNewDataset.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition(
+		    "HMIS:Linkage outcome of newly identified Hiv positive individuals in the reporting period",
+		    map(linkageNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}
