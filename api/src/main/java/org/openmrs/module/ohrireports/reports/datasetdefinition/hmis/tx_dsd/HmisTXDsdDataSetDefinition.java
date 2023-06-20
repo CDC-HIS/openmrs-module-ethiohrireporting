@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetdefinition.hmis;
+package org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_dsd;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * TXCurrDataSetDefinition
  */
 @Component
-public class HmisTXCurrDataSetDefinition extends BaseDataSetDefinition {
+public class HmisTXDsdDataSetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;

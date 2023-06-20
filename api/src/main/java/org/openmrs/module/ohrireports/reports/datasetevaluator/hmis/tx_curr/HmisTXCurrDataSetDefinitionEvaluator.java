@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetevaluator.hmis;
+package org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.tx_curr;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.HmisTXCurrDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_curr.HmisTXCurrDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.MapDataSet;
