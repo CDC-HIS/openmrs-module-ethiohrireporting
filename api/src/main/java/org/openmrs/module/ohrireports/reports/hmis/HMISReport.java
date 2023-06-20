@@ -7,6 +7,7 @@ import java.util.List;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_curr.HmisTXCurrDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_dsd.HmisTXDsdDataSetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.api.context.Context;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -84,6 +85,13 @@ public class HMISReport implements ReportManager {
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Linkage outcome of newly identified Hiv positive individuals in the reporting period",
 		    map(linkageNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HmisTXDsdDataSetDefinition txDSDDataset = new HmisTXDsdDataSetDefinition();
+		txDSDDataset.setParameters(getParameters());
+		txDSDDataset.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition(
+		    "HMIS:Proportion of PLHIV currently on differentiated service Delivery model (DSD) in the reporting period",
+		    map(txDSDDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}
