@@ -74,9 +74,18 @@ public class HMISReport implements ReportManager {
 		
 		HIVARTRETDatasetDefinition hivArtRetDatasetDefinition = new HIVARTRETDatasetDefinition();
 		hivArtRetDatasetDefinition.addParameters(getParameters());
+		hivArtRetDatasetDefinition.setNetRetention(false);
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Number of adults and children who are still on treatment at 12 months after\n" + //
 		            "initiating ART", map(hivArtRetDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HIVARTRETDatasetDefinition hivArtRetDatasetDefinitionNet = new HIVARTRETDatasetDefinition();
+		hivArtRetDatasetDefinitionNet.addParameters(getParameters());
+		hivArtRetDatasetDefinitionNet.setNetRetention(true);
+		reportDefinition
+		        .addDataSetDefinition(
+		            "HMIS:Number of persons on ART in the original cohort including those transferred in, minus those transferred out (net current cohort)",
+		            map(hivArtRetDatasetDefinitionNet, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		HIVLinkageNewCtDatasetDefinition linkageNewDataset = new HIVLinkageNewCtDatasetDefinition();
 		linkageNewDataset.setParameters(getParameters());

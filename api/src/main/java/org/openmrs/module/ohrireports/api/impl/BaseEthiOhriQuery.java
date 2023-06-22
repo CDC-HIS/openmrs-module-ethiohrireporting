@@ -8,7 +8,7 @@ public abstract class BaseEthiOhriQuery {
 	
 	protected StringBuilder baseQuery(String conceptQuestionUUid) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select " + OBS_ALIAS + "person_id from obs as ob ");
+		sql.append("select distinct " + OBS_ALIAS + "person_id from obs as ob ");
 		sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");
 		sql.append("inner join person as p on pa.patient_id = p.person_id ");
 		sql.append("inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id ");

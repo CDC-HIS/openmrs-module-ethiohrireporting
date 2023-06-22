@@ -22,9 +22,13 @@ import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQueryDao {
 	
+	// Calendar month is zero base so total month in a year is 11 which is counting
+	// from zero
 	private DbSessionFactory sessionFactory;
 	
 	public PatientQueryImpDao() {
@@ -178,6 +182,30 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		return new Cohort(q.list());
 	}
 	
+	public Cohort getCurrentOnTreatmentCohort(String gender, Date endOnOrBefore, Cohort cohort) {
+		
+		if (cohort == null || cohort.size() == 0)
+			return new Cohort();
+		
+		StringBuilder sql = baseQuery(TREATMENT_END_DATE);
+		
+		if (gender != null && !gender.trim().isEmpty())
+			sql.append("and p.gender = '" + gender + "' ");
+		if (endOnOrBefore != null)
+			sql.append(" and " + OBS_ALIAS + "value_datetime >= :endOnOrBefore ");
+		if (cohort != null && cohort.size() != 0)
+			sql.append("and p.person_id in (:personIds) ");
+		
+		Query q = getSession().createQuery(sql.toString());
+		
+		if (endOnOrBefore != null)
+			q.setTimestamp("endOnOrBefore", endOnOrBefore);
+		if (cohort != null && cohort.size() != 0)
+			q.setParameter("personIds", cohort.getMemberIds());
+		
+		return new Cohort(q.list());
+	}
+	
 	@Override
 	public List<Person> getPersons(Cohort cohort) {
 		Set<Integer> pIntegers = cohort.getMemberIds();
@@ -213,4 +241,5 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		return new Cohort(q.list());
 		
 	}
+	
 }
