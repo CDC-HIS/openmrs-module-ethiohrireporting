@@ -84,7 +84,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	 * and must be on art for the last three month
 	 */
 	private int getAllPatientWithViralLoadCount() {
-
+                //TODO: update date query for performance optimization
                 List<Integer> patientIdList = getListOfALiveORRestartPatientObs();
                 List<Integer> refinedPatientIdList = new ArrayList<>();
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();

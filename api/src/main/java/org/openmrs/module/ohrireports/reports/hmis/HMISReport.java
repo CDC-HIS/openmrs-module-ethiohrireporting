@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.api.context.Context;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -83,6 +85,39 @@ public class HMISReport implements ReportManager {
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Linkage outcome of newly identified Hiv positive individuals in the reporting period",
 		    map(linkageNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPvlsDatasetDefinition hivPvlsDataset = new HivPvlsDatasetDefinition();
+		hivPvlsDataset.setParameters(getParameters());
+		hivPvlsDataset.setType(HivPvlsType.TESTED);
+		hivPvlsDataset.setPrefix(".1");
+		hivPvlsDataset
+		        .setDescription("Number of adult and pediatric ART patients for whom viral load test result received in the reporting period (with in the past 12 months)");
+		reportDefinition
+		        .addDataSetDefinition(
+		            "HMIS:Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)",
+		            map(hivPvlsDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPvlsDatasetDefinition hivPvlsUnDataset = new HivPvlsDatasetDefinition();
+		hivPvlsUnDataset.setParameters(getParameters());
+		hivPvlsUnDataset.setType(HivPvlsType.SUPPRESSED);
+		hivPvlsUnDataset.setPrefix("_UN");
+		hivPvlsUnDataset
+		        .setDescription("Total number of adult and paediatric ART patients with an undetectable viral load(<50 copies/ml) in the reporting period  (with in the past 12 months)");
+		reportDefinition
+		        .addDataSetDefinition(
+		            "HMIS:Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)",
+		            map(hivPvlsUnDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPvlsDatasetDefinition hivPvlsLvDataset = new HivPvlsDatasetDefinition();
+		hivPvlsLvDataset.setParameters(getParameters());
+		hivPvlsLvDataset.setType(HivPvlsType.LOW_LEVEL_LIVERMIA);
+		hivPvlsLvDataset.setPrefix("_LV");
+		hivPvlsLvDataset
+		        .setDescription("Total number of adult and paediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period  (with in the past 12 months)");
+		reportDefinition
+		        .addDataSetDefinition(
+		            "HMIS:Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)",
+		            map(hivPvlsLvDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}
