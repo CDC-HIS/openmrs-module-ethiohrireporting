@@ -192,6 +192,8 @@ public class OHRIReportsConstants {
 	
 	public final static String HIV_TARGET_VIRAL_LOAD_COUNT = "8f75ce27-29fa-4a67-bc8a-295c94323220";
 	
+	public final static String HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA = "167378AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String HIV_VIRAL_LOAD_STATUS = "2dc9ee04-4d12-4606-ae0f-86895bf14a44";
 	
 	public final static String HIV_VIRAL_LOAD_SUPPRESSED = "5d5e42cc-acc4-4069-b3a8-7163e0db5d96";
