@@ -13,8 +13,6 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.query.PatientQuery;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -24,14 +22,20 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { HIVARTRETDatasetDefinition.class })
 public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private HIVARTRETDatasetDefinition _datasetDefinition;
 	private String baseName = "HIV_ART_RET.1 ";
+	private String baseNameForNet = "HIV_ART_RET_NET";
 	private String column_3_name = "Tir 15";
-	private PatientQuery patientQuery;
+	private String description = "Number of adults and children who are still on treatment at 12 months after initiating ART";
+	private String descriptionNet = "Number of persons on ART in the original cohort including those transferred in, minus those transferred out (net current cohort)";
+
+	@Autowired
+	private HivArtRetQuery hivArtRetQuery;
 
 	List<Person> persons = new ArrayList<>();
 
@@ -39,7 +43,6 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
 		_datasetDefinition = (HIVARTRETDatasetDefinition) dataSetDefinition;
-		patientQuery = Context.getService(PatientQuery.class);
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		buildDataSet(dataSet);
 
@@ -49,8 +52,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public void buildDataSet(SimpleDataSet dataSet) {
 
 		dataSet.addRow(buildColumn(" ",
-				"Number of adults and children who are still on treatment at 12 months after\n" + //
-						"initiating ART",
+				_datasetDefinition.getNetRetention() ? descriptionNet : description,
 				new QueryParameter(0D, 0D, "", UNKNOWN)));
 
 		dataSet.addRow(buildColumn(".1", "< 1 year, Male",
@@ -161,7 +163,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow hivTxNewDataSetRow = new DataSetRow();
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-				baseName + "" + col_1_value);
+				(_datasetDefinition.getNetRetention() ? baseNameForNet : baseName) + "" + col_1_value);
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
 		hivTxNewDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class),
@@ -175,11 +177,16 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
 			Calendar startDate = Calendar.getInstance();
 			startDate.setTime(_datasetDefinition.getStartDate());
-			startDate.add(Calendar.MONTH, -12);
-			int diff  = startDate.compareTo(Calendar.getInstance());
-			cohort = patientQuery.getActiveOnArtCohort(parameter.gender, startDate.getTime(),
-					_datasetDefinition.getEndDate(), cohort);
-			persons = patientQuery.getPersons(cohort);
+
+			if (_datasetDefinition.getNetRetention()) {
+				cohort = hivArtRetQuery.getPatientRetentionCohortNet(parameter.gender, startDate.getTime(),
+						_datasetDefinition.getEndDate(), cohort);
+			} else {
+				cohort = hivArtRetQuery.getPatientRetentionCohort(parameter.gender, startDate.getTime(),
+						_datasetDefinition.getEndDate(), cohort);
+			}
+			persons = hivArtRetQuery.getPersons(cohort);
+
 			return cohort.getMemberIds().size();
 		}
 
@@ -223,7 +230,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES,
+				Cohort pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(cohort, YES,
 						_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 				if (parameter.isPregnant == YES) {
 

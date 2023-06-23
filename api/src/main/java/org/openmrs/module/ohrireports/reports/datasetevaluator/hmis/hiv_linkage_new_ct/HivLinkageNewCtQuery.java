@@ -50,13 +50,13 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
 
 		allCohort.addAll(getTotalCohort().getMemberIds());
 		totalOnHivePatient = allCohort.size();
-		
+
 		knownCohort = getKnownOnArt().getMemberIds();
 		linkedToCareCohort = getLinkedToCareTreatment().getMemberIds();
-		
+
 		lostToFollowUpCohort = getLostToFollowUp().getMemberIds();
 		referToOtherCohort = getReferToOtherFacility().getMemberIds();
-		
+
 		diedCohort = getDiedPatientCohort().getMemberIds();
 		othersCohort = allCohort.size();
 	}
@@ -149,13 +149,6 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
 		return diedCohort;
 	}
 
-	private void deduplicate(Cohort firsCohort) {
-
-		for (CohortMembership cohortMembership : firsCohort.getActiveMemberships()) {
-			allCohort.remove(cohortMembership.getPatientId());
-		}
-	}
-
 	private void deduplicate(List<Integer> patientIds) {
 
 		for (Integer patientId : patientIds) {
@@ -178,11 +171,11 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
 		List list = query.list();
 
 		for (Object object : list) {
-			if(object instanceof Integer){
-				int id = (Integer)object;
+			if (object instanceof Integer) {
+				int id = (Integer) object;
 				cohort.addMembership(new CohortMembership(id));
 			}
-			
+
 		}
 
 		deduplicate(list);
@@ -216,8 +209,8 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
 		sql.append("and " + OBS_ALIAS + "obs_datetime  <= :endOnOrBefore ");
 
 		Query query = sessionFactory
-						.getCurrentSession()
-						.createSQLQuery(sql.toString());
+				.getCurrentSession()
+				.createSQLQuery(sql.toString());
 
 		query.setTimestamp("startOnOrAfter", starDate);
 		query.setTimestamp("endOnOrBefore", endDate);
