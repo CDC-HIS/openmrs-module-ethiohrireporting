@@ -41,7 +41,7 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
 		_datasetDefinition = (HivPvlsDatasetDefinition) dataSetDefinition;
-		baseName.concat(_datasetDefinition.getPrefix());
+		baseName = baseName+""+_datasetDefinition.getPrefix();
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		buildDataSet(dataSet);
 

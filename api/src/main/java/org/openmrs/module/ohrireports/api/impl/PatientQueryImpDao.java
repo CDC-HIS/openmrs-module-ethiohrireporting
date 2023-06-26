@@ -210,9 +210,11 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	public List<Person> getPersons(Cohort cohort) {
 		Set<Integer> pIntegers = cohort.getMemberIds();
 		Criteria criteria = getSession().createCriteria(Person.class);
+		
 		criteria.setCacheable(false);
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.in("personId", pIntegers));
+		
 		return criteria.list();
 		
 	}

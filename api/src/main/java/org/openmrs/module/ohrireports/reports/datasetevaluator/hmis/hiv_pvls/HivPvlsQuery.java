@@ -45,17 +45,17 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	
 	public Cohort getPatientsWithViralLoadSuppressed(String gender, Date startOnOrAfter, Date endOnOrBefore) {
 		setDate(startOnOrAfter, endOnOrBefore);
-		Cohort artCohort = getActiveOnArtCohort(gender, startOnOrAfter, endOnOrBefore, null);
+		Cohort artCohort = getActiveOnArtCohort(gender, startDate, endOnOrBefore, null);
 		if (artCohort == null || artCohort.size() <= 0)
 			return new Cohort();
 		
 		StringBuilder sql = super.baseQuery(HIV_VIRAL_LOAD_STATUS);
-		sql.append("and " + OBS_ALIAS + "value_coded =(select distinct concept_id from concepts where uuid='"
-		        + HIV_VIRAL_LOAD_SUPPRESSED + "'') limit 1");
+		sql.append("and " + OBS_ALIAS + "value_coded =(select distinct concept_id from concept where uuid='"
+		        + HIV_VIRAL_LOAD_SUPPRESSED + "'  limit 1 )  ");
 		
-		sql.append("p.person_id in (:artCohorts)");
+		sql.append("and p.person_id in (:artCohorts) ");
 		Query query = addDateRange(sql);
-		query.setParameter("artCohort", artCohort.getMemberIds());
+		query.setParameter("artCohorts", artCohort.getMemberIds());
 		
 		return new Cohort(query.list());
 	}
@@ -74,34 +74,34 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	
 	public Cohort getPatientWithViralLoadCount(String gender, Date startOnOrAfter, Date endOnOrBefore) {
 		setDate(startOnOrAfter, endOnOrBefore);
-		Cohort artCohort = getActiveOnArtCohort(gender, startOnOrAfter, endOnOrBefore, null);
+		Cohort artCohort = getActiveOnArtCohort(gender, startDate, endOnOrBefore, null);
 		if (artCohort == null || artCohort.size() <= 0)
 			return new Cohort();
 		
 		StringBuilder sql = super.baseQuery(HIV_VIRAL_LOAD_COUNT);
-		sql.append("and " + OBS_ALIAS + "value_coded >0");
+		sql.append("and " + OBS_ALIAS + "value_numeric > 0 ");
 		
-		sql.append("p.person_id in (:artCohorts)");
+		sql.append("and p.person_id in (:artCohorts) ");
 		Query query = addDateRange(sql);
-		query.setParameter("artCohort", artCohort.getMemberIds());
+		query.setParameter("artCohorts", artCohort.getMemberIds());
 		
-		return new Cohort();
+		return new Cohort(query.list());
 	}
 	
 	public Cohort getPatientWithViralLoadCountLowLevelViremia(String gender, Date startOnOrAfter, Date endOnOrBefore) {
 		setDate(startOnOrAfter, endOnOrBefore);
-		Cohort artCohort = getActiveOnArtCohort(gender, startOnOrAfter, endOnOrBefore, null);
+		Cohort artCohort = getActiveOnArtCohort(gender, startDate, endOnOrBefore, null);
 		if (artCohort == null || artCohort.size() <= 0)
 			return new Cohort();
 		
 		StringBuilder sql = super.baseQuery(HIV_VIRAL_LOAD_STATUS);
-		sql.append("and " + OBS_ALIAS + "value_coded =(select distinct concept_id from concept where uuid='"
-		        + HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA + "' limit 1)");
+		sql.append("and " + OBS_ALIAS + "value_coded = (select distinct concept_id from concept where uuid='"
+		        + HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA + "' limit 1) ");
 		
-		sql.append("p.person_id in (:artCohorts)");
+		sql.append("and p.person_id in (:artCohorts) ");
 		Query query = addDateRange(sql);
-		query.setParameter("artCohort", artCohort.getMemberIds());
+		query.setParameter("artCohorts", artCohort.getMemberIds());
 		
-		return new Cohort();
+		return new Cohort(query.list());
 	}
 }
