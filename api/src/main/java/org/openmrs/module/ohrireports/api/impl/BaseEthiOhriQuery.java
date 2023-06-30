@@ -6,6 +6,8 @@ public abstract class BaseEthiOhriQuery {
 	
 	protected String OBS_ALIAS = "ob.";
 	
+	protected String CONCEPT_ALIAS = "c.";
+	
 	protected StringBuilder baseQuery(String conceptQuestionUUid) {
 		StringBuilder sql = new StringBuilder();
 		sql.append("select distinct " + OBS_ALIAS + "person_id from obs as ob ");
@@ -18,5 +20,25 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
 		sql.append("where pa.voided = false and " + OBS_ALIAS + "voided = false ");
 		return sql;
+	}
+	
+	protected StringBuilder baseSubQuery(String query) {
+		StringBuilder sql = new StringBuilder();
+		if (query == null || query.isEmpty())
+			return sql.append("(select MAX(obs_id) from obs as ob where ob.voided=false;   group by person_id )");
+		
+		return sql.append("(select MAX(obs_id) from obs as ob where " + query + "  group by person_id)");
+		
+	}
+	
+	protected StringBuilder baseSubQueryJoin(String query, String joinQuery) {
+		StringBuilder sql = new StringBuilder();
+		if (query == null || query.isEmpty())
+			return sql.append("(select MAX(obs_id) from obs as ob " + joinQuery
+			        + " where ob.voided=false  group by person_id )");
+		
+		return sql.append("(select MAX(obs_id) from obs as ob " + joinQuery + " where ob.voided=false and " + query
+		        + "  group by person_id)");
+		
 	}
 }

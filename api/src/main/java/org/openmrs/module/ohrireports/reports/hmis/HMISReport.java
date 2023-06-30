@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
@@ -136,6 +137,11 @@ public class HMISReport implements ReportManager {
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Proportion of PLHIV currently on differentiated service Delivery model (DSD) in the reporting period",
 		    map(txDSDDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivArtIntrDatasetDefinition hivArtIntrDataset = new HivArtIntrDatasetDefinition();
+		hivArtIntrDataset.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("HMIS: HIV_ART_INTR Number of ART Clients that interrupted Treatment",
+		    map(hivArtIntrDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}
