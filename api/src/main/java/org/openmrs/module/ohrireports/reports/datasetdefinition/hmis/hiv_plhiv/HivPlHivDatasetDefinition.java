@@ -8,23 +8,24 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HivPlHivDatasetDefinition extends BaseDataSetDefinition {
-    @ConfigurationProperty
+	
+	@ConfigurationProperty
 	private Date startDate;
 	
 	@ConfigurationProperty
 	private Date endDate;
-
+	
 	@ConfigurationProperty
 	private HivPvlHivType hivPvlHivType;
 	
 	public HivPvlHivType getHivPvlHivType() {
 		return hivPvlHivType;
 	}
-
+	
 	public void setHivPvlHivType(HivPvlHivType hivPvlHivType) {
 		this.hivPvlHivType = hivPvlHivType;
 	}
-
+	
 	public Date getStartDate() {
 		return startDate;
 	}

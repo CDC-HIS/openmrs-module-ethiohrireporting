@@ -8,7 +8,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.MILD_MAL_NUTRI
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MODERATE_MAL_NUTRITION;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SEVERE_MAL_NUTRITION;
 
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,27 +19,25 @@ import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 @Component
-public class HivPlvHivQuery extends PatientQueryImpDao  {
- 
-  
-    private Date startDate,endDate;
-    private DbSessionFactory sessionFactory;
-
-
-    @Autowired
-    public HivPlvHivQuery(DbSessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-        setSessionFactory(sessionFactory);
-    }
-
-    public void setDates(Date _start,Date _date){
-        startDate = _start;
-        endDate = _date;
-    }
-
-    public Set<Integer> getAssessedPatients(){
+public class HivPlvHivQuery extends PatientQueryImpDao {
+	
+	private Date startDate, endDate;
+	
+	private DbSessionFactory sessionFactory;
+	
+	@Autowired
+	public HivPlvHivQuery(DbSessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+		setSessionFactory(sessionFactory);
+	}
+	
+	public void setDates(Date _start, Date _date) {
+		startDate = _start;
+		endDate = _date;
+	}
+	
+	public Set<Integer> getAssessedPatients(){
           StringBuilder sql = new StringBuilder();
           Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
           
@@ -58,8 +55,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao  {
 
         return new HashSet<>(query.list());
     }
-
-    public Set<Integer> getPatientUndernourished(){
+	
+	public Set<Integer> getPatientUndernourished(){
          StringBuilder sql = new StringBuilder();
          Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
          sql.append(" select person_id from obs where obs_id in ");
@@ -76,8 +73,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao  {
 
         return new HashSet<>(query.list());
     }
-
-    public Set<Integer> getPatientModerateMalNutrition(){
+	
+	public Set<Integer> getPatientModerateMalNutrition(){
          StringBuilder sql = new StringBuilder();
          Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
          sql.append(" select person_id from obs where obs_id in ");
@@ -94,8 +91,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao  {
 
         return new HashSet<>(query.list());
     }
-
-      public Set<Integer> getPatientSevereMalNutrition(){
+	
+	public Set<Integer> getPatientSevereMalNutrition(){
          StringBuilder sql = new StringBuilder();
          Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
          sql.append(" select person_id from obs where obs_id in ");
@@ -112,8 +109,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao  {
 
         return new HashSet<>(query.list());
     }
-
-     public Set<Integer> getPatientTookSupplement(Set<Integer> memberIds){
+	
+	public Set<Integer> getPatientTookSupplement(Set<Integer> memberIds){
          StringBuilder sql = new StringBuilder();
          sql.append(" select person_id from obs where obs_id in ");
          sql.append(" (select Max(obs_id) from obs where concept_id = ");
