@@ -113,7 +113,7 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 	
 	private List<Obs> getTxCurrPatients() {
 
-		List<Integer> patientsId = getListOfALiveORRestartPatientObservations();
+		List<Integer> patientsId = getListOfALiveORRestartPatientObservertions();
 		List<Integer> patients = new ArrayList<>();
 		List<Obs> localObs = new ArrayList<>();
 		if (patientsId == null || patientsId.size() == 0)
@@ -157,7 +157,7 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 		}
 		return patients.size();
 	}
-	private List<Integer> getListOfALiveORRestartPatientObservations() {
+	private List<Integer> getListOfALiveORRestartPatientObservertions() {
 
 		List<Integer> uniqiObs = new ArrayList<>();
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
