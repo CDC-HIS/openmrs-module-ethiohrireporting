@@ -46,11 +46,11 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 
 		hdsd = (TXCurrDataSetDefinitionAdx) dataSetDefinition;
 		context = evalContext;
-		
+
 		MapDataSet data = new MapDataSet(dataSetDefinition, evalContext);
-		
+
 		obses = getTxCurrPatients();
-		
+
 		data.addData(new DataSetColumn("1_famale","<1,  Female, on Treatment",Integer.class)
 		,getPersonCount(0, 1, Gender.Female));
 		data.addData(new DataSetColumn("1_male","<1,  Male, on Treatment",Integer.class)
@@ -60,7 +60,7 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 		,getPersonCount(1, 4, Gender.Female));
 		data.addData(new DataSetColumn("1-4_male","1-4,  Male, on Treatment",Integer.class)
 		,getPersonCount(1, 4, Gender.Male));
-		
+
 		data.addData(new DataSetColumn("5-9_famale","5-9, Female, on Treatment",Integer.class)
 		,getPersonCount(5, 9, Gender.Female));
 		data.addData(new DataSetColumn("5-9_male","5-9,  Male, on Treatment",Integer.class)
@@ -75,12 +75,11 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 		,getPersonCount(20, 24, Gender.Female));
 		data.addData(new DataSetColumn("20-24_male","20-24,  Male, on Treatment",Integer.class)
 		,getPersonCount(20, 24, Gender.Male));
-		
+
 		data.addData(new DataSetColumn("25-29_famale","25-29, Female, on Treatment",Integer.class)
 		,getPersonCount(25, 29, Gender.Female));
 		data.addData(new DataSetColumn("25-29_male","25-29,  Male, on Treatment",Integer.class)
 		,getPersonCount(25, 29, Gender.Male));
-
 
 		data.addData(new DataSetColumn("30-34_famale","30-34, Female, on Treatment",Integer.class)
 		,getPersonCount(30, 34, Gender.Female));
@@ -110,7 +109,6 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 
 	}
 
-	
 	private List<Obs> getTxCurrPatients() {
 
 		List<Integer> patientsId = getListOfALiveORRestartPatientObservertions();
@@ -137,7 +135,7 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 						localObs.add(obs);
 					  }
 				}
-		
+
 		return localObs;
 	}
 
@@ -150,7 +148,7 @@ public class TXCurrDataSetDefinitionEvaluatorAdx implements DataSetEvaluator {
 			if (!patients.contains(obs.getPersonId()) 
 			 && (_age>minAge && _age< maxAge)
 			 && (obs.getPerson().getGender().toLowerCase().equals(_gender))) {
-				
+
 				patients.add(obs.getPersonId());
 
 			}

@@ -46,18 +46,21 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
 				HivPlHivDatasetBuilder severeDatasetBuilder = new HivPlHivDatasetBuilder(severePatients, dataSet,
 				        "Total SAM", "HIV_PLHIV_NUT_SAM");
 				severeDatasetBuilder.getPlHivDataset();
+				break;
 			case PLHIV_SUP:
-				List<Person> supPatients = hivPlvHivQuery.getPersons(new Cohort(hivPlvHivQuery
-				        .getPatientTookSupplement(hivPlvHivQuery.getPatientModerateMalNutrition())));
-				HivPlHivDatasetBuilder supDatasetBuilder = new HivPlHivDatasetBuilder(supPatients, dataSet,
+				
+				List<Person> supPregnantList = hivPlvHivQuery.getPersons(new Cohort(hivPlvHivQuery.getPregnant()));
+				List<Person> supPatients = hivPlvHivQuery
+				        .getPersons(new Cohort(hivPlvHivQuery.getPatientMATookSupplement()));
+				HivPlHivDatasetBuilder supDatasetBuilder = new HivPlHivDatasetBuilder(supPatients, supPregnantList, dataSet,
 				        "Total MAM who received therapeutic or supplementary food", "HIV_PLHIV_SUP.1");
-				supDatasetBuilder.getPlHivDataset();
+				supDatasetBuilder.getPlHivPregnantDataset();
 				
 				List<Person> sevSupPatients = hivPlvHivQuery.getPersons(new Cohort(hivPlvHivQuery
-				        .getPatientTookSupplement(hivPlvHivQuery.getPatientSevereMalNutrition())));
-				HivPlHivDatasetBuilder sevSupDatasetBuilder = new HivPlHivDatasetBuilder(sevSupPatients, dataSet,
-				        "Total SAM who received therapeutic or supplementary food", "HIV_PLHIV_SUP.2");
-				sevSupDatasetBuilder.getPlHivDataset();
+				        .getPatientSVTookSupplement()));
+				HivPlHivDatasetBuilder sevSupDatasetBuilder = new HivPlHivDatasetBuilder(sevSupPatients, supPregnantList,
+				        dataSet, "Total SAM who received therapeutic or supplementary food", "HIV_PLHIV_SUP.2");
+				sevSupDatasetBuilder.getPlHivPregnantDataset();
 				break;
 			default:
 				break;

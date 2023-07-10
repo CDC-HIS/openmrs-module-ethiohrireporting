@@ -82,28 +82,27 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 				continue;
 
 			Patient patient = patientService.getPatient(person.getId());
-			
-			
+
 			Concept status = patientStatus.get(person.getId());
 			EthiopianDate ethiopianDate = null;
 			try {
 				ethiopianDate = EthiopianDateConverter
 						.ToEthiopianDate(obses.getValueDate()
 						.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-			
+
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			getStringIdentifier(patient.getPatientIdentifier(mrnIdentifierType)));
-			
+
 			row.addColumnValue(new DataSetColumn("OpenMrs", "Openmrs ID", String.class),
 			getStringIdentifier(patient.getPatientIdentifier(openmrsIdentifierType)) );
-			
+
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
-			
+
 			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge());
-			
+
 			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
-			
+
 			row.addColumnValue(new DataSetColumn("TreatmentEndDate", "Treatment End Date",
 					Date.class), obses.getValueDate());
 			row.addColumnValue(new DataSetColumn("TreatmentEndDateETC", "Treatment End Date ETH",
@@ -111,7 +110,7 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 					ethiopianDate.equals(null) ? ""
 							: ethiopianDate.getDay() + "/" + ethiopianDate.getMonth() + "/" + ethiopianDate.getYear());
 			row.addColumnValue(new DataSetColumn("Regimen", "Regmin", String.class), getRegimen(obses, evalContext));
-			
+
 			row.addColumnValue(new DataSetColumn("Status", "Status",
 					String.class),
 					Objects.isNull(status) || Objects.isNull(status.getName()) ? "" : status.getName().getName());
@@ -125,13 +124,9 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		return data;
 	}
 
-	
-
 	private String getStringIdentifier(PatientIdentifier patientIdentifier) {
 		return Objects.isNull(patientIdentifier)?"--":patientIdentifier.getIdentifier();
 	}
-
-
 
 	private List<Obs> getTxCurrPatients() {
 
@@ -191,7 +186,7 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 				patientStatus.put(obs.getPersonId(), obs.getValueCoded());
 			}
 		 }
-		
+
 		 return new ArrayList<Integer>(patients);
 	}
 
