@@ -445,5 +445,13 @@ public class OHRIReportsConstants {
 	public final static String DSD_OTHER = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DSD_AHDCM = "69e20fac-25ff-46c5-8681-756ba0078c80";
-	
+
+	/*
+	 * Family planning methods and others related to family planning
+	 */
+	public final static String FAMILY_PLANNING_METHODS="374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String ORAL_CONTRACEPTIVE_PILL ="780AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String INJECTABLE = "5279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String DIAPHRAGM_CERVICAL_CAP = "5278AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String IMPLANTABLE_HORMONE = "159589AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 }
