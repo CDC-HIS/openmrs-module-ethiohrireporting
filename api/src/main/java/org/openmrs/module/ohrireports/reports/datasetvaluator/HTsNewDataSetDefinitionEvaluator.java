@@ -30,13 +30,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 //@Handler(supports = { HtsNewDataSetDefinition.class })
 public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
-
+	
 	@Autowired
 	EvaluationService evaluationService;
-
+	
 	@Autowired
 	ConceptService conceptService;
-
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
@@ -81,7 +81,7 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		return data;
 	}
-
+	
 	private List<Obs> getObservations(HtsNewDataSetDefinition hdsd, EvaluationContext context) {
 
 		List<Obs> obses = new ArrayList<>();
@@ -102,7 +102,7 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		return obses;
 	}
-
+	
 	private List<Integer> getPatientsWithARTStartedDate(HtsNewDataSetDefinition hdsd, EvaluationContext context) {
 		List<Integer> uniqPatientsId = new ArrayList<>();
 
@@ -124,21 +124,21 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		return uniqPatientsId;
 	}
-
+	
 	private String getRegimen(Obs obs, EvaluationContext context) {
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-
+		
 		queryBuilder.select("obv.valueCoded").from(Obs.class, "obv")
 		        .whereInAny("obv.concept", conceptService.getConceptByUuid(REGIMEN))
 		        .whereEqual("obv.encounter", obs.getEncounter()).and().whereEqual("obv.person", obs.getPerson())
 		        .orderDesc("obv.obsDatetime").limit(1);
 		List<Concept> concepts = evaluationService.evaluateToList(queryBuilder, Concept.class, context);
-
+		
 		Concept data = null;
 		if (concepts != null && concepts.size() > 0)
 			data = concepts.get(0);
-
+		
 		return data == null ? "" : data.getName().getName();
 	}
-
+	
 }

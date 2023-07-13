@@ -253,6 +253,20 @@ public class OHRIReportsConstants {
 	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
 	
+	//Prep
+	public final static String DISCORDANT_COUPLE = "6096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String FEMALE_SEX_WORKER = "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	//pep
+	public final static String EXPOSURE_TYPE = "916eebc3-1141-40e6-beaa-ad2b5685956b";
+	
+	public final static String OCCUPATIONAL = "453bf209-c408-4692-83e7-17d21282a8ae";
+	
+	public final static String NON_OCCUPATIONAL = "164837AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String SEXUAL_ASSAULT = "126582AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	// #region
 	public final static String UNIQUE_ANTIRETROVAIRAL_THERAPY_UAN = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

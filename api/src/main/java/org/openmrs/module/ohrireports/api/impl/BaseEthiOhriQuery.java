@@ -20,12 +20,12 @@ public abstract class BaseEthiOhriQuery {
 		return sql;
 	}
 	
-	protected StringBuilder personIdQuery(String subQuery, String outerQuery) {
+	protected StringBuilder personIdQuery(String conditions, String outerQuery) {
 		StringBuilder sql = new StringBuilder();
 		
 		sql.append("select distinct person_id from obs as ob where encounter_id in ");
 		sql.append("(select Max(encounter_id) from obs where ");
-		sql.append(subQuery);
+		sql.append(conditions);
 		sql.append(" GROUP BY person_id)");
 		
 		if (!outerQuery.isEmpty()) {
@@ -33,5 +33,9 @@ public abstract class BaseEthiOhriQuery {
 		}
 		return sql;
 		
+	}
+	
+	protected String conceptQuery(String uuid) {
+		return "(select concept_id from concept where uuid ='" + uuid + "' limit 1 )";
 	}
 }
