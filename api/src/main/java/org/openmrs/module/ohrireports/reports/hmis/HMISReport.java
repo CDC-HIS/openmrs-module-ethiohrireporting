@@ -4,8 +4,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_fb.HivArtFbDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_fb.HivArtFbMetDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_curr.HmisTXCurrDataSetDefinition;
@@ -113,7 +117,7 @@ public class HMISReport implements ReportManager {
 		hivPvlsUnDataset.setType(HivPvlsType.SUPPRESSED);
 		hivPvlsUnDataset.setPrefix("_UN");
 		hivPvlsUnDataset
-		        .setDescription("Total number of adult and paediatric ART patients with an undetectable viral load(<50 copies/ml) in the reporting period  (with in the past 12 months)");
+		        .setDescription("Total number of adult and pediatric ART patients with an undetectable viral load(<50 copies/ml) in the reporting period  (with in the past 12 months)");
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS:(UN) Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)",
@@ -124,7 +128,7 @@ public class HMISReport implements ReportManager {
 		hivPvlsLvDataset.setType(HivPvlsType.LOW_LEVEL_LIVERMIA);
 		hivPvlsLvDataset.setPrefix("_LV");
 		hivPvlsLvDataset
-		        .setDescription("Total number of adult and paediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period  (with in the past 12 months)");
+		        .setDescription("Total number of adult and pediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period  (with in the past 12 months)");
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS: (LV) Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)",
@@ -136,6 +140,45 @@ public class HMISReport implements ReportManager {
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Proportion of PLHIV currently on differentiated service Delivery model (DSD) in the reporting period",
 		    map(txDSDDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPlHivDatasetDefinition hivPlTSPDatasetDefinition = new HivPlHivDatasetDefinition();
+		hivPlTSPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_TSP);
+		hivPlTSPDatasetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Proportion of clinically undernourished People Living with HIV (PLHIV) who received therapeutic or supplementary food",
+		            map(hivPlTSPDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPlHivDatasetDefinition hivPlNUTDatasetDefinition = new HivPlHivDatasetDefinition();
+		hivPlNUTDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_NUT);
+		hivPlNUTDatasetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Number of PLHIV that were nutritionally assessed and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)",
+		            map(hivPlNUTDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPlHivDatasetDefinition hivPlSUPDatasetDefinition = new HivPlHivDatasetDefinition();
+		hivPlSUPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_SUP);
+		hivPlSUPDatasetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)",
+		            map(hivPlSUPDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivArtFbDatasetDefinition hivArtFpDatasetDefinition = new HivArtFbDatasetDefinition();
+		hivArtFpDatasetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "FP:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",
+		            map(hivArtFpDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivArtFbMetDatasetDefinition hivArtFpMeDatasetDefinition = new HivArtFbMetDatasetDefinition();
+		hivArtFpMeDatasetDefinition.setParameters(getParameters());
+		hivArtFpDatasetDefinition.setDescription("Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age");
+		reportDefinition
+		        .addDataSetDefinition(
+		            "FP-Method:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",
+		            map(hivArtFpMeDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}

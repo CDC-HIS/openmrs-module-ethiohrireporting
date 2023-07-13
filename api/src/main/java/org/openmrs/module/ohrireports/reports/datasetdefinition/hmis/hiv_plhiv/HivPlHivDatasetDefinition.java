@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_fb;
+package org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_plhiv;
 
 import java.util.Date;
 
@@ -7,13 +7,24 @@ import org.openmrs.module.reporting.definition.configuration.ConfigurationProper
 import org.springframework.stereotype.Component;
 
 @Component
-public class HivArtFbDatasetDefinition extends BaseDataSetDefinition {
+public class HivPlHivDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;
 	
 	@ConfigurationProperty
 	private Date endDate;
+	
+	@ConfigurationProperty
+	private HivPvlHivType hivPvlHivType;
+	
+	public HivPvlHivType getHivPvlHivType() {
+		return hivPvlHivType;
+	}
+	
+	public void setHivPvlHivType(HivPvlHivType hivPvlHivType) {
+		this.hivPvlHivType = hivPvlHivType;
+	}
 	
 	public Date getStartDate() {
 		return startDate;
@@ -30,5 +41,4 @@ public class HivArtFbDatasetDefinition extends BaseDataSetDefinition {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	
 }
