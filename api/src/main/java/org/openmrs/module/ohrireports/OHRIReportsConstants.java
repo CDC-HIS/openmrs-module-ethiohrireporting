@@ -233,7 +233,9 @@ public class OHRIReportsConstants {
 	public final static String RESTART = "ee957295-85b9-4433-bf12-45886cdc7dd1";
 	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
-	
+	//Pep
+	public final static String DISCORDANT_COUPLE  ="6096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String FEMALE_SEX_WORKER ="160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	// #region
 	public final static String UNIQUE_ANTIRETROVAIRAL_THERAPY_UAN = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
