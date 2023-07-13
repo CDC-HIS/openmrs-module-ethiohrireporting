@@ -183,6 +183,25 @@ public class OHRIReportsConstants {
 	
 	public final static String CYTOLOGY_GREATER_ASCUS_SUSPICIOUS = "912a5c48-8b07-4fd7-b2c3-ccb94fde7c68";
 	
+	/*
+	 * undernourished concepts
+	 */
+	public final static String UNDERNOURISHED = "123815AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String NUTRITIONAL_STATUS = "ae4d72a4-ccf5-49ff-b395-6687c534b1a2";
+	
+	public final static String OVERWEIGHT = "114413AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String NORMAL = "1115AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String MODERATE_MAL_NUTRITION = "134722AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String MILD_MAL_NUTRITION = "134723AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String THERAPEUTIC_SUPPLEMENTARY_FOOD = "161005AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String SEVERE_MAL_NUTRITION = "126598AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	/**
 	 * Viral Load Constant
 	 */
@@ -233,9 +252,21 @@ public class OHRIReportsConstants {
 	public final static String RESTART = "ee957295-85b9-4433-bf12-45886cdc7dd1";
 	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
-	//Pep
-	public final static String DISCORDANT_COUPLE  ="6096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	public final static String FEMALE_SEX_WORKER ="160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	//Prep
+	public final static String DISCORDANT_COUPLE = "6096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String FEMALE_SEX_WORKER = "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	//pep
+	public final static String EXPOSURE_TYPE = "916eebc3-1141-40e6-beaa-ad2b5685956b";
+	
+	public final static String OCCUPATIONAL = "453bf209-c408-4692-83e7-17d21282a8ae";
+	
+	public final static String NON_OCCUPATIONAL = "164837AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String SEXUAL_ASSAULT = "126582AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	// #region
 	public final static String UNIQUE_ANTIRETROVAIRAL_THERAPY_UAN = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -448,4 +479,18 @@ public class OHRIReportsConstants {
 	
 	public final static String DSD_AHDCM = "69e20fac-25ff-46c5-8681-756ba0078c80";
 	
+	/*
+	 * Family planning methods and others related to family planning
+	 */
+	public final static String FAMILY_PLANNING_METHODS = "374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String ORAL_CONTRACEPTIVE_PILL = "780AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String INJECTABLE = "5279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String DIAPHRAGM_CERVICAL_CAP = "5278AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String IMPLANTABLE_HORMONE = "159589AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String INTRAUTERINE_DEVICE = "5275AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 }

@@ -28,7 +28,7 @@ import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Handler(supports = { HtsNewDataSetDefinition.class })
+//@Handler(supports = { HtsNewDataSetDefinition.class })
 public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
@@ -99,7 +99,6 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 				.whereIn("obv.personId", personIds)
 				.orderDesc("obv.personId,obv.obsDatetime");
 				obses = evaluationService.evaluateToList(queryBuilder, Obs.class,context);
-	
 
 		return obses;
 	}
@@ -108,7 +107,7 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		List<Integer> uniqPatientsId = new ArrayList<>();
 
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-      
+
         queryBuilder.select("obv.personId")
         .from(Obs.class,"obv")  
 		.and()
@@ -116,7 +115,7 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		.whereNotInAny("obv.valueCoded",Arrays.asList(conceptService.getConceptByUuid(TRANSFERRED_IN)))
 		.and()
 		.whereEqual("obv.encounter.encounterType", hdsd.getEncounterType()).and()
-		  	
+
         .orderDesc("obv.personId,obv.obsDatetime") ;
 		List<Integer> personIds = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
 		for (Integer personId : personIds) {

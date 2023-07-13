@@ -96,7 +96,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Disaggregation 
  * 
  */
-@Handler(supports = { TransferredInOutDataSetDefinition.class })
+//@Handler(supports = { TransferredInOutDataSetDefinition.class })
 public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private TransferredInOutDataSetDefinition tDataSetDefinition;

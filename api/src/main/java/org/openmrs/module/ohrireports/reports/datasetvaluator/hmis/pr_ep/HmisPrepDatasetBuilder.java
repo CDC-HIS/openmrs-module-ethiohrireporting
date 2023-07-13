@@ -90,10 +90,20 @@ public class HmisPrepDatasetBuilder {
 	}
 	
 	private String getDescription(int min, int max, String gender) {
-		if (max == 50)
-			return ">= 50 years, " + gender == "M" ? "Male" : "Female";
+		StringBuilder description = new StringBuilder();
+		if (max == 50) {
+			description.append(">= 50 years, ");
+			description.append(gender.equals("M") ? "Male" : "Female");
+			
+		} else {
+			description.append(min);
+			description.append(" - ");
+			description.append(max);
+			description.append(" years, ");
+			description.append(gender.equals("M") ? "Male" : "Female");
+		}
 		
-		return min + " - " + max + " years, " + gender == "M" ? "Male" : "Female";
+		return description.toString();
 	}
 	
 }
