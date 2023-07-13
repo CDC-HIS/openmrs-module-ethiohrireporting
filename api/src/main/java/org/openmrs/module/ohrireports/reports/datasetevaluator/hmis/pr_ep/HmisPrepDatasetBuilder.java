@@ -89,7 +89,7 @@ public class HmisPrepDatasetBuilder {
 		}
 	}
 	
-	private Object getDescription(int min, int max, String gender) {
+	private String getDescription(int min, int max, String gender) {
 		if (max == 50)
 			return ">= 50 years, " + gender == "M" ? "Male" : "Female";
 		
