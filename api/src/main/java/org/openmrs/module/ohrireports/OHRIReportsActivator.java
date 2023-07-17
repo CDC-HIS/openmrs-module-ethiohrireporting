@@ -38,7 +38,6 @@ public class OHRIReportsActivator extends BaseModuleActivator {
 			ReportManagerUtil.setupReport(reportManager);
 		}
 		
-		
 	}
 	
 	/**

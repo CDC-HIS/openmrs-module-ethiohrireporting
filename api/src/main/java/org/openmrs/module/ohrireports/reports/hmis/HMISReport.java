@@ -15,6 +15,7 @@ import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.art_tpt_cr_
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.cxca_scrn.HmisCxCaScrnDataSetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.cxca_rx.HmisCxCaRxDataSetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tb_Lb_Lf_Lam.TbLbLfLamDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_dsd.HmisTXDsdDataSetDefinition;
 
 import org.openmrs.api.context.Context;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
