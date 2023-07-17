@@ -29,7 +29,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
     private EvaluationContext context;
 
     private HmisTXDsdDataSetDefinition hdsd;
-  
+    private String title = "Number of adults and children Currently enrolling on antiretroviral therapy (ART)";
     @Autowired
     private ConceptService conceptService;
 
@@ -57,43 +57,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
         obses = getDSDModel(DSD_6MMD);
         data.addData(new DataSetColumn("HIV_TX_ASM","Total number of clients on ASM(6MMD)",Integer.class)
 		,obses.size());
-        buildDataSet(data,15,50,"HIV_TX_ASM");
-
-        obses = getDSDModel(DSD_FTAR);
-        data.addData(new DataSetColumn("HIV_TX_FTAR","Total number of clients on FTAR",Integer.class)
-		,obses.size());
-        buildDataSet(data,15,50,"HIV_TX_FTAR");
-
-        obses = getDSDModel(DSD_HEP_CAG);
-        data.addData(new DataSetColumn("HIV_TX_CAG","Total number of clients on CAG",Integer.class)
-		,obses.size());
-        buildDataSet(data,15,50,"HIV_TX_CAG");
-
-        obses = getDSDModel(DSD_PCAD);
-        data.addData(new DataSetColumn("HIV_TX_PCAD","Total number of clients on PCAD",Integer.class)
-		,obses.size());
-        buildDataSet(data,15,50,"HIV_TX_PCAD");
-
-        obses = getDSDModel(DSD_ADOLESCENT);
-        data.addData(new DataSetColumn("HIV_TX_Adolescent DSD","Total number of clients on Adolescent DSD",Integer.class)
-		,obses.size());
-
-        obses = getDSDModel(DSD_KP);
-        data.addData(new DataSetColumn("HIV_TX_KP DSD","Total number of clients on KP DSD",Integer.class)
-		,obses.size());
-
-        obses = getDSDModel(DSD_MCH);
-        data.addData(new DataSetColumn("HIV_TX_MCH DSD","Total number of clients on MCH DSD",Integer.class)
-		,obses.size());
-
-        obses = getDSDModel(DSD_OTHER);
-        data.addData(new DataSetColumn("HIV_TX_ other types of DSD.","Total number of clients on other types of DSD",Integer.class)
-		,obses.size());
-
-        obses = getDSDModel(DSD_AHDCM);
-        data.addData(new DataSetColumn("HIV_TX_AHDCM","Total number of clients on \"Advanced HIV Disease Care Model\"",Integer.class)
-		,obses.size());
-        buildDataSet(data,1,50,"HIV_TX_AHDCM");
+        buildDataSet(data,1,50,"HIV_TX_ASM");
         
         
         return data;
@@ -123,13 +87,9 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
                 
             } else {
-                if(minCount==25){
-                    maxCount=49;
-                }
                 data.addData(new DataSetColumn(name+"."+counter,minCount+" - "+maxCount+" years, Male",Integer.class),getdsdByAgeAndGender(minCount,maxCount,Gender.Male));
                 counter+=1;
                 data.addData(new DataSetColumn(name+"."+counter,minCount+" - "+maxCount+" years, Female",Integer.class),getdsdByAgeAndGender(minCount,maxCount,Gender.Female));
-                
 
             }
 
