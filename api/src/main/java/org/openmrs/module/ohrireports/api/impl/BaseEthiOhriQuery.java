@@ -22,23 +22,18 @@ public abstract class BaseEthiOhriQuery {
 		return sql;
 	}
 	
-	protected StringBuilder baseSubQuery(String query) {
+	protected StringBuilder personIdQuery(String subQuery, String outerQuery) {
 		StringBuilder sql = new StringBuilder();
-		if (query == null || query.isEmpty())
-			return sql.append("(select MAX(obs_id) from obs as ob where ob.voided=false;   group by person_id )");
 		
-		return sql.append("(select MAX(obs_id) from obs as ob where " + query + "  group by person_id)");
+		sql.append("select distinct person_id from obs as ob where encounter_id in ");
+		sql.append("(select Max(encounter_id) from obs where ");
+		sql.append(subQuery);
+		sql.append(" GROUP BY person_id)");
 		
-	}
-	
-	protected StringBuilder baseSubQueryJoin(String query, String joinQuery) {
-		StringBuilder sql = new StringBuilder();
-		if (query == null || query.isEmpty())
-			return sql.append("(select MAX(obs_id) from obs as ob " + joinQuery
-			        + " where ob.voided=false  group by person_id )");
-		
-		return sql.append("(select MAX(obs_id) from obs as ob " + joinQuery + " where ob.voided=false and " + query
-		        + "  group by person_id)");
+		if (!outerQuery.isEmpty()) {
+			sql.append(outerQuery);
+		}
+		return sql;
 		
 	}
 }
