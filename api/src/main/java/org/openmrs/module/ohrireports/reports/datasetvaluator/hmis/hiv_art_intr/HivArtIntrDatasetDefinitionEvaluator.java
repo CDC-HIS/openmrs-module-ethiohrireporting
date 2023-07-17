@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.hiv_art_intr;
+package org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.hiv_art_intr;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DIED;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFER_OUT;
@@ -15,13 +15,13 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.query.PatientQuery;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.hiv_art_intr.HivArtIntrQuery.Range;
+import org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.hiv_art_intr.HivArtIntrQuery.Range;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LOST_TO_FOLLOW_UP;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.STOP;
 
-import static org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
-import static org.openmrs.module.ohrireports.reports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
+import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.COLUMN_1_NAME;
+import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
