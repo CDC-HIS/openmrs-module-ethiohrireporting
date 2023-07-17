@@ -149,6 +149,7 @@ public class TbPrevNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		}
 		return obsARTstarted;
 	}
+	
 	public List<Obs> getARTstarted(String gender){
 		List<Integer> tbstarted = getTPTreatmentEndDateInLastSixMonths();
 		List<Obs> obsARTstarted = new ArrayList<>();

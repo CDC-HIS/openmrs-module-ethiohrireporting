@@ -444,4 +444,14 @@ public class OHRIReportsConstants {
 	
 	public final static String DSD_AHDCM = "69e20fac-25ff-46c5-8681-756ba0078c80";
 	
+	public final static String TB_PROPHYLAXIS_TYPE_ALTERNATE = "f18eded5-67a9-4f02-b131-9a6230e64d18";
+	
+	public final static String TB_PROPHYLAXIS_TYPE_ALTERNATE_3HP = "e8588507-635c-4e28-a1f8-3c493e30b2f5";
+	
+	public final static String TB_PROPHYLAXIS_TYPE_ALTERNATE_3HR = "c989f10b-6ab4-44d2-a8cd-b4f45fc3ab9b";
+	
+	public final static String TB_PROPHYLAXIS_TYPE = "54084c9e-bc87-4d95-89fc-eb9a2cffb592";
+	
+	public final static String TB_PROPHYLAXIS_TYPE_INH = "8ba598a1-9e8a-4499-bd7a-54c3d0c94f01";
+	
 }
