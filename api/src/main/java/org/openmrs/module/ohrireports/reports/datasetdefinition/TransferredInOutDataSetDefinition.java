@@ -1,7 +1,5 @@
 package org.openmrs.module.ohrireports.reports.datasetdefinition;
 
-import java.time.LocalDate;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.openmrs.EncounterType;

@@ -15,6 +15,17 @@ public class HIVARTRETDatasetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private Date endDate;
 	
+	@ConfigurationProperty
+	private Boolean netRetention;
+	
+	public Boolean getNetRetention() {
+		return netRetention;
+	}
+	
+	public void setNetRetention(Boolean netRetention) {
+		this.netRetention = netRetention;
+	}
+	
 	public Date getStartDate() {
 		return startDate;
 	}
