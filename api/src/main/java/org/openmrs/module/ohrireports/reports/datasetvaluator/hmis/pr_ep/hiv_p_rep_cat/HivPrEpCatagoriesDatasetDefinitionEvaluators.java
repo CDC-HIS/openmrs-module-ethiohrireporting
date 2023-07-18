@@ -65,7 +65,7 @@ public class HivPrEpCatagoriesDatasetDefinitionEvaluators implements DataSetEval
 		dataSet.addRow(SexualAssaultPepRow);
 		
 		DataSetRow otherNonOccupationPepRow = new DataSetRow();
-		otherNonOccupationPepRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PEP");
+		otherNonOccupationPepRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PEP.3");
 		otherNonOccupationPepRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
 		    "Other Non-occupational");
 		otherNonOccupationPepRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class),
