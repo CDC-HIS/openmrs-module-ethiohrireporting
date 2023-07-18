@@ -5,8 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
-
-
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_re_arv.HivArtReArvDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPrEpCatagoriesDatasetDefinition;
@@ -166,7 +165,12 @@ public class HMISReport implements ReportManager {
 		hivArtIntrDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS: HIV_ART_INTR Number of ART Clients that interrupted Treatment",
 		    map(hivArtIntrDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		//HivArtReArvDatasetDefinition
 		
+		HivArtReArvDatasetDefinition hivArtReArvDataset = new HivArtReArvDatasetDefinition();
+		hivArtReArvDataset.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("HMIS: Number of ART clients restarted ARV treatment in the reporting period",
+		    map(hivArtReArvDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
 		return reportDefinition;
 	}
 	

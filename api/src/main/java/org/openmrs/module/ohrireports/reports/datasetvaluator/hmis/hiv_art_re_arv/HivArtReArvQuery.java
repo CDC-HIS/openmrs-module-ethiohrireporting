@@ -17,36 +17,41 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HivArtReArvQuery extends PatientQueryImpDao {
-
-
-	@Autowired
+	
 	private DbSessionFactory sessionFactory;
-
-	private Date starDate, endDate;
-
-	public HivArtReArvQuery() {
-		super();
+	
+	@Autowired
+	public HivArtReArvQuery(DbSessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 		setSessionFactory(sessionFactory);
+		
 	}
-
+	
+	private Date startDate, endDate;
+	
+	public void setDates(Date _start, Date _date) {
+		startDate = _start;
+		endDate = _date;
+	}
+	
 	public Set<Integer> getArvPatients() {
 		String subQuery = "and ob.concept_id = (select concept_id from concept where uuid ='" + FOLLOW_UP_STATUS
-				+ "' limit 1) and ob.value_coded = (select concept_id from concept where uuid = '" + RESTART
-				+ "' limit 1) and ob.obs_datetime >= :start and ob.obs_datetime <= :end ";
+		        + "' limit 1) and ob.value_coded = (select concept_id from concept where uuid = '" + RESTART
+		        + "' limit 1) and ob.obs_datetime >= :start and ob.obs_datetime <= :end ";
 		StringBuilder sql = personIdQuery(arvBaseQuery(), subQuery);
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-
-		query.setTime("startDate", starDate);
+		
+		query.setTime("startDate", startDate);
 		query.setTime("endDate", endDate);
-
-		query.setTime("start", starDate);
+		
+		query.setTime("start", startDate);
 		query.setTime("end", endDate);
-
+		
 		return new HashSet<Integer>(query.list());
 	}
-
+	
 	private String arvBaseQuery() {
 		return "obs.concept_id= (select concept_id from concept where uuid='" + ART_START_DATE
-				+ "' limit 1) and obs.value_datetime >= :startDate and obs.value_datetime <= :endDate ";
+		        + "' limit 1) and obs.value_datetime >= :startDate and obs.value_datetime <= :endDate ";
 	}
 }
