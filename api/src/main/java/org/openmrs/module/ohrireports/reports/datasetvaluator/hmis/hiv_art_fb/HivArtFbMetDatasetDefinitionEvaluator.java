@@ -43,7 +43,7 @@ public class HivArtFbMetDatasetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FB_MET");
 		row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
-		    _DatasetDefinition.getDescription());
+		   "Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by method");
 		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), oralContraceptive + injectable
 		        + implants + iucd + others);
 		dataSet.addRow(row);
