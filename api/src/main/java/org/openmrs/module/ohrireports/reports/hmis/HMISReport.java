@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_fb.HivArtFbDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_fb.HivArtFbMetDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_re_arv.HivArtReArvDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
@@ -180,13 +181,21 @@ public class HMISReport implements ReportManager {
 						"HMIS:Number of persons provided with post-exposure prophylaxis (PEP) for risk of HIV infection by exposure type",
 						map(hivPrEpCatagoriesDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 
-		HivArtFbDatasetDefinition hivArtFbDatasetDefinition = new HivArtFbDatasetDefinition();
-		hivArtFbDatasetDefinition.setParameters(getParameters());
+		HivArtFbDatasetDefinition hivArtFpDatasetDefinition = new HivArtFbDatasetDefinition();
+		hivArtFpDatasetDefinition.setParameters(getParameters());
 		reportDefinition
-				.addDataSetDefinition(
-						"HMIS:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",
-						map(hivArtFbDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
-
+		        .addDataSetDefinition(
+		            "FP:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",
+		            map(hivArtFpDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivArtFbMetDatasetDefinition hivArtFpMeDatasetDefinition = new HivArtFbMetDatasetDefinition();
+		hivArtFpMeDatasetDefinition.setParameters(getParameters());
+		hivArtFpDatasetDefinition.setDescription("Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age");
+		reportDefinition
+		        .addDataSetDefinition(
+		            "FP-Method:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",
+		            map(hivArtFpMeDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
 		
 		return reportDefinition;
 	}
