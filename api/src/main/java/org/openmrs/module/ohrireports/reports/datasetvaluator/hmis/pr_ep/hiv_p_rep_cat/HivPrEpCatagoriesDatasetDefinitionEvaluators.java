@@ -26,7 +26,7 @@ public class HivPrEpCatagoriesDatasetDefinitionEvaluators implements DataSetEval
 	@Autowired
 	private HivPrEpQuery query;
 	
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
