@@ -88,7 +88,6 @@ public class HivArtIntrQuery extends BaseEthiOhriQuery {
 		// e.g if less than three month
 		if (range == Range.LESS_THAN_THREE_MONTH) {
 			sql.append(baseSubQueryJoin(" value_datetime >=:startOnOrBefore and value_datetime<:endOnBefore ", sqlJoin));
-			
 			// above three month
 		} else {
 			sql.append(baseSubQueryJoin("  value_datetime < :startOnOrBefore", sqlJoin));
