@@ -42,8 +42,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-        query.setParameter("startOnOrBefore", startDate);
-
         query.setParameter("endOnOrAfter", endDate);
 
         query.setParameterList("drugs", getPrEpDrugs().toArray());
@@ -57,7 +55,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
         StringBuilder sql = personIdQuery(subQueryClauses, "");
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-        query.setParameter("startOnOrBefore", startDate);
 
         query.setParameter("endOnOrAfter", endDate);
 
@@ -115,12 +112,12 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	}
 	
 	public Set<Integer> getPrEpDrugs() {
-        StringBuilder sql = new StringBuilder("select distinct concept_id from concept ");
-        sql.append("where uuid in ('" + TDF_TENOFOVIR_DRUG + "','" + TDF_FTC_DRUG + "','" + TDF_3TC_DRUG + "')");
-
-        Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-        return new HashSet<Integer>(query.list());
-    }
+		StringBuilder sql = new StringBuilder("select distinct concept_id from concept ");
+		sql.append("where uuid in ('" + TDF_TENOFOVIR_DRUG + "','" + TDF_FTC_DRUG + "','" + TDF_3TC_DRUG + "')");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		return new HashSet<Integer>(query.list());
+	}
 	
 	public Integer getCountByExposureType(String uuid) {
 		
