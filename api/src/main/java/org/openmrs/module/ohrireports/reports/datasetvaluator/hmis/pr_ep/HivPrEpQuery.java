@@ -68,8 +68,7 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	 * Newly enrolled patients to Prep
 	 */
 	private String getSubQueryClauses() {
-		String subQueryClauses = "obs.concept_id ="
-		        + conceptQuery(PR_EP_STARTED)
+		String subQueryClauses = "obs.concept_id =" + conceptQuery(PR_EP_STARTED)
 		        + " and obs.voided = false and obs.value_datetime >= :endOnOrAfter  ";
 		return subQueryClauses;
 	}
@@ -106,7 +105,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		
 		query.setParameter("endOnOrAfter", endDate);
 		
 		if (isCurrent)
@@ -121,7 +119,7 @@ public class HivPrEpQuery extends PatientQueryImpDao {
         sql.append("where uuid in ('" + TDF_TENOFOVIR_DRUG + "','" + TDF_FTC_DRUG + "','" + TDF_3TC_DRUG + "')");
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-        return new HashSet<>(query.list());
+        return new HashSet<Integer>(query.list());
     }
 	
 	public Integer getCountByExposureType(String uuid) {
@@ -131,7 +129,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		StringBuilder sql = personIdQuery(getCurrQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		
 		
 		query.setParameter("endOnOrAfter", endDate);
 		
