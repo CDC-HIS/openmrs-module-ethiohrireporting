@@ -135,6 +135,10 @@ public class OHRIReportsConstants {
 	
 	public final static String LF_LAM = "34e4571e-7950-42e8-9936-a204f5f01a5b";
 	
+	public final static String LF_LAM_RESULT = "98ff157c-c736-4078-8acd-847a74accb64";
+	
+	public final static String GENE_XPERT_RESULT = "a10a7db7-5ec5-4d62-9b35-cc9ac222a05c";
+	
 	public final static String ADDITIONAL_TEST_OTHERTHAN_GENE_XPERT = "9224c3c7-d2d7-4165-88cb-81e5aec30d70";
 	
 	public final static String SPECIMEN_SENT = "161934AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -273,6 +277,8 @@ public class OHRIReportsConstants {
 	public final static String SERVICE_DELIVERY_POINT_NUMBER_MRN = "162054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TB_TREATMENT_START_DATE = "1113AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TB_SCREENING_RESULT = "160108AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	// TODO: update as soon as the concept created
 	public final static String ADHERENCE_UUID = "";

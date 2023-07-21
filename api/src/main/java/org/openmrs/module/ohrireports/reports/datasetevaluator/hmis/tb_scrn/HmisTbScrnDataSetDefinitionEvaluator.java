@@ -180,7 +180,7 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 			return tbscreened;
 		}
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(TB_DIAGNOSTIC_TEST_RESULT)).and().whereEqual("obs.valueCoded", conceptService.getConceptByUuid(POSITIVE)).and().whereIdIn("obs.personId", dispense).orderDesc("obs.personId, obs.obsDatetime");
+		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(TB_SCREENING_RESULT)).and().whereEqual("obs.valueCoded", conceptService.getConceptByUuid(POSITIVE)).and().whereIdIn("obs.personId", dispense).orderDesc("obs.personId, obs.obsDatetime");
 		obstbstarted=evaluationService.evaluateToList(queryBuilder,Obs.class,context);
 		for (Obs obs:obstbstarted){
 			if (!tbscreened.contains(obs.getPersonId())){
