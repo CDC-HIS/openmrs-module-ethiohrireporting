@@ -29,7 +29,7 @@ public class HivPlHivDatasetBuilder {
 	
 	private int rowCounter = 1;
 	
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	
 	public HivPlHivDatasetBuilder(List<Person> personList, SimpleDataSet dataSet, String description, String baseName) {
 		this.personList = personList;

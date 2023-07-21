@@ -45,7 +45,7 @@ public class HivArtIntrDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private HivArtIntrDatasetDefinition _datasetDefinition;
 	private String baseName = "HIV_ART_INTR_OUT ";
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 
 	@Autowired
 	private HivArtIntrQuery hivArtIntrQuery;

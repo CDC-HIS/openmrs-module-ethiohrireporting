@@ -40,8 +40,8 @@ public class HivArtReArvQuery extends PatientQueryImpDao {
 		StringBuilder sql = personIdQuery(arvBaseQuery(), subQuery);
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		query.setTime("startDate", startDate);
-		query.setTime("endDate", endDate);
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
 		
 		return new HashSet<Integer>(query.list());
 	}

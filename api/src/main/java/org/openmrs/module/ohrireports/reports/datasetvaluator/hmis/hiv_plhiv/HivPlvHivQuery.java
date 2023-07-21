@@ -50,8 +50,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
 		query.setParameterList("person_id", cohort.getMemberIds());
-		query.setTime("startDate", startDate);
-		query.setTime("endDate", endDate);
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
 		
 		return new HashSet<Integer>(query.list());
 	}
@@ -67,8 +67,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
         query.setParameterList("person_id", cohort.getMemberIds());
-        query.setTime("startDate", startDate);
-        query.setTime("endDate", endDate);
+        query.setDate("startDate", startDate);
+        query.setDate("endDate", endDate);
 
         return new HashSet<>(query.list());
     }
@@ -97,8 +97,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
         query.setParameterList("person_id", cohort.getMemberIds());
-        query.setTime("startDate", startDate);
-        query.setTime("endDate", endDate);
+        query.setDate("startDate", startDate);
+        query.setDate("endDate", endDate);
 
         return new HashSet<>(query.list());
     }
@@ -113,8 +113,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
        
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
         query.setParameterList("person_id", cohort.getMemberIds());
-        query.setTime("startDate", startDate);
-        query.setTime("endDate", endDate);
+        query.setDate("startDate", startDate);
+        query.setDate("endDate", endDate);
 
         return new HashSet<>(query.list());
     }
@@ -131,8 +131,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setParameterList("person_id", cohort.getMemberIds());
-		query.setTime("startDate", startDate);
-		query.setTime("endDate", endDate);
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
 		
 		return new HashSet<Integer>(query.list());
 	}
@@ -151,8 +151,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setParameterList("person_id", cohort.getMemberIds());
-		query.setTime("startDate", startDate);
-		query.setTime("endDate", endDate);
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
 		
 		return new HashSet<Integer>(query.list());
 	}
@@ -168,8 +168,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setParameterList("person_id", cohort.getMemberIds());
-		query.setTime("startDate", startDate);
-		query.setTime("endDate", endDate);
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
 		
 		return new HashSet<Integer>(query.list());
 	}

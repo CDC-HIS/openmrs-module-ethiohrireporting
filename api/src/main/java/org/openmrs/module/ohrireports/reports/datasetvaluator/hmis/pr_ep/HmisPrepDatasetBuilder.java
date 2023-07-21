@@ -19,7 +19,7 @@ public class HmisPrepDatasetBuilder {
 	
 	private String baseName = "";
 	
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	
 	private int initialAge = 15;
 	

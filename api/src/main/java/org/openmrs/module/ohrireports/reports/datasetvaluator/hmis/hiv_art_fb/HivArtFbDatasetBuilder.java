@@ -30,7 +30,7 @@ public class HivArtFbDatasetBuilder {
 		this.baseName = baseName;
 	}
 	
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	
 	public void buildDataset() {
 		DataSetRow row = new DataSetRow();

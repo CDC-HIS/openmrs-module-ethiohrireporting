@@ -30,7 +30,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 	private HIVARTRETDatasetDefinition _datasetDefinition;
 	private String baseName = "HIV_ART_RET.1 ";
 	private String baseNameForNet = "HIV_ART_RET_NET";
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	private String description = "Number of adults and children who are still on treatment at 12 months after initiating ART";
 	private String descriptionNet = "Number of persons on ART in the original cohort including those transferred in, minus those transferred out (net current cohort)";
 
@@ -57,7 +57,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
 					"ART retention rate (Percentage of adult and children on ART treatment after 12 month of initiation of ARV therapy )");
 			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, String.class),
-					getPercentage());
+					getPercentage()+"%");
 			dataSet.addRow(headerDataSetRow);
 		}
 		dataSet.addRow(buildColumn(" ",

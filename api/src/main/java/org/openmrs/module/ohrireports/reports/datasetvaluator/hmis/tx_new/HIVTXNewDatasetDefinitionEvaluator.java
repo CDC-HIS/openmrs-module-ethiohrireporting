@@ -29,7 +29,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private HIVTXNewDatasetDefinition _datasetDefinition;
 	private String baseName = "HIV_TX_NEW ";
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	private PatientQuery patientQuery;
 
 	List<Person> persons = new ArrayList<>();

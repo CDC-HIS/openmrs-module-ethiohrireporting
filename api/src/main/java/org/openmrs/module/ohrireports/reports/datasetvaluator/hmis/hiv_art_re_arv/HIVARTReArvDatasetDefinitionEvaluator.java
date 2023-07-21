@@ -25,7 +25,7 @@ public class HIVARTReArvDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private HivArtReArvDatasetDefinition _datasetDefinition;
 	private String baseName = "HIV_ART_RE_ARV ";
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	private String description = "Number of ART clients restarted ARV treatment in the reporting period";
 
 	@Autowired
