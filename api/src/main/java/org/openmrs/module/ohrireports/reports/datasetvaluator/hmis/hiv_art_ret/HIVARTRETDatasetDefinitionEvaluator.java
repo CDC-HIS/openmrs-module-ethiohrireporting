@@ -50,7 +50,16 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 	}
 
 	public void buildDataSet(SimpleDataSet dataSet) {
-
+		if (!_datasetDefinition.getNetRetention()) {
+			DataSetRow headerDataSetRow = new DataSetRow();
+			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+					"HIV_ART_RET");
+			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
+					"ART retention rate (Percentage of adult and children on ART treatment after 12 month of initiation of ARV therapy )");
+			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, String.class),
+					getPercentage());
+			dataSet.addRow(headerDataSetRow);
+		}
 		dataSet.addRow(buildColumn(" ",
 				_datasetDefinition.getNetRetention() ? descriptionNet : description,
 				new QueryParameter(0D, 0D, "", UNKNOWN)));
@@ -175,8 +184,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		Cohort cohort = new Cohort();
 
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
-			Calendar startDate = Calendar.getInstance();
-			startDate.setTime(_datasetDefinition.getStartDate());
+			Calendar startDate = getBack12MonthStart();
 
 			if (_datasetDefinition.getNetRetention()) {
 				cohort = hivArtRetQuery.getPatientRetentionCohortNet(parameter.gender, startDate.getTime(),
@@ -250,6 +258,28 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 		}
 		return cohort.getMemberIds().size();
+	}
+
+	private Calendar getBack12MonthStart() {
+		Calendar startDate = Calendar.getInstance();
+		startDate.setTime(_datasetDefinition.getStartDate());
+		return startDate;
+	}
+
+	private int getPercentage() {
+
+		Cohort cohortRet, cohortRetNet;
+		cohortRet = hivArtRetQuery.getPatientRetentionCohortNet("", getBack12MonthStart().getTime(),
+				_datasetDefinition.getEndDate(), new Cohort());
+
+		cohortRetNet = hivArtRetQuery.getPatientRetentionCohort("", getBack12MonthStart().getTime(),
+				_datasetDefinition.getEndDate(), new Cohort());
+		
+				if(cohortRetNet.size()==0)
+				return 0;
+		int percentage = (cohortRet.size()/cohortRetNet.size())/100;
+
+		return percentage;
 	}
 
 	/**

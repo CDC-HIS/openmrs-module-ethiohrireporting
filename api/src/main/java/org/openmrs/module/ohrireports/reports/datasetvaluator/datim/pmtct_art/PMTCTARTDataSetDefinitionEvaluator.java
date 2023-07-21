@@ -9,6 +9,8 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_DIAGNOSTIC_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.POSITIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.PREGNANCY_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
 
 import org.joda.time.chrono.IslamicChronology;
 import org.openmrs.Concept;
@@ -38,7 +40,8 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
     List<Obs> obses = new ArrayList<>();
     private PMTCTARTDataSetDefinition hdsd;
 
-    private Concept artConcept, treatmentConcept, tbScreenDateConcept, tbDiagnosticTestResultConcept, positiveConcept;
+    private Concept artConcept, treatmentConcept, pregnancyStatusConcept, yes, tbDiagnosticTestResultConcept,
+            positiveConcept;
 
     @Autowired
     private ConceptService conceptService;
@@ -60,7 +63,7 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
     }
 
     private void buildDataSet(SimpleDataSet simpleDataSet, boolean isAlreadyOnArt) {
-        setObservations("F",isAlreadyOnArt);
+        setObservations("F", isAlreadyOnArt);
         DataSetRow femaleSetRow = new DataSetRow();
         buildDataSet(femaleSetRow, "F");
         simpleDataSet.addRow(femaleSetRow);
@@ -164,25 +167,26 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
     private void setRequiredConcepts() {
         artConcept = conceptService.getConceptByUuid(ART_START_DATE);
         treatmentConcept = conceptService.getConceptByUuid(TREATMENT_END_DATE);
-        tbScreenDateConcept = conceptService.getConceptByUuid(TB_SCREENING_DATE);
+        pregnancyStatusConcept = conceptService.getConceptByUuid(PREGNANCY_STATUS);
+        yes = conceptService.getConceptByUuid(YES);
         tbDiagnosticTestResultConcept = conceptService.getConceptByUuid(TB_DIAGNOSTIC_TEST_RESULT);
         positiveConcept = conceptService.getConceptByUuid(POSITIVE);
     }
 
-    private void setObservations(String gender,boolean isAlreadyOnArt) {
+    private void setObservations(String gender, boolean isAlreadyOnArt) {
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("obs").from(Obs.class, "obs")
                 .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
                 .and()
                 .whereEqual("obs.person.gender", gender)
                 .whereEqual("obs.concept", artConcept).and();
-            if (!isAlreadyOnArt) {
+        
+        if (!isAlreadyOnArt){
             queryBuilder.whereBetweenInclusive("obs.valueDatetime", hdsd.getStartDate(),
-             hdsd.getEndDate());
-
-            }else {
-                queryBuilder.whereLess("obs.valueDatetime", hdsd.getStartDate());
-            }
+                    hdsd.getEndDate());
+        } else {
+            queryBuilder.whereLess("obs.valueDatetime", hdsd.getStartDate());
+        }
 
         queryBuilder.whereIdIn("obs.personId", getPregnantPatients());
 
@@ -198,15 +202,24 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
                 .whereGreater("obs.valueDatetime", hdsd.getStartDate());
         return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
     }
-    
 
-    private List<Integer> getPregnantPatients() {
+    private List<Integer> getPositiveTbPatients() {
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-        queryBuilder.select("obs").from(Obs.class, "obs")
+        queryBuilder.select("distinct obs.personId").from(Obs.class, "obs")
                 .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
                 .and().whereEqual("obs.concept", tbDiagnosticTestResultConcept).and()
                 .whereEqual("obs.valueCoded", positiveConcept)
                 .and().whereIdIn("obs.personId", getOnTreatmentPatients());
+        return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
+
+    }
+     private List<Integer> getPregnantPatients() {
+        HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
+        queryBuilder.select("distinct obs.personId").from(Obs.class, "obs")
+                .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
+                .and().whereEqual("obs.concept", pregnancyStatusConcept).and()
+                .whereEqual("obs.valueCoded", yes)
+                .and().whereIdIn("obs.personId", getPositiveTbPatients());
         return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
 
     }

@@ -204,7 +204,7 @@ public class TBARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 
     private List<Integer> getPatientsWithTB() {
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-        queryBuilder.select("obs").from(Obs.class, "obs")
+        queryBuilder.select("distinct obs.personId").from(Obs.class, "obs")
                     .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
                     .and()
                     .whereEqual("obs.concept", tbDiagnosticTestResultConcept).and()
