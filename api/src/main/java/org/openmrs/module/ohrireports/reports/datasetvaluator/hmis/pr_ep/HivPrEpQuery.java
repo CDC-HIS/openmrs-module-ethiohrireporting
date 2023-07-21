@@ -42,8 +42,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-        query.setParameter("startOnOrBefore", startDate);
-
         query.setParameter("endOnOrAfter", endDate);
 
         query.setParameterList("drugs", getPrEpDrugs().toArray());
@@ -57,7 +55,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
         StringBuilder sql = personIdQuery(subQueryClauses, "");
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-        query.setParameter("startOnOrBefore", startDate);
 
         query.setParameter("endOnOrAfter", endDate);
 
@@ -68,9 +65,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	 * Newly enrolled patients to Prep
 	 */
 	private String getSubQueryClauses() {
-		String subQueryClauses = "obs.concept_id ="
-		        + conceptQuery(PR_EP_STARTED)
-		        + " and obs.voided = false and obs.value_datetime >= :startOnOrBefore and obs.value_datetime <= :endOnOrAfter  ";
+		String subQueryClauses = "obs.concept_id =" + conceptQuery(PR_EP_STARTED)
+		        + " and obs.voided = false and obs.value_datetime >= :endOnOrAfter  ";
 		return subQueryClauses;
 	}
 	
@@ -78,7 +74,7 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	 * curr concerned more about the drug they are taking
 	 */
 	private String getCurrQueryClauses() {
-		String subQueryClauses = " obs.value_coded in (:drugs) and obs.voided = false and obs.obs_datetime >= :startOnOrBefore and obs.obs_datetime <= :endOnOrAfter ";
+		String subQueryClauses = " obs.value_coded in (:drugs) and obs.voided = false and  obs.obs_datetime >= :endOnOrAfter ";
 		return subQueryClauses;
 	}
 	
@@ -90,9 +86,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		query.setParameter("startOnOrBefore", startDate);
-		
 		query.setParameter("endOnOrAfter", endDate);
+		
 		if (isCurrent)
 			query.setParameterList("drugs", getPrEpDrugs());
 		
@@ -107,8 +102,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		query.setParameter("startOnOrBefore", startDate);
-		
 		query.setParameter("endOnOrAfter", endDate);
 		
 		if (isCurrent)
@@ -119,12 +112,12 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	}
 	
 	public Set<Integer> getPrEpDrugs() {
-        StringBuilder sql = new StringBuilder("select distinct concept_id from concept ");
-        sql.append("where uuid in ('" + TDF_TENOFOVIR_DRUG + "','" + TDF_FTC_DRUG + "','" + TDF_3TC_DRUG + "')");
-
-        Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-        return new HashSet<>(query.list());
-    }
+		StringBuilder sql = new StringBuilder("select distinct concept_id from concept ");
+		sql.append("where uuid in ('" + TDF_TENOFOVIR_DRUG + "','" + TDF_FTC_DRUG + "','" + TDF_3TC_DRUG + "')");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		return new HashSet<Integer>(query.list());
+	}
 	
 	public Integer getCountByExposureType(String uuid) {
 		
@@ -133,8 +126,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		StringBuilder sql = personIdQuery(getCurrQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		
-		query.setParameter("startOnOrBefore", startDate);
 		
 		query.setParameter("endOnOrAfter", endDate);
 		

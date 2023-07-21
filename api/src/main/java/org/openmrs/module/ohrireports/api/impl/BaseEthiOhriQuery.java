@@ -9,6 +9,7 @@ public abstract class BaseEthiOhriQuery {
 	protected String CONCEPT_ALIAS = "c.";
 	
 	protected StringBuilder baseQuery(String conceptQuestionUUid) {
+		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select distinct " + OBS_ALIAS + "person_id from obs as ob ");
 		sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");
@@ -23,6 +24,7 @@ public abstract class BaseEthiOhriQuery {
 	}
 	
 	protected StringBuilder personIdQuery(String conditions, String outerQuery) {
+		
 		StringBuilder sql = new StringBuilder();
 		
 		sql.append("select distinct person_id from obs as ob where encounter_id in ");
