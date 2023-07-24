@@ -120,7 +120,7 @@ public class HMISReport implements ReportManager {
 		hivPvlsUnDataset.setType(HivPvlsType.SUPPRESSED);
 		hivPvlsUnDataset.setPrefix("_UN");
 		hivPvlsUnDataset
-		        .setDescription("Total number of adult and paediatric ART patients with an		undetectable viral load(<50 copies/ml) in the reporting period (with in the		past 12 months)");
+		        .setDescription("Total number of adult and pediatric ART patients with an		undetectable viral load(<50 copies/ml) in the reporting period (with in the		past 12 months)");
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS:(UN) Viral load Suppression (Percentage of ART clients with a		suppressed viral load among those with a viral load test at 12 month in the		reporting period)",

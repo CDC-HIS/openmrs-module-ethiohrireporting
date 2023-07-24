@@ -172,7 +172,7 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow hivTxNewDataSetRow = new DataSetRow();
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-				baseName + "" + col_1_value);
+				baseName.concat(col_1_value));
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
 		hivTxNewDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class),
@@ -191,7 +191,7 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 			return cohort.getMemberIds().size();
 		}
 
-		if (parameter.maxAge < 1) {
+		if (parameter.maxAge < 1){
 
 			List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {

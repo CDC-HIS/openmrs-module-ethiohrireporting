@@ -14,7 +14,6 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.query.PatientQuery;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.hiv_art_intr.HivArtIntrQuery.Range;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LOST_TO_FOLLOW_UP;

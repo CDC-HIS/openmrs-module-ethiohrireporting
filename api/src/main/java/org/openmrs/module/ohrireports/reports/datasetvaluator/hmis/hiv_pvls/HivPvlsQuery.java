@@ -25,8 +25,10 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	
 	private Date startDate, endDate;
 	
-	// -11 is because calendar library start count month from zero or less should be
-	// -12
+	/*
+	 * -11 is because calendar library start count month from zero,
+	 *  the idea is to check all record from past twelve months
+	 */
 	private int STARTING_FROM_MONTHS = -11;
 	
 	@Autowired

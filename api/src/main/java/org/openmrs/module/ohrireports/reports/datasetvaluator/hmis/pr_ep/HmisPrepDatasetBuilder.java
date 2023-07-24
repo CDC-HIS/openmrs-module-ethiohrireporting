@@ -2,7 +2,6 @@ package org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.pr_ep;
 
 import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.COLUMN_2_NAME;
-import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.COLUMN_4_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
