@@ -12,6 +12,8 @@ import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPrEpCatagoriesDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_p_rep.HivPrepDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.pr_ep_curr.HivPrEpCurrDatasetDefinition;
@@ -172,6 +174,30 @@ public class HMISReport implements ReportManager {
 		            "HMIS:Number of persons provided with post-exposure prophylaxis (PEP) for risk of HIV infection by exposure type",
 		            map(hivPrEpCatagoriesDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
+		HivPlHivDatasetDefinition hivPlTSPDatasetDefinition = new HivPlHivDatasetDefinition();
+		hivPlTSPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_TSP);
+		hivPlTSPDatasetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Proportion of clinically undernourished People Living with HIV (PLHIV) who received therapeutic or supplementary food",
+		            map(hivPlTSPDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPlHivDatasetDefinition hivPlNUTDatasetDefinition = new HivPlHivDatasetDefinition();
+		hivPlNUTDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_NUT);
+		hivPlNUTDatasetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Number of PLHIV that were nutritionally assessed and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)",
+		            map(hivPlNUTDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		
+		HivPlHivDatasetDefinition hivPlSUPDatasetDefinition = new HivPlHivDatasetDefinition();
+		hivPlSUPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_SUP);
+		hivPlSUPDatasetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)",
+		            map(hivPlSUPDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+
 		HivArtFbDatasetDefinition hivArtFpDatasetDefinition = new HivArtFbDatasetDefinition();
 		hivArtFpDatasetDefinition.setParameters(getParameters());
 		reportDefinition
