@@ -40,7 +40,10 @@ public class HmisPrepDatasetBuilder {
 	}
 	
 	private SimpleDataSet buildPrepDataSet() {
-		
+		DataSetRow subHeaderDataSetRow = new DataSetRow();
+		subHeaderDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),baseName);
+		subHeaderDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "By age and sex");
+		subHeaderDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), personList.size());
 		for (int i = initialAge; i <= maxAge; i++) {
 			min = i;
 			i = i + 4;
