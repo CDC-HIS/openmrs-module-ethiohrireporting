@@ -86,6 +86,8 @@ public class OHRIReportsConstants {
 	
 	// public final static String POSITIVE = "6378487b-584d-4422-a6a6-56c8830873ff";
 	public final static String POSITIVE = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+	
 	
 	public final static String NEGATIVE = "664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -105,7 +107,9 @@ public class OHRIReportsConstants {
 	
 	public final static String LINKED_TO_CARE_AND_TREATMENT_IN_THIS_FACILITY = "e8e8fe71-adbb-48e7-b531-589985094d30";
 	
-	public final static String ART_START_DATE = "159599AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	// public final static String ART_START_DATE = "159599AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+	public final static String ART_START_DATE = "ae329187-6232-4142-aa91-22c85bc8e5b5";
 	
 	public final static String TRANSFERRED_IN = "160563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
