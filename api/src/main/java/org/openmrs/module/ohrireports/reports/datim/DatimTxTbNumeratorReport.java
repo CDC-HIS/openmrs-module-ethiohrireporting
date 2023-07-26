@@ -30,7 +30,7 @@ public class DatimTxTbNumeratorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-Tx_Tb_Numerator";
+		return DATIM_REPORT + "-TX_TB(Numerator)";
 	}
 	
 	@Override

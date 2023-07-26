@@ -1,13 +1,25 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.openmrs.maven.parents</groupId>
-        <artifactId>maven-parent-openmrs-module</artifactId>
-        <version>1.1.1</version>
-    </parent>
-
+	<parent>
+		<groupId>org.openmrs.maven.parents</groupId>
+		<artifactId>maven-parent-openmrs-module</artifactId>
+		<version>1.1.1</version>
+	</parent>
+	<developers>
+		<developer>
+			<name>Kalkidan Gezehagn</name>
+			<id>kal</id>
+			<organization>ICAP-Ethiopia</organization>
+		</developer>
+		<developer>
+			<name>Abdi Asres</name>
+			<id>abdi</id>
+			<organization>ICAP-Ethiopia</organization>
+		</developer>
+	</developers>
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>ethiohri-reports</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
@@ -115,11 +127,69 @@
 				<version>${cohortVersion}</version>
 				<scope>provided</scope>
 			</dependency>
+
+			
 		</dependencies>
 	</dependencyManagement>
 
-	<build>
 
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</testResource>
+		</testResources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>generate-test-resources</phase>
+						<goals>
+							<goal>parse-version</goal>
+						</goals>
+						<configuration>
+							<propertyPrefix>omrsVersion</propertyPrefix>
+							<versionString>${openMRSVersion}</versionString>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
 
 		<pluginManagement>
@@ -154,9 +224,12 @@
 
 	</build>
 
-    <properties>
-        <openmrsPlatformVersion>2.1.1</openmrsPlatformVersion>
+	<properties>
+		<openmrsPlatformVersion>2.1.1</openmrsPlatformVersion>
 		<reportingVersion>1.19.0</reportingVersion>
+		 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		 <calculationVersion>1.1</calculationVersion>
+		<serialization.xstreamVersion>0.2.11</serialization.xstreamVersion>
 		<cohortVersion>3.0.0-SNAPSHOT</cohortVersion>
 	</properties>
 
