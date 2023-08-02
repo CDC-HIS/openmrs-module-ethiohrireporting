@@ -10,6 +10,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -81,7 +82,9 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		if (cohort != null && cohort.size() != 0)
 			q.setParameter("personIds", cohort.getMemberIds());
 		
-		return new Cohort(q.list());
+		Collection<?> list = q.list();
+		
+		return new Cohort(list);
 	}
 	
 	@Override
