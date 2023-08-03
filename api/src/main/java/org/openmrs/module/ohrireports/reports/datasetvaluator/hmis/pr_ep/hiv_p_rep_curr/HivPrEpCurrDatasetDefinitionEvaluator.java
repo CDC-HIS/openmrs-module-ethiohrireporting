@@ -27,7 +27,7 @@ public class HivPrEpCurrDatasetDefinitionEvaluator implements DataSetEvaluator {
     @Autowired
     private HivPrEpQuery hivPrEpQuery;
     private Set<Integer> patientIds = new HashSet<>();
-    private String column_3_name = "Tir 15";
+    private String column_3_name = "Number";
 
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)

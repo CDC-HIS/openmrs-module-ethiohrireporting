@@ -30,12 +30,13 @@ public class HivArtFbDatasetBuilder {
 		this.baseName = baseName;
 	}
 	
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	
 	public void buildDataset() {
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), baseName);
 		row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), description);
+		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), personList.size());
 		dataSet.addRow(row);
 		buildRowByAge();
 	}

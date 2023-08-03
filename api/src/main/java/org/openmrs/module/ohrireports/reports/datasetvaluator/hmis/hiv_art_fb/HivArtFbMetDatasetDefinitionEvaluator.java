@@ -25,7 +25,7 @@ public class HivArtFbMetDatasetDefinitionEvaluator implements DataSetEvaluator {
 	@Autowired
 	private HivArtFbQuery fbQuery;
 	
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {

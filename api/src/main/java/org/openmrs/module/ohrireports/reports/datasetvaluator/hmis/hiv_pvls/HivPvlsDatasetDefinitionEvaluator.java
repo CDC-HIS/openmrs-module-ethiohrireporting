@@ -15,6 +15,7 @@ import org.openmrs.CohortMembership;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -30,7 +31,7 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private HivPvlsDatasetDefinition _datasetDefinition;
 	private String baseName = "HIV_TX_PVLS";
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 
 	@Autowired
 	private HivPvlsQuery hivPvlsQuery;
@@ -41,7 +42,7 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
 		_datasetDefinition = (HivPvlsDatasetDefinition) dataSetDefinition;
-		baseName = baseName+""+_datasetDefinition.getPrefix();
+		baseName = baseName + "" + _datasetDefinition.getPrefix();
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		buildDataSet(dataSet);
 
@@ -50,6 +51,16 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	public void buildDataSet(SimpleDataSet dataSet) {
 
+		if (_datasetDefinition.getType() == HivPvlsType.TESTED) {
+			DataSetRow headerDataSetRow = new DataSetRow();
+			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+					"HIV_TX_PVLS");
+			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
+					"Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)");
+			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, String.class),
+					calculatePercentage() + "%");
+			dataSet.addRow(headerDataSetRow);
+		}
 		dataSet.addRow(buildColumn(" ", _datasetDefinition.getDescription(),
 				new QueryParameter(0D, 0D, "", UNKNOWN)));
 
@@ -240,6 +251,28 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 		}
 		return cohort.getMemberIds().size();
+	}
+
+	private int calculatePercentage() {
+		Cohort cohortAll, cohortLV, cohortUN;
+		cohortUN = hivPvlsQuery.getPatientsWithViralLoadSuppressed("",
+				_datasetDefinition.getStartDate(),
+				_datasetDefinition.getEndDate());
+
+		cohortLV = hivPvlsQuery.getPatientWithViralLoadCountLowLevelViremia("",
+				_datasetDefinition.getStartDate(),
+				_datasetDefinition.getEndDate());
+
+		cohortAll = hivPvlsQuery.getPatientWithViralLoadCount("",
+				_datasetDefinition.getStartDate(),
+				_datasetDefinition.getEndDate());
+
+		if (cohortAll.size() == 0)
+			return 0;
+
+		int total = (cohortLV.size() + cohortUN.size()) / cohortAll.size();
+
+		return total / 100;
 	}
 
 	private Cohort getAll(QueryParameter parameter) {

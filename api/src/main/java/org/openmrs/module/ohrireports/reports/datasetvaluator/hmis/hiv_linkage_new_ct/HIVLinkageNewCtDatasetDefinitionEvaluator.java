@@ -24,7 +24,7 @@ public class HIVLinkageNewCtDatasetDefinitionEvaluator implements DataSetEvaluat
 
 	private HIVLinkageNewCtDatasetDefinition _datasetDefinition;
 	private String baseName = "HIV_LINKAGE_NEW_CT ";
-	private String column_3_name = "Tir 15";
+	private String column_3_name = "Number";
 
 	@Autowired
 	private HivLinkageNewCtQuery hivLinkageNewCtQuery;
