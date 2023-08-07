@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private HivPvlsDatasetDefinition _datasetDefinition;
-	private String baseName = "HIV_TX_PVLS";
+	private String baseName;
 	private String column_3_name = "Number";
 
 	@Autowired
@@ -42,7 +42,8 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
 		_datasetDefinition = (HivPvlsDatasetDefinition) dataSetDefinition;
-		baseName = baseName + "" + _datasetDefinition.getPrefix();
+		 baseName = "HIV_TX_PVLS";
+		 baseName = baseName + "" + _datasetDefinition.getPrefix();
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		buildDataSet(dataSet);
 
