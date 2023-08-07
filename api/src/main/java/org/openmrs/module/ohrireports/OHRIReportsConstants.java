@@ -105,6 +105,8 @@ public class OHRIReportsConstants {
 	
 	public final static String LINKED_TO_CARE_AND_TREATMENT_IN_THIS_FACILITY = "e8e8fe71-adbb-48e7-b531-589985094d30";
 	
+	// public final static String ART_START_DATE = "159599AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String ART_START_DATE = "ae329187-6232-4142-aa91-22c85bc8e5b5";
 	
 	public final static String TRANSFERRED_IN = "160e563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -134,6 +136,10 @@ public class OHRIReportsConstants {
 	public final static String LF_LAM_MTB_RIF = "9f4d51da-b09f-4de7-ac55-678f700eadfd";
 	
 	public final static String LF_LAM = "34e4571e-7950-42e8-9936-a204f5f01a5b";
+	
+	public final static String LF_LAM_RESULT = "98ff157c-c736-4078-8acd-847a74accb64";
+	
+	public final static String GENE_XPERT_RESULT = "a10a7db7-5ec5-4d62-9b35-cc9ac222a05c";
 	
 	public final static String ADDITIONAL_TEST_OTHERTHAN_GENE_XPERT = "9224c3c7-d2d7-4165-88cb-81e5aec30d70";
 	
@@ -273,6 +279,8 @@ public class OHRIReportsConstants {
 	public final static String SERVICE_DELIVERY_POINT_NUMBER_MRN = "162054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TB_TREATMENT_START_DATE = "1113AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TB_SCREENING_RESULT = "160108AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	// TODO: update as soon as the concept created
 	public final static String ADHERENCE_UUID = "";
@@ -478,6 +486,16 @@ public class OHRIReportsConstants {
 	public final static String DSD_OTHER = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DSD_AHDCM = "69e20fac-25ff-46c5-8681-756ba0078c80";
+	
+	public final static String TB_PROPHYLAXIS_TYPE_ALTERNATE = "f18eded5-67a9-4f02-b131-9a6230e64d18";
+	
+	public final static String TB_PROPHYLAXIS_TYPE_ALTERNATE_3HP = "e8588507-635c-4e28-a1f8-3c493e30b2f5";
+	
+	public final static String TB_PROPHYLAXIS_TYPE_ALTERNATE_3HR = "c989f10b-6ab4-44d2-a8cd-b4f45fc3ab9b";
+	
+	public final static String TB_PROPHYLAXIS_TYPE = "54084c9e-bc87-4d95-89fc-eb9a2cffb592";
+	
+	public final static String TB_PROPHYLAXIS_TYPE_INH = "8ba598a1-9e8a-4499-bd7a-54c3d0c94f01";
 	
 	/*
 	 * Family planning methods and others related to family planning
