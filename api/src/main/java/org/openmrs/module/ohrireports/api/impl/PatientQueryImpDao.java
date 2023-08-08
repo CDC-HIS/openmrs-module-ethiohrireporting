@@ -150,9 +150,13 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	@Override
 	public Cohort getCurrentOnTreatmentCohort() {
 		StringBuilder sql = baseQuery(TREATMENT_END_DATE);
+		
 		sql.append(" and " + OBS_ALIAS + "value_datetime >= :startOnOrAfter ");
+		
 		Query q = getSession().createSQLQuery(sql.toString());
+		
 		q.setTimestamp("startOnOrAfter", Calendar.getInstance().getTime());
+		
 		return new Cohort(q.list());
 	}
 	
@@ -199,7 +203,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		if (cohort != null && cohort.size() != 0)
 			sql.append("and p.person_id in (:personIds) ");
 		
-		Query q = getSession().createQuery(sql.toString());
+		Query q = getSession().createSQLQuery(sql.toString());
 		
 		if (endOnOrBefore != null)
 			q.setTimestamp("endOnOrBefore", endOnOrBefore);

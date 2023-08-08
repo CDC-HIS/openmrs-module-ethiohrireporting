@@ -38,7 +38,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		if (artCohort == null || artCohort.size() == 0)
 			return new Cohort();
 		
-		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, cohort);
+		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, artCohort);
 		
 		if (onTreatmentCohort == null || onTreatmentCohort.size() == 0)
 			return new Cohort();
