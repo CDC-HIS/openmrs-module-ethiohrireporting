@@ -174,7 +174,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 			return localObs;
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 		queryBuilder.select("obs").from(Obs.class, "obs")
-				.whereEqual("obs.concept", conceptService.getConceptByUuid(ARV_DISPENSED_IN_DAYS)).and()
+				.whereEqual("obs.concept", conceptService.getConceptByUuid(ARV_DISPENSED_IN_DAYS)).and().whereNotNull("obs.valueNumeric")
 				.whereIn("obs.personId", pList).whereLess("obs.obsDatetime", hdsd.getEndDate())
 				.orderDesc("obs.personId,obs.obsDatetime");
 		List<Obs> arvObs = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
