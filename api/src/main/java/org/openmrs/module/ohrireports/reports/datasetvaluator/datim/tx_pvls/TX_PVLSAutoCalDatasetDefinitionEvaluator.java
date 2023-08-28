@@ -84,7 +84,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	 * and must be on art for the last three month
 	 */
 	private int getAllPatientWithViralLoadCount() {
-                //TODO: update date query for performance optimization
+                // TODO: update date query for performance optimization
                 List<Integer> patientIdList = getListOfALiveORRestartPatientObs();
                 List<Integer> refinedPatientIdList = new ArrayList<>();
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
@@ -110,7 +110,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
                 for (Obs obs : obses) {
                         startDate = new LocalDate(obs.getObsDatetime());
                         if (Months.monthsBetween(startDate, endDate)
-                                  .getMonths() > _VALID_MONTHS_OF_VIRAL_LOAD_TEST)
+                                        .getMonths() > _VALID_MONTHS_OF_VIRAL_LOAD_TEST)
                                 continue;
                         if (!refinedPatientIdList.contains(obs.getPersonId())) {
                                 refinedPatientIdList.add(obs.getPersonId());
@@ -157,8 +157,9 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	private List<Integer> getListOfALiveORRestartPatientObs() {
 
                 List<Integer> personIdList = new ArrayList<>();
-                Cohort personIdOnArt = Context.getService(PatientQuery.class).getOnArtCohorts(null,null, txDatasetDefinition.getEndDate(),null);
-                //getPatientsOnArt();
+                Cohort personIdOnArt = Context.getService(PatientQuery.class).getOnArtCohorts(null, null,
+                                txDatasetDefinition.getEndDate(), null);
+                // getPatientsOnArt();
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 
                 queryBuilder.select("distinct obs.personId")

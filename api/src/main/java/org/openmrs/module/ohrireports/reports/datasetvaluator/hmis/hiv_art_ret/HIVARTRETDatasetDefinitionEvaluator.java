@@ -184,13 +184,12 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		Cohort cohort = new Cohort();
 
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
-			Calendar startDate = getBack12MonthStart();
 
 			if (_datasetDefinition.getNetRetention()) {
-				cohort = hivArtRetQuery.getPatientRetentionCohortNet(parameter.gender, startDate.getTime(),
+				cohort = hivArtRetQuery.getPatientRetentionCohortNet(parameter.gender, _datasetDefinition.getStartDate(),
 						_datasetDefinition.getEndDate(), cohort);
 			} else {
-				cohort = hivArtRetQuery.getPatientRetentionCohort(parameter.gender, startDate.getTime(),
+				cohort = hivArtRetQuery.getPatientRetentionCohort(parameter.gender, _datasetDefinition.getStartDate(),
 						_datasetDefinition.getEndDate(), cohort);
 			}
 			persons = hivArtRetQuery.getPersons(cohort);
@@ -260,19 +259,14 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		return cohort.getMemberIds().size();
 	}
 
-	private Calendar getBack12MonthStart() {
-		Calendar startDate = Calendar.getInstance();
-		startDate.setTime(_datasetDefinition.getStartDate());
-		return startDate;
-	}
 
 	private int getPercentage() {
 
 		Cohort cohortRet, cohortRetNet;
-		cohortRet = hivArtRetQuery.getPatientRetentionCohortNet("", getBack12MonthStart().getTime(),
+		cohortRet = hivArtRetQuery.getPatientRetentionCohortNet("", _datasetDefinition.getStartDate(),
 				_datasetDefinition.getEndDate(), new Cohort());
 
-		cohortRetNet = hivArtRetQuery.getPatientRetentionCohort("", getBack12MonthStart().getTime(),
+		cohortRetNet = hivArtRetQuery.getPatientRetentionCohort("", _datasetDefinition.getStartDate(),
 				_datasetDefinition.getEndDate(), new Cohort());
 		
 				if(cohortRetNet.size()==0)

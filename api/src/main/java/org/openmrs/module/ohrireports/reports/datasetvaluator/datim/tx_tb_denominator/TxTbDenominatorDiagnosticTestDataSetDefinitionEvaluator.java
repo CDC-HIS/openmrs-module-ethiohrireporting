@@ -85,7 +85,10 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 			return mwrd.size();
 		}
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(DIAGNOSTIC_TEST)).and().whereIn("obs.valueCoded", Arrays.asList(conceptService.getConceptByUuid(MTB_RIF_ASSAY_WITH_OTHEROUT_TESTING),conceptService.getConceptByUuid(MTB_RIF_ASSAY_WITH_OTHER_TESTING),conceptService.getConceptByUuid(LF_LAM_MTB_RIF),conceptService.getConceptByUuid(LF_LAM))).and().whereIdIn("obs.personId", specimenSents).and().whereLess("obs.obsDatetime", hdsd.getEndDate()).orderDesc("obs.personId, obs.obsDatetime");
+		queryBuilder.select("obs").from(Obs.class,"obs").whereIn("obs.concept", Arrays.asList(conceptService.getConceptByUuid(DIAGNOSTIC_TEST), conceptService.getConceptByUuid(LF_LAM_RESULT),conceptService.getConceptByUuid(GENE_XPERT_RESULT))).and()
+		
+		// .whereIn("obs.valueCoded", Arrays.asList(conceptService.getConceptByUuid(MTB_RIF_ASSAY_WITH_OTHEROUT_TESTING),conceptService.getConceptByUuid(MTB_RIF_ASSAY_WITH_OTHER_TESTING),conceptService.getConceptByUuid(LF_LAM_MTB_RIF),conceptService.getConceptByUuid(LF_LAM))).and()
+		.whereIdIn("obs.personId", specimenSents).and().whereLess("obs.obsDatetime", hdsd.getEndDate()).orderDesc("obs.personId, obs.obsDatetime");
 		obsmwrd=evaluationService.evaluateToList(queryBuilder,Obs.class,context);
 		for (Obs obs:obsmwrd){
 			if (!mwrd.contains(obs.getPersonId())){

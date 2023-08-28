@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
-
+<%@ include file="/WEB-INF/view/module/reporting/includeScripts.jsp"%>
 <h2><spring:message code="ohrireports.title" /></h2>
 
 <br/>
