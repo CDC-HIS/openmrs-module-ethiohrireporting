@@ -154,9 +154,11 @@ public class TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinitionEvaluato
             subSixMonth.setTime(treatEnd);
             subSixMonth.add(Calendar.MONTH, -6);
             prevSixMonth = subSixMonth.getTime();
+            if(obs.getValueDatetime() !=null){
             if(obs.getValueDatetime().before(prevSixMonth)){
                 startedARTlessthan6Months.add(obs);
-            } 
+             } 
+            }
             }
         }
         return startedARTlessthan6Months;

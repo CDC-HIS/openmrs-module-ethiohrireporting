@@ -154,9 +154,11 @@ public class TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinitionEvaluator imp
             subThreeMonth.setTime(treatEnd);
             subThreeMonth.add(Calendar.MONTH, -3);
             prevThreeMonth = subThreeMonth.getTime();
+            if(obs.getValueDatetime() !=null){
             if(obs.getValueDatetime().before(prevThreeMonth) && obs.getValueDatetime().after(prevFiveMonth)){
                 startedARTlessthan3Months.add(obs);
             } 
+        }
         }
         }
         return startedARTlessthan3Months;
