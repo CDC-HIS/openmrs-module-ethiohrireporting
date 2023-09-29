@@ -38,32 +38,40 @@
             <ref bean="transactionAttributeSource" />
         </property>
     </bean>
-    
-  <bean parent="serviceContext">
-		<property name="moduleService">
-			<list merge="true">
-				<value>org.openmrs.module.ohrireports.api.query.PatientQuery</value> 
-				<bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-					<property name="transactionManager"><ref bean="transactionManager"/></property>
-					<property name="target">
-						<bean class="org.openmrs.module.ohrireports.api.impl.query.PatientQueryImp">
-							<property name="patientQueryDao">
-								<bean class="org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao">
-									<property name="sessionFactory"><ref bean="dbSessionFactory"/></property>	
-								</bean>
-							</property>
-						</bean>
-					</property>
-					<property name="preInterceptors">
-						<ref bean="serviceInterceptors" />
-					</property>
-					<property name="transactionAttributeSource">
-						<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-					</property>
-				</bean>		
-			</list>
-		</property>
-	</bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list merge="true">
+                <value>org.openmrs.module.ohrireports.api.query.PatientQueryService</value>
+                <bean
+                    class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                    <property name="transactionManager">
+                        <ref bean="transactionManager" />
+                    </property>
+                    <property name="target">
+                        <bean
+                            class="org.openmrs.module.ohrireports.api.impl.query.PatientQueryServiceImp">
+                            <property name="patientQueryDao">
+                                <bean
+                                    class="org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao">
+                                    <property name="sessionFactory">
+                                        <ref bean="dbSessionFactory" />
+                                    </property>
+                                </bean>
+                            </property>
+                        </bean>
+                    </property>
+                    <property name="preInterceptors">
+                        <ref bean="serviceInterceptors" />
+                    </property>
+                    <property name="transactionAttributeSource">
+                        <bean
+                            class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
     <!-- Adds OHRIReportsService to OpenMRS context so it can be accessed
     calling Context.getService(OHRIReportsService.class) -->
     <bean parent="serviceContext">

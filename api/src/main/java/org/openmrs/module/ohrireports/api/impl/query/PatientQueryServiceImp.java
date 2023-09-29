@@ -2,19 +2,18 @@ package org.openmrs.module.ohrireports.api.impl.query;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
-import org.openmrs.module.ohrireports.api.query.PatientQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 
-public class PatientQueryImp extends BaseOpenmrsService implements PatientQuery {
+public class PatientQueryServiceImp extends BaseOpenmrsService implements PatientQueryService {
 	
 	private PatientQueryDao patientQueryDao;
 	
-	public PatientQueryImp() {
+	public PatientQueryServiceImp() {
 	}
 	
 	public PatientQueryDao getPatientQueryDao() {

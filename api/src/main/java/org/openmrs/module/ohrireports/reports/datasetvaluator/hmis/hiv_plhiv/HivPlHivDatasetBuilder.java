@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.query.PatientQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -15,7 +15,7 @@ import org.openmrs.module.reporting.dataset.SimpleDataSet;
 
 public class HivPlHivDatasetBuilder {
 	
-	private PatientQuery patientQuery;
+	private PatientQueryService patientQuery;
 	
 	private List<Person> personList;
 	
@@ -36,7 +36,7 @@ public class HivPlHivDatasetBuilder {
 		this.dataSet = dataSet;
 		this.description = description;
 		this.baseName = baseName;
-		patientQuery = Context.getService(PatientQuery.class);
+		patientQuery = Context.getService(PatientQueryService.class);
 	}
 	
 	public HivPlHivDatasetBuilder(List<Person> personList, List<Person> pregnantPersonList, SimpleDataSet dataSet,
@@ -46,7 +46,7 @@ public class HivPlHivDatasetBuilder {
 		this.description = description;
 		this.baseName = baseName;
 		this.pregnantPersonList = pregnantPersonList;
-		patientQuery = Context.getService(PatientQuery.class);
+		patientQuery = Context.getService(PatientQueryService.class);
 	}
 	
 	public DataSet getPlHivDataset() {

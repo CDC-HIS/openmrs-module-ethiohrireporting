@@ -6,6 +6,7 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_denominator.TbPrevDominatorDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -20,21 +21,21 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatimTbPrevNumeratorReport implements ReportManager {
+public class DatimTbPrevDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "752tbpren-e57c-47d3-9dc3-57c4ad9e28bf";
+		return "ee4aa4e7-3cbe-4f5e-881e-ec7699461f88";
 	}
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-TB_PREV (Numerator)";
+		return DATIM_REPORT + "-TB_PREV (Denominator)";
 	}
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of  TB_Prev_Numerator patients";
+		return "DSD: TB_PREV (Denominator)";
 	}
 	
 	@Override
@@ -58,22 +59,19 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		TbPrevNumeratorAutoCalculateDataSetDefinition aDefinition = new TbPrevNumeratorAutoCalculateDataSetDefinition();
+		TbPrevDominatorDatasetDefinition aDefinition = new TbPrevDominatorDatasetDefinition();
 		aDefinition.addParameters(getParameters());
-		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		aDefinition
-		        .setDescription("Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy (for continuous IPT programs, this includes the patients who have completed the first 6 months of isoniazid preventive therapy (IPT), or any other standard course of TPT such as 3 months of weekly isoniazid and rifapentine, or 3-HP)");
-		reportDefinition
-		        .addDataSetDefinition(
-		            "Auto-Calculate : Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy",
-		            map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		aDefinition.setAggregateType(false);
+		aDefinition.setDescription("DSD: TB_PREV (Denominator)");
+		reportDefinition.addDataSetDefinition("DSD: TB_PREV (Denominator)",
+		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
-		TbPrevNumeratorARTByAgeAndSexDataSetDefinition cDefinition = new TbPrevNumeratorARTByAgeAndSexDataSetDefinition();
-		cDefinition.addParameters(getParameters());
-		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		cDefinition.setDescription("Disaggregated by ART by Age/Sex");
-		reportDefinition.addDataSetDefinition("Required : Disaggregated by ART by Age/Sex",
-		    map(cDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		TbPrevDominatorDatasetDefinition aggDatasetDefinition = new TbPrevDominatorDatasetDefinition();
+		aggDatasetDefinition.setAggregateType(true);
+		aggDatasetDefinition.addParameters(getParameters());
+		aggDatasetDefinition.setDescription("DSD: TB_PREV Aggregation by age and sex");
+		reportDefinition.addDataSetDefinition("Required:Disaggregated by age and sex",
+		    map(aggDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}
@@ -90,7 +88,7 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("6db2a9c6-9b2d-4684-8ae3-b2b7114331fc", reportDefinition);
+		ReportDesign design = ReportManagerUtil.createExcelDesign("50e85ddc-018b-4ea0-9412-248d566b587f", reportDefinition);
 		
 		return Arrays.asList(design);
 		

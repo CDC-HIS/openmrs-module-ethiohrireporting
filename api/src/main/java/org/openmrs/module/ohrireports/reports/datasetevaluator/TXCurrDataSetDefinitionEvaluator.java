@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.reports.datasetvaluator;
+package org.openmrs.module.ohrireports.reports.datasetevaluator;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
@@ -42,10 +42,8 @@ import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-//@Handler(supports = { TXCurrDataSetDefinition.class })
+@Handler(supports = { TXCurrDataSetDefinition.class })
 public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
-//--org.openmrs.module.ohrireports.reports.datasetvaluator.TXCurrDataSetDefinitionEvaluatorAdx
-//--org.openmrs.module.ohrireports.reports.datasetevaluator.TXCurrDataSetDefinitionEvaluatorAdx
 	@Autowired
 	EvaluationService evaluationService;
 
@@ -54,6 +52,9 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 	@Autowired
 	PatientService patientService;
+
+	@Autowired
+	private ArtQuery artQuery;
 
 	private TXCurrDataSetDefinition hdsd;
 	private EvaluationContext context;
@@ -69,7 +70,7 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		List<Obs> obsList = getTxCurrPatients();
 
-		DataSetRow row = null;
+		DataSetRow row = new DataSetRow();
 		PatientIdentifierType mrnIdentifierType = patientService
 				.getPatientIdentifierTypeByUuid(MRN_PATIENT_IDENTIFIERS);
 		PatientIdentifierType openmrsIdentifierType = patientService
@@ -89,44 +90,54 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			try {
 				ethiopianDate = EthiopianDateConverter
 						.ToEthiopianDate(obses.getValueDate()
-						.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+								.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
-			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
-			getStringIdentifier(patient.getPatientIdentifier(mrnIdentifierType)));
+				row = new DataSetRow();
+				row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
+						getStringIdentifier(patient.getPatientIdentifier(mrnIdentifierType)));
 
-			row.addColumnValue(new DataSetColumn("OpenMrs", "Openmrs ID", String.class),
-			getStringIdentifier(patient.getPatientIdentifier(openmrsIdentifierType)) );
+				row.addColumnValue(new DataSetColumn("OpenMrs", "Openmrs ID", String.class),
+						getStringIdentifier(patient.getPatientIdentifier(openmrsIdentifierType)));
 
-			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
+				row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
 
-			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge());
+				row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge());
 
-			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
+				row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
 
-			row.addColumnValue(new DataSetColumn("TreatmentEndDate", "Treatment End Date",
-					Date.class), obses.getValueDate());
-			row.addColumnValue(new DataSetColumn("TreatmentEndDateETC", "Treatment End Date ETH",
-					String.class),
-					ethiopianDate.equals(null) ? ""
-							: ethiopianDate.getDay() + "/" + ethiopianDate.getMonth() + "/" + ethiopianDate.getYear());
-			row.addColumnValue(new DataSetColumn("Regimen", "Regmin", String.class), getRegimen(obses, evalContext));
+				row.addColumnValue(new DataSetColumn("TreatmentEndDate", "Treatment End Date",
+						Date.class), obses.getValueDate());
+				row.addColumnValue(new DataSetColumn("TreatmentEndDateETC", "Treatment End Date ETH",
+						String.class),
+						ethiopianDate.equals(null) ? ""
+								: ethiopianDate.getDay() + "/" + ethiopianDate.getMonth() + "/"
+										+ ethiopianDate.getYear());
+				row.addColumnValue(new DataSetColumn("Regimen", "Regmin", String.class),
+						getRegimen(obses, evalContext));
 
-			row.addColumnValue(new DataSetColumn("Status", "Status",
-					String.class),
-					Objects.isNull(status) || Objects.isNull(status.getName()) ? "" : status.getName().getName());
-			data.addRow(row);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				row.addColumnValue(new DataSetColumn("Status", "Status",
+						String.class),
+						Objects.isNull(status) || Objects.isNull(status.getName()) ? "" : status.getName().getName());
+				data.addRow(row);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
+		if (obsList.size() > 0) {
+			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("OpenMRS", "OpenMRS ID", Integer.class), obsList.size());
+
+			data.addRow(row);
 		}
 		return data;
 	}
 
 	private String getStringIdentifier(PatientIdentifier patientIdentifier) {
-		return Objects.isNull(patientIdentifier)?"--":patientIdentifier.getIdentifier();
+		return Objects.isNull(patientIdentifier) ? "--" : patientIdentifier.getIdentifier();
 	}
 
 	private List<Obs> getTxCurrPatients() {
@@ -178,17 +189,16 @@ public class TXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 				.whereIn("obv.valueCoded", concepts);
 
 		Set<Integer> patients = new LinkedHashSet<>();
-		List<Obs> obsList=  evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-		//Removing duplicate using HashSet
-		 for (Obs obs : obsList) {
-			if(patients.add(obs.getPersonId()))
-			{
-				//updating 
+		List<Obs> obsList = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
+		// Removing duplicate using HashSet
+		for (Obs obs : obsList) {
+			if (patients.add(obs.getPersonId())) {
+				// updating
 				patientStatus.put(obs.getPersonId(), obs.getValueCoded());
 			}
-		 }
+		}
 
-		 return new ArrayList<Integer>(patients);
+		return new ArrayList<Integer>(patients);
 	}
 
 	private String getRegimen(Obs obs, EvaluationContext context) {

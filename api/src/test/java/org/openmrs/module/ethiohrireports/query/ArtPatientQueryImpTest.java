@@ -10,7 +10,7 @@ import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.ohrireports.api.query.PatientQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +32,7 @@ public class ArtPatientQueryImpTest extends BaseModuleContextSensitiveTest {
 	public void Setup() {
 		startDate = Calendar.getInstance();
 		startDate.add(Calendar.MONTH, -12);
-		//startDate.set(2023, 01, 01);
+		// startDate.set(2023, 01, 01);
 		endDate = Calendar.getInstance();
 		endDate.set(2023, Calendar.DECEMBER, 29);
 		
@@ -53,8 +53,9 @@ public class ArtPatientQueryImpTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void QueryShouldFetchAllPatientBaseONCohort() throws Exception {
-		//List<Person> result = Context.getService(PatientQuery.class).getPersons(cohort);
-		//Assert.assertEquals(10, result.size());
+		// List<Person> result =
+		// Context.getService(PatientQuery.class).getPersons(cohort);
+		// Assert.assertEquals(10, result.size());
 		
 	}
 }

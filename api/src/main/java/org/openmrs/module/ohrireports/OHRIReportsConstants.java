@@ -51,9 +51,9 @@ public class OHRIReportsConstants {
 	
 	public final static String ALL_PATIENTS_COHORT_UUID = "895d0025-84e2-4306-bdd9-66acc150ec21";
 	
-	public final static String MRN_PATIENT_IDENTIFIERS = "52c28db7-09fb-4d33-8f9f-4500347256b6";
+	public final static String MRN_PATIENT_IDENTIFIERS = "f85081e2-b4be-4e48-b3a4-7994b69bb101";
 	
-	public final static String OPENMRS_PATIENT_IDENTIFIERS = "05a29f94-c0ed-11e2-94be-8c13b969e334";
+	public final static String OPENMRS_PATIENT_IDENTIFIERS = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public final static String CURRENTLY_BREAST_FEEDING_CHILD = "5632AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -105,13 +105,14 @@ public class OHRIReportsConstants {
 	
 	public final static String LINKED_TO_CARE_AND_TREATMENT_IN_THIS_FACILITY = "e8e8fe71-adbb-48e7-b531-589985094d30";
 	
-	// public final static String ART_START_DATE = "159599AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	// public final static String ART_START_DATE =
+	// "159599AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String ART_START_DATE = "ae329187-6232-4142-aa91-22c85bc8e5b5";
 	
-	public final static String TRANSFERRED_IN = "160e563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String TRANSFERRED_IN = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String REASON_FOR_ART_ELIGIBILITY = "162225AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String REASON_FOR_ART_ELIGIBILITY = "613718f1-ecf2-4228-b9c2-6157d574bd0b";
 	
 	public final static String FOLLOW_UP_DATE = "163137AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -259,12 +260,12 @@ public class OHRIReportsConstants {
 	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
 	
-	//Prep
+	// Prep
 	public final static String DISCORDANT_COUPLE = "6096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String FEMALE_SEX_WORKER = "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	//pep
+	// pep
 	public final static String EXPOSURE_TYPE = "916eebc3-1141-40e6-beaa-ad2b5685956b";
 	
 	public final static String OCCUPATIONAL = "453bf209-c408-4692-83e7-17d21282a8ae";
@@ -284,6 +285,11 @@ public class OHRIReportsConstants {
 	
 	// TODO: update as soon as the concept created
 	public final static String ADHERENCE_UUID = "";
+	
+	// #endregion
+	
+	// #region TPT (TB prevention)
+	public final static String TB_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	// #endregion
 	
@@ -486,6 +492,8 @@ public class OHRIReportsConstants {
 	public final static String DSD_OTHER = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DSD_AHDCM = "69e20fac-25ff-46c5-8681-756ba0078c80";
+	
+	public final static String TB_SCREENING_OBSERVATION_ = "246831e5-65e8-411f-aac9-57adcc4fb12c";
 	
 	public final static String TB_PROPHYLAXIS_TYPE_ALTERNATE = "f18eded5-67a9-4f02-b131-9a6230e64d18";
 	

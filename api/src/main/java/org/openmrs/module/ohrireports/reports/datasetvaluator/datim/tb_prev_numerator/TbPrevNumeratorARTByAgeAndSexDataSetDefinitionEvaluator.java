@@ -158,8 +158,16 @@ public class TbPrevNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 			return obsARTstarted;
 		}
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE)).and().whereGreater("obs.valueDatetime", prevSixMonth).and().whereLess("obs.valueDatetime", hdsd.getStartDate()).and()
-		.whereEqual("obs.person.gender", gender).and().whereIdIn("obs.personId", tbstarted).orderDesc("obs.personId, obs.obsDatetime");
+		queryBuilder.select("obs")
+		.from(Obs.class,"obs")
+		.whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE))
+		.and()
+		.whereGreater("obs.valueDatetime", prevSixMonth)
+		.and().whereLess("obs.valueDatetime", hdsd.getStartDate()).and()
+		.whereEqual("obs.person.gender", gender)
+		.and()
+		.whereIdIn("obs.personId", tbstarted)
+		.orderDesc("obs.personId, obs.obsDatetime");
 		for (Obs obs: evaluationService.evaluateToList(queryBuilder, Obs.class, context)){
 				if (!artstarted.contains(obs.getPersonId())){
 					artstarted.add(obs.getPersonId());

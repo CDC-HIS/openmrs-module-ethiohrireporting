@@ -7,7 +7,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.OpenmrsService;
 
-public interface PatientQuery extends OpenmrsService {
+public interface PatientQueryService extends OpenmrsService {
 	
 	Cohort getOnArtCohorts();
 	

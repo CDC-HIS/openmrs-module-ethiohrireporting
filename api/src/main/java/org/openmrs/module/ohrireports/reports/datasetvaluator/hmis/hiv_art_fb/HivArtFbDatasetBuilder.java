@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.Person;
-import org.openmrs.module.ohrireports.api.query.PatientQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 
 public class HivArtFbDatasetBuilder {
 	
-	private PatientQuery patientQuery;
+	private PatientQueryService patientQuery;
 	
 	private List<Person> personList;
 	
@@ -59,15 +59,15 @@ public class HivArtFbDatasetBuilder {
 	}
 	
 	private Integer getCount(int initialAge, int maxAge) {
-        List<Person> _personList = new ArrayList<>();
-        for (Person person : personList) {
-            if (person.getGender().equals("F") && person.getAge() >= initialAge && person.getAge() <= maxAge) {
-                _personList.add(person);
-            }
-        }
+		List<Person> _personList = new ArrayList<>();
+		for (Person person : personList) {
+			if (person.getGender().equals("F") && person.getAge() >= initialAge && person.getAge() <= maxAge) {
+				_personList.add(person);
+			}
+		}
 
-        personList.removeAll(_personList);
+		personList.removeAll(_personList);
 
-        return _personList.size();
-    }
+		return _personList.size();
+	}
 }

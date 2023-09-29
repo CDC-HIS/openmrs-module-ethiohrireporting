@@ -30,6 +30,7 @@ import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.manager.ReportManager;
+import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
@@ -53,7 +54,7 @@ public class TX_CUR_Report implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "e1543c2e-0d81-11ed-861d-0242ac120002";
+		return "86a28f40-7987-482b-bc49-2d32451d00d9";
 	}
 	
 	@Override
@@ -104,9 +105,10 @@ public class TX_CUR_Report implements ReportManager {
 	}
 	
 	@Override
-	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition){
+	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
+		ReportDesign design = ReportManagerUtil.createExcelDesign("a1ee4c33-f087-4af9-8efc-edf007e5c277", reportDefinition);
 		
-		return new ArrayList<>();
+		return Arrays.asList(design);
 	}
 	
 	@Override

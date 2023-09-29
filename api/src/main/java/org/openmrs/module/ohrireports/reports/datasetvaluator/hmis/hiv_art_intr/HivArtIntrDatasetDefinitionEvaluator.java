@@ -12,7 +12,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.query.PatientQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
 import org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.hiv_art_intr.HivArtIntrQuery.Range;
 
@@ -49,7 +49,7 @@ public class HivArtIntrDatasetDefinitionEvaluator implements DataSetEvaluator {
 	@Autowired
 	private HivArtIntrQuery hivArtIntrQuery;
 
-	private PatientQuery patientQuery;
+	private PatientQueryService patientQuery;
 	List<Person> persons = new ArrayList<>();
 
 	@Override
@@ -60,7 +60,7 @@ public class HivArtIntrDatasetDefinitionEvaluator implements DataSetEvaluator {
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 
 		hivArtIntrQuery.initialize(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
-		patientQuery = Context.getService(PatientQuery.class);
+		patientQuery = Context.getService(PatientQueryService.class);
 		buildDataSet(dataSet);
 
 		return dataSet;
@@ -136,7 +136,7 @@ public class HivArtIntrDatasetDefinitionEvaluator implements DataSetEvaluator {
 				buildColumn(".4. 4", ">= 15 years, Female", Range.ABOVE_OR_EQUAL_TO_FIFTY, Range.NONE,
 						STOP, "F"));
 
-		//Died
+		// Died
 		dataSet.addRow(buildColumn(".5", "Died", Range.NONE,
 				Range.NONE, DIED, ""));
 
@@ -171,11 +171,11 @@ public class HivArtIntrDatasetDefinitionEvaluator implements DataSetEvaluator {
 	}
 
 	private Integer getArtIntr(Range range, String type) {
-	
+
 		Set<Integer> patientId = new HashSet<>();
-	
+
 		persons.clear();
-	
+
 		if (type.equals(LOST_TO_FOLLOW_UP)) {
 			patientId = hivArtIntrQuery.getAllPatientExceedsTreatmentEndDate(range, type);
 		} else {
