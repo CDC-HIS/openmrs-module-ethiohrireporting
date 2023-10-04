@@ -6,10 +6,13 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
 
 import java.util.List;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_new.BreastFeedingStatusDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -30,10 +33,12 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 	
 	private BreastFeedingStatusDataSetDefinition hdsd;
 	
-	private Concept artConcept, breastFeeding, breastFeedingYes;
+	private Concept breastFeeding, breastFeedingYes;
 	
 	@Autowired
 	private ConceptService conceptService;
+	
+	private PatientQueryService patientQuery;
 	
 	@Autowired
 	private EvaluationService evaluationService;
@@ -43,7 +48,7 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 		
 		hdsd = (BreastFeedingStatusDataSetDefinition) dataSetDefinition;
 		context = evalContext;
-		artConcept = conceptService.getConceptByUuid(ART_START_DATE);
+		patientQuery = Context.getService(PatientQueryService.class);
 		breastFeeding = conceptService.getConceptByUuid(CURRENTLY_BREAST_FEEDING_CHILD);
 		breastFeedingYes = conceptService.getConceptByUuid(YES);
 		DataSetRow dataSet = new DataSetRow();
@@ -54,23 +59,11 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 		return set;
 	}
 	
-	private List<Integer> getTotalEnrolledFemalePatients() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("Distinct obs.personId").from(Obs.class, "obs")
-		        .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType()).and()
-		        .whereEqual("obs.person.gender", "F").and().whereEqual("obs.concept", artConcept).and()
-		        .whereGreaterOrEqualTo("obs.valueDatetime", hdsd.getStartDate()).and()
-		        .whereLessOrEqualTo("obs.valueDatetime", hdsd.getEndDate());
-		
-		List<Integer> personIDList = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-		return personIDList;
-	}
-	
 	public int getNumberOfEnrolledBreastFeeding() {
-		List<Integer> pList = getTotalEnrolledFemalePatients();
+		Cohort pList = patientQuery.getOnArtCohorts("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 		queryBuilder.select("distinct obs.personId").from(Obs.class, "obs").whereEqual("obs.concept", breastFeeding).and()
-		        .whereEqual("obs.valueCoded", breastFeedingYes).and().whereIn("obs.personId", pList);
+		        .whereEqual("obs.valueCoded", breastFeedingYes).and().whereIn("obs.personId", pList.getMemberIds());
 		List<Integer> personIDs = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
 		return personIDs.size();
 		

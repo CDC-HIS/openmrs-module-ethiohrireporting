@@ -1,18 +1,16 @@
 package org.openmrs.module.ohrireports.reports.datasetvaluator.datim.tx_new;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.openmrs.Concept;
-import org.openmrs.Obs;
+import org.openmrs.Cohort;
+import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_new.CoarseByAgeAndSexDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_new.FineByAgeAndSexDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -21,136 +19,106 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
-import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { CoarseByAgeAndSexDataSetDefinition.class })
 public class CoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
-
-        private EvaluationContext context;
-
-        private CoarseByAgeAndSexDataSetDefinition hdsd;
-        private Concept artConcept;
-        private int total = 0;
-        @Autowired
-        private ConceptService conceptService;
-
-        @Autowired
-        private EvaluationService evaluationService;
-       
-        List<Obs> obses = new ArrayList<>();
-
-        @Override
-        public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-                        throws EvaluationException {
-                        total=0;
-                hdsd = (CoarseByAgeAndSexDataSetDefinition) dataSetDefinition;
-                context = evalContext;
-                artConcept = conceptService.getConceptByUuid(ART_START_DATE);
-                SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-                DataSetRow femaleDateSet = new DataSetRow();
-                obses = LoadObs("F");
-                femaleDateSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender",
-                                Integer.class), "Female");
-                femaleDateSet.addColumnValue(new DataSetColumn("unkownAge", "Unkown Age", Integer.class),
-                               getEnrolledByUnknownAge());
-                femaleDateSet.addColumnValue(new DataSetColumn("<15", "<15", Integer.class),
-                                getEnrolledByAgeAndGender(0, 15));
-                femaleDateSet.addColumnValue(new DataSetColumn("15+", "15+", Integer.class),
-                                getEnrolledByAgeAndGender(15, 200));
-
-                set.addRow(femaleDateSet);
-
-                obses = LoadObs("M");
-
-                DataSetRow maleDataSet = new DataSetRow();
-                maleDataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender",
-                                Integer.class), "Male");
-                maleDataSet.addColumnValue(new DataSetColumn("unkownAge", "Unkown Age", Integer.class),
-                             getEnrolledByUnknownAge());
-
-                maleDataSet.addColumnValue(new DataSetColumn("<15", "<15", Integer.class),
-                                getEnrolledByAgeAndGender(0, 15));
-                maleDataSet.addColumnValue(new DataSetColumn("15+", "15+", Integer.class),
-                                getEnrolledByAgeAndGender(15, 200));
-
-                set.addRow(maleDataSet);
-                DataSetRow tSetRow = new DataSetRow();
-                tSetRow.addColumnValue(new DataSetColumn("subtotal", "Sub-Total", Integer.class),
-                                total);
-                set.addRow(tSetRow);
-                return set;
-        }
-
-        private int getEnrolledByUnknownAge() {
+	
+	private CoarseByAgeAndSexDataSetDefinition hdsd;
+	
+	private int total = 0;
+	
+	private PatientQueryService patientQuery;
+	
+	@Override
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+		total = 0;
+		hdsd = (CoarseByAgeAndSexDataSetDefinition) dataSetDefinition;
+		
+		patientQuery = Context.getService(PatientQueryService.class);
+		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		DataSetRow femaleDateSet = new DataSetRow();
+		Cohort femalCohort = patientQuery.getOnArtCohorts("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		
+		List<Person> persons = patientQuery.getPersons(femalCohort);
+		
+		femaleDateSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Female");
+		femaleDateSet.addColumnValue(new DataSetColumn("unkownAge", "Unkown Age", Integer.class),
+		    getEnrolledByUnknownAge(persons));
+		femaleDateSet.addColumnValue(new DataSetColumn("<15", "<15", Integer.class),
+		    getEnrolledByAgeAndGender(0, 15, persons));
+		femaleDateSet.addColumnValue(new DataSetColumn("15+", "15+", Integer.class),
+		    getEnrolledByAgeAndGender(15, 200, persons));
+		
+		set.addRow(femaleDateSet);
+		
+		persons.clear();
+		Cohort maleCohort = patientQuery.getOnArtCohorts("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		persons = patientQuery.getPersons(maleCohort);
+		DataSetRow maleDataSet = new DataSetRow();
+		maleDataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Male");
+		maleDataSet.addColumnValue(new DataSetColumn("unkownAge", "Unknown Age", Integer.class),
+		    getEnrolledByUnknownAge(persons));
+		
+		maleDataSet
+		        .addColumnValue(new DataSetColumn("<15", "<15", Integer.class), getEnrolledByAgeAndGender(0, 15, persons));
+		maleDataSet.addColumnValue(new DataSetColumn("15+", "15+", Integer.class),
+		    getEnrolledByAgeAndGender(15, 200, persons));
+		
+		set.addRow(maleDataSet);
+		DataSetRow tSetRow = new DataSetRow();
+		tSetRow.addColumnValue(new DataSetColumn("subtotal", "Sub-Total", Integer.class), total);
+		set.addRow(tSetRow);
+		return set;
+	}
+	
+	private int getEnrolledByUnknownAge(List<Person> persons) {
                 int count = 0;
                 List<Integer> personIds = new ArrayList<>();
-                for (Obs obs : obses) {
-                        if (personIds.contains(obs.getPersonId()))
+                for (Person person : persons) {
+                        if (personIds.contains(person.getPersonId()))
                                 continue;
 
-                        if (Objects.isNull(obs.getPerson().getAge()) ||
-                                        obs.getPerson().getAge() <= 0) {
+                        if (Objects.isNull(person.getAge()) ||
+                                        person.getAge() <= 0) {
                                 count++;
-                                personIds.add(obs.getPersonId());
+                                personIds.add(person.getPersonId());
                         }
 
                 }
                 incrementTotalCount(count);
-                clearCountedPerson(personIds);
-                return count;
-        }
-
-        private int getEnrolledByAgeAndGender(int min, int max) {
-                int count = 0;
-                List<Integer> personIds = new ArrayList<>();
-                for (Obs obs : obses) {
-                        if (personIds.contains(obs.getPersonId()))
-                                continue;
-                      
-                                if (obs.getPerson().getAge() >= min &&
-                         obs.getPerson().getAge() <= max) {
-                                personIds.add(obs.getPersonId());
-                                count++;
-                        }
-
-                }
-                incrementTotalCount(count);
-                clearCountedPerson(personIds);
-                return count;
-        }
-
-
-        private void incrementTotalCount(int count)
-        {
-                if(count>0)
-                total=total+count;
-        }
-
-        private void clearCountedPerson(List<Integer> personIds) {
                 for (int pId : personIds) {
-                        obses.removeIf(p -> p.getPersonId().equals(pId));
+                        persons.removeIf(p -> p.getPersonId()==pId);
                 }
+                return count;
         }
+	
+	private int getEnrolledByAgeAndGender(int min, int max, List<Person> persons) {
+                int count = 0;
+                List<Integer> personIds = new ArrayList<>();
+                for (Person person : persons) {
+                        if (personIds.contains(person.getPersonId()))
+                                continue;
 
-        private List<Obs> LoadObs(String gender) {
-                HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-                queryBuilder.select("obs")
-                                .from(Obs.class, "obs")
-                                .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-                                .and()
-                                .whereEqual("obs.person.gender", gender)
-                                .and()
-                                .whereEqual("obs.concept", artConcept)
-                                .and()
-                                .whereGreaterOrEqualTo("obs.valueDatetime", hdsd.getStartDate())
-                                .and()
-                                .whereLessOrEqualTo("obs.valueDatetime", hdsd.getEndDate())
-                                .orderDesc("obs.obsDatetime");
+                        if (person.getAge() >= min &&
+                                        person.getAge() <= max) {
+                                personIds.add(person.getPersonId());
+                                count++;
+                        }
 
-                List<Obs> obses = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-                return obses;
+                }
+                incrementTotalCount(count);
+           
+                for (int pId : personIds) {
+                        persons.removeIf(p -> p.getPersonId()==pId);
+                }
+
+                return count;
         }
-
+	
+	private void incrementTotalCount(int count) {
+		if (count > 0)
+			total = total + count;
+	}
+	
 }

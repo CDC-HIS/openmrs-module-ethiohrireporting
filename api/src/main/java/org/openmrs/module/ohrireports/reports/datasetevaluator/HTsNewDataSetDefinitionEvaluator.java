@@ -4,6 +4,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import java.util.Date;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
@@ -44,21 +45,19 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		patientQuery = Context.getService(PatientQueryService.class);
 		
-		Cohort cohort = patientQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort cohort = patientQuery.getOnArtCohorts("", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		
 		PatientIdentifierType mrnIdentifierType = patientService.getPatientIdentifierTypeByUuid(MRN_PATIENT_IDENTIFIERS);
 		PatientIdentifierType openmrsIdentifierType = patientService
 		        .getPatientIdentifierTypeByUuid(OPENMRS_PATIENT_IDENTIFIERS);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
-		Dictionary<Integer, Object> regimentDictionary = artQuery
-		        .getRegiment(cohort, hdsd.getStartDate(), hdsd.getEndDate());
+		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(cohort, hdsd.getStartDate(), hdsd.getEndDate());
 		
-		Dictionary<Integer, Object> artStartDictionary = artQuery.getArtStartDate(cohort, hdsd.getStartDate(),
+		HashMap<Integer, Object> artStartDictionary = artQuery.getArtStartDate(cohort, hdsd.getStartDate(),
 		    hdsd.getEndDate());
 		
 		DataSetRow row = new DataSetRow();
-		
 		for (Person person : persons) {
 			
 			row = new DataSetRow();

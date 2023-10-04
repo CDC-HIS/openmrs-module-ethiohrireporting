@@ -40,18 +40,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPO
 @Component
 public class TX_CUR_Report implements ReportManager {
 	
-	@Autowired
-	EncounterService encounterService;
-	
-	@Autowired
-	ConceptService conceptService;
-	
-	@Autowired
-	PatientDataLibrary hpdl;
-	
-	@Autowired
-	EncounterDataLibrary hedl;
-	
 	@Override
 	public String getUuid() {
 		return "86a28f40-7987-482b-bc49-2d32451d00d9";
