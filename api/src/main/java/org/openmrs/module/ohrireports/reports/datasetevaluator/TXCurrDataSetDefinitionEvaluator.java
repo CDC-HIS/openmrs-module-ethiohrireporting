@@ -1,38 +1,16 @@
 package org.openmrs.module.ohrireports.reports.datasetevaluator;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MRN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.OPENMRS_PATIENT_IDENTIFIERS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REGIMEN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-
 import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
-import org.openmrs.module.ohrireports.helper.EthiopianDate;
-import org.openmrs.module.ohrireports.helper.EthiopianDateConverter;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.TXCurrDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;

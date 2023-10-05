@@ -73,48 +73,54 @@ public class CoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalu
 	}
 	
 	private int getEnrolledByUnknownAge(List<Person> persons) {
-                int count = 0;
-                List<Integer> personIds = new ArrayList<>();
-                for (Person person : persons) {
-                        if (personIds.contains(person.getPersonId()))
-                                continue;
+		int count = 0;
+		int _age = 0;
+		List<Integer> personIds = new ArrayList<>();
+		for (Person person : persons) {
+			_age = person.getAge(hdsd.getStartDate());
 
-                        if (Objects.isNull(person.getAge()) ||
-                                        person.getAge() <= 0) {
-                                count++;
-                                personIds.add(person.getPersonId());
-                        }
+			if (personIds.contains(person.getPersonId()))
+				continue;
 
-                }
-                incrementTotalCount(count);
-                for (int pId : personIds) {
-                        persons.removeIf(p -> p.getPersonId()==pId);
-                }
-                return count;
-        }
+			if (Objects.isNull(_age) ||
+					_age <= 0) {
+				count++;
+				personIds.add(person.getPersonId());
+			}
+
+		}
+		incrementTotalCount(count);
+		for (int pId : personIds) {
+			persons.removeIf(p -> p.getPersonId() == pId);
+		}
+		return count;
+	}
 	
 	private int getEnrolledByAgeAndGender(int min, int max, List<Person> persons) {
-                int count = 0;
-                List<Integer> personIds = new ArrayList<>();
-                for (Person person : persons) {
-                        if (personIds.contains(person.getPersonId()))
-                                continue;
+		int count = 0;
+		int _age = 0;
+		List<Integer> personIds = new ArrayList<>();
+		for (Person person : persons) {
+			_age = person.getAge(hdsd.getStartDate());
 
-                        if (person.getAge() >= min &&
-                                        person.getAge() <= max) {
-                                personIds.add(person.getPersonId());
-                                count++;
-                        }
+			if (personIds.contains(person.getPersonId()))
+				continue;
 
-                }
-                incrementTotalCount(count);
-           
-                for (int pId : personIds) {
-                        persons.removeIf(p -> p.getPersonId()==pId);
-                }
+			if (_age >= min &&
+					_age <= max) {
+				personIds.add(person.getPersonId());
+				count++;
+			}
 
-                return count;
-        }
+		}
+		incrementTotalCount(count);
+
+		for (int pId : personIds) {
+			persons.removeIf(p -> p.getPersonId() == pId);
+		}
+
+		return count;
+	}
 	
 	private void incrementTotalCount(int count) {
 		if (count > 0)

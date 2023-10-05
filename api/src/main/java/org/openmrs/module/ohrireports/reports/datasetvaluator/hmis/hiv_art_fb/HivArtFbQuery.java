@@ -23,6 +23,8 @@ public class HivArtFbQuery extends PatientQueryImpDao {
 	
 	private Date startDate, endDate;
 	
+	private Cohort cohort = null;
+	
 	@Autowired
 	public HivArtFbQuery(DbSessionFactory sessionFactory) {
 		
@@ -34,68 +36,80 @@ public class HivArtFbQuery extends PatientQueryImpDao {
 	public void setDate(Date start, Date end) {
 		startDate = start;
 		endDate = end;
+		if (cohort == null)
+			cohort = getActiveOnArtCohort("", startDate, endDate, null);
+		
 	}
 	
 	public Set<Integer> GetPatientsOnFamilyPlanning() {
-		Cohort cohort = getOnArtCohorts("", startDate, endDate, null);
 		
-		StringBuilder sql = personIdQuery(getBaseQuery(" "),
-		    " and ob.concept_id = (select distinct concept_id from concept where uuid = '" + PREGNANT_STATUS
-		            + "' limit 1) and value_coded = (select distinct concept_id from concept where uuid = '" + NO
-		            + "' limit 1) and ob.person_id in (:art_patients)");
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		StringBuilder sqlBuilder = new StringBuilder(
+		        "select distinct patient_id from encounter as enc where encounter_id in ");
+		sqlBuilder.append(" (select obt.encounter_id from obs as obt where obt.concept_id = "
+		        + conceptQuery(FAMILY_PLANNING_METHODS));
+		sqlBuilder.append(" and obt.value_coded  is not null and obs_datetime >= :startDate and obs_datetime <= :endDate");
+		sqlBuilder.append(" and obt.person_id in (select subOb.person_id from obs as subOb where ");
+		sqlBuilder.append(" subOb.concept_id =" + conceptQuery(PREGNANT_STATUS) + " and subOb.value_coded ="
+		        + conceptQuery(NO) + " and obs_datetime >= :subStartDate and obs_datetime <= :subEndDate))");
+		sqlBuilder.append(" and enc.patient_id in (:cohort)");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
 		
 		query.setTimestamp("startDate", startDate);
 		query.setTimestamp("endDate", endDate);
-		query.setParameterList("art_patients", cohort.getMemberIds());
+		query.setTimestamp("subStartDate", startDate);
+		query.setTimestamp("subEndDate", endDate);
+		query.setParameterList("cohort", cohort.getMemberIds());
 		
 		return new HashSet<Integer>(query.list());
 		
 	}
 	
 	public Integer getPatientByMethodOfFP(String conceptTypeUUID) {
-		Cohort cohort = getOnArtCohorts("", startDate, endDate, null);
 		
-		String subQuery = " = (select distinct concept_id from concept where uuid = '" + conceptTypeUUID + "' limit 1) ";
-		StringBuilder sql = personIdQuery(getBaseQuery(subQuery),
-		    " and ob.concept_id = (select distinct concept_id from concept where uuid = '" + PREGNANT_STATUS
-		            + "' limit 1) and value_coded = (select distinct concept_id from concept where uuid = '" + NO
-		            + "' limit 1) and ob.person_id in (:art_patients)");
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		StringBuilder sqlBuilder = new StringBuilder(
+		        "select distinct patient_id from encounter as enc where encounter_id in ");
+		sqlBuilder.append(" (select obt.encounter_id from obs as obt where obt.concept_id = "
+		        + conceptQuery(FAMILY_PLANNING_METHODS));
+		sqlBuilder.append(" and obt.value_coded = " + conceptQuery(conceptTypeUUID));
+		sqlBuilder.append(" and obs_datetime >= :startDate and obs_datetime <= :endDate");
+		sqlBuilder.append(" and obt.person_id in (select subOb.person_id from obs as subOb where ");
+		sqlBuilder.append(" subOb.concept_id =" + conceptQuery(PREGNANT_STATUS) + " and subOb.value_coded ="
+		        + conceptQuery(NO) + " and obs_datetime >= :subStartDate and obs_datetime <= :subEndDate))");
+		sqlBuilder.append(" and enc.patient_id in (:cohort)");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
 		
 		query.setTimestamp("startDate", startDate);
 		query.setTimestamp("endDate", endDate);
-		query.setParameterList("art_patients", cohort.getMemberIds());
+		query.setTimestamp("subStartDate", startDate);
+		query.setTimestamp("subEndDate", endDate);
+		query.setParameterList("cohort", cohort.getMemberIds());
 		
 		return query.list().size();
 	}
 	
 	public Integer getPatientByMethodOfOtherFP(List<String> conceptTypeUUID) {
-		Cohort cohort = getOnArtCohorts("", startDate, endDate, null);
+		StringBuilder sqlBuilder = new StringBuilder(
+		        "select distinct patient_id from encounter as enc where encounter_id in ");
+		sqlBuilder.append(" (select obt.encounter_id from obs as obt where obt.concept_id = "
+		        + conceptQuery(FAMILY_PLANNING_METHODS));
+		sqlBuilder.append(" and obt.value_coded in " + conceptQuery(conceptTypeUUID));
+		sqlBuilder.append(" and obs_datetime >= :startDate and obs_datetime <= :endDate");
+		sqlBuilder.append(" and obt.person_id in (select subOb.person_id from obs as subOb where ");
+		sqlBuilder.append(" subOb.concept_id =" + conceptQuery(PREGNANT_STATUS) + " and subOb.value_coded ="
+		        + conceptQuery(NO) + " and obs_datetime >= :subStartDate and obs_datetime <= :subEndDate))");
+		sqlBuilder.append(" and enc.patient_id in (:cohort)");
 		
-		String subQuery = " not in (select distinct concept_id from concept where uuid in (:uuids))";
-		StringBuilder sql = personIdQuery(getBaseQuery(subQuery),
-		    " and ob.concept_id = (select distinct concept_id from concept where uuid = '" + PREGNANT_STATUS
-		            + "' limit 1) and value_coded = (select distinct concept_id from concept where uuid = '" + NO
-		            + "' limit 1) and ob.person_id in  (:art_patients)");
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
 		
 		query.setTimestamp("startDate", startDate);
 		query.setTimestamp("endDate", endDate);
-		query.setParameterList("art_patients", cohort.getMemberIds());
-		query.setParameterList("uuids", conceptTypeUUID);
+		query.setTimestamp("subStartDate", startDate);
+		query.setTimestamp("subEndDate", endDate);
+		query.setParameterList("cohort", cohort.getMemberIds());
+		
 		return query.list().size();
 	}
 	
-	private String getBaseQuery(String valueCoded) {
-		
-		String _valueCoded = "is not null";
-		
-		if (!valueCoded.isEmpty())
-			_valueCoded = valueCoded;
-		
-		return " ob.concept_id = (select distinct concept_id from concept where uuid = '" + FAMILY_PLANNING_METHODS
-		        + "' limit 1)  and value_coded  " + _valueCoded
-		        + " and obs_datetime >= :startDate and obs_datetime <= :endDate ";
-	}
 }

@@ -167,6 +167,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 	}
 
 	private Integer getHTXNew(QueryParameter parameter) {
+		int _age = 0;
 		Cohort cohort = new Cohort();
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
 			cohort = patientQuery.getOnArtCohorts("", _datasetDefinition.getStartDate(),
@@ -178,8 +179,10 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		if (parameter.maxAge < 1) {
 
 			List<Person> countPersons = new ArrayList<>();
+
 			for (Person person : persons) {
-				if (person.getAge() < parameter.maxAge && person.getGender().equals(parameter.gender)) {
+				_age = person.getAge(_datasetDefinition.getEndDate());
+				if (_age < parameter.maxAge && person.getGender().equals(parameter.gender)) {
 					countPersons.add(person);
 					cohort.addMembership(new CohortMembership(person.getPersonId()));
 
@@ -193,7 +196,9 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		else if (parameter.maxAge >= 200) {
 			List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {
-				if (person.getAge() >= parameter.minAge && person.getGender().equals(parameter.gender)) {
+				_age = person.getAge(_datasetDefinition.getEndDate());
+
+				if (_age >= parameter.minAge && person.getGender().equals(parameter.gender)) {
 					countPersons.add(person);
 					cohort.addMembership(new CohortMembership(person.getPersonId()));
 				}
@@ -206,7 +211,9 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		else {
 			List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {
-				if (person.getAge() >= parameter.minAge && person.getAge() <= parameter.maxAge
+				_age = person.getAge(_datasetDefinition.getEndDate());
+
+				if (_age >= parameter.minAge && _age <= parameter.maxAge
 						&& person.getGender().equals(parameter.gender)) {
 					countPersons.add(person);
 					cohort.addMembership(new CohortMembership(person.getPersonId()));

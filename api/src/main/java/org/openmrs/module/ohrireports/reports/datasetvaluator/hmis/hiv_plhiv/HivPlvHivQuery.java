@@ -10,6 +10,8 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.MILD_MAL_NUTRI
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MODERATE_MAL_NUTRITION;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SEVERE_MAL_NUTRITION;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,12 +23,16 @@ import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import antlr.collections.List;
+
 @Component
 public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	private Date startDate, endDate;
 	
 	private DbSessionFactory sessionFactory;
+	
+	private Cohort baseCohort;
 	
 	@Autowired
 	public HivPlvHivQuery(DbSessionFactory sessionFactory) {
@@ -37,19 +43,17 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	public void setDates(Date _start, Date _date) {
 		startDate = _start;
 		endDate = _date;
+		if (baseCohort == null)
+			baseCohort = getActiveOnArtCohort("", startDate, endDate, null);
 	}
 	
 	public Set<Integer> getAssessedPatients() {
 		
-		String outerQuery = "and person_id in (:person_id)";
-		
-		StringBuilder sql = personIdQuery(getBaseQuery(""), outerQuery);
-		
-		Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
-		
+		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS,
+		    Arrays.asList(MILD_MAL_NUTRITION, MODERATE_MAL_NUTRITION, UNDERNOURISHED, SEVERE_MAL_NUTRITION));
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		query.setParameterList("person_id", cohort.getMemberIds());
+		query.setParameterList("person_id", baseCohort.getMemberIds());
 		query.setDate("startDate", startDate);
 		query.setDate("endDate", endDate);
 		
@@ -57,79 +61,50 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	}
 	
 	public Set<Integer> getPatientUndernourished() {
-        String outerQuery = "and person_id in (:person_id) and ob.concept_id = (select distinct concept_id from concept where uuid = '"
-                + NUTRITIONAL_STATUS
-                + "' limit 1) and  ob.value_coded = (select distinct concept_id from concept where uuid = '"
-                + UNDERNOURISHED + "' limit 1)";
+		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS, Arrays.asList(UNDERNOURISHED));
 
-        StringBuilder sql = personIdQuery(getBaseQuery(""), outerQuery);
-        Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		query.setParameterList("person_id", baseCohort.getMemberIds());
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
 
-        Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-        query.setParameterList("person_id", cohort.getMemberIds());
-        query.setDate("startDate", startDate);
-        query.setDate("endDate", endDate);
-
-        return new HashSet<>(query.list());
-    }
-	
-	private String getBaseQuery(String valueCoded) {
-		// Nutrition assessed patient
-		String _valueCoded = "is not null";
-		
-		if (!valueCoded.isEmpty())
-			_valueCoded = valueCoded;
-		
-		return " ob.concept_id = (select distinct concept_id from concept where uuid = '" + NUTRITIONAL_STATUS
-		        + "' limit 1)  and value_coded  " + _valueCoded
-		        + " and obs_datetime >= :startDate and obs_datetime <= :endDate ";
+		return new HashSet<>(query.list());
 	}
 	
 	public Set<Integer> getPatientModerateMalNutrition() {
-         String outerQuery = "and person_id in (:person_id) and ob.concept_id = (select distinct concept_id from concept where uuid = '"
-                + NUTRITIONAL_STATUS
-                + "' limit 1) and  ob.value_coded in (select distinct concept_id from concept where uuid in ('" + MILD_MAL_NUTRITION
-                + "','" + MODERATE_MAL_NUTRITION + "' ) ) ";
 
-        StringBuilder sql = personIdQuery(getBaseQuery(""),outerQuery);
-        Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
-     ;
+		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS,
+				Arrays.asList(MODERATE_MAL_NUTRITION, MILD_MAL_NUTRITION));
 
-        Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-        query.setParameterList("person_id", cohort.getMemberIds());
-        query.setDate("startDate", startDate);
-        query.setDate("endDate", endDate);
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-        return new HashSet<>(query.list());
-    }
+		query.setParameterList("person_id", baseCohort.getMemberIds());
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
+
+		return new HashSet<>(query.list());
+	}
 	
 	public Set<Integer> getPatientSevereMalNutrition() {
-            String outerQuery = "and person_id in (:person_id) and ob.concept_id = (select distinct concept_id from concept where uuid = '"
-                + NUTRITIONAL_STATUS
-                + "' limit 1) and  ob.value_coded = (select distinct concept_id from concept where uuid  = '" + SEVERE_MAL_NUTRITION
-                + "' limit 1) ";
-        StringBuilder sql = personIdQuery(getBaseQuery(""), outerQuery);
-        Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
-       
-        Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-        query.setParameterList("person_id", cohort.getMemberIds());
-        query.setDate("startDate", startDate);
-        query.setDate("endDate", endDate);
 
-        return new HashSet<>(query.list());
-    }
+		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS, Arrays.asList(SEVERE_MAL_NUTRITION));
+
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		query.setParameterList("person_id", baseCohort.getMemberIds());
+		query.setDate("startDate", startDate);
+		query.setDate("endDate", endDate);
+
+		return new HashSet<>(query.list());
+	}
 	
 	public Set<Integer> getPatientMATookSupplement() {
-		Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
 		
-		String outerQuery = "and person_id in (:person_id) and ob.concept_id = (select distinct concept_id from concept where uuid = '"
-		        + THERAPEUTIC_SUPPLEMENTARY_FOOD
-		        + "' limit 1) and  ob.value_coded = (select distinct concept_id from concept where uuid ='" + YES + "') ";
-		String subQueryAnswer = " in (select distinct concept_id from concept where uuid in ('" + MILD_MAL_NUTRITION + "','"
-		        + MODERATE_MAL_NUTRITION + "') )";
-		StringBuilder sql = personIdQuery(getBaseQuery(subQueryAnswer), outerQuery);
+		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, YES));
+		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS,
+		    Arrays.asList(MILD_MAL_NUTRITION, MODERATE_MAL_NUTRITION));
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
 		query.setParameterList("person_id", cohort.getMemberIds());
 		query.setDate("startDate", startDate);
 		query.setDate("endDate", endDate);
@@ -138,18 +113,12 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	}
 	
 	public Set<Integer> getPatientSVTookSupplement() {
-		Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
 		
-		String outerQuery = "and person_id in (:person_id) and ob.concept_id = (select distinct concept_id from concept where uuid = '"
-		        + THERAPEUTIC_SUPPLEMENTARY_FOOD
-		        + "' limit 1) and  ob.value_coded = (select distinct concept_id from concept where uuid ='"
-		        + YES
-		        + "' limit 1 )";
-		String subQueryAnswer = "= (select distinct concept_id from concept where uuid = '" + SEVERE_MAL_NUTRITION
-		        + "' limit 1 )";
-		StringBuilder sql = personIdQuery(getBaseQuery(subQueryAnswer), outerQuery);
+		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, YES));
+		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS, Arrays.asList(SEVERE_MAL_NUTRITION));
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
 		query.setParameterList("person_id", cohort.getMemberIds());
 		query.setDate("startDate", startDate);
 		query.setDate("endDate", endDate);
@@ -158,19 +127,39 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	}
 	
 	public Set<Integer> getPregnant() {
-		String outerQuery = "and person_id in (:person_id) and ob.concept_id = (select distinct concept_id from concept where uuid = '"
-		        + PREGNANT_STATUS
-		        + "' limit 1) and  ob.value_coded = (select distinct concept_id from concept where uuid ='"
-		        + YES
-		        + "' limit 1) ";
-		StringBuilder sql = personIdQuery(getBaseQuery(""), outerQuery);
-		Cohort cohort = getActiveOnArtCohort("", startDate, endDate, null);
 		
+		Set<Integer> pregnantIntegers = getPatientByStatus(PREGNANT_STATUS, YES);
+		return pregnantIntegers;
+	}
+	
+	private StringBuilder getPatientBySupplementType(String supplementType, java.util.List<String> list) {
+		StringBuilder sql = new StringBuilder("select distinct enc.patient_id from encounter as enc where encounter_id in");
+		
+		sql.append("(select Max(encounter_id) from obs as ob where ");
+		sql.append("ob.person_id in (");
+		sql.append("select person_id from obs as obt ");
+		sql.append(" where obt.concept_id =" + conceptQuery(supplementType));
+		sql.append(" and obt.value_coded in (select concept_id from concept where uuid in ('" + String.join("','", list)
+		        + "')) and obt.obs_datetime >= :startDate and obt.obs_datetime <= :endDate)");
+		
+		sql.append(" GROUP BY person_id) and enc.patient_id in (:person_id)");
+		
+		return sql;
+		
+	}
+	
+	private Set<Integer> getPatientByStatus(String concept, String value) {
+		StringBuilder sql = baseQuery(concept);
+		sql.append(" and ob.value_coded = " + conceptQuery(value));
+		sql.append(
+				" and ob.obs_datetime >= :startDate and ob.obs_datetime <= :endDate and ob.person_id in (:personIds)");
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		query.setParameterList("person_id", cohort.getMemberIds());
+
 		query.setDate("startDate", startDate);
 		query.setDate("endDate", endDate);
-		
-		return new HashSet<Integer>(query.list());
+		query.setParameterList("personIds", baseCohort.getMemberIds());
+
+		return new HashSet<>(query.list());
+
 	}
 }

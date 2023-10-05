@@ -19,9 +19,6 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
-import org.openmrs.module.reporting.evaluation.service.EvaluationService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { AutoCalculateDataSetDefinition.class })
 public class AutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {

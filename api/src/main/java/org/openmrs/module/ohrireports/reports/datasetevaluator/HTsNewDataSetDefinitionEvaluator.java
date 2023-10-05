@@ -70,7 +70,7 @@ public class HTsNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    patient.getPatientIdentifier(openmrsIdentifierType));
 			
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
-			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge());
+			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(date));
 			row.addColumnValue(new DataSetColumn("Gender", "Gender", Integer.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("ArtStartDate", "Art Start Date", Date.class), date);
 			row.addColumnValue(new DataSetColumn("ArtStartDateEth", "Art Start Date ETH", String.class), ethiopianDate);

@@ -67,6 +67,7 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 		buildDataSet(femaleDateSet, "F", persons);
 		set.addRow(femaleDateSet);
 		persons.clear();
+		
 		// Male aggregation
 		Cohort maleCohort = patientQuery.getOnArtCohorts("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		persons = patientQuery.getPersons(maleCohort);
@@ -81,8 +82,10 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 		total = 0;
 		minCount = 1;
 		maxCount = 4;
+		
 		dataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class),
 		    gender.equals("F") ? "Female" : "Male");
+		
 		dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
 		    getEnrolledByUnknownAge(persons));
 		
@@ -104,58 +107,66 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 	}
 	
 	private int getEnrolledByAgeAndGender(int min, int max, List<Person> persons) {
-        int count = 0;
-        List<Integer> personIds = new ArrayList<>();
-        for (Person person : persons) {
+		int count = 0;
+		int _age = 0;
+		List<Integer> personIds = new ArrayList<>();
+		for (Person person : persons) {
+			_age = person.getAge(hdsd.getEndDate());
+			if (personIds.contains(person.getPersonId()))
+				continue;
 
-            if (personIds.contains(person.getPersonId()))
-                continue;
-
-            if (person.getAge() >= min && person.getAge() <= max ) {
-                personIds.add(person.getPersonId());
-                count++;
-            }
-        }
-        incrementTotalCount(count);
-        clearCountedPerson(personIds, persons);
-        return count;
-    }
+			if (_age >= min && _age <= max) {
+				personIds.add(person.getPersonId());
+				count++;
+			}
+		}
+		incrementTotalCount(count);
+		clearCountedPerson(personIds, persons);
+		return count;
+	}
 	
 	private int getEnrolledByUnknownAge(List<Person> persons) {
-        int count = 0;
-        List<Integer> personIds = new ArrayList<>();
-        for (Person person : persons) {
-            if (personIds.contains(person.getPersonId()))
-                continue;
+		int count = 0;
+		int _age = 0;
 
-            if (Objects.isNull(person.getAge()) ||
-                    person.getAge() <= 0) {
-                count++;
-                personIds.add(person.getPersonId());
-            }
+		List<Integer> personIds = new ArrayList<>();
+		for (Person person : persons) {
+			_age = person.getAge(hdsd.getEndDate());
 
-        }
-        incrementTotalCount(count);
-        clearCountedPerson(personIds, persons);
-        return count;
-    }
+			if (personIds.contains(person.getPersonId()))
+				continue;
+
+			if (Objects.isNull(_age) ||
+					_age <= 0) {
+				count++;
+				personIds.add(person.getPersonId());
+			}
+
+		}
+		incrementTotalCount(count);
+		clearCountedPerson(personIds, persons);
+		return count;
+	}
 	
 	private int getEnrolledBelowOneYear(List<Person> persons) {
-        int count = 0;
-        List<Integer> personIds = new ArrayList<>();
-        for (Person person : persons) {
-            if (personIds.contains(person.getPersonId()))
-                continue;
+		int count = 0;
+		int _age = 0;
+		List<Integer> personIds = new ArrayList<>();
+		for (Person person : persons) {
+			_age = person.getAge(hdsd.getEndDate());
 
-            if (person.getAge() < 1) {
-                count++;
-                personIds.add(person.getPersonId());
-            }
-        }
-        incrementTotalCount(count);
-        clearCountedPerson(personIds, persons);
-        return count;
-    }
+			if (personIds.contains(person.getPersonId()))
+				continue;
+
+			if (_age < 1) {
+				count++;
+				personIds.add(person.getPersonId());
+			}
+		}
+		incrementTotalCount(count);
+		clearCountedPerson(personIds, persons);
+		return count;
+	}
 	
 	private void incrementTotalCount(int count) {
 		if (count > 0)
@@ -163,8 +174,8 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 	}
 	
 	private void clearCountedPerson(List<Integer> personIds, List<Person> persons) {
-        for (int pId : personIds) {
-            persons.removeIf(p -> p.getPersonId()==pId);
-        }
-    }
+		for (int pId : personIds) {
+			persons.removeIf(p -> p.getPersonId() == pId);
+		}
+	}
 }
