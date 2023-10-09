@@ -14,6 +14,7 @@ import org.openmrs.Concept;
 import org.openmrs.EncounterType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCAAutoCalculateDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCADatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
@@ -56,15 +57,7 @@ public class CXCASCRNReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	private void loadConcepts() {
@@ -87,28 +80,28 @@ public class CXCASCRNReport implements ReportManager {
 		tbADataSet.addParameters(getParameters());
 		tbADataSet.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Number of HIV-positive women on ART screened for cervical cancer.",
-		    map(tbADataSet, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(tbADataSet));
 		
 		CXCADatasetDefinition firstTimeScreeningCxcaDatasetDefinition = new CXCADatasetDefinition();
 		firstTimeScreeningCxcaDatasetDefinition.setScreeningType(cxcaFirstTimeScreeningConcept);
 		firstTimeScreeningCxcaDatasetDefinition.addParameters(getParameters());
 		firstTimeScreeningCxcaDatasetDefinition.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("First time screened for cervical cancer",
-		    map(firstTimeScreeningCxcaDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(firstTimeScreeningCxcaDatasetDefinition));
 		
 		CXCADatasetDefinition rescreenDatasetDefinition = new CXCADatasetDefinition();
 		rescreenDatasetDefinition.setScreeningType(cxcaRescreeningAfterNegativeResultOneYear);
 		rescreenDatasetDefinition.addParameters(getParameters());
 		rescreenDatasetDefinition.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Rescreen after pervious negative or suspected cancer",
-		    map(rescreenDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(rescreenDatasetDefinition));
 		
 		CXCADatasetDefinition postTreatmentDatasetDefinition = new CXCADatasetDefinition();
 		postTreatmentDatasetDefinition.setScreeningType(cxcaPostScreeningAfterTreatmentConcept);
 		postTreatmentDatasetDefinition.addParameters(getParameters());
 		postTreatmentDatasetDefinition.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Post-treatment follow-up ",
-		    map(postTreatmentDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(postTreatmentDatasetDefinition));
 		
 		return reportDefinition;
 	}
@@ -121,15 +114,6 @@ public class CXCASCRNReport implements ReportManager {
 		
 	}
 	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
-	}
 	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {

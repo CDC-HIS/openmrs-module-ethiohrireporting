@@ -8,6 +8,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.BreastFeedingStatusDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.CoarseByAgeAndSexDataSetDefinition;
@@ -46,15 +47,7 @@ public class DatimTxNewReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -71,46 +64,36 @@ public class DatimTxNewReport implements ReportManager {
 		aDefinition.setEncounterType(followUpEncounter);
 		aDefinition.setDescription("Number of adults and children newly enrolled on antiretroviral therapy (ART)");
 		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(aDefinition));
 		
 		FineByAgeAndSexDataSetDefinition fDefinition = new FineByAgeAndSexDataSetDefinition();
 		fDefinition.addParameters(getParameters());
 		fDefinition.setDescription("Disaggregated by Age/Sex (Fine disaggregate)");
 		fDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Required", map(fDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Required", EthiOhriUtil.map(fDefinition));
 		
 		CoarseByAgeAndSexDataSetDefinition cDefinition = new CoarseByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());
 		cDefinition.setEncounterType(followUpEncounter);
 		cDefinition.setDescription("Disaggregated by Age/Sex (Coarse disaggregated)");
 		reportDefinition.addDataSetDefinition("Conditional",
-		    map(cDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(cDefinition));
 		
 		BreastFeedingStatusDataSetDefinition bDefinition = new BreastFeedingStatusDataSetDefinition();
 		bDefinition.addParameters(getParameters());
 		bDefinition.setEncounterType(followUpEncounter);
 		bDefinition.setDescription("Disaggregated by Breastfeeding Status at ART Initiation");
 		reportDefinition.addDataSetDefinition("Breast-Feeding-ART-Status",
-		    map(bDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(bDefinition));
 		
 		PopulationTypeDataSetDefinition pDefinition = new PopulationTypeDataSetDefinition();
 		pDefinition.addParameters(getParameters());
 		pDefinition.setEncounterType(followUpEncounter);
 		pDefinition.setDescription("Disaggregated by Key population-type");
 		reportDefinition.addDataSetDefinition("Breast-Feeding-Status",
-		    map(pDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(pDefinition));
 		
 		return reportDefinition;
-	}
-	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
 	@Override
