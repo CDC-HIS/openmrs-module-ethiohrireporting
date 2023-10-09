@@ -13,11 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.BaseModuleActivator;
-import org.openmrs.module.ohrireports.cohorts.util.HtsStaticCohortsUtil;
 import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
-
-import static org.openmrs.module.ohrireports.cohorts.manager.CohortDefinitionManagerUtil.setUpCohortsDefinitions;
 
 /**
  * This class contains the logic that is run every time this module is either started or shutdown
@@ -31,7 +28,7 @@ public class OHRIReportsActivator extends BaseModuleActivator {
 	 */
 	public void started() {
 		log.info("Started ETHIOHRI Reports");
-		setUpCohortsDefinitions();
+		//setUpCohortsDefinitions();
 		
 		for (ReportManager reportManager : Context.getRegisteredComponents(ReportManager.class)) {
 			log.info("Setting up report " + reportManager.getName() + "...");

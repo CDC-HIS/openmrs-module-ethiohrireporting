@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_ct.AutoCalculatePrEPCTDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_ct.PrEPCTByPopulationTypeDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_ct.PrEPCTDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_ct.PrEPCTPregnantBreastfeedingDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_ct.PrEPCTTestResultDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.AutoCalculatePrEPCTDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTByPopulationTypeDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTPregnantBreastfeedingDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTTestResultDatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;

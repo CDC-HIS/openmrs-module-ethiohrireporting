@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.HtsNewDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.HTSNewDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -70,7 +70,7 @@ public class TX_New_Report implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		HtsNewDataSetDefinition htsNewDataSetDefinition = new HtsNewDataSetDefinition();
+		HTSNewDataSetDefinition htsNewDataSetDefinition = new HTSNewDataSetDefinition();
 		htsNewDataSetDefinition.addParameters(getParameters());
 		htsNewDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));

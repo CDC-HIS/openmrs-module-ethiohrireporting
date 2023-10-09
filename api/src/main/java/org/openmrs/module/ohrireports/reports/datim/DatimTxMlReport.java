@@ -7,7 +7,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_ml.*;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_ml.*;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
