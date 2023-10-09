@@ -1,9 +1,6 @@
 package org.openmrs.module.ohrireports.reports.datasetvaluator.datim.tb_prev_denominator;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_denominator.TbPrevDominatorDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
