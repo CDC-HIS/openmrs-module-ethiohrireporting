@@ -50,6 +50,11 @@ public class TransferInOutReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
+		return getReportDateRangeParameters();
+		
+	}
+
+	private List<Parameter> getReportDateRangeParameters() {
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
 		startDate.setRequired(false);
 		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
@@ -59,7 +64,6 @@ public class TransferInOutReport implements ReportManager {
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
 		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
-		
 	}
 	
 	@Override
