@@ -9,12 +9,14 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REASON_FOR_ART_ELIGIBILITY;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -58,9 +60,9 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		return new Cohort(q.list());
 	}
 	
-	//For new 
+	// For new
 	@Override
-	public Cohort getOnArtCohorts(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort) {
+	public Cohort getNewOnArtCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort) {
 		Cohort transferInCohort = transferredInFacility(null, endOrBefore);
 		
 		Collection<?> list = getArtStartedCohort(gender, startOnOrAfter, endOrBefore, cohort, transferInCohort);
@@ -68,7 +70,16 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		return new Cohort(list);
 	}
 	
-	private Collection<?> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
+	/**
+	 * @param gender for full range of gender "" or for specific gend pass F or M
+	 * @param startOnOrAfter optional but at list one of date should be provided start or end date.
+	 * @param endOrBefore optional but at list one of date should be provided start or end date.
+	 * @param cohort can be if there is no patients the ART should run on.
+	 * @param toBeExcludedCohort Can be null if there is no patients to be excluded from the query.
+	 * @return
+	 */
+	@Override
+	public Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
 	        Cohort toBeExcludedCohort) {
 		StringBuilder sql = baseQuery(ART_START_DATE);
 		if (gender != null && !gender.trim().isEmpty())
@@ -96,8 +107,14 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		if (toBeExcludedCohort != null && toBeExcludedCohort.size() != 0)
 			q.setParameterList("toBeExcludedCohort", toBeExcludedCohort.getMemberIds());
 		
-		Collection<?> list = q.list();
-		return list;
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+		
 	}
 	
 	@Override
@@ -107,20 +124,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort("", calendar.getTime(), Calendar.getInstance().getTime(),
 		    null);
 		
-		if (onTreatmentCohort == null || onTreatmentCohort.size() == 0)
-			return new Cohort();
-		
-		StringBuilder sql = baseQuery(FOLLOW_UP_STATUS);
-		sql.append("and " + OBS_ALIAS + "person_id in (:onTreatmentCohortIds) ");
-		sql.append("and " + OBS_ALIAS + "obs_datetime >= :startOnOrAfter ");
-		sql.append("and " + OBS_ALIAS + "value_coded in (select concept_id from concept where uuid in (:activeIndicator)) ");
-		
-		Query q = getSession().createSQLQuery(sql.toString());
-		q.setParameter("onTreatmentCohortIds", onTreatmentCohort.getMemberIds());
-		q.setParameter("startOnOrAfter", Calendar.getInstance().getTime());
-		q.setParameter("activeIndicator", Arrays.asList(ALIVE, RESTART, TRANSFERRED_IN));
-		
-		return new Cohort(q.list());
+		return onTreatmentCohort;
 	}
 	
 	@Override
@@ -129,35 +133,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		Cohort artStartedCohort = new Cohort(getArtStartedCohort(gender, null, endOnOrBefore, null, null));
 		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, artStartedCohort);
 		
-		if (onTreatmentCohort == null || onTreatmentCohort.size() == 0)
-			return new Cohort();
-		
-		StringBuilder sql = baseQuery(FOLLOW_UP_STATUS);
-		
-		sql.append("and " + OBS_ALIAS + "person_id in (:onTreatmentPersonIds) ");
-		sql.append("and " + OBS_ALIAS + "value_coded in (select concept_id from concept where uuid in (:activeIndicator)) ");
-		if (gender != null && !gender.trim().isEmpty())
-			sql.append("and p.gender = '" + gender + "' ");
-		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "obs_datetime >= :startOnOrAfter ");
-		if (endOnOrBefore != null)
-			sql.append(" and " + OBS_ALIAS + "obs_datetime <= :endOnOrBefore ");
-		if (cohort != null && cohort.size() != 0)
-			sql.append("and p.person_id in (:personIds) ");
-		
-		Query q = getSession().createSQLQuery(sql.toString());
-		
-		q.setParameter("onTreatmentPersonIds", onTreatmentCohort.getMemberIds());
-		
-		q.setParameter("activeIndicator", Arrays.asList(ALIVE, RESTART, TRANSFERRED_IN));
-		if (startOnOrAfter != null)
-			q.setTimestamp("startOnOrAfter", startOnOrAfter);
-		if (endOnOrBefore != null)
-			q.setTimestamp("endOnOrBefore", endOnOrBefore);
-		if (cohort != null && cohort.size() != 0)
-			q.setParameter("personIds", cohort.getMemberIds());
-		
-		return new Cohort(q.list());
+		return onTreatmentCohort;
 		
 	}
 	
@@ -176,7 +152,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	
 	@Override
 	public Cohort getCurrentOnTreatmentCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
-		Cohort onArtCohort = getOnArtCohorts(gender, startOnOrAfter, endOnOrBefore, cohort);
+		Cohort onArtCohort = getNewOnArtCohort(gender, startOnOrAfter, endOnOrBefore, cohort);
 		
 		if (onArtCohort == null || onArtCohort.size() == 0)
 			return new Cohort();

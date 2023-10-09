@@ -33,7 +33,7 @@ public class PatientQueryServiceImp extends BaseOpenmrsService implements Patien
 	@Override
 	public Cohort getOnArtCohorts(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
 		
-		return patientQueryDao.getOnArtCohorts(gender, startOnOrAfter, endOnOrBefore, cohort);
+		return patientQueryDao.getNewOnArtCohort(gender, startOnOrAfter, endOnOrBefore, cohort);
 	}
 	
 	@Override

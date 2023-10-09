@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.api.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +11,10 @@ public interface PatientQueryDao {
 	
 	Cohort getOnArtCohorts();
 	
-	Cohort getOnArtCohorts(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort);
+	Cohort getNewOnArtCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort);
+	
+	Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
+	        Cohort toBeExcludedCohort);
 	
 	Cohort getActiveOnArtCohort();
 	

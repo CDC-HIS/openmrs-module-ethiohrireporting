@@ -34,7 +34,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		Calendar endDate = Calendar.getInstance();
 		
 		goBackToMonths(endOnOrBefore, startDate, endDate);
-		Cohort artCohort = getOnArtCohorts(gender, startDate.getTime(), endDate.getTime(), cohort);
+		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort);
 		if (artCohort == null || artCohort.size() == 0)
 			return new Cohort();
 		
@@ -81,7 +81,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		Calendar endDate = Calendar.getInstance();
 		
 		goBackToMonths(endOnOrBefore, startDate, endDate);
-		Cohort artCohort = getOnArtCohorts(gender, startDate.getTime(), endDate.getTime(), cohort);
+		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort);
 		if (artCohort == null || artCohort.size() == 0)
 			return new Cohort();
 		
