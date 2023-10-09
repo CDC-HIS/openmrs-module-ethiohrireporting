@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.TransferredInOutDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;

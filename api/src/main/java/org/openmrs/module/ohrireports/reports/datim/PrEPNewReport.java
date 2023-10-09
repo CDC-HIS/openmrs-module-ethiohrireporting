@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_new.AutoCalculatePrepNewDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_new.DisaggregatedByPopulationTypDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pr_ep_new.PrEPNewDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.AutoCalculatePrepNewDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.DisaggregatedByPopulationTypDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.PrEPNewDatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;

@@ -8,8 +8,8 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pmtct_art.PMTCTARTAutoCalculateDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;

@@ -6,9 +6,9 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_denominator.TbPrevDominatorDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorARTByAgeAndSexDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_denominator.TbPrevDominatorDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorARTByAgeAndSexDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;

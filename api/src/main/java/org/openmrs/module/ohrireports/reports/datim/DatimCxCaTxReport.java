@@ -7,10 +7,10 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxAutoCalculateDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxByAgeandTreatmentTypeandScreeningVisitTypeDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxPostTreatmentFollowupDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_cx_ca.CxCaTxRescreenDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_cx_ca.CxCaTxAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_cx_ca.CxCaTxByAgeandTreatmentTypeandScreeningVisitTypeDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_cx_ca.CxCaTxPostTreatmentFollowupDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_cx_ca.CxCaTxRescreenDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
