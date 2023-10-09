@@ -29,35 +29,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { TxTbNumeratorAutoCalculateDataSetDefinition.class })
 public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {
-
+	
 	private EvaluationContext context;
-
+	
 	private TxTbNumeratorAutoCalculateDataSetDefinition hdsd;
-
+	
 	// HashMap<Integer, Concept> patientStatus = new HashMap<>();
 	private String title = "Number of ART patients who were started on TB treatment during the reporting period";
-
+	
 	@Autowired
 	private ConceptService conceptService;
-
+	
 	@Autowired
 	private EvaluationService evaluationService;
-
+	
 	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-			throws EvaluationException {
-
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+		
 		hdsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
 		context = evalContext;
-
+		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
-				getTBstartedInReportingPeriod());
+		    getTBstartedInReportingPeriod());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;
 	}
-
+	
 	public int getTBstartedInReportingPeriod() {
 		List<Integer> tbstarted = new ArrayList<>();
 		List<Obs> obstbstarted = new ArrayList<>();
@@ -83,7 +82,7 @@ public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements Dat
 		}
 		return tbstarted.size();
 	}
-
+	
 	public List<Integer> getDispenseDose() {
 		List<Integer> pList = getDatimValidTreatmentEndDatePatients();
 		List<Integer> patients = new ArrayList<>();
@@ -102,7 +101,7 @@ public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements Dat
 		}
 		return patients;
 	}
-
+	
 	private List<Integer> getDatimValidTreatmentEndDatePatients() {
 
 		List<Integer> patientsId = getListOfALiveORRestartPatientObservertions();
@@ -131,7 +130,7 @@ public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements Dat
 
 		return patients;
 	}
-
+	
 	private List<Integer> getListOfALiveORRestartPatientObservertions() {
 
 		List<Integer> uniqiObs = new ArrayList<>();

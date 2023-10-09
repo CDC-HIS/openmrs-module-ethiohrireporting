@@ -61,21 +61,18 @@ public class PrEPNewReport implements ReportManager {
 		AutoCalculatePrepNewDataSetDefinition aDataSetDefinition = new AutoCalculatePrepNewDataSetDefinition();
 		aDataSetDefinition.setParameters(getParameters());
 		aDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    EthiOhriUtil.map(aDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Auto-Calculate", EthiOhriUtil.map(aDataSetDefinition));
 		
 		PrEPNewDatasetDefinition dataSetDefinition = new PrEPNewDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
 		dataSetDefinition.setEncounterType(Context.getEncounterService()
 		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Disaggregated by Age / Sex",
-		    EthiOhriUtil.map(dataSetDefinition));
+		reportDefinition.addDataSetDefinition("Disaggregated by Age / Sex", EthiOhriUtil.map(dataSetDefinition));
 		
 		DisaggregatedByPopulationTypDatasetDefinition dDataSetDefinition = new DisaggregatedByPopulationTypDatasetDefinition();
 		dDataSetDefinition.setParameters(getParameters());
 		dDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Disaggregated by key population type",
-		    EthiOhriUtil.map(dDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Disaggregated by key population type", EthiOhriUtil.map(dDataSetDefinition));
 		
 		return reportDefinition;
 	}

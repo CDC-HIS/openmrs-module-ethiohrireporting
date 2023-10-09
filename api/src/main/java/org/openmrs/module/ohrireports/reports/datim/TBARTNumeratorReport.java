@@ -90,7 +90,7 @@ public class TBARTNumeratorReport implements ReportManager {
 		return Arrays.asList(design);
 		
 	}
-		
+	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {
 		return null;

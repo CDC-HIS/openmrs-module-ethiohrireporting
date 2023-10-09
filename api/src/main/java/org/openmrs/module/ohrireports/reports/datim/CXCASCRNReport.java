@@ -100,8 +100,7 @@ public class CXCASCRNReport implements ReportManager {
 		postTreatmentDatasetDefinition.setScreeningType(cxcaPostScreeningAfterTreatmentConcept);
 		postTreatmentDatasetDefinition.addParameters(getParameters());
 		postTreatmentDatasetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Post-treatment follow-up ",
-		    EthiOhriUtil.map(postTreatmentDatasetDefinition));
+		reportDefinition.addDataSetDefinition("Post-treatment follow-up ", EthiOhriUtil.map(postTreatmentDatasetDefinition));
 		
 		return reportDefinition;
 	}
@@ -113,7 +112,6 @@ public class CXCASCRNReport implements ReportManager {
 		return Arrays.asList(design);
 		
 	}
-	
 	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {

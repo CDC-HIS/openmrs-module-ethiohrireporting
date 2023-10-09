@@ -54,8 +54,6 @@ public class TransferInOutReport implements ReportManager {
 		return EthiOhriUtil.getDateRangeParameters();
 		
 	}
-
-	
 	
 	@Override
 	public ReportDefinition constructReportDefinition() {
@@ -69,12 +67,10 @@ public class TransferInOutReport implements ReportManager {
 		tDataSetDefinition.addParameters(getParameters());
 		tDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("TransferredInOut",
-		  EthiOhriUtil.map(tDataSetDefinition));
+		reportDefinition.addDataSetDefinition("TransferredInOut", EthiOhriUtil.map(tDataSetDefinition));
 		
-		  return reportDefinition;
+		return reportDefinition;
 	}
-
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {

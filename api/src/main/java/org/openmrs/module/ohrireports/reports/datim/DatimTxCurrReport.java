@@ -59,8 +59,7 @@ public class DatimTxCurrReport implements ReportManager {
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition.setDescription("Number of adults and children currently enrolling on antiretroviral therapy (ART)");
-		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    EthiOhriUtil.map(aDefinition));
+		reportDefinition.addDataSetDefinition("Auto-Calculate", EthiOhriUtil.map(aDefinition));
 		
 		TxCurrFineByAgeAndSexDataSetDefinition fDefinition = new TxCurrFineByAgeAndSexDataSetDefinition();
 		fDefinition.addParameters(getParameters());

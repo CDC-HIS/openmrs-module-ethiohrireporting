@@ -65,50 +65,45 @@ public class DatimTxMlReport implements ReportManager {
 		dDefinition.addParameters(getParameters());
 		dDefinition.setDescription("Disaggregated Outcome by Age/Sex");
 		dDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Required - Disaggregated Outcome by Age/Sex",
-		    EthiOhriUtil.map(dDefinition));
+		reportDefinition.addDataSetDefinition("Required - Disaggregated Outcome by Age/Sex", EthiOhriUtil.map(dDefinition));
 		
 		TxMlInterruptionlessthan3MonthsByAgeAndSexDataSetDefinition cDefinition = new TxMlInterruptionlessthan3MonthsByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());
 		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Interruption in Treatment After being on Treatment for < 3 months");
-		reportDefinition.addDataSetDefinition(
-		    "Conditional - Interruption in Treatment After being on Treatment for < 3 months",
-		    EthiOhriUtil.map(cDefinition));
+		reportDefinition
+		        .addDataSetDefinition("Conditional - Interruption in Treatment After being on Treatment for < 3 months",
+		            EthiOhriUtil.map(cDefinition));
 		
 		TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition tDefinition = new TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition();
 		tDefinition.addParameters(getParameters());
 		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		tDefinition.setDescription("Interruption in Treatment After being on Treatment for 3-5 months");
-		reportDefinition.addDataSetDefinition(
-		    "Conditional - Interruption in Treatment After being on Treatment for 3-5 months",
-		    EthiOhriUtil.map(tDefinition));
+		reportDefinition
+		        .addDataSetDefinition("Conditional - Interruption in Treatment After being on Treatment for 3-5 months",
+		            EthiOhriUtil.map(tDefinition));
 		
 		TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinition sDefinition = new TxMlInterruptionmorethan6MonthsByAgeAndSexDataSetDefinition();
 		sDefinition.addParameters(getParameters());
 		sDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		sDefinition.setDescription("Interruption in Treatment After being on Treatment for 6+ months");
 		reportDefinition.addDataSetDefinition(
-		    "Conditional - Interruption in Treatment After being on Treatment for 6+ months",
-		    EthiOhriUtil.map(sDefinition));
+		    "Conditional - Interruption in Treatment After being on Treatment for 6+ months", EthiOhriUtil.map(sDefinition));
 		
 		TxMlTransferOutByAgeAndSexDataSetDefinition oDefinition = new TxMlTransferOutByAgeAndSexDataSetDefinition();
 		oDefinition.addParameters(getParameters());
 		oDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		oDefinition.setDescription("Transferred out");
-		reportDefinition.addDataSetDefinition("Conditional - Transferred out",
-		    EthiOhriUtil.map(oDefinition));
+		reportDefinition.addDataSetDefinition("Conditional - Transferred out", EthiOhriUtil.map(oDefinition));
 		
 		TxMlRefusedByAgeAndSexDataSetDefinition rDefinition = new TxMlRefusedByAgeAndSexDataSetDefinition();
 		rDefinition.addParameters(getParameters());
 		rDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		rDefinition.setDescription("Refused(Stopped) Treatment");
-		reportDefinition.addDataSetDefinition("Conditional - Refused(Stopped) Treatment",
-		    EthiOhriUtil.map(rDefinition));
+		reportDefinition.addDataSetDefinition("Conditional - Refused(Stopped) Treatment", EthiOhriUtil.map(rDefinition));
 		
 		return reportDefinition;
 	}
-	
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {

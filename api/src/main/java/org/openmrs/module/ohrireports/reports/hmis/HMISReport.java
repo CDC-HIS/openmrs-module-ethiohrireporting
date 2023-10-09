@@ -90,7 +90,8 @@ public class HMISReport implements ReportManager {
 		hivArtRetDatasetDefinition.addParameters(getParameters());
 		hivArtRetDatasetDefinition.setNetRetention(false);
 		reportDefinition.addDataSetDefinition(
-		    "HMIS:Number of adults and children who are still on treatment at 12 months	after initiating ART", EthiOhriUtil.map(hivArtRetDatasetDefinition));
+		    "HMIS:Number of adults and children who are still on treatment at 12 months	after initiating ART",
+		    EthiOhriUtil.map(hivArtRetDatasetDefinition));
 		
 		HIVARTRETDatasetDefinition hivArtRetDatasetDefinitionNet = new HIVARTRETDatasetDefinition();
 		hivArtRetDatasetDefinitionNet.addParameters(getParameters());
@@ -247,14 +248,12 @@ public class HMISReport implements ReportManager {
 		HmisCxCaScrnDataSetDefinition cxcaScrn = new HmisCxCaScrnDataSetDefinition();
 		cxcaScrn.setParameters(getParameters());
 		cxcaScrn.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Cervical Cancer screening by type of test",
-		    EthiOhriUtil.map(cxcaScrn));
+		reportDefinition.addDataSetDefinition("Cervical Cancer screening by type of test", EthiOhriUtil.map(cxcaScrn));
 		
 		HmisCxCaRxDataSetDefinition cxcaRx = new HmisCxCaRxDataSetDefinition();
 		cxcaRx.setParameters(getParameters());
 		cxcaRx.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Treatment of precancerous cervical lesion",
-		    EthiOhriUtil.map(cxcaRx));
+		reportDefinition.addDataSetDefinition("Treatment of precancerous cervical lesion", EthiOhriUtil.map(cxcaRx));
 		
 		TbLbLfLamDataSetDefinition tblblflam = new TbLbLfLamDataSetDefinition();
 		tblblflam.setParameters(getParameters());

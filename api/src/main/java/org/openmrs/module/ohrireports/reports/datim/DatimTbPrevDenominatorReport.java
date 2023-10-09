@@ -23,27 +23,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatimTbPrevDenominatorReport implements ReportManager {
-
+	
 	@Override
 	public String getUuid() {
 		return "ee4aa4e7-3cbe-4f5e-881e-ec7699461f88";
 	}
-
+	
 	@Override
 	public String getName() {
 		return DATIM_REPORT + "-TB_PREV (Denominator)";
 	}
-
+	
 	@Override
 	public String getDescription() {
 		return "DSD: TB_PREV (Denominator)";
 	}
-
+	
 	@Override
 	public List<Parameter> getParameters() {
 		return EthiOhriUtil.getDateRangeParameters();
 	}
-
+	
 	@Override
 	public ReportDefinition constructReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
@@ -51,42 +51,40 @@ public class DatimTbPrevDenominatorReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
-
+		
 		TbPrevDominatorDatasetDefinition aDefinition = new TbPrevDominatorDatasetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setAggregateType(false);
 		aDefinition.setDescription("DSD: TB_PREV (Denominator)");
-		reportDefinition.addDataSetDefinition("DSD: TB_PREV (Denominator)",
-				EthiOhriUtil.map(aDefinition));
-
+		reportDefinition.addDataSetDefinition("DSD: TB_PREV (Denominator)", EthiOhriUtil.map(aDefinition));
+		
 		TbPrevDominatorDatasetDefinition aggDatasetDefinition = new TbPrevDominatorDatasetDefinition();
 		aggDatasetDefinition.setAggregateType(true);
 		aggDatasetDefinition.addParameters(getParameters());
 		aggDatasetDefinition.setDescription("DSD: TB_PREV Aggregation by age and sex");
 		reportDefinition.addDataSetDefinition("Required:Disaggregated by age and sex",
-				EthiOhriUtil.map(aggDatasetDefinition));
-
+		    EthiOhriUtil.map(aggDatasetDefinition));
+		
 		return reportDefinition;
 	}
-
+	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("50e85ddc-018b-4ea0-9412-248d566b587f",
-				reportDefinition);
-
+		ReportDesign design = ReportManagerUtil.createExcelDesign("50e85ddc-018b-4ea0-9412-248d566b587f", reportDefinition);
+		
 		return Arrays.asList(design);
-
+		
 	}
-
+	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {
 		return null;
 	}
-
+	
 	@Override
 	public String getVersion() {
 		return "1.0.0-SNAPSHOT";
-
+		
 	}
-
+	
 }

@@ -68,8 +68,8 @@ public class PMTCTARTReport implements ReportManager {
 		alreadyOnARTSetDefinition.addParameters(getParameters());
 		alreadyOnARTSetDefinition.setEncounterType(followUpEncounter);
 		
-		reportDefinition.addDataSetDefinition("Disaggregated by Regiment Type:",
-		    EthiOhriUtil.map(alreadyOnARTSetDefinition));
+		reportDefinition
+		        .addDataSetDefinition("Disaggregated by Regiment Type:", EthiOhriUtil.map(alreadyOnARTSetDefinition));
 		
 		PMTCTARTDataSetDefinition newlyEnrolledSetDefinition = new PMTCTARTDataSetDefinition();
 		newlyEnrolledSetDefinition.addParameters(getParameters());
@@ -88,7 +88,6 @@ public class PMTCTARTReport implements ReportManager {
 		return Arrays.asList(design);
 		
 	}
-	
 	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {

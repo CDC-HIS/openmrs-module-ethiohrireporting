@@ -22,28 +22,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatimTbPrevNumeratorReport implements ReportManager {
-
+	
 	@Override
 	public String getUuid() {
 		return "752tbpren-e57c-47d3-9dc3-57c4ad9e28bf";
 	}
-
+	
 	@Override
 	public String getName() {
 		return DATIM_REPORT + "-TB_PREV (Numerator)";
 	}
-
+	
 	@Override
 	public String getDescription() {
 		return "Aggregate report of  TB_Prev_Numerator patients";
 	}
-
+	
 	@Override
 	public List<Parameter> getParameters() {
 		return EthiOhriUtil.getDateRangeParameters();
-
+		
 	}
-
+	
 	@Override
 	public ReportDefinition constructReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
@@ -51,48 +51,43 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
-
+		
 		TbPrevNumeratorAutoCalculateDataSetDefinition aDefinition = new TbPrevNumeratorAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
+		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition
-				.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		aDefinition
-				.setDescription(
-						"Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy (for continuous IPT programs, this includes the patients who have completed the first 6 months of isoniazid preventive therapy (IPT), or any other standard course of TPT such as 3 months of weekly isoniazid and rifapentine, or 3-HP)");
+		        .setDescription("Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy (for continuous IPT programs, this includes the patients who have completed the first 6 months of isoniazid preventive therapy (IPT), or any other standard course of TPT such as 3 months of weekly isoniazid and rifapentine, or 3-HP)");
 		reportDefinition
-				.addDataSetDefinition(
-						"Auto-Calculate : Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy",
-						EthiOhriUtil.map(aDefinition));
-
+		        .addDataSetDefinition(
+		            "Auto-Calculate : Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy",
+		            EthiOhriUtil.map(aDefinition));
+		
 		TbPrevNumeratorARTByAgeAndSexDataSetDefinition cDefinition = new TbPrevNumeratorARTByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());
-		cDefinition
-				.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Disaggregated by ART by Age/Sex");
-		reportDefinition.addDataSetDefinition("Required : Disaggregated by ART by Age/Sex",
-				EthiOhriUtil.map(cDefinition));
-
+		reportDefinition.addDataSetDefinition("Required : Disaggregated by ART by Age/Sex", EthiOhriUtil.map(cDefinition));
+		
 		return reportDefinition;
 	}
-
+	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("6db2a9c6-9b2d-4684-8ae3-b2b7114331fc",
-				reportDefinition);
-
+		ReportDesign design = ReportManagerUtil.createExcelDesign("6db2a9c6-9b2d-4684-8ae3-b2b7114331fc", reportDefinition);
+		
 		return Arrays.asList(design);
-
+		
 	}
-
+	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {
 		return null;
 	}
-
+	
 	@Override
 	public String getVersion() {
 		return "1.0.0-SNAPSHOT";
-
+		
 	}
-
+	
 }

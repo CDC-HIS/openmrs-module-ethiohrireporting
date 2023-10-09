@@ -29,8 +29,6 @@ import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 
-
-
 @Component
 public class TX_New_Report implements ReportManager {
 	
@@ -67,10 +65,9 @@ public class TX_New_Report implements ReportManager {
 		htsNewDataSetDefinition.addParameters(getParameters());
 		htsNewDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("TX-New",
-		    EthiOhriUtil.map(htsNewDataSetDefinition));
+		reportDefinition.addDataSetDefinition("TX-New", EthiOhriUtil.map(htsNewDataSetDefinition));
 		
-			return reportDefinition;
+		return reportDefinition;
 	}
 	
 	@Override

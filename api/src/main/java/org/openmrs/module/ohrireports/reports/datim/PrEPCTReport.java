@@ -63,32 +63,27 @@ public class PrEPCTReport implements ReportManager {
 		AutoCalculatePrEPCTDatasetDefinition aDataSetDefinition = new AutoCalculatePrEPCTDatasetDefinition();
 		aDataSetDefinition.setParameters(getParameters());
 		aDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    EthiOhriUtil.map(aDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Auto-Calculate", EthiOhriUtil.map(aDataSetDefinition));
 		
 		PrEPCTDatasetDefinition dataSetDefinition = new PrEPCTDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
 		dataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Disaggregated by Age / Sex",
-		    EthiOhriUtil.map(dataSetDefinition));
+		reportDefinition.addDataSetDefinition("Disaggregated by Age / Sex", EthiOhriUtil.map(dataSetDefinition));
 		
 		PrEPCTTestResultDatasetDefinition prEPCTTestDataset = new PrEPCTTestResultDatasetDefinition();
 		prEPCTTestDataset.addParameters(getParameters());
 		prEPCTTestDataset.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Disaggregated by test result",
-		    EthiOhriUtil.map(prEPCTTestDataset));
+		reportDefinition.addDataSetDefinition("Disaggregated by test result", EthiOhriUtil.map(prEPCTTestDataset));
 		
 		PrEPCTByPopulationTypeDatasetDefinition prEPCTDataset = new PrEPCTByPopulationTypeDatasetDefinition();
 		prEPCTDataset.addParameters(getParameters());
 		prEPCTDataset.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Disaggregated by key population type",
-		    EthiOhriUtil.map(prEPCTDataset));
+		reportDefinition.addDataSetDefinition("Disaggregated by key population type", EthiOhriUtil.map(prEPCTDataset));
 		
 		PrEPCTPregnantBreastfeedingDatasetDefinition prEPCPFDataset = new PrEPCTPregnantBreastfeedingDatasetDefinition();
 		prEPCPFDataset.addParameters(getParameters());
 		prEPCPFDataset.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Disaggregated by Pregnant/Breastfeeding",
-		    EthiOhriUtil.map(prEPCPFDataset));
+		reportDefinition.addDataSetDefinition("Disaggregated by Pregnant/Breastfeeding", EthiOhriUtil.map(prEPCPFDataset));
 		
 		return reportDefinition;
 	}

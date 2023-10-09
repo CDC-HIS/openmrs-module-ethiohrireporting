@@ -59,8 +59,7 @@ public class DatimCxCaTxReport implements ReportManager {
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition
 		        .setDescription("Total Number of female clients Currently on ART and received treatment forCervical Cancer during the reporting period");
-		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    EthiOhriUtil.map(aDefinition));
+		reportDefinition.addDataSetDefinition("Auto-Calculate", EthiOhriUtil.map(aDefinition));
 		
 		CxCaTxByAgeandTreatmentTypeandScreeningVisitTypeDataSetDefinition fDefinition = new CxCaTxByAgeandTreatmentTypeandScreeningVisitTypeDataSetDefinition();
 		fDefinition.addParameters(getParameters());
@@ -81,8 +80,7 @@ public class DatimCxCaTxReport implements ReportManager {
 		pDefinition.addParameters(getParameters());
 		pDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		pDefinition.setDescription("Post treatment follow-up");
-		reportDefinition.addDataSetDefinition("Conditional Post treatment follow-up",
-		    EthiOhriUtil.map(pDefinition));
+		reportDefinition.addDataSetDefinition("Conditional Post treatment follow-up", EthiOhriUtil.map(pDefinition));
 		
 		return reportDefinition;
 	}
