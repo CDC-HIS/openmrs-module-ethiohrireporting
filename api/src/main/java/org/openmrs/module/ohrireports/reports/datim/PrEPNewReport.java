@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.AutoCalculatePrepNewDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.DisaggregatedByPopulationTypDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.PrEPNewDatasetDefinition;
@@ -43,15 +44,7 @@ public class PrEPNewReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(true);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(true);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -69,20 +62,20 @@ public class PrEPNewReport implements ReportManager {
 		aDataSetDefinition.setParameters(getParameters());
 		aDataSetDefinition.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    map(aDataSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(aDataSetDefinition));
 		
 		PrEPNewDatasetDefinition dataSetDefinition = new PrEPNewDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
 		dataSetDefinition.setEncounterType(Context.getEncounterService()
 		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Disaggregated by Age / Sex",
-		    map(dataSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(dataSetDefinition));
 		
 		DisaggregatedByPopulationTypDatasetDefinition dDataSetDefinition = new DisaggregatedByPopulationTypDatasetDefinition();
 		dDataSetDefinition.setParameters(getParameters());
 		dDataSetDefinition.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Disaggregated by key population type",
-		    map(dDataSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(dDataSetDefinition));
 		
 		return reportDefinition;
 	}
@@ -92,16 +85,6 @@ public class PrEPNewReport implements ReportManager {
 		ReportDesign design = ReportManagerUtil.createExcelDesign("ba0df56a-2902-4c7f-a32f-e7f552431105", reportDefinition);
 		
 		return Arrays.asList(design);
-	}
-	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
 	@Override

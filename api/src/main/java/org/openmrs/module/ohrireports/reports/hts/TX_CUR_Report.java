@@ -16,12 +16,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TxCurrDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.library.EncounterDataLibrary;
-import org.openmrs.module.ohrireports.reports.library.PatientDataLibrary;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -31,7 +27,6 @@ import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 

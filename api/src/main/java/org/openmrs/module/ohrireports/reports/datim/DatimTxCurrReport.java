@@ -7,6 +7,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.TxCurrARVDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.TxCurrAutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.TxCurrCoarseByAgeAndSexDataSetDefinition;
@@ -43,15 +44,7 @@ public class DatimTxCurrReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -67,21 +60,21 @@ public class DatimTxCurrReport implements ReportManager {
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition.setDescription("Number of adults and children currently enrolling on antiretroviral therapy (ART)");
 		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(aDefinition));
 		
 		TxCurrFineByAgeAndSexDataSetDefinition fDefinition = new TxCurrFineByAgeAndSexDataSetDefinition();
 		fDefinition.addParameters(getParameters());
 		fDefinition.setDescription("Disaggregated by Age/Sex (Fine disaggregate)");
 		fDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Required Disaggregated by Age/Sex (Fine disaggregate)",
-		    map(fDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(fDefinition));
 		
 		TxCurrCoarseByAgeAndSexDataSetDefinition cDefinition = new TxCurrCoarseByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());
 		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Disaggregated by Age/Sex (Coarse disaggregated)");
 		reportDefinition.addDataSetDefinition("Conditional Disaggregated by Age/Sex (Coarse disaggregated)",
-		    map(cDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(cDefinition));
 		
 		TxCurrARVDataSetDefinition arvDefinition = new TxCurrARVDataSetDefinition();
 		arvDefinition.addParameters(getParameters());
@@ -89,7 +82,7 @@ public class DatimTxCurrReport implements ReportManager {
 		arvDefinition.setDescription("Disaggregated by ARV Dispensing Quantity by Coarse Age/Sex ");
 		
 		reportDefinition.addDataSetDefinition("Required Disaggregated by ARV Dispensing Quantity by Coarse Age/Sex",
-		    map(arvDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(arvDefinition));
 		
 		TxCurrKeyPopulationTypeDataSetDefinition keyPopulationTypeDefinition = new TxCurrKeyPopulationTypeDataSetDefinition();
 		keyPopulationTypeDefinition.addParameters(getParameters());
@@ -98,7 +91,7 @@ public class DatimTxCurrReport implements ReportManager {
 		keyPopulationTypeDefinition.setDescription("Disaggregated by key population type");
 		
 		reportDefinition.addDataSetDefinition("Required Disaggregated by key population type",
-		    map(keyPopulationTypeDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(keyPopulationTypeDefinition));
 		
 		return reportDefinition;
 	}
