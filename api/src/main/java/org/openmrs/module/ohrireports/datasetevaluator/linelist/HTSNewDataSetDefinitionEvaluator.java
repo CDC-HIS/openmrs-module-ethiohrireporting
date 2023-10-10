@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { HTSNewDataSetDefinition.class })
 public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
-	@Autowired
-	private PatientService patientService;
 	
 	@Autowired
 	private ArtQuery artQuery;
@@ -46,10 +44,9 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		patientQuery = Context.getService(PatientQueryService.class);
 		
 		Cohort cohort = patientQuery.getOnArtCohorts("", hdsd.getStartDate(), hdsd.getEndDate(), null);
-		
-		PatientIdentifierType mrnIdentifierType = patientService.getPatientIdentifierTypeByUuid(MRN_PATIENT_IDENTIFIERS);
-		PatientIdentifierType openmrsIdentifierType = patientService
-		        .getPatientIdentifierTypeByUuid(OPENMRS_PATIENT_IDENTIFIERS);
+	
+		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> openMRSIdentifierHashMap = artQuery.getIdentifier(cohort, OPENMRS_PATIENT_IDENTIFIERS);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
 		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(cohort, hdsd.getStartDate(), hdsd.getEndDate());
@@ -63,11 +60,10 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			Date date = artQuery.getDate(artStartDictionary.get(person.getPersonId()));
 			String ethiopianDate = artQuery.getEthiopianDate(date);
-			Patient patient = patientService.getPatient(person.getPersonId());
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
-			    patient.getPatientIdentifier(mrnIdentifierType));
+						row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
+			    mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("OpenMRS-ID", "OpenMRS ID", Integer.class),
-			    patient.getPatientIdentifier(openmrsIdentifierType));
+			    openMRSIdentifierHashMap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(date));
