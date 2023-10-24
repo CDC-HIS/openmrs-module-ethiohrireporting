@@ -24,11 +24,14 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.*;
 
 @Handler(supports = { HmisArtTptDataSetDefinition.class })
 public class HmisArtTptDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private EvaluationContext context;
+	private String baseName = "HIV_ART_TPT";
+	private String COLUMN_3_NAME = "Number";
 	
 	private HmisArtTptDataSetDefinition hdsd;
 		
@@ -44,49 +47,61 @@ public class HmisArtTptDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		hdsd = (HmisArtTptDataSetDefinition) dataSetDefinition;
 		context = evalContext;
-	
-		MapDataSet data = new MapDataSet(dataSetDefinition, context);
+
+		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);	
 				
-        data.addData(new DataSetColumn("HIV_ART_TPT.1","Number of ART patients who started on a standard course of TB Preventive Treatment (TPT) in the reporting period",String.class)
-		," ");
+        data.addRow(buildColumn(".1","Number of ART patients who started on a standard course of TB Preventive Treatment (TPT) in the reporting period",0));
 		obses = getTPTTreatmentBYType(TB_PROPHYLAXIS_TYPE,TB_PROPHYLAXIS_TYPE_INH);
-        data.addData(new DataSetColumn("HIV_ART_TPT_6H","Patients on 6H",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_ART_TPT_6H. 1","< 15 years, Male",Integer.class)
-		,gettbscrnByAgeAndGender(0,15,Gender.Male));
-		data.addData(new DataSetColumn("HIV_ART_TPT_6H. 2","< 15 years, female",Integer.class)
-		,gettbscrnByAgeAndGender(0,15,Gender.Female));
-		data.addData(new DataSetColumn("HIV_ART_TPT_6H. 3",">= 15 years, Male",Integer.class)
-		,gettbscrnByAgeAndGender(15,150,Gender.Male));
-		data.addData(new DataSetColumn("HIV_ART_TPT_6H. 4",">= 15 years, female",Integer.class)
-		,gettbscrnByAgeAndGender(15,150,Gender.Female));
+        data.addRow(buildColumn("_6H","Patients on 6H"
+		,obses.size()));
+		data.addRow(buildColumn("_6H. 1","< 15 years, Male"
+		,gettbscrnByAgeAndGender(0,15,Gender.Male)));
+		data.addRow(buildColumn("_6H. 2","< 15 years, female"
+		,gettbscrnByAgeAndGender(0,15,Gender.Female)));
+		data.addRow(buildColumn("_6H. 3",">= 15 years, Male"
+		,gettbscrnByAgeAndGender(15,150,Gender.Male)));
+		data.addRow(buildColumn("_6H. 4",">= 15 years, female"
+		,gettbscrnByAgeAndGender(15,150,Gender.Female)));
 
 		
 		obses = getTPTTreatmentBYType(TB_PROPHYLAXIS_TYPE_ALTERNATE,TB_PROPHYLAXIS_TYPE_ALTERNATE_3HP);
-        data.addData(new DataSetColumn("HIV_ART_TPT_3HP","Patients on 3HP",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HP. 1","< 15 years, Male",Integer.class)
-		,gettbscrnByAgeAndGender(0,15,Gender.Male));
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HP. 2","< 15 years, female",Integer.class)
-		,gettbscrnByAgeAndGender(0,15,Gender.Female));
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HP. 3",">= 15 years, Male",Integer.class)
-		,gettbscrnByAgeAndGender(15,150,Gender.Male));
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HP. 4",">= 15 years, female",Integer.class)
-		,gettbscrnByAgeAndGender(15,150,Gender.Female));
+        data.addRow(buildColumn("_3HP","Patients on 3HP"
+		,obses.size()));
+		data.addRow(buildColumn("_3HP. 1","< 15 years, Male"
+		,gettbscrnByAgeAndGender(0,15,Gender.Male)));
+		data.addRow(buildColumn("_3HP. 2","< 15 years, female"
+		,gettbscrnByAgeAndGender(0,15,Gender.Female)));
+		data.addRow(buildColumn("_3HP. 3",">= 15 years, Male"
+		,gettbscrnByAgeAndGender(15,150,Gender.Male)));
+		data.addRow(buildColumn("_3HP. 4",">= 15 years, female"
+		,gettbscrnByAgeAndGender(15,150,Gender.Female)));
 
 		obses = getTPTTreatmentBYType(TB_PROPHYLAXIS_TYPE_ALTERNATE,TB_PROPHYLAXIS_TYPE_ALTERNATE_3HR);
-        data.addData(new DataSetColumn("HIV_ART_TPT_3HR","Patients on 3HR",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HR. 1","< 15 years, Male",Integer.class)
-		,gettbscrnByAgeAndGender(0,15,Gender.Male));
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HR. 2","< 15 years, female",Integer.class)
-		,gettbscrnByAgeAndGender(0,15,Gender.Female));
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HR. 3",">= 15 years, Male",Integer.class)
-		,gettbscrnByAgeAndGender(15,150,Gender.Male));
-		data.addData(new DataSetColumn("HIV_ART_TPT_3HR. 4",">= 15 years, female",Integer.class)
-		,gettbscrnByAgeAndGender(15,150,Gender.Female));
+        data.addRow(buildColumn("_3HR","Patients on 3HR"
+		,obses.size()));
+		data.addRow(buildColumn("_3HR. 1","< 15 years, Male"
+		,gettbscrnByAgeAndGender(0,15,Gender.Male)));
+		data.addRow(buildColumn("_3HR. 2","< 15 years, female"
+		,gettbscrnByAgeAndGender(0,15,Gender.Female)));
+		data.addRow(buildColumn("_3HR. 3",">= 15 years, Male"
+		,gettbscrnByAgeAndGender(15,150,Gender.Male)));
+		data.addRow(buildColumn("_3HR. 4",">= 15 years, female"
+		,gettbscrnByAgeAndGender(15,150,Gender.Female)));
 
 		return data;
+	}
+	private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
+		DataSetRow hivCxcarxDataSetRow = new DataSetRow();
+		hivCxcarxDataSetRow.addColumnValue(
+				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+				baseName + "" + col_1_value);
+		hivCxcarxDataSetRow.addColumnValue(
+				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+		
+		hivCxcarxDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
+				col_3_value);
+		
+		return hivCxcarxDataSetRow;
 	}
 	
 	private Integer gettbscrnByAgeAndGender(int minAge, int maxAge, Gender gender) {

@@ -13,7 +13,9 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.cxca_scrn.HmisCxCaScrnDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
+import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.MapDataSet;
+import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -21,11 +23,14 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.*;
 
 @Handler(supports = { HmisCxCaScrnDataSetDefinition.class })
 public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private EvaluationContext context;
+	private String baseName = "HIV_CXCA_SCRN. ";
+	private String COLUMN_3_NAME = "Number";
 	
 	private HmisCxCaScrnDataSetDefinition hdsd;
 		
@@ -44,81 +49,92 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
 		hdsd = (HmisCxCaScrnDataSetDefinition) dataSetDefinition;
 		context = evalContext;
 		cxcaScreenedPatientsID=getPatientByScreeningType();
-		MapDataSet data = new MapDataSet(dataSetDefinition, context);
-				
-        data.addData(new DataSetColumn("HIV_CXCA_SCRN.1","Cervical Cancer screening by type of test",String.class)
-		," ");
-        data.addData(new DataSetColumn("HIV_CXCA_SCRN.1. 1","Screened by VIA",Integer.class)
-		,getVIAScreeningPatients());
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.1. 2","Screened by HPV DNA",Integer.class)
-		,getHPVANDDNAScreeningPatients());
+		
+		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);	
 
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2","VIA Screening Result",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
+		data.addRow(buildColumn("1","Cervical Cancer screening by type of test",0));
+        data.addRow(buildColumn("1. 1","Screened by VIA",getVIAScreeningPatients()));
+		data.addRow(buildColumn("1. 2","Screened by HPV DNA", getHPVANDDNAScreeningPatients()));
+		data.addRow(buildColumn("2","VIA Screening Result",gettbscrnByAgeAndGender(20,24,Gender.Female)));
 		viaScreeningResultConcept=conceptService.getConceptByUuid(VIA_SCREENING_RESULT);
 		viaNegativeConcept = conceptService.getConceptByUuid(VIA_NEGATIVE);
         viaPositiveConcept = conceptService.getConceptByUuid(VIA_POSITIVE);
         viaSuspiciousConcept = conceptService.getConceptByUuid(VIA_SUSPICIOUS_RESULT);
-      
+
 		obses = getScreeningTypeCohort(viaScreeningResultConcept, viaNegativeConcept);
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.1","Normal cervix:",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.1. 1","15 - 19 years",Integer.class)
-		,gettbscrnByAgeAndGender(15,19,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.1. 2","20 - 24 years",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.1. 3","25 - 29 years",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.1. 4","30 - 49 years",Integer.class)
-		,gettbscrnByAgeAndGender(30,49,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.1. 5",">= 50 years",Integer.class)
-		,gettbscrnByAgeAndGender(51,150,Gender.Female));
+		data.addRow(buildColumn("2.1","Normal cervix:"
+		,gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("2.1. 1","15 - 19 years"
+		,gettbscrnByAgeAndGender(15,19,Gender.Female)));
+		data.addRow(buildColumn("2.1. 2","20 - 24 years"
+		,gettbscrnByAgeAndGender(20,24,Gender.Female)));
+		data.addRow(buildColumn("2.1. 3","25 - 29 years"
+		,gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("2.1. 4","30 - 49 years"
+		,gettbscrnByAgeAndGender(30,49,Gender.Female)));
+		data.addRow(buildColumn("2.1. 5",">= 50 years"
+		,gettbscrnByAgeAndGender(51,150,Gender.Female)));
 		
 		obses = getScreeningTypeCohort(viaScreeningResultConcept, viaPositiveConcept);
-        data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.3","Precancerous Lesion:",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.3. 1","15 - 19 years",Integer.class)
-		,gettbscrnByAgeAndGender(15,19,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.3. 2","20 - 24 years",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.3. 3","25 - 29 years",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.3. 4","30 - 49 years",Integer.class)
-		,gettbscrnByAgeAndGender(30,49,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.3. 5",">= 50 years",Integer.class)
-		,gettbscrnByAgeAndGender(51,150,Gender.Female));
+        data.addRow(buildColumn("2.3","Precancerous Lesion:"
+		,gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("2.3. 1","15 - 19 years"
+		,gettbscrnByAgeAndGender(15,19,Gender.Female)));
+		data.addRow(buildColumn("2.3. 2","20 - 24 years"
+		,gettbscrnByAgeAndGender(20,24,Gender.Female)));
+		data.addRow(buildColumn("2.3. 3","25 - 29 years"
+		,gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("2.3. 4","30 - 49 years"
+		,gettbscrnByAgeAndGender(30,49,Gender.Female)));
+		data.addRow(buildColumn("2.3. 5",">= 50 years"
+		,gettbscrnByAgeAndGender(51,150,Gender.Female)));
 
 		obses = getScreeningTypeCohort(viaScreeningResultConcept, viaSuspiciousConcept);
-        data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.4","Suspecious cancerous Lesion:",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.4. 1","15 - 19 years",Integer.class)
-		,gettbscrnByAgeAndGender(15,19,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.4. 2","20 - 24 years",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.4. 3","25 - 29 years",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.4. 4","30 - 49 years",Integer.class)
-		,gettbscrnByAgeAndGender(30,49,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.4. 5",">= 50 years",Integer.class)
-		,gettbscrnByAgeAndGender(51,150,Gender.Female));
+        data.addRow(buildColumn("2.4","Suspecious cancerous Lesion:"
+		,obses.size()));
+		data.addRow(buildColumn("2.4. 1","15 - 19 years"
+		,gettbscrnByAgeAndGender(15,19,Gender.Female)));
+		data.addRow(buildColumn("2.4. 2","20 - 24 years"
+		,gettbscrnByAgeAndGender(20,24,Gender.Female)));
+		data.addRow(buildColumn("2.4. 3","25 - 29 years"
+		,gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("2.4. 4","30 - 49 years"
+		,gettbscrnByAgeAndGender(30,49,Gender.Female)));
+		data.addRow(buildColumn("2.4. 5",">= 50 years"
+		,gettbscrnByAgeAndGender(51,150,Gender.Female)));
 
 		hpvAndDNAScreeningResultConcept = conceptService.getConceptByUuid(HPV_DNA_SCREENING_RESULT);
 		positiveConcept = conceptService.getConceptByUuid(POSITIVE);
 		obses = getScreeningTypeCohort(hpvAndDNAScreeningResultConcept, positiveConcept);
-        data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.5","HPV DNA test positive:",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.5. 1","15 - 19 years",Integer.class)
-		,gettbscrnByAgeAndGender(15,19,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.5. 2","20 - 24 years",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.5. 3","25 - 29 years",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.5. 4","30 - 49 years",Integer.class)
-		,gettbscrnByAgeAndGender(30,49,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_SCRN.2.5. 5",">= 50 years",Integer.class)
-		,gettbscrnByAgeAndGender(51,150,Gender.Female));
+        data.addRow(buildColumn("2.5","HPV DNA test positive:"
+		,obses.size()));
+		data.addRow(buildColumn("2.5. 1","15 - 19 years"
+		,gettbscrnByAgeAndGender(15,19,Gender.Female)));
+		data.addRow(buildColumn("2.5. 2","20 - 24 years"
+		,gettbscrnByAgeAndGender(20,24,Gender.Female)));
+		data.addRow(buildColumn("2.5. 3","25 - 29 years"
+		,gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("2.5. 4","30 - 49 years"
+		,gettbscrnByAgeAndGender(30,49,Gender.Female)));
+		data.addRow(buildColumn("2.5. 5",">= 50 years"
+		,gettbscrnByAgeAndGender(51,150,Gender.Female)));
+
 
 		return data;
+	}
+
+	private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
+		DataSetRow hivCxcarxDataSetRow = new DataSetRow();
+		hivCxcarxDataSetRow.addColumnValue(
+				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+				baseName + "" + col_1_value);
+		hivCxcarxDataSetRow.addColumnValue(
+				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+		
+		hivCxcarxDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
+				col_3_value);
+		
+		return hivCxcarxDataSetRow;
 	}
 	
 	private Integer gettbscrnByAgeAndGender(int minAge, int maxAge, Gender gender) {

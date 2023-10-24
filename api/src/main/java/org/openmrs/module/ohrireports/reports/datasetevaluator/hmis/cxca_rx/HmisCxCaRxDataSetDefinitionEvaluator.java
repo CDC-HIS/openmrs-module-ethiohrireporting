@@ -10,7 +10,9 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.cxca_rx.HmisCxCaRxDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
+import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.MapDataSet;
+import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -18,12 +20,13 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.*;
 @Handler(supports = { HmisCxCaRxDataSetDefinition.class })
 public class HmisCxCaRxDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private EvaluationContext context;
-	
+	private String baseName = "HIV_CXCA_RX. ";
+	private String COLUMN_3_NAME = "Number";
 	private HmisCxCaRxDataSetDefinition hdsd;
 		
 	@Autowired
@@ -38,56 +41,49 @@ public class HmisCxCaRxDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		hdsd = (HmisCxCaRxDataSetDefinition) dataSetDefinition;
 		context = evalContext;
-	
-		MapDataSet data = new MapDataSet(dataSetDefinition, context);
-				
-        data.addData(new DataSetColumn("HIV_CXCA_RX","Treatment of precancerous cervical lesion",String.class)
-		," ");
+		
+		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);	
+		data.addRow(buildColumn("","Treatment of precancerous cervical lesion",0));
 		obses = getByScreenType(CXCA_TREATMENT_TYPE_CRYOTHERAPY);
-        data.addData(new DataSetColumn("HIV_CXCA_RX.1","Treatment with Cryotherapy",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_CXCA_RX.1. 1","15 - 19 years",Integer.class)
-		,gettbscrnByAgeAndGender(15,19,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.1. 2","20 - 24 years",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.1. 3","25 - 29 years",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.1. 4","30 - 49 years",Integer.class)
-		,gettbscrnByAgeAndGender(30,49,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.1. 5",">= 50 years",Integer.class)
-		,gettbscrnByAgeAndGender(51,150,Gender.Female));
+		data.addRow(buildColumn("1", "Treatment with Cryotherapy",obses.size()));
+		data.addRow(buildColumn("1. 1", "15 - 19 years",gettbscrnByAgeAndGender(15,19,Gender.Female)));
+
+		data.addRow(buildColumn("1. 2","20 - 24 years", gettbscrnByAgeAndGender(20,24,Gender.Female)));
+		data.addRow(buildColumn("1. 3","25 - 29 years", gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("1. 4","30 - 49 years", gettbscrnByAgeAndGender(30,49,Gender.Female)));
+		data.addRow(buildColumn("1. 5",">= 50 years",gettbscrnByAgeAndGender(51,150,Gender.Female)));
 		
 		obses = getByScreenType(CXCA_TREATMENT_TYPE_LEEP);
-        data.addData(new DataSetColumn("HIV_CXCA_RX.2","Treatment with LEEP",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_CXCA_RX.2. 1","15 - 19 years",Integer.class)
-		,gettbscrnByAgeAndGender(15,19,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.2. 2","20 - 24 years",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.2. 3","25 - 29 years",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.2. 4","30 - 49 years",Integer.class)
-		,gettbscrnByAgeAndGender(30,49,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.2. 5",">= 50 years",Integer.class)
-		,gettbscrnByAgeAndGender(51,150,Gender.Female));
+        data.addRow(buildColumn("2","Treatment with LEEP",obses.size()));
+		data.addRow(buildColumn("2. 1","15 - 19 years", gettbscrnByAgeAndGender(15,19,Gender.Female)));
+		data.addRow(buildColumn("2. 2","20 - 24 years", gettbscrnByAgeAndGender(20,24,Gender.Female)));
+		data.addRow(buildColumn("2. 3","25 - 29 years", gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("2. 4","30 - 49 years", gettbscrnByAgeAndGender(30,49,Gender.Female)));
+		data.addRow(buildColumn("2. 5",">= 50 years", gettbscrnByAgeAndGender(51,150,Gender.Female)));
 
 		obses = getByScreenType(CXCA_TREATMENT_TYPE_THERMOCOAGULATION);
-        data.addData(new DataSetColumn("HIV_CXCA_RX.3","Treatment with Thermal Ablation/Thermocoagulation",Integer.class)
-		,obses.size());
-		data.addData(new DataSetColumn("HIV_CXCA_RX.3. 1","15 - 19 years",Integer.class)
-		,gettbscrnByAgeAndGender(15,19,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.3. 2","20 - 24 years",Integer.class)
-		,gettbscrnByAgeAndGender(20,24,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.3. 3","25 - 29 years",Integer.class)
-		,gettbscrnByAgeAndGender(25,29,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.3. 4","30 - 49 years",Integer.class)
-		,gettbscrnByAgeAndGender(30,49,Gender.Female));
-		data.addData(new DataSetColumn("HIV_CXCA_RX.3. 5",">= 50 years",Integer.class)
-		,gettbscrnByAgeAndGender(51,150,Gender.Female));
-
+        data.addRow(buildColumn("3","Treatment with Thermal Ablation/Thermocoagulation",obses.size()));
+		data.addRow(buildColumn("3. 1","15 - 19 years",gettbscrnByAgeAndGender(15,19,Gender.Female)));
+		data.addRow(buildColumn("3. 2","20 - 24 years",gettbscrnByAgeAndGender(20,24,Gender.Female)));
+		data.addRow(buildColumn("3. 3","25 - 29 years",gettbscrnByAgeAndGender(25,29,Gender.Female)));
+		data.addRow(buildColumn("3. 4","30 - 49 years", gettbscrnByAgeAndGender(30,49,Gender.Female)));
+		data.addRow(buildColumn("3. 5",">= 50 years", gettbscrnByAgeAndGender(51,150,Gender.Female)));
+	
 		return data;
 	}
-	
+	private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
+		DataSetRow hivCxcarxDataSetRow = new DataSetRow();
+		hivCxcarxDataSetRow.addColumnValue(
+				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+				baseName + "" + col_1_value);
+		hivCxcarxDataSetRow.addColumnValue(
+				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+		
+		hivCxcarxDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
+				col_3_value);
+		
+		return hivCxcarxDataSetRow;
+	}
 	private Integer gettbscrnByAgeAndGender(int minAge, int maxAge, Gender gender) {
         int _age = 0;
 		List<Integer> patients = new ArrayList<>();
