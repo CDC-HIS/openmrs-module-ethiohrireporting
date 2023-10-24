@@ -23,7 +23,7 @@ import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import antlr.collections.List;
+;
 
 @Component
 public class HivPlvHivQuery extends PatientQueryImpDao {

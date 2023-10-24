@@ -16,6 +16,10 @@ public interface PatientQueryDao {
 	Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
 	        Cohort toBeExcludedCohort);
 	
+	public List<Integer> getBaseEncounters(Date start, Date end);
+	
+	public List<Integer> init(Date endDate);
+	
 	Cohort getActiveOnArtCohort();
 	
 	Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort);

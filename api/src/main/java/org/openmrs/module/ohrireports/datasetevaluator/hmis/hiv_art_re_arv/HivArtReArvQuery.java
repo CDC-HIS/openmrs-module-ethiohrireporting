@@ -32,12 +32,15 @@ public class HivArtReArvQuery extends PatientQueryImpDao {
 	public void setDates(Date _start, Date _date) {
 		startDate = _start;
 		endDate = _date;
+		
 	}
 	
 	public Set<Integer> getArvPatients() {
-		String subQuery = "and ob.concept_id = (select concept_id from concept where uuid ='" + FOLLOW_UP_STATUS
-		        + "' limit 1) and ob.value_coded = (select concept_id from concept where uuid = '" + RESTART + "' limit 1)";
-		StringBuilder sql = personIdQuery(arvBaseQuery(), subQuery);
+		String outerQuery = "and " + PERSON_ID_ALIAS_OBS + "concept_id = (select concept_id from concept where uuid ='"
+		        + FOLLOW_UP_STATUS + "' limit 1) and " + PERSON_ID_ALIAS_OBS
+		        + "value_coded = (select concept_id from concept where uuid = '" + RESTART + "' limit 1)";
+		
+		StringBuilder sql = personIdQuery(arvBaseQuery(), outerQuery);
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
 		query.setDate("startDate", startDate);
@@ -47,7 +50,8 @@ public class HivArtReArvQuery extends PatientQueryImpDao {
 	}
 	
 	private String arvBaseQuery() {
-		return "obs.concept_id=" + conceptQuery(ART_START_DATE)
-		        + " and obs.value_datetime >= :startDate and obs.value_datetime <= :endDate ";
+		return "" + PERSON_ID_SUB_ALIAS_OBS + "concept_id=" + conceptQuery(ART_START_DATE) + " and "
+		        + PERSON_ID_SUB_ALIAS_OBS + "value_datetime >= :startDate and " + PERSON_ID_SUB_ALIAS_OBS
+		        + "value_datetime <= :endDate ";
 	}
 }

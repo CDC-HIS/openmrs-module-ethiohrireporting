@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr;
 
 import java.util.Date;
 
+import org.openmrs.Cohort;
 import org.openmrs.EncounterType;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
@@ -18,6 +19,17 @@ public class TxCurrAutoCalculateDataSetDefinition extends BaseDataSetDefinition 
 	
 	@ConfigurationProperty
 	private EncounterType encounterType;
+	
+	@ConfigurationProperty
+	private Cohort baseCohort;
+	
+	public Cohort getBaseCohort() {
+		return baseCohort;
+	}
+	
+	public void setBaseCohort(Cohort baseCohort) {
+		this.baseCohort = baseCohort;
+	}
 	
 	public Date getStartDate() {
 		return startDate;

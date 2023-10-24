@@ -38,17 +38,27 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		patientQuery = Context.getService(PatientQueryService.class);
-		
+		List<Integer> latestEncounters = patientQuery
+		        .getBaseEncountersByFollowUpDate(hdsd.getStartDate(), hdsd.getEndDate());
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
-		HashMap<Integer, Object> treatmentHashMap = artQuery.getTreatmentEndDates(cohort, hdsd.getEndDate());
+		HashMap<Integer, Object> treatmentHashMap = artQuery.getTreatmentEndDates(cohort, hdsd.getEndDate(),
+		    latestEncounters);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> openMRSIdentifierHashMap = artQuery.getIdentifier(cohort, OPENMRS_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(cohort, hdsd.getStartDate(), hdsd.getEndDate());
 		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(cohort, hdsd.getStartDate(), hdsd.getEndDate());
-		
 		DataSetRow row = new DataSetRow();
+		
+		if (persons.size() > 0) {
+			
+			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+			
+			data.addRow(row);
+		}
+		
 		for (Person person : persons) {
 			
 			// row should be filled with only patient data
@@ -57,9 +67,6 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
-			
-			row.addColumnValue(new DataSetColumn("OpenMRS", "OpenMRS ID", String.class),
-			    getStringIdentifier(openMRSIdentifierHashMap.get(person.getPersonId())));
 			
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
 			
@@ -78,14 +85,6 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 		}
 		
-		if (persons.size() > 0) {
-			
-			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("OpenMRS", "OpenMRS ID", Integer.class), persons.size());
-			
-			data.addRow(row);
-		}
 		return data;
 	}
 	

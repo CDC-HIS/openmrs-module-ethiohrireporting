@@ -38,7 +38,8 @@ public class CoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalu
 		patientQuery = Context.getService(PatientQueryService.class);
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		DataSetRow femaleDateSet = new DataSetRow();
-		Cohort femalCohort = patientQuery.getOnArtCohorts("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		
+		Cohort femalCohort = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		
 		List<Person> persons = patientQuery.getPersons(femalCohort);
 		
@@ -53,7 +54,7 @@ public class CoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalu
 		set.addRow(femaleDateSet);
 		
 		persons.clear();
-		Cohort maleCohort = patientQuery.getOnArtCohorts("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort maleCohort = patientQuery.getNewOnArtCohort("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		persons = patientQuery.getPersons(maleCohort);
 		DataSetRow maleDataSet = new DataSetRow();
 		maleDataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Male");

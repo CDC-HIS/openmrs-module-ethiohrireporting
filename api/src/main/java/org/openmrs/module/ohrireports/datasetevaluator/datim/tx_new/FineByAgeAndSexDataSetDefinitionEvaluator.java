@@ -43,9 +43,6 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 	
 	private PatientQueryService patientQuery;
 	
-	@Autowired
-	private EvaluationService evaluationService;
-	
 	private int minCount = 0;
 	
 	private int maxCount = 4;
@@ -56,9 +53,10 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 		hdsd = (FineByAgeAndSexDataSetDefinition) dataSetDefinition;
 		context = evalContext;
 		patientQuery = Context.getService(PatientQueryService.class);
+		
 		artConcept = conceptService.getConceptByUuid(ART_START_DATE);
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		Cohort femaleCohort = patientQuery.getOnArtCohorts("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort femaleCohort = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		
 		// Female aggregation
 		List<Person> persons = patientQuery.getPersons(femaleCohort);
@@ -69,7 +67,7 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 		persons.clear();
 		
 		// Male aggregation
-		Cohort maleCohort = patientQuery.getOnArtCohorts("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort maleCohort = patientQuery.getNewOnArtCohort("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		persons = patientQuery.getPersons(maleCohort);
 		
 		DataSetRow maleDataSet = new DataSetRow();

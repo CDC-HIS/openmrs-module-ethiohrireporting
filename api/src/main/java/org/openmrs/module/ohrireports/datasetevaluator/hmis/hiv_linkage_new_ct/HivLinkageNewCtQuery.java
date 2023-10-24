@@ -20,8 +20,10 @@ import java.util.Set;
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +49,6 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
 
 		starDate = startOnOrAfter;
 		endDate = endOnOrBefore;
-
 		allCohort.addAll(getTotalCohort().getMemberIds());
 		totalOnHivePatient = allCohort.size();
 

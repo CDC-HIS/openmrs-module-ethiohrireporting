@@ -66,8 +66,9 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	 * Newly enrolled patients to Prep
 	 */
 	private String getSubQueryClauses() {
-		String subQueryClauses = "obs.concept_id =" + conceptQuery(PR_EP_STARTED)
-		        + " and obs.voided = false and obs.value_datetime >= :endOnOrAfter  ";
+		String subQueryClauses = "" + PERSON_ID_SUB_ALIAS_OBS + "concept_id =" + conceptQuery(PR_EP_STARTED) + " and "
+		        + PERSON_ID_SUB_ALIAS_OBS + "voided = false and " + PERSON_ID_SUB_ALIAS_OBS
+		        + "value_datetime >= :endOnOrAfter  ";
 		return subQueryClauses;
 	}
 	
@@ -75,14 +76,15 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	 * curr concerned more about the drug they are taking
 	 */
 	private String getCurrQueryClauses() {
-		String subQueryClauses = " obs.value_coded in (:drugs) and obs.voided = false and  obs.obs_datetime >= :endOnOrAfter ";
+		String subQueryClauses = " " + PERSON_ID_SUB_ALIAS_OBS + "value_coded in (:drugs) and " + PERSON_ID_SUB_ALIAS_OBS
+		        + "voided = false and  " + PERSON_ID_SUB_ALIAS_OBS + "obs_datetime >= :endOnOrAfter ";
 		return subQueryClauses;
 	}
 	
 	public Integer getFemaleSexWorkerOnPrep(Boolean isCurrent) {
 		
-		String condition = " and  ob.concept_id =" + conceptQuery(FEMALE_SEX_WORKER) + " and ob.value_coded = "
-		        + conceptQuery(YES) + "";
+		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id =" + conceptQuery(FEMALE_SEX_WORKER) + " and "
+		        + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(YES) + " ";
 		StringBuilder sql = personIdQuery(isCurrent ? getCurrQueryClauses() : getSubQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
@@ -98,7 +100,7 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public Integer getDiscordantCoupleOnPrep(Boolean isCurrent) {
 		
-		String condition = " and  ob.value_coded = " + conceptQuery(DISCORDANT_COUPLE) + "";
+		String condition = " and " + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(DISCORDANT_COUPLE) + "";
 		StringBuilder sql = personIdQuery(isCurrent ? getCurrQueryClauses() : getSubQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
@@ -122,8 +124,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public Integer getCountByExposureType(String uuid) {
 		
-		String condition = " and ob.concept_id =" + conceptQuery(EXPOSURE_TYPE) + " and ob.value_coded = "
-		        + conceptQuery(uuid) + "";
+		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id =" + conceptQuery(EXPOSURE_TYPE) + " and "
+		        + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(uuid) + "";
 		StringBuilder sql = personIdQuery(getCurrQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());

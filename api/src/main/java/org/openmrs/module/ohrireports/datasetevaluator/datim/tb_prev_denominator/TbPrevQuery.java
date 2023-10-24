@@ -38,10 +38,10 @@ public class TbPrevQuery extends BaseEthiOhriQuery {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(startDate);
 		calendar.add(Calendar.MONTH, MONTH_TO_BE_DEDUCT);
-		
 		_startDate = calendar.getTime();
 		_endDate = endDate;
 		_patientQuery = Context.getService(PatientQueryService.class);
+		
 	}
 	
 	// We don't consider patients if wether they are on ART or not, for counting
@@ -83,7 +83,7 @@ public class TbPrevQuery extends BaseEthiOhriQuery {
 	public List<Person> getOnArtNewAndOnTbPrevPatient(String gender) {
         List<Person> _personList = new ArrayList<>();
 
-        Cohort cohort = _patientQuery.getOnArtCohorts(gender, _startDate, _endDate, null);
+        Cohort cohort = _patientQuery.getNewOnArtCohort(gender, _startDate, _endDate, null);
         Set<Integer> onTbPrevPatients = getOnTbPrevPatientId(cohort);
 
         _personList = _patientQuery.getPersons(new Cohort(onTbPrevPatients));
@@ -98,7 +98,7 @@ public class TbPrevQuery extends BaseEthiOhriQuery {
         cl.setTime(_startDate);
         cl.add(Calendar.DATE, -1);
 
-        Cohort cohort = _patientQuery.getOnArtCohorts(gender, cl.getTime(), null, null);
+        Cohort cohort = _patientQuery.getNewOnArtCohort(gender, cl.getTime(), null, null);
         Set<Integer> onTbPrevPatients = getOnTbPrevPatientId(cohort);
 
         _personList = _patientQuery.getPersons(new Cohort(onTbPrevPatients));

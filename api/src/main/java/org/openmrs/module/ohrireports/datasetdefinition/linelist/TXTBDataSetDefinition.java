@@ -17,6 +17,17 @@ public class TXTBDataSetDefinition extends BaseDataSetDefinition {
 	private Date endDate;
 	
 	@ConfigurationProperty
+	private String type;
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	@ConfigurationProperty
 	private EncounterType encounterType;
 	
 	public Date getStartDate() {

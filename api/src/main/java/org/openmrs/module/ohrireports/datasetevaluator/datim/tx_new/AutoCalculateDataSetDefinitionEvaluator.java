@@ -35,9 +35,11 @@ public class AutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator
 		hdsd = (AutoCalculateDataSetDefinition) dataSetDefinition;
 		
 		patientQuery = Context.getService(PatientQueryService.class);
+		patientQuery = Context.getService(PatientQueryService.class);
+		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), patientQuery
-		        .getOnArtCohorts("", hdsd.getStartDate(), hdsd.getEndDate(), null).size());
+		        .getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null).size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;

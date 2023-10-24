@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { HTSNewDataSetDefinition.class })
 public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
-	
 	@Autowired
 	private ArtQuery artQuery;
 	
@@ -43,10 +42,9 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		patientQuery = Context.getService(PatientQueryService.class);
 		
-		Cohort cohort = patientQuery.getOnArtCohorts("", hdsd.getStartDate(), hdsd.getEndDate(), null);
-	
+		Cohort cohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> openMRSIdentifierHashMap = artQuery.getIdentifier(cohort, OPENMRS_PATIENT_IDENTIFIERS);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
 		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(cohort, hdsd.getStartDate(), hdsd.getEndDate());
@@ -55,15 +53,21 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    hdsd.getEndDate());
 		
 		DataSetRow row = new DataSetRow();
+		if (persons.size() > 0) {
+			
+			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+			
+			data.addRow(row);
+		}
 		for (Person person : persons) {
 			
 			row = new DataSetRow();
 			Date date = artQuery.getDate(artStartDictionary.get(person.getPersonId()));
 			String ethiopianDate = artQuery.getEthiopianDate(date);
-						row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("OpenMRS-ID", "OpenMRS ID", Integer.class),
-			    openMRSIdentifierHashMap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(date));
@@ -73,16 +77,6 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),
 			    regimentDictionary.get(person.getPersonId()));
-			
-			data.addRow(row);
-		}
-		
-		if (persons.size() > 0) {
-			
-			row = new DataSetRow();
-			
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("OpenMRS-ID", "OpenMRS ID", Integer.class), persons.size());
 			
 			data.addRow(row);
 		}

@@ -2,7 +2,6 @@ package org.openmrs.module.ohrireports.api.dao;
 
 import java.util.Date;
 
-import org.openmrs.Patient;
 import org.openmrs.Person;
 
 public class EthiOhriPatient extends Person {

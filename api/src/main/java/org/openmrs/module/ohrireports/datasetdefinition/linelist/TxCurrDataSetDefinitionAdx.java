@@ -16,15 +16,15 @@ public class TxCurrDataSetDefinitionAdx extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private Date startDate;
 	
-	public Date getStartDate() {
-		return startDate;
-	}
-	
 	@ConfigurationProperty
 	private Date endDate;
 	
 	@ConfigurationProperty
 	private EncounterType encounterType;
+	
+	public Date getStartDate() {
+		return startDate;
+	}
 	
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;

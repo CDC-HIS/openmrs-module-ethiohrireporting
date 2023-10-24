@@ -114,7 +114,7 @@ public class OHRIReportsConstants {
 	
 	public final static String REASON_FOR_ART_ELIGIBILITY = "613718f1-ecf2-4228-b9c2-6157d574bd0b";
 	
-	public final static String FOLLOW_UP_DATE = "163137AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String FOLLOW_UP_DATE = "b8cd8630-56dd-495e-8c84-e36a636febe7";
 	
 	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d94b14";
 	
@@ -256,7 +256,12 @@ public class OHRIReportsConstants {
 	
 	public final static String TRANSFER_OUT = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String RESTART = "ee957295-85b9-4433-bf12-45886cdc7dd1";
+	public final static String DROP = "160431AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	// public final static String RESTART = "ee957295-85b9-4433-bf12-45886cdc7dd1";
+	public final static String RESTART = "162904AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	// 162904AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
 	

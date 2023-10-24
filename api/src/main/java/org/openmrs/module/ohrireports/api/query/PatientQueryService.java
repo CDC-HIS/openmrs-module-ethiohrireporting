@@ -9,15 +9,19 @@ import org.openmrs.api.OpenmrsService;
 
 public interface PatientQueryService extends OpenmrsService {
 	
-	Cohort getOnArtCohorts();
+	Cohort getNewOnArtCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort);
 	
-	Cohort getOnArtCohorts(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort);
+	Cohort getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort, Cohort toBeExcludedCohort);
 	
 	Cohort getActiveOnCohort();
 	
 	Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort);
 	
 	Cohort getCurrentOnTreatmentCohort();
+	
+	public List<Integer> getBaseEncounters(Date start, Date end);
+	
+	public List<Integer> getBaseEncountersByFollowUpDate(Date starDate, Date endDate);
 	
 	Cohort getCurrentOnTreatmentCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort);
 	

@@ -60,7 +60,7 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 	}
 	
 	public int getNumberOfEnrolledBreastFeeding() {
-		Cohort pList = patientQuery.getOnArtCohorts("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort pList = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 		queryBuilder.select("distinct obs.personId").from(Obs.class, "obs").whereEqual("obs.concept", breastFeeding).and()
 		        .whereEqual("obs.valueCoded", breastFeedingYes).and().whereIn("obs.personId", pList.getMemberIds());

@@ -29,7 +29,7 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 		
 		hdsd = (TbPrevDominatorDatasetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		
+		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 		tbPrevQuery.instantiate(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		if (!hdsd.getAggregateType()) {

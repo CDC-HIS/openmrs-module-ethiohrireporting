@@ -10,6 +10,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.LOST_TO_FOLLOW
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
@@ -27,6 +28,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	private DbSessionFactory sessionFactory;
 	
 	public Cohort getPatientRetentionCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
+		
 		if (getSessionFactory() == null)
 			this.setSessionFactory(sessionFactory);
 		
@@ -34,7 +36,9 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		Calendar endDate = Calendar.getInstance();
 		
 		goBackToMonths(endOnOrBefore, startDate, endDate);
+		
 		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort);
+		
 		if (artCohort == null || artCohort.size() == 0)
 			return new Cohort();
 		
@@ -81,6 +85,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		Calendar endDate = Calendar.getInstance();
 		
 		goBackToMonths(endOnOrBefore, startDate, endDate);
+		
 		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort);
 		if (artCohort == null || artCohort.size() == 0)
 			return new Cohort();
@@ -116,6 +121,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	public void goBackToMonths(Date endOnOrBefore, Calendar startDate, Calendar endDate) {
 		startDate.setTime(endOnOrBefore);
 		startDate.add(Calendar.MONTH, -MONTHS_IN_YEAR);
+		
 		int actualMaximum = startDate.getActualMaximum(Calendar.DATE);
 		int month = startDate.get(Calendar.MONTH);
 		endDate.set(startDate.get(Calendar.YEAR), month, actualMaximum);

@@ -66,21 +66,19 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 		            EthiOhriUtil.map(aDefinition));
 		
 		TxTbDenominatorARTByAgeAndSexDataSetDefinition cDefinition = new TxTbDenominatorARTByAgeAndSexDataSetDefinition();
+		
 		cDefinition.addParameters(getParameters());
-		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Disaggregated by Start of ART Screen Result by Age/Sex");
 		reportDefinition.addDataSetDefinition("Required : Disaggregated by Start of ART Screen Result by Age/Sex",
 		    EthiOhriUtil.map(cDefinition));
 		
 		TxTbDenominatorSpecimenSentDataSetDefinition sDefinition = new TxTbDenominatorSpecimenSentDataSetDefinition();
 		sDefinition.addParameters(getParameters());
-		sDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		sDefinition.setDescription("Disaggregated by Specimen Sent");
 		reportDefinition.addDataSetDefinition("Required : Disaggregated by Specimen Sent", EthiOhriUtil.map(sDefinition));
 		
 		TxTbDenominatorDiagnosticTestDataSetDefinition tDefinition = new TxTbDenominatorDiagnosticTestDataSetDefinition();
 		tDefinition.addParameters(getParameters());
-		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		tDefinition.setDescription("Disaggregated by Specimen Sent and Diagnostic Test");
 		reportDefinition.addDataSetDefinition("Required : [Disagg by Specimen Sent] Diagnostic Test",
 		    EthiOhriUtil.map(tDefinition));

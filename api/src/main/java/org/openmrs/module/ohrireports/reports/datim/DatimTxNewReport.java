@@ -27,29 +27,29 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DatimTxNewReport implements ReportManager {
-
+	
 	private EncounterType followUpEncounter;
-
+	
 	@Override
 	public String getUuid() {
 		return "9f9f13aa-65cb-44c2-a2e8-1ff058f8c959";
 	}
-
+	
 	@Override
 	public String getName() {
 		return DATIM_REPORT + "-TX_NEW";
 	}
-
+	
 	@Override
 	public String getDescription() {
 		return "Aggregate report of DATIM TXnew lists a newly enrolled  patients";
 	}
-
+	
 	@Override
 	public List<Parameter> getParameters() {
 		return EthiOhriUtil.getDateRangeParameters();
 	}
-
+	
 	@Override
 	public ReportDefinition constructReportDefinition() {
 		ReportDefinition reportDefinition = new ReportDefinition();
@@ -58,58 +58,57 @@ public class DatimTxNewReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
-
+		
 		AutoCalculateDataSetDefinition aDefinition = new AutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(followUpEncounter);
 		aDefinition.setDescription("Number of adults and children newly enrolled on antiretroviral therapy (ART)");
 		reportDefinition.addDataSetDefinition("Total-New", EthiOhriUtil.map(aDefinition));
-
+		
 		FineByAgeAndSexDataSetDefinition fDefinition = new FineByAgeAndSexDataSetDefinition();
 		fDefinition.addParameters(getParameters());
 		fDefinition.setDescription("Disaggregated by Age/Sex (Fine disaggregate)");
 		fDefinition.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Fine-Disagg.", EthiOhriUtil.map(fDefinition));
-
+		
 		CoarseByAgeAndSexDataSetDefinition cDefinition = new CoarseByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());
 		cDefinition.setEncounterType(followUpEncounter);
 		cDefinition.setDescription("Disaggregated by Age/Sex (Coarse disaggregated)");
 		reportDefinition.addDataSetDefinition("Coarse-Disagg.", EthiOhriUtil.map(cDefinition));
-
+		
 		BreastFeedingStatusDataSetDefinition bDefinition = new BreastFeedingStatusDataSetDefinition();
 		bDefinition.addParameters(getParameters());
 		bDefinition.setEncounterType(followUpEncounter);
 		bDefinition.setDescription("Disaggregated by Breastfeeding Status at ART Initiation");
 		reportDefinition.addDataSetDefinition("Breast-Feeding", EthiOhriUtil.map(bDefinition));
-
+		
 		PopulationTypeDataSetDefinition pDefinition = new PopulationTypeDataSetDefinition();
 		pDefinition.addParameters(getParameters());
 		pDefinition.setEncounterType(followUpEncounter);
 		pDefinition.setDescription("Disaggregated by Key population-type");
 		reportDefinition.addDataSetDefinition("KP-Disagg.", EthiOhriUtil.map(pDefinition));
-
+		
 		return reportDefinition;
 	}
-
+	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("c29ab966-7727-4e66-95e9-d1aeba22caf1",
-				reportDefinition);
-
+		ReportDesign design = ReportManagerUtil.createExcelDesign("c29ab966-7727-4e66-95e9-d1aeba22caf1", reportDefinition);
+		
 		return Arrays.asList(design);
-
+		
 	}
-
+	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {
 		return null;
 	}
-
+	
 	@Override
 	public String getVersion() {
 		return "1.0.0-SNAPSHOT";
-
+		
 	}
-
+	
 }

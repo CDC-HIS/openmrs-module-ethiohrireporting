@@ -51,6 +51,8 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	
 	private EvaluationContext context;
 	
+	private PatientQueryService patientQueryService;
+	
 	private TX_PVLSAutoCalcDatasetDefinition txDatasetDefinition;
 	
 	private LocalDate startDate;
@@ -60,6 +62,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 		context = evalContext;
 		txDatasetDefinition = (TX_PVLSAutoCalcDatasetDefinition) dataSetDefinition;
 		
+		patientQueryService = Context.getService(PatientQueryService.class);
 		loadConcepts();
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		DataSetRow setRow = new DataSetRow();
@@ -157,7 +160,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	private List<Integer> getListOfALiveORRestartPatientObs() {
 
                 List<Integer> personIdList = new ArrayList<>();
-                Cohort personIdOnArt = Context.getService(PatientQueryService.class).getOnArtCohorts(null, null,
+               Cohort personIdOnArt = patientQueryService.getNewOnArtCohort("null", null,
                                 txDatasetDefinition.getEndDate(), null);
                 // getPatientsOnArt();
                 HqlQueryBuilder queryBuilder = new HqlQueryBuilder();

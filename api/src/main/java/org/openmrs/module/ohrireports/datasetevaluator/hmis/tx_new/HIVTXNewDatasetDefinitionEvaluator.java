@@ -170,7 +170,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		int _age = 0;
 		Cohort cohort = new Cohort();
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
-			cohort = patientQuery.getOnArtCohorts("", _datasetDefinition.getStartDate(),
+			cohort = patientQuery.getNewOnArtCohort("", _datasetDefinition.getStartDate(),
 					_datasetDefinition.getEndDate(), null);
 			persons = patientQuery.getPersons(cohort);
 			return cohort.getMemberIds().size();

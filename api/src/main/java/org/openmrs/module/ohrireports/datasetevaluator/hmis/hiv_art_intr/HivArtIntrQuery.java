@@ -5,14 +5,14 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STAT
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.Query;
-import org.openmrs.Cohort;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -56,17 +56,19 @@ public class HivArtIntrQuery extends BaseEthiOhriQuery {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select " + OBS_ALIAS + "person_id from obs as ob where obs_id in ");
-		String sqlJoin = "inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.uuid ='"
-		        + FOLLOW_UP_STATUS + "'";
+		String sqlJoin = "inner join concept as c on c.concept_id = " + SUB_QUERY_JOIN_BASE_ALIAS_OBS
+		        + "concept_id and c.uuid ='" + FOLLOW_UP_STATUS + "'";
 		// e.g if less than three month
 		if (range == Range.LESS_THAN_THREE_MONTH) {
-			sql.append(baseSubQueryJoin(" obs_datetime >=:startOnOrBefore and obs_datetime <:endOnBefore  and " + OBS_ALIAS
-			        + "value_coded =(select concept_id from concept where uuid ='" + status + "' limit 1) ", sqlJoin));
+			sql.append(baseSubQueryJoin(" obs_datetime >=:startOnOrBefore and obs_datetime <:endOnBefore  and "
+			        + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "value_coded =(select concept_id from concept where uuid ='" + status
+			        + "' limit 1) ", sqlJoin));
 			
 			// above three month
 		} else {
-			sql.append(baseSubQueryJoin("  obs_datetime < :startOnOrBefore   and " + OBS_ALIAS
-			        + "value_coded =(select concept_id from concept where uuid ='" + status + "' limit 1)", sqlJoin));
+			sql.append(baseSubQueryJoin(" " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + " obs_datetime < :startOnOrBefore   and "
+			        + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "value_coded =(select concept_id from concept where uuid ='" + status
+			        + "' limit 1)", sqlJoin));
 		}
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setTimestamp("startOnOrBefore", calendar.getTime());
@@ -83,14 +85,15 @@ public class HivArtIntrQuery extends BaseEthiOhriQuery {
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select " + OBS_ALIAS + "person_id from obs as ob where obs_id in ");
-		String sqlJoin = "inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.uuid ='"
-		        + TREATMENT_END_DATE + "'";
+		String sqlJoin = "inner join concept as c on c.concept_id = " + SUB_QUERY_JOIN_BASE_ALIAS_OBS
+		        + "concept_id and c.uuid ='" + TREATMENT_END_DATE + "'";
 		// e.g if less than three month
 		if (range == Range.LESS_THAN_THREE_MONTH) {
-			sql.append(baseSubQueryJoin(" value_datetime >=:startOnOrBefore and value_datetime<:endOnBefore ", sqlJoin));
+			sql.append(baseSubQueryJoin(" " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + " value_datetime >=:startOnOrBefore and "
+			        + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "value_datetime<:endOnBefore ", sqlJoin));
 			// above three month
 		} else {
-			sql.append(baseSubQueryJoin("  value_datetime < :startOnOrBefore", sqlJoin));
+			sql.append(baseSubQueryJoin(" " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + " value_datetime < :startOnOrBefore", sqlJoin));
 		}
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setTimestamp("startOnOrBefore", calendar.getTime());
@@ -107,11 +110,11 @@ public class HivArtIntrQuery extends BaseEthiOhriQuery {
 		sql.append(" and ob.obs_datetime>=:startOnOrAfter and ob.obs_datetime<=:endOnOrBefore ");
 		sql.append("and " + OBS_ALIAS + "obs_id in ");
 
-		String sqlJoin = "inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.uuid ='"
+		String sqlJoin = "inner join concept as c on c.concept_id = " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "concept_id and c.uuid ='"
 				+ FOLLOW_UP_STATUS + "' ";
 
-		String sqlQuery = OBS_ALIAS + "value_coded = (select concept_id from concept where uuid ='" + status
-				+ "' limit 1) and ob.obs_datetime>=:start and ob.obs_datetime<=:end ";
+		String sqlQuery = SUB_QUERY_JOIN_BASE_ALIAS_OBS + "value_coded = (select concept_id from concept where uuid ='" + status
+				+ "' limit 1) and "+SUB_QUERY_JOIN_BASE_ALIAS_OBS+"obs_datetime >=:start and "+SUB_QUERY_JOIN_BASE_ALIAS_OBS+"obs_datetime<=:end ";
 		sql.append(baseSubQueryJoin(sqlQuery, sqlJoin));
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
