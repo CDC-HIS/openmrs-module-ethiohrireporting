@@ -7,11 +7,12 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorAutoCalculateDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorDiagnosticTestDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorPositiveResultReturnedDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorSpecimenSentDataSetDefinition;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorDiagnosticTestDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorPositiveResultReturnedDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorSpecimenSentDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -43,15 +44,7 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -70,46 +63,33 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Auto-Calculate : Number of ART patients who were screened for TB at least once during the reporting period. Denominator will auto-calculate from Start on ART by Screen Result by Age/Sex",
-		            map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(aDefinition));
 		
 		TxTbDenominatorARTByAgeAndSexDataSetDefinition cDefinition = new TxTbDenominatorARTByAgeAndSexDataSetDefinition();
+		
 		cDefinition.addParameters(getParameters());
-		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Disaggregated by Start of ART Screen Result by Age/Sex");
 		reportDefinition.addDataSetDefinition("Required : Disaggregated by Start of ART Screen Result by Age/Sex",
-		    map(cDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(cDefinition));
 		
 		TxTbDenominatorSpecimenSentDataSetDefinition sDefinition = new TxTbDenominatorSpecimenSentDataSetDefinition();
 		sDefinition.addParameters(getParameters());
-		sDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		sDefinition.setDescription("Disaggregated by Specimen Sent");
-		reportDefinition.addDataSetDefinition("Required : Disaggregated by Specimen Sent",
-		    map(sDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Required : Disaggregated by Specimen Sent", EthiOhriUtil.map(sDefinition));
 		
 		TxTbDenominatorDiagnosticTestDataSetDefinition tDefinition = new TxTbDenominatorDiagnosticTestDataSetDefinition();
 		tDefinition.addParameters(getParameters());
-		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		tDefinition.setDescription("Disaggregated by Specimen Sent and Diagnostic Test");
 		reportDefinition.addDataSetDefinition("Required : [Disagg by Specimen Sent] Diagnostic Test",
-		    map(tDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(tDefinition));
 		
 		TxTbDenominatorPositiveResultReturnedDataSetDefinition pDefinition = new TxTbDenominatorPositiveResultReturnedDataSetDefinition();
 		pDefinition.addParameters(getParameters());
 		pDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		pDefinition.setDescription("Disaggregated by Positive Result Returned");
 		reportDefinition.addDataSetDefinition("Required: Disaggregated by Positive Result Returned",
-		    map(pDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(pDefinition));
 		return reportDefinition;
-	}
-	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
 	@Override

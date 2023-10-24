@@ -16,12 +16,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.TXCurrDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.library.EncounterDataLibrary;
-import org.openmrs.module.ohrireports.reports.library.PatientDataLibrary;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.TxCurrDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -31,7 +27,6 @@ import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 
@@ -74,11 +69,11 @@ public class TX_CUR_Report implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		
 		reportDefinition.setParameters(getParameters());
-		TXCurrDataSetDefinition txCurrDataSetDefinition = new TXCurrDataSetDefinition();
+		TxCurrDataSetDefinition txCurrDataSetDefinition = new TxCurrDataSetDefinition();
 		txCurrDataSetDefinition.addParameters(getParameters());
 		txCurrDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Tx-Curr", map(txCurrDataSetDefinition, "endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Tx-Currt", map(txCurrDataSetDefinition, "endDate=${endDateGC}"));
 		return reportDefinition;
 	}
 	

@@ -8,8 +8,9 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pmtct_art.PMTCTARTAutoCalculateDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -43,15 +44,7 @@ public class PMTCTARTReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -69,21 +62,21 @@ public class PMTCTARTReport implements ReportManager {
 		tbADataSet.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition(
 		    "During pregnancy.Numerator will auto-calculate from the Maternal Regimen Type Desegregates",
-		    map(tbADataSet, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(tbADataSet));
 		
 		PMTCTARTDataSetDefinition alreadyOnARTSetDefinition = new PMTCTARTDataSetDefinition();
 		alreadyOnARTSetDefinition.addParameters(getParameters());
 		alreadyOnARTSetDefinition.setEncounterType(followUpEncounter);
 		
-		reportDefinition.addDataSetDefinition("Disaggregated by Regiment Type:",
-		    map(alreadyOnARTSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition
+		        .addDataSetDefinition("Disaggregated by Regiment Type:", EthiOhriUtil.map(alreadyOnARTSetDefinition));
 		
 		PMTCTARTDataSetDefinition newlyEnrolledSetDefinition = new PMTCTARTDataSetDefinition();
 		newlyEnrolledSetDefinition.addParameters(getParameters());
 		newlyEnrolledSetDefinition.setEncounterType(followUpEncounter);
 		
 		reportDefinition.addDataSetDefinition("Disaggregated by Regiment Type:",
-		    map(newlyEnrolledSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(newlyEnrolledSetDefinition));
 		
 		return reportDefinition;
 	}
@@ -94,16 +87,6 @@ public class PMTCTARTReport implements ReportManager {
 		
 		return Arrays.asList(design);
 		
-	}
-	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
 	@Override

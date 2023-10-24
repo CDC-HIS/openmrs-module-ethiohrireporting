@@ -4,33 +4,33 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_fb.HivArtFbDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_fb.HivArtFbMetDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_re_arv.HivArtReArvDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPrEpCatagoriesDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_p_rep.HivPrepDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.pr_ep_curr.HivPrEpCurrDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_curr.HmisTXCurrDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tb_scrn.HmisTbScrnDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.art_tpt.HmisArtTptDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.art_tpt_cr_1.HmisArtTptCrOneDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.art_tpt_cr_2.HmisArtTptCrTwoDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.cxca_scrn.HmisCxCaScrnDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.cxca_rx.HmisCxCaRxDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tb_Lb_Lf_Lam.TbLbLfLamDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.hmis.tx_dsd.HmisTXDsdDataSetDefinition;
-
 import org.openmrs.api.context.Context;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt.HmisArtTptDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_1.HmisArtTptCrOneDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_2.HmisArtTptCrTwoDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_rx.HmisCxCaRxDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_scrn.HmisCxCaScrnDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_fb.HivArtFbDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_fb.HivArtFbMetDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_re_arv.HivArtReArvDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPrEpCatagoriesDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_rep.HivPrepDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.pr_ep_curr.HivPrEpCurrDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_Lb_Lf_Lam.TbLbLfLamDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_scrn.HmisTbScrnDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_curr.HmisTXCurrDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_dsd.HmisTXDsdDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -62,15 +62,7 @@ public class HMISReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(true);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(true);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -87,19 +79,19 @@ public class HMISReport implements ReportManager {
 		aDefinition.setDescription("06 - HIV | Hospital, Health center, Clinic |	Monthly (Federal Ministry Of Health)");
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:06 - HIV | Hospital, Health center, Clinic | Monthly (Federal Ministry		Of Health)",
-		    map(aDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(aDefinition));
 		
 		HIVTXNewDatasetDefinition txNewDataset = new HIVTXNewDatasetDefinition();
 		txNewDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS:Number of adults and children		with HIV infection newly started on ART",
-		    map(txNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(txNewDataset));
 		
 		HIVARTRETDatasetDefinition hivArtRetDatasetDefinition = new HIVARTRETDatasetDefinition();
 		hivArtRetDatasetDefinition.addParameters(getParameters());
 		hivArtRetDatasetDefinition.setNetRetention(false);
 		reportDefinition.addDataSetDefinition(
-		    "HMIS:Number of adults and children who are still on treatment at 12 months		after\n" + //
-		            "initiating ART", map(hivArtRetDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    "HMIS:Number of adults and children who are still on treatment at 12 months	after initiating ART",
+		    EthiOhriUtil.map(hivArtRetDatasetDefinition));
 		
 		HIVARTRETDatasetDefinition hivArtRetDatasetDefinitionNet = new HIVARTRETDatasetDefinition();
 		hivArtRetDatasetDefinitionNet.addParameters(getParameters());
@@ -107,13 +99,13 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS:Number of persons on ART in the original cohort including those transferred in, minus those transferred out (net current cohort)",
-		            map(hivArtRetDatasetDefinitionNet, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivArtRetDatasetDefinitionNet));
 		
 		HIVLinkageNewCtDatasetDefinition linkageNewDataset = new HIVLinkageNewCtDatasetDefinition();
 		linkageNewDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Linkage outcome of newly identified Hiv positive individuals in the reporting period",
-		    map(linkageNewDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(linkageNewDataset));
 		
 		HivPvlsDatasetDefinition hivPvlsDataset = new HivPvlsDatasetDefinition();
 		hivPvlsDataset.setParameters(getParameters());
@@ -124,7 +116,7 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS:Viral load Suppression (Percentage of ART clients with a suppressed	viral load among those with a viral load test at 12 month in the reporting	period)",
-		            map(hivPvlsDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivPvlsDataset));
 		
 		HivPvlsDatasetDefinition hivPvlsUnDataset = new HivPvlsDatasetDefinition();
 		hivPvlsUnDataset.setParameters(getParameters());
@@ -135,7 +127,7 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS:(UN) Viral load Suppression (Percentage of ART clients with a		suppressed viral load among those with a viral load test at 12 month in the		reporting period)",
-		            map(hivPvlsUnDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivPvlsUnDataset));
 		
 		HivPvlsDatasetDefinition hivPvlsLvDataset = new HivPvlsDatasetDefinition();
 		hivPvlsLvDataset.setParameters(getParameters());
@@ -146,42 +138,42 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS: (LV) Viral load Suppression (Percentage of ART clients with a		suppressed viral load among those with a viral load test at 12 month in the		reporting period)",
-		            map(hivPvlsLvDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivPvlsLvDataset));
 		
 		HmisTXDsdDataSetDefinition txDSDDataset = new HmisTXDsdDataSetDefinition();
 		txDSDDataset.setParameters(getParameters());
 		txDSDDataset.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Proportion of PLHIV currently on differentiated service Delivery model	(DSD) in the reporting period",
-		    map(txDSDDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(txDSDDataset));
 		
 		HivArtIntrDatasetDefinition hivArtIntrDataset = new HivArtIntrDatasetDefinition();
 		hivArtIntrDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS: HIV_ART_INTR Number of ART Clients that interrupted Treatment",
-		    map(hivArtIntrDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(hivArtIntrDataset));
 		
 		HivArtReArvDatasetDefinition hivArtReArvDataset = new HivArtReArvDatasetDefinition();
 		hivArtReArvDataset.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS: Number of ART clients restarted ARV treatment in the reporting period",
-		    map(hivArtReArvDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(hivArtReArvDataset));
 		
 		HivPrepDatasetDefinition hivPrepDatasetDefinition = new HivPrepDatasetDefinition();
 		hivPrepDatasetDefinition.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("HMIS:Number of individuals receiving Pre-Exposure Prophylaxis",
-		    map(hivPrepDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(hivPrepDatasetDefinition));
 		
 		HivPrEpCurrDatasetDefinition hivPrepCurrDatasetDefinition = new HivPrEpCurrDatasetDefinition();
 		hivPrepCurrDatasetDefinition.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:PrEP Curr (Number of individuals that received oral PrEP during the reporting period)",
-		    map(hivPrepCurrDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(hivPrepCurrDatasetDefinition));
 		
 		HivPrEpCatagoriesDatasetDefinition hivPrEpCatagoriesDatasetDefinition = new HivPrEpCatagoriesDatasetDefinition();
 		hivPrEpCatagoriesDatasetDefinition.setParameters(getParameters());
 		reportDefinition
 		        .addDataSetDefinition(
 		            "HMIS:Number of persons provided with post-exposure prophylaxis (PEP) for risk of HIV infection by exposure type",
-		            map(hivPrEpCatagoriesDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivPrEpCatagoriesDatasetDefinition));
 		
 		HivPlHivDatasetDefinition hivPlTSPDatasetDefinition = new HivPlHivDatasetDefinition();
 		hivPlTSPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_TSP);
@@ -189,7 +181,7 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Proportion of clinically undernourished People Living with HIV (PLHIV) who received therapeutic or supplementary food",
-		            map(hivPlTSPDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivPlTSPDatasetDefinition));
 		
 		HivPlHivDatasetDefinition hivPlNUTDatasetDefinition = new HivPlHivDatasetDefinition();
 		hivPlNUTDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_NUT);
@@ -197,7 +189,7 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Number of PLHIV that were nutritionally assessed and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)",
-		            map(hivPlNUTDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivPlNUTDatasetDefinition));
 		
 		HivPlHivDatasetDefinition hivPlSUPDatasetDefinition = new HivPlHivDatasetDefinition();
 		hivPlSUPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_SUP);
@@ -205,14 +197,14 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)",
-		            map(hivPlSUPDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivPlSUPDatasetDefinition));
 		
 		HivArtFbDatasetDefinition hivArtFpDatasetDefinition = new HivArtFbDatasetDefinition();
 		hivArtFpDatasetDefinition.setParameters(getParameters());
 		reportDefinition
 		        .addDataSetDefinition(
 		            "FP:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",
-		            map(hivArtFpDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivArtFpDatasetDefinition));
 		
 		HivArtFbMetDatasetDefinition hivArtFpMeDatasetDefinition = new HivArtFbMetDatasetDefinition();
 		hivArtFpMeDatasetDefinition.setParameters(getParameters());
@@ -221,14 +213,14 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "FP-Method:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",
-		            map(hivArtFpMeDatasetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(hivArtFpMeDatasetDefinition));
 		
 		HmisTbScrnDataSetDefinition tbscrnDataset = new HmisTbScrnDataSetDefinition();
 		tbscrnDataset.setParameters(getParameters());
 		tbscrnDataset.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition(
 		    "HMIS:Proportion of patients enrolled in HIV care who were screened for TB (FD)",
-		    map(tbscrnDataset, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(tbscrnDataset));
 		
 		HmisArtTptDataSetDefinition artTpt = new HmisArtTptDataSetDefinition();
 		artTpt.setParameters(getParameters());
@@ -236,14 +228,14 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Number of ART patients who started on a standard course of TB Preventive Treatment (TPT) in the reporting period",
-		            map(artTpt, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(artTpt));
 		
 		HmisArtTptCrOneDataSetDefinition artTptCr1 = new HmisArtTptCrOneDataSetDefinition();
 		artTptCr1.setParameters(getParameters());
 		artTptCr1.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition(
 		    "Number of ART patients who were initiated on any course of TPT 12 months before the reporting period",
-		    map(artTptCr1, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(artTptCr1));
 		
 		HmisArtTptCrTwoDataSetDefinition artTptCr2 = new HmisArtTptCrTwoDataSetDefinition();
 		artTptCr2.setParameters(getParameters());
@@ -251,38 +243,26 @@ public class HMISReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Number of ART patients who started TPT 12 months prior to the reproting period that completed a full course of therapy",
-		            map(artTptCr2, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(artTptCr2));
 		
 		HmisCxCaScrnDataSetDefinition cxcaScrn = new HmisCxCaScrnDataSetDefinition();
 		cxcaScrn.setParameters(getParameters());
 		cxcaScrn.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Cervical Cancer screening by type of test",
-		    map(cxcaScrn, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Cervical Cancer screening by type of test", EthiOhriUtil.map(cxcaScrn));
 		
 		HmisCxCaRxDataSetDefinition cxcaRx = new HmisCxCaRxDataSetDefinition();
 		cxcaRx.setParameters(getParameters());
 		cxcaRx.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Treatment of precancerous cervical lesion",
-		    map(cxcaRx, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Treatment of precancerous cervical lesion", EthiOhriUtil.map(cxcaRx));
 		
 		TbLbLfLamDataSetDefinition tblblflam = new TbLbLfLamDataSetDefinition();
 		tblblflam.setParameters(getParameters());
 		tblblflam.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition(
 		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay",
-		    map(tblblflam, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(tblblflam));
 		
 		return reportDefinition;
-	}
-	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
 	@Override

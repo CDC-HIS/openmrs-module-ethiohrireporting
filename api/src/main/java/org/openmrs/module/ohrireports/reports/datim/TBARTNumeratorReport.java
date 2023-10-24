@@ -8,8 +8,10 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_art.TBARTAutoCalculateDataSetDefinition;
-import org.openmrs.module.ohrireports.reports.datasetdefinition.datim.tb_art.TBARTDataSetDefinition;
+import org.openmrs.module.ohrireports.api.dao.EthiOhriPatient;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_art.TBARTAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_art.TBARTDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -43,15 +45,7 @@ public class TBARTNumeratorReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -70,21 +64,21 @@ public class TBARTNumeratorReport implements ReportManager {
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Number of TB cases with documented HIV-positive status who start or continue ART during the reporting period. ",
-		            map(tbADataSet, "startDate=${startDateGC},endDate=${endDateGC}"));
+		            EthiOhriUtil.map(tbADataSet));
 		
 		TBARTDataSetDefinition alreadyOnARTSetDefinition = new TBARTDataSetDefinition();
 		alreadyOnARTSetDefinition.addParameters(getParameters());
 		alreadyOnARTSetDefinition.setEncounterType(followUpEncounter);
 		//alreadyOnARTSetDefinition.setNewlyEnrolled(false);
 		reportDefinition.addDataSetDefinition("Disaggregated by Age/Sex/Result Already on ART",
-		    map(alreadyOnARTSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(alreadyOnARTSetDefinition));
 		
 		TBARTDataSetDefinition newlyEnrolledSetDefinition = new TBARTDataSetDefinition();
 		newlyEnrolledSetDefinition.addParameters(getParameters());
 		newlyEnrolledSetDefinition.setEncounterType(followUpEncounter);
 		//newlyEnrolledSetDefinition.setNewlyEnrolled(true);
 		reportDefinition.addDataSetDefinition("Disaggregated by Age/Sex/Result Newly on ARt",
-		    map(newlyEnrolledSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		    EthiOhriUtil.map(newlyEnrolledSetDefinition));
 		
 		return reportDefinition;
 	}
@@ -95,16 +89,6 @@ public class TBARTNumeratorReport implements ReportManager {
 		
 		return Arrays.asList(design);
 		
-	}
-	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
 	@Override
