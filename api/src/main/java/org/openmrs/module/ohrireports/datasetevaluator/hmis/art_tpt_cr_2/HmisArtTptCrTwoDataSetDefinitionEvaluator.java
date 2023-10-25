@@ -13,7 +13,7 @@ import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_2.HmisAr
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
-import org.openmrs.module.reporting.dataset.MapDataSet;
+
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
@@ -22,7 +22,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.openmrs.module.ohrireports.reports.datasetvaluator.hmis.HMISConstant.*;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
 
 @Handler(supports = { HmisArtTptCrTwoDataSetDefinition.class })
 public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluator {
