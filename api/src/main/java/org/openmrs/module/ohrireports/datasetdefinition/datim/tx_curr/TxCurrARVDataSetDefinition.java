@@ -11,21 +11,10 @@ import org.springframework.stereotype.Component;
 public class TxCurrARVDataSetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
-	private Date startDate;
-	
-	@ConfigurationProperty
 	private Date endDate;
 	
 	@ConfigurationProperty
 	private EncounterType encounterType;
-	
-	public Date getStartDate() {
-		return startDate;
-	}
-	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
 	
 	public Date getEndDate() {
 		return endDate;

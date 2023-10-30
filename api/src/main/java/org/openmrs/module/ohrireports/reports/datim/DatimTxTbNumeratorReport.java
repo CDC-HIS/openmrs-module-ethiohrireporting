@@ -1,7 +1,6 @@
 package org.openmrs.module.ohrireports.reports.datim;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -10,10 +9,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_numerator.TxTbNumeratorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_numerator.TxTbNumeratorAutoCalculateDataSetDefinition;
-import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
-import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;

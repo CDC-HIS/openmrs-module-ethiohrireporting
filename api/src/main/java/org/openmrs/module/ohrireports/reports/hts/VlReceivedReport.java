@@ -1,11 +1,13 @@
-package org.openmrs.module.ohrireports.reports.datim;
+package org.openmrs.module.ohrireports.reports.hts;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
 
 import java.util.Arrays;
 import java.util.List;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_denominator.TbPrevDominatorDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -15,21 +17,21 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatimTbPrevDenominatorReport implements ReportManager {
+public class VlReceivedReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "ee4aa4e7-3cbe-4f5e-881e-ec7699461f88";
+		return "2afbc7ab-d098-44e7-8890-4e7a2fb2fef4";
 	}
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-TB_PREV (Denominator)";
+		return LINE_LIST_REPORT + "-VL Received";
 	}
 	
 	@Override
 	public String getDescription() {
-		return "DSD: TB_PREV (Denominator)";
+		return "";
 	}
 	
 	@Override
@@ -45,28 +47,20 @@ public class DatimTbPrevDenominatorReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		TbPrevDominatorDatasetDefinition aDefinition = new TbPrevDominatorDatasetDefinition();
-		aDefinition.addParameters(getParameters());
-		aDefinition.setAggregateType(false);
-		aDefinition.setDescription("DSD: TB_PREV (Denominator)");
-		reportDefinition.addDataSetDefinition("DSD: TB_PREV (Denominator)", EthiOhriUtil.map(aDefinition));
+		VLReceivedDataSetDefinition vlDatasetDefinition = new VLReceivedDataSetDefinition();
+		vlDatasetDefinition.addParameters(getParameters());
 		
-		TbPrevDominatorDatasetDefinition aggDatasetDefinition = new TbPrevDominatorDatasetDefinition();
-		aggDatasetDefinition.setAggregateType(true);
-		aggDatasetDefinition.addParameters(getParameters());
-		aggDatasetDefinition.setDescription("DSD: TB_PREV Aggregation by age and sex");
-		reportDefinition.addDataSetDefinition("Required:Disaggregated by age and sex",
-		    EthiOhriUtil.map(aggDatasetDefinition));
+		reportDefinition.addDataSetDefinition("VL Received", EthiOhriUtil.map(vlDatasetDefinition));
 		
 		return reportDefinition;
 	}
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("50e85ddc-018b-4ea0-9412-248d566b587f", reportDefinition);
+		
+		ReportDesign design = ReportManagerUtil.createExcelDesign("3465b588-100b-48a7-864f-1ee6009d600b", reportDefinition);
 		
 		return Arrays.asList(design);
-		
 	}
 	
 	@Override
@@ -76,8 +70,6 @@ public class DatimTbPrevDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getVersion() {
-		return "1.0.0-SNAPSHOT";
-		
+		return REPORT_VERSION;
 	}
-	
 }

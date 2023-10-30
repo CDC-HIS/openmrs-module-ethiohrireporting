@@ -1,6 +1,5 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -69,8 +68,8 @@ public class PatientQueryServiceImp extends BaseOpenmrsService implements Patien
 	}
 	
 	@Override
-	public List<Integer> getBaseEncounters(Date start, Date end) {
-		return patientQueryDao.getBaseEncounters(start, end);
+	public List<Integer> getBaseEncounters(String questionConceptUUid, Date start, Date end) {
+		return patientQueryDao.getBaseEncounters(questionConceptUUid, start, end);
 	}
 	
 	@Override

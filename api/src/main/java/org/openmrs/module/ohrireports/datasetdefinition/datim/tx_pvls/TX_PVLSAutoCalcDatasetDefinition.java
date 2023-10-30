@@ -11,9 +11,6 @@ import org.springframework.stereotype.Component;
 public class TX_PVLSAutoCalcDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
-	private Date startDate;
-	
-	@ConfigurationProperty
 	private Date endDate;
 	
 	@ConfigurationProperty
@@ -28,14 +25,6 @@ public class TX_PVLSAutoCalcDatasetDefinition extends BaseDataSetDefinition {
 	
 	public void setIncludeUnSuppressed(Boolean includeUnSuppressed) {
 		this.includeUnSuppressed = includeUnSuppressed;
-	}
-	
-	public Date getStartDate() {
-		return startDate;
-	}
-	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
 	}
 	
 	public Date getEndDate() {

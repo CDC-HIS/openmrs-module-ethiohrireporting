@@ -123,10 +123,10 @@ public class HMISReport implements ReportManager {
 		hivPvlsUnDataset.setType(HivPvlsType.SUPPRESSED);
 		hivPvlsUnDataset.setPrefix("_UN");
 		hivPvlsUnDataset
-		        .setDescription("Total number of adult and pediatric ART patients with an		undetectable viral load(<50 copies/ml) in the reporting period (with in the		past 12 months)");
+		        .setDescription("Total number of adult and pediatric ART patients with an undetectable viral load(<50 copies/ml) in the reporting period (with in the		past 12 months)");
 		reportDefinition
 		        .addDataSetDefinition(
-		            "HMIS:(UN) Viral load Suppression (Percentage of ART clients with a		suppressed viral load among those with a viral load test at 12 month in the		reporting period)",
+		            "HMIS:(UN) Viral load Suppression (Percentage of ART clients with a	uppressed viral load among those with a viral load test at 12 month in the		reporting period)",
 		            EthiOhriUtil.map(hivPvlsUnDataset));
 		
 		HivPvlsDatasetDefinition hivPvlsLvDataset = new HivPvlsDatasetDefinition();
@@ -242,7 +242,7 @@ public class HMISReport implements ReportManager {
 		artTptCr2.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition
 		        .addDataSetDefinition(
-		            "Number of ART patients who started TPT 12 months prior to the reproting period that completed a full course of therapy",
+		            "Number of ART patients who started TPT 12 months prior to the reporting period that completed a full course of therapy",
 		            EthiOhriUtil.map(artTptCr2));
 		
 		HmisCxCaScrnDataSetDefinition cxcaScrn = new HmisCxCaScrnDataSetDefinition();

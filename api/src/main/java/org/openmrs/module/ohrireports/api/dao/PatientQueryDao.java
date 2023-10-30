@@ -16,7 +16,15 @@ public interface PatientQueryDao {
 	Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
 	        Cohort toBeExcludedCohort);
 	
-	public List<Integer> getBaseEncounters(Date start, Date end);
+	/**
+	 * @param questionConcept this should only be uuid of concept question
+	 * @param answer uuid concept for questionConcept answer support only value_coded answer concept
+	 * @param start start date of the report going to be considered
+	 * @param end date of the report going to be considered
+	 * @return collection latest encounter id base on the passed parameter of Question concepts and
+	 *         answer
+	 */
+	public List<Integer> getBaseEncounters(String questionConcept, Date start, Date end);
 	
 	public List<Integer> init(Date endDate);
 	

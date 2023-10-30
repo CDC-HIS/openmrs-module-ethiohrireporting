@@ -76,7 +76,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		context = evalContext;
 
 		patientQueryService = Context.getService(PatientQueryService.class);
-		Cohort cohort = patientQueryService.getCurrentOnTreatmentCohort("", hdsd.getStartDate(), hdsd.getEndDate(),
+		Cohort cohort = patientQueryService.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(),
 				null);
 		MapDataSet data = new MapDataSet(dataSetDefinition, evalContext);
 

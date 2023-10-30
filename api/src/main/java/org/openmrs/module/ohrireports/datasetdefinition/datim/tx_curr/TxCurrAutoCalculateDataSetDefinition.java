@@ -12,9 +12,6 @@ import org.springframework.stereotype.Component;
 public class TxCurrAutoCalculateDataSetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
-	private Date startDate;
-	
-	@ConfigurationProperty
 	private Date endDate;
 	
 	@ConfigurationProperty
@@ -29,14 +26,6 @@ public class TxCurrAutoCalculateDataSetDefinition extends BaseDataSetDefinition 
 	
 	public void setBaseCohort(Cohort baseCohort) {
 		this.baseCohort = baseCohort;
-	}
-	
-	public Date getStartDate() {
-		return startDate;
-	}
-	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
 	}
 	
 	public Date getEndDate() {

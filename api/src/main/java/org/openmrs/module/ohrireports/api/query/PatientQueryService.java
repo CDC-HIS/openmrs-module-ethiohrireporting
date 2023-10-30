@@ -19,7 +19,7 @@ public interface PatientQueryService extends OpenmrsService {
 	
 	Cohort getCurrentOnTreatmentCohort();
 	
-	public List<Integer> getBaseEncounters(Date start, Date end);
+	public List<Integer> getBaseEncounters(String questionConceptUUid, Date start, Date end);
 	
 	public List<Integer> getBaseEncountersByFollowUpDate(Date starDate, Date endDate);
 	

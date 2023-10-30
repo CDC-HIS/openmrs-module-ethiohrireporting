@@ -14,6 +14,8 @@ public abstract class BaseEthiOhriQuery {
 	
 	protected String VALUE_DATE_BASE_ALIAS_OBS = "obvd.";
 	
+	protected String VALUE_NUMERIC_BASE_ALIAS_OBS = "obvnd.";
+	
 	protected String LATEST_ENCOUNTER_BASE_ALIAS_OBS = "obenc.";
 	
 	protected String SUB_QUERY_BASE_ALIAS_OBS = "obsq.";
@@ -122,6 +124,23 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
 		sql.append(" where pa.voided = false and " + VALUE_DATE_BASE_ALIAS_OBS + "voided = false ");
+		return sql;
+	}
+	
+	protected StringBuilder baseValueNumberQuery(String conceptQuestionUUid) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select " + VALUE_NUMERIC_BASE_ALIAS_OBS + "person_id," + VALUE_NUMERIC_BASE_ALIAS_OBS
+		        + "value_numeric from obs as  obvnd ");
+		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS + "person_id ");
+		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
+		sql.append(" inner join concept as c on c.concept_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS
+		        + " concept_id and c.retired = false ");
+		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
+		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS + "encounter_id ");
+		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
+		sql.append(" where pa.voided = false and " + VALUE_NUMERIC_BASE_ALIAS_OBS + "voided = false ");
 		return sql;
 	}
 	

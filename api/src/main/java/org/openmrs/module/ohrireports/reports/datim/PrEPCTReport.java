@@ -1,7 +1,6 @@
 package org.openmrs.module.ohrireports.reports.datim;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.openmrs.EncounterType;
@@ -12,10 +11,7 @@ import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTByP
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTPregnantBreastfeedingDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTTestResultDatasetDefinition;
-import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
-import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
