@@ -55,6 +55,8 @@ public class OHRIReportsConstants {
 	
 	public final static String OPENMRS_PATIENT_IDENTIFIERS = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
 	
+	public final static String DISPENSED_DOSE = "ddf10471-2e25-4010-b539-fff2c2900780";
+	
 	public final static String CURRENTLY_BREAST_FEEDING_CHILD = "5632AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String PREGNANT_STATUS = "5272AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -214,6 +216,8 @@ public class OHRIReportsConstants {
 	 */
 	public final static String HIV_VIRAL_LOAD_COUNT = "856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String DATE_VIRAL_TEST_RESULT_RECEIVED = "beeede36-cae4-4f6e-b4b9-e39e37353a82";
+	
 	public final static String HIV_ROUTINE_VIRAL_LOAD_COUNT = "9b8cef86-9093-4737-a641-3b8399618c85";
 	
 	public final static String HIV_TARGET_VIRAL_LOAD_COUNT = "8f75ce27-29fa-4a67-bc8a-295c94323220";
@@ -225,6 +229,10 @@ public class OHRIReportsConstants {
 	public final static String HIV_VIRAL_LOAD_SUPPRESSED = "5d5e42cc-acc4-4069-b3a8-7163e0db5d96";
 	
 	public final static String HIV_VIRAL_LOAD_UNSUPPRESSED = "a6768be6-c08e-464d-8f53-5f4229508e54";
+	
+	public final static String HIV_HIGH_VIRAL_LOAD = "162185AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String VIRAL_LOAD_TEST_INDICATION = "6bb5b796-60bc-406c-abd9-fb9362ed5e80";
 	
 	/*
 	 * End Of Viral Load Constant

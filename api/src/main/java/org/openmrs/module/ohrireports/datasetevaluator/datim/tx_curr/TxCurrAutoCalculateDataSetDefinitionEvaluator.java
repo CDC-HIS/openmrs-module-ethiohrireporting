@@ -48,7 +48,7 @@ public class TxCurrAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 		DataSetRow dataSet = new DataSetRow();
 		
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
-		    patientQueryService.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null).size());
+		    patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null).size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;

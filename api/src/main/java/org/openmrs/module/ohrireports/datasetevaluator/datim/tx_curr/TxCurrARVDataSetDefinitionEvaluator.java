@@ -118,7 +118,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		int count = 0;
 		int _age =0;
 		for (Obs obs : obses) {
-			_age = obs.getPerson().getAge(hdsd.getStartDate());
+			_age = obs.getPerson().getAge(hdsd.getEndDate());
 			if (Objects.isNull(_age) || _age == 0) {
 				if (obs.getValueNumeric() <= maxd && obs.getValueNumeric() >= mind) {
 					count++;
@@ -141,7 +141,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		int _age = 0;
 		List<Integer> persoIntegers = new ArrayList<>();
 		for (Obs obs : obses) {
-			_age = obs.getPerson().getAge(hdsd.getStartDate());
+			_age = obs.getPerson().getAge(hdsd.getEndDate());
 			if (persoIntegers.contains(obs.getPersonId()))
 				continue;
 			if (_age >= min && _age <= max) {

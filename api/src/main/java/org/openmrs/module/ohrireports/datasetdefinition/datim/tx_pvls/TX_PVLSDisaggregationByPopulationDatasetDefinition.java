@@ -12,9 +12,6 @@ import org.springframework.stereotype.Component;
 public class TX_PVLSDisaggregationByPopulationDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
-	private Date startDate;
-	
-	@ConfigurationProperty
 	private Date endDate;
 	
 	@ConfigurationProperty
@@ -40,14 +37,6 @@ public class TX_PVLSDisaggregationByPopulationDatasetDefinition extends BaseData
 	
 	public void setViralLoadTypeConcept(Concept viralLoadTypeConcept) {
 		this.viralLoadTypeConcept = viralLoadTypeConcept;
-	}
-	
-	public Date getStartDate() {
-		return startDate;
-	}
-	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
 	}
 	
 	public Date getEndDate() {

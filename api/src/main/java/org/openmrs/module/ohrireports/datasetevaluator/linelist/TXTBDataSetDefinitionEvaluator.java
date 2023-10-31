@@ -60,7 +60,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		patientQuery = Context.getService(PatientQueryService.class);
 
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
-
+		
 		if (hdsd.getType().equals(TXTBReport.numerator)) {
 			cohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "");
 			tbTxStartDictionary = tbQuery.getTBTreatmentStartDate(cohort, hdsd.getStartDate(),
@@ -73,14 +73,15 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		}
 
+	
+
 		mrnIdentifierHashMap = tbQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		openMRSIdentifierHashMap = tbQuery.getIdentifier(cohort, OPENMRS_PATIENT_IDENTIFIERS);
 		screenedResultHashMap = tbQuery.getTBScreenedResult(cohort, hdsd.getStartDate(),
 				hdsd.getEndDate());
 		artStartDictionary = tbQuery.getArtStartDate(cohort, null,
 				hdsd.getEndDate());
-		regimentDictionary = tbQuery.getRegiment(cohort, hdsd.getStartDate(),
-				hdsd.getEndDate());
+		regimentDictionary = tbQuery.getRegiment(patientQuery.getBaseEncountersByFollowUpDate(hdsd.getStartDate(), hdsd.getEndDate()),cohort);
 		specimen = tbQuery.getByResultTypeQuery(cohort, hdsd.getStartDate(), hdsd.getEndDate(), SPECIMEN_SENT);
 		_LAMResults = tbQuery.getByResultTypeQuery(cohort, hdsd.getStartDate(), hdsd.getEndDate(), LF_LAM_RESULT);
 		OtherDiagnosticTest = tbQuery.getByResultTypeQuery(cohort, hdsd.getStartDate(), hdsd.getEndDate(),

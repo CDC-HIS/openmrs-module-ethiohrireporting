@@ -10,6 +10,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.ArtQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TxCurrDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -43,11 +44,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
-		HashMap<Integer, Object> treatmentHashMap = artQuery.getTreatmentEndDates(cohort, hdsd.getEndDate(),
-		    latestEncounters);
+		HashMap<Integer, Object> treatmentHashMap = artQuery.getTreatmentEndDates(hdsd.getEndDate(), latestEncounters);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(cohort, hdsd.getStartDate(), hdsd.getEndDate());
-		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(cohort, hdsd.getStartDate(), hdsd.getEndDate());
+		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(latestEncounters, cohort);
+		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(latestEncounters, cohort);
 		DataSetRow row = new DataSetRow();
 		
 		if (persons.size() > 0) {

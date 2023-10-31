@@ -68,9 +68,9 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 		
 	}
 	
-	public HashMap<Integer, Object> getRegiment(Cohort cohort, Date startDate, Date endDate) {
+	public HashMap<Integer, Object> getRegiment(List<Integer> baseEncounters,Cohort cohort) {
 
-		Query query = getObs(cohort, startDate, endDate, REGIMEN);
+		Query query = getObs(baseEncounters,REGIMEN, cohort);
 		List list = query.list();
 		HashMap<Integer, Object> dictionary = new HashMap<>();
 		int personId = 0;
@@ -89,8 +89,8 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 
 	}
 	
-	public HashMap<Integer, Object> getFollowUpStatus(Cohort cohort, Date startDate, Date endDate) {
-		return getDictionary(getObs(cohort, startDate, endDate, FOLLOW_UP_STATUS));
+	public HashMap<Integer, Object> getFollowUpStatus(List<Integer> baseEncounters, Cohort cohort) {
+		return getDictionary(getObs(baseEncounters, FOLLOW_UP_STATUS, cohort));
 	}
 	
 	public HashMap<Integer, Object> getIdentifier(Cohort cohort, String identifierType) {
@@ -123,32 +123,30 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 		return dictionary;
 	}
 	
-	private Query getObs(Cohort cohort, Date startDate, Date endDate, String concept) {
+	protected Query getObs(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseConceptQuery(concept);
-		String _query = "";
-		if (startDate != null)
-			_query = _query + "  " + SUB_QUERY_BASE_ALIAS_OBS + "obs_datetime >= :startOnOrAfter  ";
-		if (endDate != null) {
-			_query = _query != "" ? _query + " and " : " ";
-			_query = _query + " " + SUB_QUERY_BASE_ALIAS_OBS + "obs_datetime <= :endOnOrBefore  ";
-			
-		}
 		
-		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:outerPatientIds) ");
-		
-		sql.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "obs_id in ");
-		sql.append(baseSubQuery(
-		    _query + " and " + SUB_QUERY_BASE_ALIAS_OBS + "person_id in (:patientIds) and " + SUB_QUERY_BASE_ALIAS_OBS
-		            + "concept_id = " + conceptQuery(concept)).toString());
+		sql.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
+		sql.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:cohorts) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		if (startDate != null)
-			query.setTimestamp("startOnOrAfter", startDate);
-		if (endDate != null)
-			query.setTimestamp("endOnOrBefore", endDate);
-		query.setParameterList("patientIds", cohort.getMemberIds());
-		query.setParameterList("outerPatientIds", cohort.getMemberIds());
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return query;
+	}
+	
+	protected Query getObsNumber(List<Integer> baseEncounters, String concept, Cohort cohort) {
+		StringBuilder sql = baseValueNumberQuery(concept);
+		
+		sql.append(" and  " + VALUE_NUMERIC_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
+		sql.append(" and  " + VALUE_NUMERIC_BASE_ALIAS_OBS + "person_id in (:cohorts) ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
 		
 		return query;
 	}

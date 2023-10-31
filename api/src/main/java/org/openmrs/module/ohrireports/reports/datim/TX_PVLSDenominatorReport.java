@@ -40,7 +40,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT.concat("- TX_PVLS (Denominator)");
+		return DATIM_REPORT.concat("-TX_PVLS(Denominator)");
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		StringBuilder stringBuilder = new StringBuilder();
 		
 		stringBuilder
-		        .append("Number of adults and pediatoric ART patients with a viral load result documented in the medical records ");
+		        .append("Number of adults and pediatric ART patients with a viral load result documented in the medical records ");
 		stringBuilder.append("and/or supporting laboratory results within the past 12 months. ");
 		stringBuilder.append("Denominator will auto-calculate from the sum of the Age/Sex/Indication disaggregated");
 		
@@ -58,15 +58,11 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
+		Parameter endDate = new Parameter("endDate", "Report Date", Date.class);
 		endDate.setRequired(false);
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return Arrays.asList(endDate, endDateGC);
 	}
 	
 	@Override
@@ -84,38 +80,31 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		autoCalDataSetDefinition.setParameters(getParameters());
 		autoCalDataSetDefinition.setIncludeUnSuppressed(true);
 		autoCalDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Auto-Calculate",
-		    map(autoCalDataSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Auto-Calculate", map(autoCalDataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSDatasetDefinition dataSetDefinition = new TX_PVLSDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
 		dataSetDefinition.setIncludeUnSuppressed(true);
 		dataSetDefinition.setEncounterType(Context.getEncounterService()
 		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition
-		        .addDataSetDefinition(
-		            " ROUTINE: Disaggregated by Age / Sex / Testing Indication (Fine Disaggregated). Must complete finer disaggregated unless permitted by program",
-		            map(dataSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition(" Disaggregated by Age / Sex / (Fine Disaggregated).",
+		    map(dataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSPregnantBreastfeedingDatasetDefinition pregnantAndBFDataSetDefinition = new TX_PVLSPregnantBreastfeedingDatasetDefinition();
 		pregnantAndBFDataSetDefinition.setParameters(getParameters());
 		pregnantAndBFDataSetDefinition.setIncludeUnSuppressed(true);
 		pregnantAndBFDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition
-		        .addDataSetDefinition(
-		            "Disaggregated by Pregnant/Breastfeeding/Testing Indication. Data on Pregnant/Breastfeeding individuals should be reported in both the 'Disaggregated by Pregnant/BreastFeeding/Testing Indication' section and the 'Disaggregated by Age/Sex/Testing Indication' section. ",
-		            map(pregnantAndBFDataSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Disaggregated by Preg/BF indication.",
+		    map(pregnantAndBFDataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSDisaggregationByPopulationDatasetDefinition disaggregationByPopDataSetDefinition = new TX_PVLSDisaggregationByPopulationDatasetDefinition();
 		disaggregationByPopDataSetDefinition.setParameters(getParameters());
 		disaggregationByPopDataSetDefinition.setIncludeUnSuppressed(true);
 		disaggregationByPopDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition
-		        .addDataSetDefinition(
-		            "Disaggregated by Key Population/Testing Indication. Data on key population should be reported in both the 'Disaggregated by key population type' section and the 'Disaggregated by Age/Sex/Testing Indication' section.",
-		            map(disaggregationByPopDataSetDefinition, "startDate=${startDateGC},endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Disaggregated by key population type",
+		    map(disaggregationByPopDataSetDefinition, "endDate=${endDateGC}"));
 		
 		return reportDefinition;
 	}
