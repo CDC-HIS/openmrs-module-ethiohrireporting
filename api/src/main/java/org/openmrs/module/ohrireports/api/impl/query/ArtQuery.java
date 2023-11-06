@@ -28,7 +28,6 @@ public class ArtQuery extends BaseLineListQuery {
 	public HashMap<Integer, Object> getTreatmentEndDates(Date endDate, List<Integer> lateEncounterIds) {
 		
 		StringBuilder sql = baseValueDateQuery(TREATMENT_END_DATE);
-		sql.append(" and " + VALUE_DATE_BASE_ALIAS_OBS + "person_id in (:patientIds)");
 		sql.append(" and " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id in (:lateEncounterIds)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());

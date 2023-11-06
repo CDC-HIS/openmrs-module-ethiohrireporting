@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_1;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.RegimentConstant.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

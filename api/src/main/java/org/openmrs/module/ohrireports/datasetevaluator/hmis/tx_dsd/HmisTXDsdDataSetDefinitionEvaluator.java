@@ -1,6 +1,20 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_dsd;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_3MMD;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_6MMD;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_ADOLESCENT;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_AHDCM;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_CATEGORY;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_FTAR;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_HEP_CAG;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_KP;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_MCH;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_OTHER;
+import static org.openmrs.module.ohrireports.RegimentConstant.DSD_PCAD;
 
 import java.util.ArrayList;
 import java.util.Arrays;
