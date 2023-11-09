@@ -91,7 +91,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	}
 	
 	/**
-	 * @param gender for full range of gender "" or for specific gend pass F or M
+	 * @param gender for full range of gender "" or for specific gender pass F or M
 	 * @param startOnOrAfter optional but at list one of date should be provided start or end date.
 	 * @param endOrBefore optional but at list one of date should be provided start or end date.
 	 * @param cohort Optional can be if there is no patients the ART should run on.
@@ -103,7 +103,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 			Cohort toBeExcludedCohort) {
 		init(endOrBefore);
 
-		if (latestEncounterIds.isEmpty())
+		if (latestEncounterIds.isEmpty() || (cohort!=null && cohort.isEmpty()))
 			return new ArrayList<>();
 
 		StringBuilder sql = baseQuery(ART_START_DATE);
@@ -135,6 +135,44 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 			q.setParameter("personIds", cohort.getMemberIds());
 		if (toBeExcludedCohort != null && toBeExcludedCohort.size() != 0)
 			q.setParameterList("toBeExcludedCohort", toBeExcludedCohort.getMemberIds());
+
+		List list = q.list();
+
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+
+	}
+	
+	public Collection<Integer> getArtStartedCohort(List<Integer> encounters, Date startOnOrAfter, Date endOrBefore, Cohort cohort) {
+	
+		if (encounters.isEmpty())
+			return new ArrayList<>();
+
+		StringBuilder sql = baseQuery(ART_START_DATE);
+
+		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
+		if (startOnOrAfter != null)
+			sql.append(" and " + OBS_ALIAS + "value_datetime >= :start ");
+		if (cohort != null && cohort.size() != 0)
+			sql.append("and p.person_id in (:personIds) ");
+
+		if (endOrBefore != null)
+			sql.append("and " + OBS_ALIAS + "value_datetime <= :end ");
+
+		Query q = getSession().createSQLQuery(sql.toString());
+		q.setParameterList("encounters", encounters);
+
+		if (startOnOrAfter != null)
+			q.setTimestamp("start", startOnOrAfter);
+
+		if (endOrBefore != null)
+			q.setTimestamp("end", endOrBefore);
+
+		if (cohort != null && cohort.size() != 0)
+			q.setParameter("personIds", cohort.getMemberIds());
 
 		List list = q.list();
 
@@ -258,7 +296,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		if (questionConcept == null || questionConcept.isEmpty())
 			return new ArrayList<>();
 
-		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
+		StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join ");
 		builder.append(
 				"(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
 
@@ -318,23 +356,18 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	}
 	
 	@Override
-	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, Date startOnOrAfter, Date endOnOrBefore) {
+	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID) {
 		StringBuilder sql = baseQuery(PREGNANT_STATUS);
 		sql.append(" and " + OBS_ALIAS + "value_coded = (select c.concept_id from concept where uuid='" + conceptUUID + "')");
 		
-		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "obs_datetime >= :startOnOrAfter ");
-		if (endOnOrBefore != null)
-			sql.append(" and " + OBS_ALIAS + "obs_datetime <= :endOnOrBefore ");
+		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters) ");
 		if (patient != null && patient.size() != 0)
 			sql.append("and p.person_id in (:personIds) ");
 		
 		Query q = getSession().createSQLQuery(sql.toString());
 		
-		if (startOnOrAfter != null)
-			q.setTimestamp("startOnOrAfter", startOnOrAfter);
-		if (endOnOrBefore != null)
-			q.setTimestamp("endOnOrBefore", endOnOrBefore);
+		q.setParameterList("encounters", getLatestEncounterIds());
+		
 		if (patient != null && patient.size() != 0)
 			q.setParameter("personIds", patient.getMemberIds());
 		

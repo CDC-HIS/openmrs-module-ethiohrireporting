@@ -66,26 +66,28 @@ public class AggregateByAgeAndGender extends ColumnBuilder {
 		String desc = "";
 		if (minAge >= 50) {
 			name = name + "50";
-			desc = "Adult currently on ART aged 50+ yr on ";
+			desc = "Adult currently on ART aged 50+ yr  ";
 		} else {
 			name = name + "1";
-			desc = "Children currently on ART aged <1 yr on ";
+			desc = "Children currently on ART aged <1 yr  ";
 			
 		}
 		data.addRow(buildColumn(name + "", desc, cohort.size()));
 		
 		Cohort intersectCohort = HMISUtilies.getUnion(cohort, firstLineCohort);
 		buildDataSetByRegiment(name + ".1", desc + " First-line regimen by sex", intersectCohort);
+		
 		intersectCohort = HMISUtilies.getUnion(cohort, secondLineCohort);
 		buildDataSetByRegiment(name + ".2", desc + " Second-line regimen by sex", intersectCohort);
 		
 		intersectCohort = HMISUtilies.getUnion(cohort, thirdLineCohort);
-		buildDataSetByRegiment(name + ".2", desc + " Third-line regimen by sex", intersectCohort);
+		buildDataSetByRegiment(name + ".3", desc + " Third-line regimen by sex", intersectCohort);
 	}
 	
 	private void getDataRowForRange(int minAge, int maxAge, String name, Cohort baseCohort) {
 		String tempName;
-		tempName = name + "" + maxAge;
+		tempName = name + "" + (maxAge == 4 ? 5 : maxAge);
+		
 		String desc = maxAge >= 15 ? "Adult" : "Children";
 		Cohort cohort = hmisCurrQuery.getBetweenAge(minAge, maxAge, baseCohort);
 		data.addRow(buildColumn(tempName, desc + " currently on ART aged " + minAge + "-" + maxAge + " yr", cohort.size()));

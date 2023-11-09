@@ -36,9 +36,9 @@ public class TodayzAppointments extends BaseCohortDefinitionManager {
 	public CohortDefinition constructCohortDefinition() {
 		DateObsCohortDefinition cd = (DateObsCohortDefinition) super.constructCohortDefinition();
 		// TODO: should we narrow down the scope to clients with C&T encounters?
-		//	cd.addEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		//		    CARE_AND_TREATMENT_SERVICE_ENROLLMENT_ENCOUNTER_TYPE));
-		cd.setQuestion(Context.getConceptService().getConceptByUuid(RETURN_VISIT_DATE));
+		// cd.addEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		// CARE_AND_TREATMENT_SERVICE_ENROLLMENT_ENCOUNTER_TYPE));
+		cd.setQuestion(Context.getConceptService().getConceptByUuid(NEXT_VISIT_DATE));
 		cd.setTimeModifier(BaseObsCohortDefinition.TimeModifier.LAST);
 		cd.setOperator1(RangeComparator.EQUAL);
 		cd.addParameter(new Parameter("value1", "appointmentDate", Date.class, null, null, null));

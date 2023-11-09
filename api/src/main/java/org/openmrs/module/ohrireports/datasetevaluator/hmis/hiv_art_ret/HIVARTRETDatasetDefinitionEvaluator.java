@@ -237,8 +237,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(cohort, YES,
-						_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+				Cohort pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(cohort, YES);
 				if (parameter.isPregnant == YES) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {

@@ -7,19 +7,15 @@
  * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
  * graphic logo is a trademark of OpenMRS Inc.
  */
-package org.openmrs.module.ohrireports.reports.hts;
+package org.openmrs.module.ohrireports.reports.linelist;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
-import org.openmrs.module.reporting.evaluation.parameter.Mapped;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.HTSNewDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
-import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -29,19 +25,17 @@ import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 
-;
-
 @Component
-public class TransferInOutReport implements ReportManager {
+public class TX_New_Report implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "af7c1fe6-d669-414e-b066-e9733f0de7a8";
+		return "4d7b385f-331f-400c-8592-f539f4565d9d";
 	}
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-Transferred In/Out";
+		return LINE_LIST_REPORT + "-TX_New";
 	}
 	
 	@Override
@@ -63,18 +57,19 @@ public class TransferInOutReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		TransferredInOutDataSetDefinition tDataSetDefinition = new TransferredInOutDataSetDefinition();
-		tDataSetDefinition.addParameters(getParameters());
-		tDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		HTSNewDataSetDefinition htsNewDataSetDefinition = new HTSNewDataSetDefinition();
+		htsNewDataSetDefinition.addParameters(getParameters());
+		htsNewDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("TransferredInOut", EthiOhriUtil.map(tDataSetDefinition));
+		reportDefinition.addDataSetDefinition("TX-New", EthiOhriUtil.map(htsNewDataSetDefinition));
 		
 		return reportDefinition;
 	}
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("35a15208-e04b-4af9-98d2-54437dfdb514", reportDefinition);
+		
+		ReportDesign design = ReportManagerUtil.createExcelDesign("a4ae3c0a-bad8-4efe-8b8d-c2762c13f5c0", reportDefinition);
 		
 		return Arrays.asList(design);
 	}

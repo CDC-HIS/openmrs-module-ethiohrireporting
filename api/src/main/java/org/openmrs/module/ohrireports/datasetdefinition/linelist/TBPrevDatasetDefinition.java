@@ -1,14 +1,13 @@
-package org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_numerator;
+package org.openmrs.module.ohrireports.datasetdefinition.linelist;
 
 import java.util.Date;
 
-import org.openmrs.EncounterType;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TbPrevNumeratorAutoCalculateDataSetDefinition extends BaseDataSetDefinition {
+public class TBPrevDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;
@@ -17,7 +16,15 @@ public class TbPrevNumeratorAutoCalculateDataSetDefinition extends BaseDataSetDe
 	private Date endDate;
 	
 	@ConfigurationProperty
-	private EncounterType encounterType;
+	private String tptStatus;
+	
+	public String getTptStatus() {
+		return tptStatus;
+	}
+	
+	public void setTptStatus(String tptStatus) {
+		this.tptStatus = tptStatus;
+	}
 	
 	public Date getStartDate() {
 		return startDate;
@@ -28,19 +35,13 @@ public class TbPrevNumeratorAutoCalculateDataSetDefinition extends BaseDataSetDe
 	}
 	
 	public Date getEndDate() {
+		
 		return endDate;
+		
 	}
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-	}
-	
-	public EncounterType getEncounterType() {
-		return encounterType;
-	}
-	
-	public void setEncounterType(EncounterType encounterType) {
-		this.encounterType = encounterType;
 	}
 	
 }

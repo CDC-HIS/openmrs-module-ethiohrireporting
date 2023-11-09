@@ -4,10 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorARTByAgeAndSexDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_numerator.TbPrevNumeratorAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev.TbPrevNumeratorDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -48,9 +46,9 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		TbPrevNumeratorAutoCalculateDataSetDefinition aDefinition = new TbPrevNumeratorAutoCalculateDataSetDefinition();
+		TbPrevNumeratorDataSetDefinition aDefinition = new TbPrevNumeratorDataSetDefinition();
 		aDefinition.addParameters(getParameters());
-		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		aDefinition.setAggregateType(false);
 		aDefinition
 		        .setDescription("Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy (for continuous IPT programs, this includes the patients who have completed the first 6 months of isoniazid preventive therapy (IPT), or any other standard course of TPT such as 3 months of weekly isoniazid and rifapentine, or 3-HP)");
 		reportDefinition
@@ -58,9 +56,10 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 		            "Auto-Calculate : Among those who started a course of TPT in the previous reporting period, the number that completed a full course of therapy",
 		            EthiOhriUtil.map(aDefinition));
 		
-		TbPrevNumeratorARTByAgeAndSexDataSetDefinition cDefinition = new TbPrevNumeratorARTByAgeAndSexDataSetDefinition();
+		TbPrevNumeratorDataSetDefinition cDefinition = new TbPrevNumeratorDataSetDefinition();
 		cDefinition.addParameters(getParameters());
-		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		aDefinition.setAggregateType(true);
+		
 		cDefinition.setDescription("Disaggregated by ART by Age/Sex");
 		reportDefinition.addDataSetDefinition("Required : Disaggregated by ART by Age/Sex", EthiOhriUtil.map(cDefinition));
 		

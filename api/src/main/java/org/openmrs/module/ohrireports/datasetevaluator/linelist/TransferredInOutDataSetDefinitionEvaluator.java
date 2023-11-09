@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.REGIMEN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_UUID;
@@ -13,7 +14,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SERVICE_DELIVERY_POINT_NUMBER_MRN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNIQUE_ANTIRETROVAIRAL_THERAPY_UAN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ADHERENCE_UUID;
 
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
@@ -21,7 +21,6 @@ import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
@@ -220,7 +219,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 		    new HqlQueryBuilder()
 		            .select("obs.valueCoded")
 		            .from(Obs.class, "obs")
-		            .whereEqual("obs.concept", conceptService.getConceptByUuid(ADHERENCE_UUID))
+		            .whereEqual("obs.concept", conceptService.getConceptByUuid(REGIMEN))
 		            .whereBetweenInclusive("obs.obsDatetime", tDataSetDefinition.getStartDate(),
 		                tDataSetDefinition.getEndDate()).limit(1), Concept.class, evalContext);
 		return adConcept.equals(null) ? "" : adConcept.getName().getName();

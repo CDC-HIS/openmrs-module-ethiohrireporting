@@ -92,20 +92,19 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
     }
 
     @Override
-    public void buildDataSetColumn(SimpleDataSet dataSet, String gender, int middleAge) {
-        DataSetRow dataSetRow = new DataSetRow();
-        dataSetRow.addColumnValue(new DataSetColumn("gender", "Gender", String.class),
+    public void buildDataSetColumn(DataSetRow row, String gender, int middleAge) {
+        row.addColumnValue(new DataSetColumn("gender", "Gender", String.class),
                 gender.equals("F") ? "Female"
                         : "Male");
 
-        dataSetRow.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
+        row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
                 getEnrolledByUnknownAge(gender));
-        dataSetRow.addColumnValue(new DataSetColumn("<" + middleAge, "<" + middleAge, Integer.class),
+        row.addColumnValue(new DataSetColumn("<" + middleAge, "<" + middleAge, Integer.class),
                 getCountByMiddleAge(gender, middleAge, _below));
 
-        dataSetRow.addColumnValue(new DataSetColumn(middleAge + "+", middleAge + "+", Integer.class),
+        row.addColumnValue(new DataSetColumn(middleAge + "+", middleAge + "+", Integer.class),
                 getCountByMiddleAge(gender, middleAge, _above));
-        dataSet.addRow(dataSetRow);
+  
     }
 
     protected int getEnrolledByAgeAndGender(int min, int max, String gender) {

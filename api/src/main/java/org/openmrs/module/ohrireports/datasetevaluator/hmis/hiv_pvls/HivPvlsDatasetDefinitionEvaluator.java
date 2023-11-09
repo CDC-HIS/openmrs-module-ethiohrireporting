@@ -234,8 +234,7 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = hivPvlsQuery.getPatientByPregnantStatus(cohort, YES,
-						_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+				Cohort pregnantCohort = hivPvlsQuery.getPatientByPregnantStatus(cohort, YES);
 				if (parameter.isPregnant == YES) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {

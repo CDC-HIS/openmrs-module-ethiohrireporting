@@ -1,23 +1,10 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr;
 
-import static org.openmrs.module.ohrireports.RegimentConstant.R1a30_D4T_30_3TC_NVP;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1a40_D4T_40_3TC_NVP;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1b30_D4T_30_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1b40_D4T_40_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1c_AZT_3TC_NVP;
 import static org.openmrs.module.ohrireports.RegimentConstant.R1d_AZT_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R1e_TDF_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1f_TDF_3TC_NVP;
 import static org.openmrs.module.ohrireports.RegimentConstant.R1g_ABC_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1h_ABC_3TC_NVP;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1i_OTHER_ADULT_1ST_LINE_REGIMEN;
 import static org.openmrs.module.ohrireports.RegimentConstant.R1j_TDF_3TC_DTG;
 import static org.openmrs.module.ohrireports.RegimentConstant.R1k_AZT_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2L_OTHER_ADULT_2ND_LINE_REGIMEN;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2a_ABC_DDL_LPV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2b_ABC_DDL_NFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2c_TDF_DDL_LPV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2d_TDF_DDL_NFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R2e_AZT_3TC_LPVr;
 import static org.openmrs.module.ohrireports.RegimentConstant.R2f_AZT_3TC_ATVr;
 import static org.openmrs.module.ohrireports.RegimentConstant.R2g_TDF_3TC_LPVr;
@@ -28,41 +15,26 @@ import static org.openmrs.module.ohrireports.RegimentConstant.R2k_AZT_3TC_DTG;
 import static org.openmrs.module.ohrireports.RegimentConstant.R3a_DRVr_DTG_AZT_3TC;
 import static org.openmrs.module.ohrireports.RegimentConstant.R3b_DRVr_DTG_TDF_3TC;
 import static org.openmrs.module.ohrireports.RegimentConstant.R3c_DRVr_ABC_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R3d_OTHER_ADULT_3RD_LINE_REGIMEN;
 import static org.openmrs.module.ohrireports.RegimentConstant.R3e_DRVr_TDF_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R3f_DRVr_AZT_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4L_ABC_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R4a_D4T_3TC_NVP;
-import static org.openmrs.module.ohrireports.RegimentConstant.R4b_D4T_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R4c_AZT_3TC_NVP;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4d_AZT_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4e_TDF_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4f_AZT_3TC_LPVr;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4g_ABC_3TC_LPVr;
-import static org.openmrs.module.ohrireports.RegimentConstant.R4h_OTHER_CHILD_1ST_LINE_REGIMEN;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4i_TDF_3TC_DTG;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4j_ABC_3TC_DTG;
 import static org.openmrs.module.ohrireports.RegimentConstant.R4k_AZT_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R5L_RAL_ABC_3TC;
-import static org.openmrs.module.ohrireports.RegimentConstant.R5a_ABC_DDL_LPY;
-import static org.openmrs.module.ohrireports.RegimentConstant.R5b_ABC_DDL_NFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R5c_TDF_DDL_LPV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R5d_TDF_DDL_NFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5e_ABC_3TC_LPVr;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5f_AZT_3TC_LPVr;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5g_TDF_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5h_ABC_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5i_TDF_3TC_LPVr;
-import static org.openmrs.module.ohrireports.RegimentConstant.R5j_OTHER_CHILD_2ND_LINE_REGIMEN;
-import static org.openmrs.module.ohrireports.RegimentConstant.R5k_RAL_AZT_3TC;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5m_ABC_3TC_DTG;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5n_AZT_3TC_DTG;
 import static org.openmrs.module.ohrireports.RegimentConstant.R5o_TDF_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R6a_DRVr_RAL_AZT_3TC;
-import static org.openmrs.module.ohrireports.RegimentConstant.R6b_DRVr_RAL_TDF_3TC;
 import static org.openmrs.module.ohrireports.RegimentConstant.R6c_DRVr_DTG_AZT_3TC;
 import static org.openmrs.module.ohrireports.RegimentConstant.R6d_DRVr_DTG_TDF_3TC;
-import static org.openmrs.module.ohrireports.RegimentConstant.R6e_OTHER_CHILD_3RD_LINE_REGIMEN;
 import static org.openmrs.module.ohrireports.RegimentConstant.R6f_DRVr_DTG_ABC_3TC;
 import static org.openmrs.module.ohrireports.RegimentConstant.R6g_DRVr_ABC_3TC_EFV;
 import static org.openmrs.module.ohrireports.RegimentConstant.R6h_DRVr_AZT_3TC_EFV;
@@ -87,6 +59,8 @@ public class AggregateByAgeAndRegiment extends ColumnBuilder {
 	
 	SimpleDataSet data;
 	
+	Boolean isChildren = true;
+	
 	Cohort firstLineCohort, secondLineCohort, thirdLineCohort;
 	
 	public AggregateByAgeAndRegiment(HmisCurrQuery hmisCurrQuery, SimpleDataSet data, Cohort firstLineCohort,
@@ -100,12 +74,14 @@ public class AggregateByAgeAndRegiment extends ColumnBuilder {
 	}
 	
 	private void buildAggregateByAgeAndRegimentDataset() {
+
                 List<String> concepts = new ArrayList<>();
                 Cohort cohort = new Cohort();
                 Cohort under19Cohort = hmisCurrQuery.getLessThanOrEqualAge(19, hmisCurrQuery.getBaseCohort());
                 data.addRow(buildColumn("HIV_TX_CURR_REG_U19",
                                 "Number of children (<19) who are currently on ART by regimen type",
                                 under19Cohort.size()));
+                isChildren = true;
 
                 // #region 1<
                 cohort = hmisCurrQuery.getLessThanAge(1, under19Cohort);
@@ -130,7 +106,7 @@ public class AggregateByAgeAndRegiment extends ColumnBuilder {
 
                 // #region 1-4
                 cohort = hmisCurrQuery.getBetweenAge(1, 4, under19Cohort);
-                data.addRow(buildColumn("HIV_TX_CURR_REG_U4.1", "Children currently on ART aged 1-4 yr by regimen type",
+                data.addRow(buildColumn("HIV_TX_CURR_REG_U4", "Children currently on ART aged 1-4 yr by regimen type",
                                 cohort.size()));
                 concepts = Arrays.asList(R4d_AZT_3TC_EFV, R4f_AZT_3TC_LPVr, R4j_ABC_3TC_DTG, R4g_ABC_3TC_LPVr,
                                 R4k_AZT_3TC_DTG,
@@ -222,6 +198,8 @@ public class AggregateByAgeAndRegiment extends ColumnBuilder {
 
                 // #endregion 10-14
 
+                isChildren = false;
+
                 // #region 15-19
                 cohort = hmisCurrQuery.getBetweenAge(15, 19, under19Cohort);
                 data.addRow(buildColumn("HIV_TX_CURR_REG_U19", "Adult currently on ART aged 15-19 yr by regimen type",
@@ -261,21 +239,22 @@ public class AggregateByAgeAndRegiment extends ColumnBuilder {
                 String desc = base;
                 String lastName = conceptUUDs.get(conceptUUDs.size() - 1);
                 String otherName = lastName;
+                String ageBaseName = isChildren ? "Children" : "Adult";
                 switch (level) {
                         case FIRST_LINE:
                                 desc = desc + " on first line regimen by regimen type";
-                                otherName = otherName + " other first line";
+                                otherName = otherName + " - other " + ageBaseName + " first line regimen";
                                 foundCohort = HMISUtilies.getUnion(cohort, firstLineCohort);
                                 break;
                         case SECOND_LINE:
                                 desc = desc + " on second line regimen by regimen type";
-                                otherName = otherName + " other second line";
+                                otherName = otherName + " other " + ageBaseName + " second line regimen";
                                 foundCohort = HMISUtilies.getUnion(cohort, secondLineCohort);
 
                                 break;
                         case THIRD_LINE:
                                 desc = desc + " on third line regimen by regimen type";
-                                otherName = otherName + " other third line";
+                                otherName = otherName + " other " + ageBaseName + " third line regimen";
                                 foundCohort = HMISUtilies.getUnion(cohort, thirdLineCohort);
 
                                 break;
@@ -294,6 +273,7 @@ public class AggregateByAgeAndRegiment extends ColumnBuilder {
                                         regiment.getCount().intValue()));
 
                 }
+                nameCount++;
                 data.addRow(buildColumn(name + "." + nameCount, otherName, foundCohort.size() - foundCount));
 
         }

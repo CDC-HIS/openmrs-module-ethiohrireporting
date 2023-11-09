@@ -38,6 +38,6 @@ public interface PatientQueryDao {
 	
 	List<Person> getPersons(Cohort cohort);
 	
-	Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, Date startOnOrAfter, Date endOnOrBefore);
+	Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID);
 	
 }

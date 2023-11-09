@@ -51,8 +51,8 @@ public class PatientQueryServiceImp extends BaseOpenmrsService implements Patien
 	}
 	
 	@Override
-	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, Date startOnOrAfter, Date endOnOrBefore) {
-		return patientQueryDao.getPatientByPregnantStatus(patient, conceptUUID, startOnOrAfter, endOnOrBefore);
+	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID) {
+		return patientQueryDao.getPatientByPregnantStatus(patient, conceptUUID);
 	}
 	
 	@Override

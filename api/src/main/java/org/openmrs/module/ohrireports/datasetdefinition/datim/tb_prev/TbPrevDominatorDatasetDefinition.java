@@ -1,13 +1,14 @@
-package org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev_denominator;
+package org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev;
 
 import java.util.Date;
+
 import org.openmrs.EncounterType;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TbPrevDenominatorARTByAgeAndSexDataSetDefinition extends BaseDataSetDefinition {
+public class TbPrevDominatorDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;
@@ -17,6 +18,17 @@ public class TbPrevDenominatorARTByAgeAndSexDataSetDefinition extends BaseDataSe
 	
 	@ConfigurationProperty
 	private EncounterType encounterType;
+	
+	@ConfigurationProperty
+	private boolean aggregateType;
+	
+	public boolean getAggregateType() {
+		return aggregateType;
+	}
+	
+	public void setAggregateType(boolean _aggregateType) {
+		aggregateType = _aggregateType;
+	}
 	
 	public Date getStartDate() {
 		return startDate;

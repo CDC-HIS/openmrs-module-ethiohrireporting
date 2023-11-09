@@ -67,10 +67,6 @@ public class OHRIReportsConstants {
 	
 	public final static String UNKNOWN = "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String TPT_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
-	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
 	/**
 	 * Associated Concepts
 	 */
@@ -84,7 +80,7 @@ public class OHRIReportsConstants {
 	
 	public final static String FINAL_COVID19_TEST_RESULT = "5da5c21b-969f-41bd-9091-e40d4c707544";
 	
-	public final static String RETURN_VISIT_DATE = "5096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String NEXT_VISIT_DATE = "5096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	// public final static String POSITIVE = "6378487b-584d-4422-a6a6-56c8830873ff";
 	public final static String POSITIVE = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -296,13 +292,24 @@ public class OHRIReportsConstants {
 	
 	public final static String TB_SCREENING_RESULT = "160108AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// TODO: update as soon as the concept created
-	public final static String ADHERENCE_UUID = "";
-	
 	// #endregion
 	
 	// #region TPT (TB prevention)
-	public final static String TB_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String TPT_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TPT_TYPE = "54084c9e-bc87-4d95-89fc-eb9a2cffb592";
+	
+	public final static String TPT_ADHERENCE = "23d97715-589c-4dcf-bb86-70e26bba2269";
+	
+	public final static String TPT_DISCONTINUED_DATE = "162281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TPT_ALTERNATE_TYPE = "c1af657e-bc31-46a2-9f5e-55a1c9ae7507";
+	
+	public final static String TPT_DOSE_DAY_TYPE_ALTERNATE = "cc80b9ac-2ed1-4fd5-969a-9e324e91e95e";
+	
+	public final static String TPT_DOSE_DAY_TYPE_INH = "ad542a8d-cd7c-4d70-8ef3-829b89c05009";
 	
 	// #endregion
 	
@@ -331,7 +338,7 @@ public class OHRIReportsConstants {
 	/*
 	 * Linkage Indicators Concepts
 	 */
-	public final static String HIV_POSITIVE_DATE = "160554AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String HIV_CONFIRMED_DATE = "160554AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String LINKED_TO_CARE_TREATMENT = "c1bb9738-10aa-4905-bb5d-af4e55b4bb69";
 	

@@ -27,5 +27,5 @@ public interface PatientQueryService extends OpenmrsService {
 	
 	List<Person> getPersons(Cohort cohort);
 	
-	Cohort getPatientByPregnantStatus(Cohort patient, String ConceptUUID, Date startOnOrAfter, Date endOnOrBefore);
+	Cohort getPatientByPregnantStatus(Cohort patient, String ConceptUUID);
 }

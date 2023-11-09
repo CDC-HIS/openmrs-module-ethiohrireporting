@@ -222,8 +222,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES,
-						_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+				Cohort pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES);
 				if (parameter.isPregnant == YES) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {

@@ -3,7 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CONFIRMED_REFERRAL;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DIED;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.FINAL_OUT_COME;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_POSITIVE_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_CONFIRMED_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINKED_TO_CARE_TREATMENT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LOST_TO_FOLLOW_UP;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY;
@@ -92,7 +92,7 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
 
 	private Cohort getTotalCohort() {
 
-		StringBuilder sql = baseQuery(HIV_POSITIVE_DATE);
+		StringBuilder sql = baseQuery(HIV_CONFIRMED_DATE);
 
 		Query query = addDateRange(sql);
 

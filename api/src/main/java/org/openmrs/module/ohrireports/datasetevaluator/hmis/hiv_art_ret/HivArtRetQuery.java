@@ -10,7 +10,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.LOST_TO_FOLLOW
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;

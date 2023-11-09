@@ -1,13 +1,14 @@
-package org.openmrs.module.ohrireports.reports.hts;
+package org.openmrs.module.ohrireports.reports.linelist;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.TXTBDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -17,16 +18,20 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VlReceivedReport implements ReportManager {
+public class TXTBReport implements ReportManager {
+	
+	public static String numerator = "TB Treatment";
+	
+	public static String denominator = "TB Screening";
 	
 	@Override
 	public String getUuid() {
-		return "2afbc7ab-d098-44e7-8890-4e7a2fb2fef4";
+		return "0b3f8468-29af-47b6-92d3-f9d3cc4d4405";
 	}
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-VL Received";
+		return LINE_LIST_REPORT + "-TX_TB";
 	}
 	
 	@Override
@@ -36,7 +41,20 @@ public class VlReceivedReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		return EthiOhriUtil.getDateRangeParameters();
+		
+		Parameter types = new Parameter("type", "TB Treatment Status", String.class);
+		types.addToWidgetConfiguration("codedOptions", numerator + "," + denominator);
+		
+		types.setRequired(false);
+		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
+		startDate.setRequired(false);
+		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
+		startDateGC.setRequired(false);
+		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
+		endDate.setRequired(false);
+		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
+		endDateGC.setRequired(false);
+		return Arrays.asList(startDate, startDateGC, endDate, endDateGC, types);
 	}
 	
 	@Override
@@ -47,18 +65,18 @@ public class VlReceivedReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		VLReceivedDataSetDefinition vlDatasetDefinition = new VLReceivedDataSetDefinition();
-		vlDatasetDefinition.addParameters(getParameters());
+		TXTBDataSetDefinition txTBdataSetDefinition = new TXTBDataSetDefinition();
+		txTBdataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("VL Received", EthiOhriUtil.map(vlDatasetDefinition));
+		reportDefinition.addDataSetDefinition("TB-Treatment", EthiOhriUtil.map(txTBdataSetDefinition, "type=${type}"));
 		
 		return reportDefinition;
 	}
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		
-		ReportDesign design = ReportManagerUtil.createExcelDesign("3465b588-100b-48a7-864f-1ee6009d600b", reportDefinition);
+		//
+		ReportDesign design = ReportManagerUtil.createExcelDesign("41f952ea-e777-44c4-8f54-303517dd6622", reportDefinition);
 		
 		return Arrays.asList(design);
 	}

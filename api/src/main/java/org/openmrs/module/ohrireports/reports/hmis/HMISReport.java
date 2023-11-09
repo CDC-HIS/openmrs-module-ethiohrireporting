@@ -251,12 +251,12 @@ public class HMISReport implements ReportManager {
 		cxcaRx.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Treatment of precancerous cervical lesion", EthiOhriUtil.map(cxcaRx));
 		
-		TbLbLfLamDataSetDefinition tblblflam = new TbLbLfLamDataSetDefinition();
-		tblblflam.setParameters(getParameters());
-		tblblflam.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition(
-		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay",
-		    EthiOhriUtil.map(tblblflam));
+		// TbLbLfLamDataSetDefinition tblblflam = new TbLbLfLamDataSetDefinition();
+		// tblblflam.setParameters(getParameters());
+		// tblblflam.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		// reportDefinition.addDataSetDefinition(
+		//     "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay",
+		//     EthiOhriUtil.map(tblblflam));
 		
 		return reportDefinition;
 	}
