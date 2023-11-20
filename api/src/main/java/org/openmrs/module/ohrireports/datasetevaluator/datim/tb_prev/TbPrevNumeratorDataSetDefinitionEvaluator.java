@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tb_prev;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_COMPLETED_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Objects;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev.TbPrevNumeratorDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -37,6 +39,9 @@ public class TbPrevNumeratorDataSetDefinitionEvaluator implements DataSetEvaluat
 	
 	List<Integer> baseEncounters;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	private Date endDate = null;
 	
 	@Override
@@ -45,23 +50,23 @@ public class TbPrevNumeratorDataSetDefinitionEvaluator implements DataSetEvaluat
 		femaleTotal = 0;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		hdsd = (TbPrevNumeratorDataSetDefinition) dataSetDefinition;
-		Date prevSixMonth = getPrevSixMonth();
 		if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-			baseEncounters = tbQuery.getBaseEncounters(TPT_START_DATE, prevSixMonth, hdsd.getStartDate());
+			baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE), hdsd.getStartDate(),
+			    hdsd.getEndDate());
 		
 		endDate = hdsd.getEndDate();
 		
-		Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_COMPLETED_DATE, prevSixMonth, endDate);
+		Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_COMPLETED_DATE, hdsd.getStartDate(), endDate);
 		Cohort onArtCorCohort = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, endDate, tptCohort));
 		if (!hdsd.getAggregateType()) {
 			// #region newly enrolled on Art with TPT completed
-			Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, prevSixMonth, endDate,
+			Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, hdsd.getStartDate(), endDate,
 			    onArtCorCohort));
 			buildDataRow(set, tbQuery.getPersons(cohortByArt), "Newly enrolled on ART");
 			// #endregion
 			
 			// #region already enrolled on ART with TPT completed
-			cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, prevSixMonth, onArtCorCohort));
+			cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(), onArtCorCohort));
 			buildDataRow(set, tbQuery.getPersons(cohortByArt), "Previously enrolled on ART");
 			// #endregion
 			

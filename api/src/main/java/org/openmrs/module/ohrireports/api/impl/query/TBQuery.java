@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_COMPLETED_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.NEGATIVE;
@@ -13,7 +14,9 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.DIAGNOSTIC_TES
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SMEAR_ONLY;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LF_LAM_RESULT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.GENE_XPERT_RESULT;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ADDITIONAL_TEST_OTHERTHAN_GENE_XPERT;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_ACTIVE_DATE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +37,7 @@ public class TBQuery extends PatientQueryImpDao {
 	private DbSessionFactory sessionFactory;
 	private List<Integer> screenedOnDateEncounters = new ArrayList<>();
 
+
 	public List<Integer> getScreenedOnDateEncounters() {
 		return screenedOnDateEncounters;
 	}
@@ -46,23 +50,19 @@ public class TBQuery extends PatientQueryImpDao {
 
 	}
 
-	private void setEncountersByScreenDate(Date endDate) {
-		if (screenedOnDateEncounters == null || screenedOnDateEncounters.isEmpty()) {
-			screenedOnDateEncounters = getBaseEncounters(TB_SCREENING_DATE, null, endDate);
-		}
+	public void setEncountersByScreenDate(List<Integer> encounters) {
+		screenedOnDateEncounters = encounters;
 	}
 
 	public Cohort getCohortByTbScreenedNegative(Cohort cohort, Date startDate, Date endDate, String gender) {
-		init(endDate);
-		setEncountersByScreenDate(endDate);
+		
 		Query query = getTBScreenedByResult(cohort, startDate, endDate, gender, NEGATIVE);
 
 		return new Cohort(query.list());
 	}
 
 	public Cohort getCohortByTbScreenedPositive(Cohort cohort, Date startDate, Date endDate, String gender) {
-		init(endDate);
-		setEncountersByScreenDate(endDate);
+		
 
 		Query query = getTBScreenedByResult(cohort, startDate, endDate, gender, POSITIVE);
 
@@ -160,8 +160,8 @@ public class TBQuery extends PatientQueryImpDao {
 		return new Cohort(query.list());
 	}
 
-	public Cohort getTBTreatmentStartedCohort(Cohort cohort, Date starDate, Date endDate, String gender) {
-		List<Integer> treatmentStatedDateEncounters = getBaseEncounters(TB_TREATMENT_START_DATE, starDate, endDate);
+	public Cohort getTBTreatmentStartedCohort(Cohort cohort, Date starDate, Date endDate, String gender,List<Integer> treatmentStatedDateEncounters) {
+			//getBaseEncounters(TB_TREATMENT_START_DATE, starDate, endDate);
 
 		StringBuilder sql = baseQuery(TB_TREATMENT_START_DATE);
 		sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");
@@ -204,7 +204,7 @@ public class TBQuery extends PatientQueryImpDao {
 
 		StringBuilder sql = baseQuery(concept);
 		sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");
-		
+
 		if (starDate != null)
 			sql.append(" and " + OBS_ALIAS + "value_datetime >= :start");
 		if (endDate != null)
@@ -221,4 +221,93 @@ public class TBQuery extends PatientQueryImpDao {
 
 		return new Cohort(query.list());
 	}
+
+	public Cohort getTPTByConceptCohort(List<Integer> treatmentStatedDateEncounters, Cohort cohort, String conceptUUIDs,
+			List<String> conceptAnswerUUIDS) {
+
+		StringBuilder sql = baseQuery(conceptUUIDs);
+		sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");
+		sql.append(" and " + OBS_ALIAS + "value_coded in " + conceptQuery(conceptAnswerUUIDS));
+
+		if (cohort != null && !cohort.isEmpty())
+			sql.append(" and " + OBS_ALIAS + " person_id in (:cohorts)");
+
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+
+		query.setParameterList("encounters", treatmentStatedDateEncounters);
+
+		if (cohort != null && !cohort.isEmpty())
+			query.setParameterList("cohorts", cohort.getMemberIds());
+
+		return new Cohort(query.list());
+	}
+
+	public Cohort getTPTByCompletedConceptCohort(List<Integer> treatmentStatedDateEncounters, Cohort cohort) {
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("select distinct " + OBS_ALIAS + "person_id from obs as ob ");
+		sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");
+		sql.append("inner join person as p on pa.patient_id = p.person_id ");
+		sql.append("inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.retired = false ");
+		sql.append("and c.uuid= '" + TPT_COMPLETED_DATE + "' ");
+		sql.append("inner join encounter as e on e.encounter_id = " + OBS_ALIAS + "encounter_id ");
+		sql.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append("left join (select * from obs where concept_id=" + conceptQuery(TPT_START_DATE)
+				+ " and encounter_id in (:joinedEncounters) ) as otherOb on otherOb.person_id = ob.person_id ");
+		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
+		sql.append(" where pa.voided = false and " + OBS_ALIAS
+				+ "voided = false and otherOb.value_datetime < ob.value_datetime");
+		sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");
+
+		if (cohort != null && !cohort.isEmpty())
+			sql.append(" and " + OBS_ALIAS + " person_id in (:cohorts)");
+
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+
+		query.setParameterList("encounters", treatmentStatedDateEncounters);
+		query.setParameterList("joinedEncounters", treatmentStatedDateEncounters);
+
+		if (cohort != null && !cohort.isEmpty())
+			query.setParameterList("cohorts", cohort.getMemberIds());
+
+		return new Cohort(query.list());
+	}
+
+	public Cohort getCohort(List<Integer> encounterIds) {
+		StringBuilder sqlBuilder = new StringBuilder(
+				"select distinct (person_id) from obs where encounter_id in (:encounterIds) ");
+
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		query.setParameterList("encounterIds", encounterIds);
+
+		return new Cohort(query.list());
+
+	}
+
+	public Cohort getCurrentOnActiveTB(Cohort cohort, Date start, Date end,List<Integer> encounters) {
+		List<String> concepts = Arrays.asList(TB_TREATMENT_START_DATE, TB_ACTIVE_DATE);
+
+	//	List<Integer> encounters = getEncounters(cohort, start, end);
+
+		StringBuilder sql = new StringBuilder("select distinct person_id from obs where ");
+		sql.append(" concept_id in " + conceptQuery(concepts));
+		sql.append(" and person_id in (:cohort)");
+		sql.append(" and encounter_id in (:encounters)");
+		sql.append(" and value_datetime >= :start");
+		sql.append(" and value_datetime <= :end");
+
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+
+		query.setParameterList("encounters", encounters);
+		query.setParameterList("cohort", cohort.getMemberIds());
+		query.setDate("start", start);
+		query.setDate("end", end);
+
+		return new Cohort(query.list());
+	}
+
+	// public List<Integer> getEncounters(Cohort cohort, Date start, Date end) {
+	// 	List<String> concepts = Arrays.asList(TB_TREATMENT_START_DATE, TB_ACTIVE_DATE);
+	// 	return (concepts, start, end, cohort);
+	// }
 }

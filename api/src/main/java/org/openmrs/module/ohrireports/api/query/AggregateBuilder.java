@@ -18,9 +18,6 @@ public interface AggregateBuilder extends OpenmrsService {
 	
 	void setAgeInterval(int ageInterval);
 	
-	/**
-	 * @param person
-	 */
 	void setPersonList(List<Person> person);
 	
 	// Build data set using lower age to upper age by incrementing age interval to

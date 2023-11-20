@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_pvls;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.NO;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
@@ -7,12 +8,15 @@ import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -27,20 +31,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { HivPvlsDatasetDefinition.class })
 public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
-
+	/*
+	 * -11 is because calendar library start count month from zero,
+	 * the idea is to check all record from past twelve months
+	 */
+	private int STARTING_FROM_MONTHS = 12;
 	private HivPvlsDatasetDefinition _datasetDefinition;
 	private String baseName;
 	private String column_3_name = "Number";
 	private int cohortAll, cohortLV, cohortUN = 0;
 	@Autowired
 	private HivPvlsQuery hivPvlsQuery;
+	@Autowired
+	private EncounterQuery encounterQuery;
 
 	List<Person> persons = new ArrayList<>();
 
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
+
 		_datasetDefinition = (HivPvlsDatasetDefinition) dataSetDefinition;
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(_datasetDefinition.getEndDate());
+		calendar.add(Calendar.MONTH, -STARTING_FROM_MONTHS);
+
+		List<Integer> encounter = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED),
+				calendar.getTime(), _datasetDefinition.getEndDate());
+		hivPvlsQuery.setData(calendar.getTime(), _datasetDefinition.getEndDate(), encounter);
+
 		baseName = "HIV_TX_PVLS";
 		baseName = baseName + "" + _datasetDefinition.getPrefix();
 		cohortAll = 0;
@@ -234,7 +254,8 @@ public class HivPvlsDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = hivPvlsQuery.getPatientByPregnantStatus(cohort, YES);
+				Cohort pregnantCohort = hivPvlsQuery.getPatientByPregnantStatus(cohort, YES,
+						hivPvlsQuery.getLastEncounterIds());
 				if (parameter.isPregnant == YES) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {

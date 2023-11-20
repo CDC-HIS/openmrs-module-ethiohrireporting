@@ -1,6 +1,5 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 
 import java.util.Date;
@@ -8,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -3,12 +3,10 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_curr;
 
 
 import java.util.ArrayList;
-
-
 import java.util.List;
+
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.TxCurrKeyPopulationTypeDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -18,8 +16,6 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.service.EvaluationService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { TxCurrKeyPopulationTypeDataSetDefinition.class })
 public class TxCurrKeyPopulationTypeDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -28,11 +24,7 @@ public class TxCurrKeyPopulationTypeDataSetDefinitionEvaluator implements DataSe
 	
 	private TxCurrKeyPopulationTypeDataSetDefinition hdsd;
 	
-	@Autowired
-	private ConceptService conceptService;
-	
-	@Autowired
-	private EvaluationService evaluationService;
+
 
     List<Obs> obses = new ArrayList<>();
 	

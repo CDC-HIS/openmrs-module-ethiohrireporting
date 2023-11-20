@@ -33,11 +33,11 @@ public class HivArtFbQuery extends PatientQueryImpDao {
 		this.sessionFactory = sessionFactory;
 	}
 	
-	public void setDate(Date start, Date end) {
+	public void setDate(Date start, Date end, List<Integer> _encounters) {
 		startDate = start;
 		endDate = end;
 		if (cohort == null)
-			cohort = getActiveOnArtCohort("", startDate, endDate, null);
+			cohort = getActiveOnArtCohort("", startDate, endDate, null, _encounters);
 		
 	}
 	

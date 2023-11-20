@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
-import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_numerator.TxTbNumeratorAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -21,25 +20,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { TxTbNumeratorAutoCalculateDataSetDefinition.class })
 public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
-	private EvaluationContext context;
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	private TxTbNumeratorAutoCalculateDataSetDefinition hdsd;
 	
 	@Autowired
 	private TBQuery tbQuery;
 	
-	private PatientQueryService patientQuery;
+	private List<Integer> encounters;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
-		context = evalContext;
-		patientQuery = Context.getService(PatientQueryService.class);
 		
-		Cohort cohort = patientQuery.getArtStartedCohort("", null, hdsd.getEndDate(), null, null);
+		encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		tbQuery.setEncountersByScreenDate(encounters);
 		
-		cohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort cohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
+		
+		cohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), cohort

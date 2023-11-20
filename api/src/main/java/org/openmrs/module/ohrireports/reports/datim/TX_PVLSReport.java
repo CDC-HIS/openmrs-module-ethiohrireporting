@@ -3,8 +3,6 @@ package org.openmrs.module.ohrireports.reports.datim;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_ROUTINE_VIRAL_LOAD_COUNT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_TARGET_VIRAL_LOAD_COUNT;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -30,9 +28,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TX_PVLSReport implements ReportManager {
-	
-	@Autowired
-	private ConceptService conceptService;
 	
 	@Override
 	public String getUuid() {

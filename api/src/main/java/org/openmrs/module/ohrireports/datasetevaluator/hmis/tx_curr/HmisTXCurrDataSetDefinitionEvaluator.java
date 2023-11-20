@@ -1,8 +1,11 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr;
 
+import java.util.List;
+
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_curr.HmisTXCurrDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr.RegimentCategory.REGIMENT_TYPE;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -24,6 +27,9 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	@Autowired
 	private HmisCurrQuery hmisCurrQuery;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	SimpleDataSet data = null;
 	
 	private HmisTXCurrDataSetDefinition hdsd;
@@ -40,8 +46,9 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		hdsd = (HmisTXCurrDataSetDefinition) dataSetDefinition;
 		
 		data = new SimpleDataSet(dataSetDefinition, evalContext);
+		List<Integer> aliveFollowUpEncounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
 		
-		hmisCurrQuery.loadInitialCohort(hdsd.getEndDate());
+		hmisCurrQuery.loadInitialCohort(hdsd.getEndDate(), aliveFollowUpEncounters);
 		
 		setHeaderRow();
 		firstLineCohort = hmisCurrQuery.getByRegiment(RegimentCategory.getRegimentConcepts(REGIMENT_TYPE.FIRST_LINE),
@@ -54,7 +61,8 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		new AggregateByAgeAndGender(hmisCurrQuery, firstLineCohort, secondLineCohort, thirdLineCohort, data);
 		new AggregateByPregnancyStatus(hmisCurrQuery, data);
 		new AggregateByAgeAndRegiment(hmisCurrQuery, data, firstLineCohort, secondLineCohort, thirdLineCohort);
-		new AggregateByAgeGenderAndPregnancyStatus(hmisCurrQuery, data, firstLineCohort, secondLineCohort, thirdLineCohort);
+		new AggregateByAgeGenderAndPregnancyStatus(hmisCurrQuery, data, firstLineCohort, secondLineCohort, thirdLineCohort,
+		        aliveFollowUpEncounters);
 		return data;
 		
 	}

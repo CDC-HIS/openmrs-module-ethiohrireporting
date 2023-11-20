@@ -21,8 +21,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TBARTNumeratorReport implements ReportManager {
 	
-	private EncounterType followUpEncounter;
-	
 	@Override
 	public String getUuid() {
 		return "af7c1fe6-d669-414e-b066-e9733f0de7a8";
@@ -51,11 +49,9 @@ public class TBARTNumeratorReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
-		followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		TBARTAutoCalculateDataSetDefinition tbADataSet = new TBARTAutoCalculateDataSetDefinition();
 		tbADataSet.addParameters(getParameters());
-		tbADataSet.setEncounterType(followUpEncounter);
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Number of TB cases with documented HIV-positive status who start or continue ART during the reporting period. ",
@@ -63,17 +59,16 @@ public class TBARTNumeratorReport implements ReportManager {
 		
 		TBARTDataSetDefinition alreadyOnARTSetDefinition = new TBARTDataSetDefinition();
 		alreadyOnARTSetDefinition.addParameters(getParameters());
-		alreadyOnARTSetDefinition.setEncounterType(followUpEncounter);
 		//alreadyOnARTSetDefinition.setNewlyEnrolled(false);
 		reportDefinition.addDataSetDefinition("Disaggregated by Age/Sex/Result Already on ART",
 		    EthiOhriUtil.map(alreadyOnARTSetDefinition));
 		
-		TBARTDataSetDefinition newlyEnrolledSetDefinition = new TBARTDataSetDefinition();
-		newlyEnrolledSetDefinition.addParameters(getParameters());
-		newlyEnrolledSetDefinition.setEncounterType(followUpEncounter);
-		//newlyEnrolledSetDefinition.setNewlyEnrolled(true);
-		reportDefinition.addDataSetDefinition("Disaggregated by Age/Sex/Result Newly on ARt",
-		    EthiOhriUtil.map(newlyEnrolledSetDefinition));
+		// TBARTDataSetDefinition newlyEnrolledSetDefinition = new TBARTDataSetDefinition();
+		// newlyEnrolledSetDefinition.addParameters(getParameters());
+		// newlyEnrolledSetDefinition.setEncounterType(followUpEncounter);
+		// //newlyEnrolledSetDefinition.setNewlyEnrolled(true);
+		// reportDefinition.addDataSetDefinition("Disaggregated by Age/Sex/Result Newly on ARt",
+		//     EthiOhriUtil.map(newlyEnrolledSetDefinition));
 		
 		return reportDefinition;
 	}

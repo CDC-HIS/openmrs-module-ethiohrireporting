@@ -1,398 +1,269 @@
 package org.openmrs.module.ohrireports.api.impl;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.PREGNANT_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REASON_FOR_ART_ELIGIBILITY;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQueryDao {
-	
-	// Calendar month is zero base so total month in a year is 11 which is counting
-	// from zero
-	private DbSessionFactory sessionFactory;
-	
-	public PatientQueryImpDao() {
-	}
-	
-	private Date endDate;
-	
-	@Override
-	public List<Integer> init(Date _endDate) {
-		if (endDate == null || !endDate.equals(_endDate)) {
-			endDate = _endDate;
-			latestEncounterIds = getLatestDateByFollowUpDate(endDate);
-		}
-		return latestEncounterIds;
-	}
-	
-	public DbSessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
-	
-	public void setSessionFactory(DbSessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-	
-	private List<Integer> latestEncounterIds;
-	
-	public List<Integer> getLatestEncounterIds() {
-		return latestEncounterIds;
-	}
-	
-	private DbSession getSession() {
-		return getSessionFactory().getCurrentSession();
-	}
-	
-	@Override
-	public Cohort getOnArtCohorts() {
-		
-		StringBuilder sql = baseQuery(ART_START_DATE);
-		sql.append(" and " + OBS_ALIAS + "value_datetime >= :startOnOrAfter ");
-		Query q = getSession().createSQLQuery(sql.toString());
-		q.setTimestamp("startOnOrAfter", Calendar.getInstance().getTime());
-		return new Cohort(q.list());
-	}
-	
-	// For new
-	@Override
-	public Cohort getNewOnArtCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort) {
-		init(endOrBefore);
-		Cohort transferInCohort = transferredInFacility(null, endOrBefore);
-		
-		Collection<?> list = getArtStartedCohort(gender, startOnOrAfter, endOrBefore, cohort, transferInCohort);
-		
-		return new Cohort(list);
-	}
-	
-	/**
-	 * @param gender for full range of gender "" or for specific gender pass F or M
-	 * @param startOnOrAfter optional but at list one of date should be provided start or end date.
-	 * @param endOrBefore optional but at list one of date should be provided start or end date.
-	 * @param cohort Optional can be if there is no patients the ART should run on.
-	 * @param toBeExcludedCohort Can be null if there is no patients to be excluded from the query.
-	 * @return
-	 */
-	@Override
-	public Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
-			Cohort toBeExcludedCohort) {
-		init(endOrBefore);
 
-		if (latestEncounterIds.isEmpty() || (cohort!=null && cohort.isEmpty()))
-			return new ArrayList<>();
+    private DbSessionFactory sessionFactory;
 
-		StringBuilder sql = baseQuery(ART_START_DATE);
+    public PatientQueryImpDao() {
+    }
 
-		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
+    public DbSessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
 
-		if (!Objects.isNull(gender) && !gender.trim().isEmpty())
-			sql.append("and p.gender = '" + gender + "' ");
-		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime >= :start ");
-		if (cohort != null && cohort.size() != 0)
-			sql.append("and p.person_id in (:personIds) ");
+    public void setSessionFactory(DbSessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
-		if (endOrBefore != null)
-			sql.append("and " + OBS_ALIAS + "value_datetime <= :end ");
-		if (toBeExcludedCohort != null && toBeExcludedCohort.size() != 0)
-			sql.append("and p.person_id not in (:toBeExcludedCohort) ");
+    private DbSession getSession() {
+        return getSessionFactory().getCurrentSession();
+    }
 
-		Query q = getSession().createSQLQuery(sql.toString());
-		q.setParameterList("encounters", latestEncounterIds);
+    @Override
+    public Cohort getNewOnArtCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
+                                    List<Integer> encounters) {
 
-		if (startOnOrAfter != null)
-			q.setTimestamp("start", startOnOrAfter);
+        Cohort transferInCohort = transferredInFacility(endOrBefore);
 
-		if (endOrBefore != null)
-			q.setTimestamp("end", endOrBefore);
+        Collection<?> list = getArtStartedCohort(gender, startOnOrAfter, endOrBefore, cohort, transferInCohort, encounters);
 
-		if (cohort != null && cohort.size() != 0)
-			q.setParameter("personIds", cohort.getMemberIds());
-		if (toBeExcludedCohort != null && toBeExcludedCohort.size() != 0)
-			q.setParameterList("toBeExcludedCohort", toBeExcludedCohort.getMemberIds());
+        return new Cohort(list);
+    }
 
-		List list = q.list();
+    @Override
+    public Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
+                                                   Cohort toBeExcludedCohort, List<Integer> encounters) {
 
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
+        if (encounters.isEmpty() || (cohort != null && cohort.isEmpty()))
+            return new ArrayList<>();
 
-	}
-	
-	public Collection<Integer> getArtStartedCohort(List<Integer> encounters, Date startOnOrAfter, Date endOrBefore, Cohort cohort) {
-	
-		if (encounters.isEmpty())
-			return new ArrayList<>();
+        StringBuilder sql = baseQuery(ART_START_DATE);
 
-		StringBuilder sql = baseQuery(ART_START_DATE);
+        sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 
-		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
-		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime >= :start ");
-		if (cohort != null && cohort.size() != 0)
-			sql.append("and p.person_id in (:personIds) ");
+        if (!Objects.isNull(gender) && !gender.trim().isEmpty())
+            sql.append("and p.gender = '").append(gender).append("' ");
+        if (startOnOrAfter != null)
+            sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start ");
+        if (cohort != null && !cohort.isEmpty())
+            sql.append("and p.person_id in (:personIds) ");
 
-		if (endOrBefore != null)
-			sql.append("and " + OBS_ALIAS + "value_datetime <= :end ");
+        if (endOrBefore != null)
+            sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
+        if (toBeExcludedCohort != null && !toBeExcludedCohort.isEmpty())
+            sql.append("and p.person_id not in (:toBeExcludedCohort) ");
 
-		Query q = getSession().createSQLQuery(sql.toString());
-		q.setParameterList("encounters", encounters);
+        Query q = getSession().createSQLQuery(sql.toString());
+        q.setParameterList("encounters", encounters);
 
-		if (startOnOrAfter != null)
-			q.setTimestamp("start", startOnOrAfter);
+        if (startOnOrAfter != null)
+            q.setTimestamp("start", startOnOrAfter);
 
-		if (endOrBefore != null)
-			q.setTimestamp("end", endOrBefore);
+        if (endOrBefore != null)
+            q.setTimestamp("end", endOrBefore);
 
-		if (cohort != null && cohort.size() != 0)
-			q.setParameter("personIds", cohort.getMemberIds());
+        if (cohort != null && !cohort.isEmpty())
+            q.setParameter("personIds", cohort.getMemberIds());
+        if (toBeExcludedCohort != null && !toBeExcludedCohort.isEmpty())
+            q.setParameterList("toBeExcludedCohort", toBeExcludedCohort.getMemberIds());
 
-		List list = q.list();
+        List list = q.list();
 
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
+        if (list != null) {
+            return (List<Integer>) list;
+        } else {
+            return new ArrayList<Integer>();
+        }
 
-	}
-	
-	@Override
-	public Cohort getActiveOnArtCohort() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MONTH, -3);
-		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort("", calendar.getTime(), Calendar.getInstance().getTime(),
-		    null);
-		
-		return onTreatmentCohort;
-	}
-	
-	@Override
-	public Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
-		
-		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, null);
-		
-		return onTreatmentCohort;
-		
-	}
-	
-	@Override
-	public Cohort getCurrentOnTreatmentCohort() {
-		StringBuilder sql = baseQuery(TREATMENT_END_DATE);
-		
-		sql.append(" and " + OBS_ALIAS + "value_datetime >= :startOnOrAfter ");
-		
-		Query q = getSession().createSQLQuery(sql.toString());
-		
-		q.setTimestamp("startOnOrAfter", Calendar.getInstance().getTime());
-		
-		return new Cohort(q.list());
-	}
-	
-	@Override
-	public Cohort getCurrentOnTreatmentCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort) {
-		
-		init(endOnOrBefore);
-		
-		if (latestEncounterIds == null || latestEncounterIds.isEmpty())
-			return new Cohort();
-		
-		StringBuilder sql = baseQuery(TREATMENT_END_DATE);
-		
-		sql.append("and " + OBS_ALIAS + "encounter_id in (:encounterIds) ");
-		
-		if (!Objects.isNull(gender) && !gender.trim().isEmpty())
-			sql.append("and p.gender = '" + gender + "' ");
-		if (endOnOrBefore != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime >= :endOnOrBefore ");
-		if (cohort != null && cohort.size() != 0)
-			sql.append("and p.person_id in (:personIds) ");
-		
-		Query q = getSession().createSQLQuery(sql.toString());
-		q.setParameter("encounterIds", latestEncounterIds);
-		
-		if (endOnOrBefore != null)
-			q.setTimestamp("endOnOrBefore", endOnOrBefore);
-		if (cohort != null && cohort.size() != 0)
-			q.setParameter("personIds", cohort.getMemberIds());
-		
-		return new Cohort(q.list());
-	}
-	
-	public Cohort getCurrentOnTreatmentCohort(String gender, Date endOnOrBefore, Cohort cohort) {
-		init(endOnOrBefore);
-		if (latestEncounterIds.isEmpty())
-			return new Cohort();
-		
-		StringBuilder sql = baseQuery(TREATMENT_END_DATE);
-		
-		String condition = LATEST_ENCOUNTER_BASE_ALIAS_OBS + "concept_id =" + conceptQuery(FOLLOW_UP_STATUS) + " and "
-		        + LATEST_ENCOUNTER_BASE_ALIAS_OBS + "value_coded in " + conceptQuery(Arrays.asList(ALIVE, RESTART))
-		        + " and " + LATEST_ENCOUNTER_BASE_ALIAS_OBS + "encounter_id in (:latestEncounterId)";
-		
-		sql.append(" and " + OBS_ALIAS + "encounter_id in ");
-		sql.append(baseLatestEncounter(condition));
-		
-		if (!Objects.isNull(gender) && !gender.trim().isEmpty())
-			sql.append("and p.gender = '" + gender + "' ");
-		if (endOnOrBefore != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime >= :endOnOrBefore ");
-		if (cohort != null && cohort.size() != 0)
-			sql.append("and p.person_id in (:personIds) ");
-		
-		Query q = getSession().createSQLQuery(sql.toString());
-		
-		q.setParameterList("latestEncounterId", latestEncounterIds);
-		if (endOnOrBefore != null)
-			q.setTimestamp("endOnOrBefore", endOnOrBefore);
-		if (cohort != null && cohort.size() != 0)
-			q.setParameter("personIds", cohort.getMemberIds());
-		
-		return new Cohort(q.list());
-	}
-	
-	@Override
-	public List<Person> getPersons(Cohort cohort) {
-		Set<Integer> pIntegers = cohort.getMemberIds();
-		Criteria criteria = getSession().createCriteria(Person.class);
-		
-		criteria.setCacheable(false);
-		criteria.add(Restrictions.eq("voided", false));
-		criteria.add(Restrictions.in("personId", pIntegers));
-		
-		return criteria.list();
-		
-	}
-	
-	public List<Integer> getBaseEncounters(String questionConcept, Date start, Date end) {
+    }
 
-		if (questionConcept == null || questionConcept.isEmpty())
-			return new ArrayList<>();
+    public Collection<Integer> getArtStartedCohort(List<Integer> encounters, Date startOnOrAfter, Date endOrBefore,
+                                                   Cohort cohort) {
 
-		StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join ");
-		builder.append(
-				"(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+        if (encounters.isEmpty())
+            return new ArrayList<>();
 
-		builder.append(" where obs_enc.concept_id =" + conceptQuery(questionConcept));
+        StringBuilder sql = baseQuery(ART_START_DATE);
 
-		if (start != null)
-			builder.append(" and obs_enc.value_datetime >= :start ");
+        sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
+        if (startOnOrAfter != null)
+            sql.append(" and " + OBS_ALIAS + "value_datetime >= :start ");
+        if (cohort != null && cohort.size() != 0)
+            sql.append("and p.person_id in (:personIds) ");
 
-		if (end != null)
-			builder.append(" and obs_enc.value_datetime <= :end ");
+        if (endOrBefore != null)
+            sql.append("and " + OBS_ALIAS + "value_datetime <= :end ");
 
-		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
-		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
-		builder.append(" and ob.concept_id =" + conceptQuery(questionConcept));
+        Query q = getSession().createSQLQuery(sql.toString());
+        q.setParameterList("encounters", encounters);
 
-		Query q = getSession().createSQLQuery(builder.toString());
+        if (startOnOrAfter != null)
+            q.setTimestamp("start", startOnOrAfter);
 
-		if (start != null)
-			q.setDate("start", start);
+        if (endOrBefore != null)
+            q.setTimestamp("end", endOrBefore);
 
-		if (end != null)
-			q.setDate("end", end);
+        if (cohort != null && cohort.size() != 0)
+            q.setParameter("personIds", cohort.getMemberIds());
 
-		List list = q.list();
+        List list = q.list();
 
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
-	}
-	
-	private List<Integer> getLatestDateByFollowUpDate(Date end) {
-		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
-		builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
-		
-		builder.append(" where obs_enc.concept_id =" + conceptQuery(FOLLOW_UP_DATE));
-		
-		if (end != null)
-			builder.append(" and obs_enc.value_datetime <= :end ");
-		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
-		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
-		builder.append(" and ob.concept_id =" + conceptQuery(FOLLOW_UP_DATE));
-		
-		Query q = getSession().createSQLQuery(builder.toString());
-		
-		if (end != null)
-			q.setDate("end", end);
-		
-		List list = q.list();
-		
-		if (list != null) {
-			return latestEncounterIds = (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
-	}
-	
-	@Override
-	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID) {
-		StringBuilder sql = baseQuery(PREGNANT_STATUS);
-		sql.append(" and " + OBS_ALIAS + "value_coded = (select c.concept_id from concept where uuid='" + conceptUUID + "')");
-		
-		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters) ");
-		if (patient != null && patient.size() != 0)
-			sql.append("and p.person_id in (:personIds) ");
-		
-		Query q = getSession().createSQLQuery(sql.toString());
-		
-		q.setParameterList("encounters", getLatestEncounterIds());
-		
-		if (patient != null && patient.size() != 0)
-			q.setParameter("personIds", patient.getMemberIds());
-		
-		return new Cohort(q.list());
-		
-	}
-	
-	private Cohort transferredInFacility(Date startOnOrAfter, Date endOnOrBefore) {
-		
-		StringBuilder sql = baseQuery(REASON_FOR_ART_ELIGIBILITY);
-		
-		sql.append(" and " + OBS_ALIAS + "value_coded = " + conceptQuery(TRANSFERRED_IN));
-		
-		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "obs_datetime >= :startOnOrAfter ");
-		if (endOnOrBefore != null)
-			sql.append(" and " + OBS_ALIAS + "obs_datetime <= :endOnOrBefore ");
-		
-		Query q = getSession().createSQLQuery(sql.toString());
-		
-		if (startOnOrAfter != null)
-			q.setTimestamp("startOnOrAfter", startOnOrAfter);
-		if (endOnOrBefore != null)
-			q.setTimestamp("endOnOrBefore", endOnOrBefore);
-		
-		return new Cohort(q.list());
-	}
+        if (list != null) {
+            return (List<Integer>) list;
+        } else {
+            return new ArrayList<Integer>();
+        }
+
+    }
+
+    @Override
+    public Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort,
+                                       List<Integer> encounters) {
+
+        Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, null, encounters);
+
+        return onTreatmentCohort;
+
+    }
+
+    @org.jetbrains.annotations.NotNull
+    @Contract("_, _, _, null -> new")
+    private Cohort getCurrentOnTreatmentCohort(String gender, Date endOnOrBefore, Cohort cohort,
+                                               List<Integer> encounters) {
+
+        if (encounters == null || encounters.isEmpty())
+            return new Cohort();
+
+        StringBuilder sql = baseQuery(TREATMENT_END_DATE);
+
+        sql.append("and ").append(OBS_ALIAS).append("encounter_id in (:encounterIds) ");
+
+        if (!Objects.isNull(gender) && !gender.trim().isEmpty())
+            sql.append("and p.gender = '").append(gender).append("' ");
+        if (endOnOrBefore != null)
+            sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :endOnOrBefore ");
+        if (cohort != null && !cohort.isEmpty())
+            sql.append("and p.person_id in (:personIds) ");
+
+        Query q = getSession().createSQLQuery(sql.toString());
+        q.setParameter("encounterIds", encounters);
+
+        if (endOnOrBefore != null)
+            q.setTimestamp("endOnOrBefore", endOnOrBefore);
+        if (cohort != null && !cohort.isEmpty())
+            q.setParameter("personIds", cohort.getMemberIds());
+
+        return new Cohort(q.list());
+    }
+
+    @Override
+    public List<Person> getPersons(@NotNull Cohort cohort) {
+        Set<Integer> pIntegers = cohort.getMemberIds();
+        Criteria criteria = getSession().createCriteria(Person.class);
+
+        criteria.setCacheable(false);
+        criteria.add(Restrictions.eq("voided", false));
+        criteria.add(Restrictions.in("personId", pIntegers));
+
+        return criteria.list();
+
+    }
+
+    @Override
+    public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, List<Integer> encounters) {
+        StringBuilder sql = baseQuery(PREGNANT_STATUS);
+        if (encounters == null || encounters.isEmpty())
+            return new Cohort();
+        sql.append(" and ").append(OBS_ALIAS).append("value_coded = (select concept_id from concept where uuid='").append(conceptUUID).append("')");
+
+        sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
+        if (patient != null && !patient.isEmpty())
+            sql.append("and p.person_id in (:personIds) ");
+
+        Query q = getSession().createSQLQuery(sql.toString());
+
+        q.setParameterList("encounters", encounters);
+
+        if (patient != null && !patient.isEmpty())
+            q.setParameter("personIds", patient.getMemberIds());
+
+        return new Cohort(q.list());
+
+    }
+
+    @NotNull
+    @Contract("_ -> new")
+    private Cohort transferredInFacility(Date endOnOrBefore) {
+
+        StringBuilder sql = baseQuery(REASON_FOR_ART_ELIGIBILITY);
+
+        sql.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(TRANSFERRED_IN));
+
+        if (endOnOrBefore != null)
+            sql.append(" and ").append(OBS_ALIAS).append("obs_datetime <= :endOnOrBefore ");
+
+        Query q = getSession().createSQLQuery(sql.toString());
+
+        if (endOnOrBefore != null)
+            q.setTimestamp("endOnOrBefore", endOnOrBefore);
+
+        return new Cohort(q.list());
+    }
+
+    public HashMap<Integer, Object> getObValue(String conceptUUId, Cohort cohort, @NotNull ObsValueType type, List<Integer> encounter) {
+
+        StringBuilder sqlBuilder = new StringBuilder();
+        String rawQuery = "";
+         switch (type){
+
+             case NUMERIC_VALUE:
+                rawQuery =" select ob.person_id,ob.value_numeric from obs as ob WHERE ob.value_numeric is not null ";
+                 break;
+             case DATE_VALUE:
+                 rawQuery =" select ob.person_id,ob.value_datetime from obs as ob WHERE ob.value_datetime is not null ";
+                 break;
+             case CONCEPT:
+                 rawQuery = "select ob.person_id, cn.name from obs as ob \n" +
+                         "inner join concept_name as cn on cn.concept_id = ob.concept_id\n" +
+                         "WHERE cn.locale_preferred =1 ";
+                 break;
+         }
+         sqlBuilder.append(rawQuery);
+        sqlBuilder.append(" and ob.concept_id = ").append(conceptQuery(conceptUUId));
+        sqlBuilder.append(" and ob.encounter_id in (:encounters)");
+        sqlBuilder.append(" and ob.person_id in (:cohort)");
+
+        Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+
+        return  HMISUtilies.getDictionary(query);
+    }
+
+    public enum ObsValueType {
+        NUMERIC_VALUE,
+        DATE_VALUE,
+        CONCEPT
+    }
 }

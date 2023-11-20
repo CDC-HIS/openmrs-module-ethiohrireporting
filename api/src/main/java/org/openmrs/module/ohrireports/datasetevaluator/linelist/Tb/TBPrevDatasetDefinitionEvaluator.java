@@ -5,6 +5,8 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_DOSE_DAY_T
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_CONFIRMED_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_DOSE_DAY_TYPE_INH;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REASON_FOR_ART_ELIGIBILITY;
@@ -15,6 +17,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_ADHERENCE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_COMPLETED_DATE;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,6 +28,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
@@ -47,15 +51,20 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 	private TBQuery tbQuery;
 	
 	@Autowired
+	private EncounterQuery encounterQuery;
+	
+	@Autowired
 	private TbQueryLineList tbQueryLineList;
 	
 	private TBPrevDatasetDefinition hdsd;
 	
 	HashMap<Integer, Object> mrnIdentifierHashMap;
 	
+	private List<Integer> lastFollowUp;
+	
 	private HashMap<Integer, Object> artStartDictionary, followUpDate, followUpStatus, arvDoseDay, tptDiscontinuedDate,
 	        tptType, tptEndDate, tptStartDate, tpDosDayType, tptAdherence, hiveConfirmedDate, nextVisitDate, alternateType,
-	        eligibleStatus, tptAlternateDoseDay;
+	        eligibleStatus, tptAlternateDoseDay, finalFollowUPStatus;
 	
 	private List<Integer> baseTPTStartDateEncounters;
 	
@@ -66,14 +75,14 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		patientQuery = Context.getService(PatientQueryService.class);
-		
+		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(hdsd.getEndDate());
 		if (hdsd.getTptStatus().equals("start")) {
-			baseTPTStartDateEncounters = patientQuery.getBaseEncounters(TPT_START_DATE, hdsd.getStartDate(),
+			baseTPTStartDateEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE), hdsd.getStartDate(),
 			    hdsd.getEndDate());
 			
 		} else {
-			baseTPTStartDateEncounters = patientQuery.getBaseEncounters(TPT_COMPLETED_DATE, hdsd.getStartDate(),
-			    hdsd.getEndDate());
+			baseTPTStartDateEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE),
+			    hdsd.getStartDate(), hdsd.getEndDate());
 			
 		}
 		
@@ -160,7 +169,8 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("visitDateEth", "Next Visit Date ETH", String.class),
 			    tbQueryLineList.getEthiopianDate(visitDate));
 			;
-			
+			row.addColumnValue(new DataSetColumn("finalFollowUpStatus", "Final Follow-up Status", String.class),
+			    finalFollowUPStatus.get(person.getPersonId()));
 			data.addRow(row);
 			
 		}
@@ -170,7 +180,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private void loadColumnDictionary(Cohort cohort) {
 		
-		artStartDictionary = tbQueryLineList.getArtStartDate(cohort, hdsd.getStartDate(), hdsd.getEndDate());
+		artStartDictionary = tbQueryLineList.getObsValueDate(baseTPTStartDateEncounters, ART_START_DATE, cohort);
 		mrnIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		followUpDate = tbQueryLineList.getObsValueDate(baseTPTStartDateEncounters, FOLLOW_UP_DATE, cohort);
 		followUpStatus = tbQueryLineList.getFollowUpStatus(baseTPTStartDateEncounters, cohort);
@@ -186,6 +196,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		eligibleStatus = tbQueryLineList.getByResult(REASON_FOR_ART_ELIGIBILITY, cohort, baseTPTStartDateEncounters);
 		alternateType = tbQueryLineList.getByResult(TPT_ALTERNATE_TYPE, cohort, baseTPTStartDateEncounters);
 		tptAlternateDoseDay = tbQueryLineList.getByResult(TPT_DOSE_DAY_TYPE_ALTERNATE, cohort, baseTPTStartDateEncounters);
+		finalFollowUPStatus = tbQueryLineList.getByResult(FOLLOW_UP_STATUS, cohort, lastFollowUp);
 		
 	}
 	

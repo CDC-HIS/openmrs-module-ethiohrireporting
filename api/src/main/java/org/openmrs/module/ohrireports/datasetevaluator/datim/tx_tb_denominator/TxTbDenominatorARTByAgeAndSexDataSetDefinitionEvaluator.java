@@ -5,6 +5,7 @@ import java.util.List;
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
@@ -27,7 +28,8 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 	@Autowired
 	private TBQuery tbQuery;
 	
-	private PatientQueryService patientQuery;
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	@Autowired
 	private AggregateBuilder _AggregateBuilder;
@@ -37,11 +39,12 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		
 		hdsd = (TxTbDenominatorARTByAgeAndSexDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		patientQuery = Context.getService(PatientQueryService.class);
 		
-		Cohort newOnArtCohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
-		Cohort alreadyOnArtCohort = patientQuery.getArtStartedCohort("", null, hdsd.getEndDate(), null, newOnArtCohort);
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		tbQuery.setEncountersByScreenDate(encounters);
 		
+		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
+		Cohort alreadyOnArtCohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 		
 		buildRowWithAggregate(set, newOnArtCohort, "New On ART");
@@ -65,12 +68,12 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		positiveDescriptionDsRow.addColumnValue(new DataSetColumn("", "Category", String.class), type + "/Screen Positive ");
 		set.addRow(positiveDescriptionDsRow);
 		
-		_AggregateBuilder.setPersonList(patientQuery.getPersons(femalePositiveCohort));
+		_AggregateBuilder.setPersonList(tbQuery.getPersons(femalePositiveCohort));
 		DataSetRow _femalePositive = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(_femalePositive, "F");
 		set.addRow(_femalePositive);
 		
-		_AggregateBuilder.setPersonList(patientQuery.getPersons(malePositiveCohort));
+		_AggregateBuilder.setPersonList(tbQuery.getPersons(malePositiveCohort));
 		DataSetRow _malePositive = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(_malePositive, "M");
 		set.addRow(_malePositive);
@@ -79,12 +82,12 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		negativeDescriptionDsRow.addColumnValue(new DataSetColumn("", "Category", String.class), type + "/Screen Negative ");
 		set.addRow(negativeDescriptionDsRow);
 		
-		_AggregateBuilder.setPersonList(patientQuery.getPersons(femaleNegativeCohort));
+		_AggregateBuilder.setPersonList(tbQuery.getPersons(femaleNegativeCohort));
 		DataSetRow _femaleNegative = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(_femaleNegative, "F");
 		set.addRow(_femaleNegative);
 		
-		_AggregateBuilder.setPersonList(patientQuery.getPersons(maleNegativeCohort));
+		_AggregateBuilder.setPersonList(tbQuery.getPersons(maleNegativeCohort));
 		DataSetRow _maleNegative = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(_maleNegative, "M");
 		set.addRow(_maleNegative);

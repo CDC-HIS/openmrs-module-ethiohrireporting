@@ -7,6 +7,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LOST_TO_FOLLOW_UP;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,12 +37,12 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		
 		goBackToMonths(endOnOrBefore, startDate, endDate);
 		
-		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort);
+		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort,new ArrayList<>());
 		
 		if (artCohort == null || artCohort.size() == 0)
 			return new Cohort();
 		
-		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, artCohort);
+		Cohort onTreatmentCohort = getActiveOnArtCohort(gender, endOnOrBefore,null, artCohort,new ArrayList<>());
 		
 		if (onTreatmentCohort == null || onTreatmentCohort.size() == 0)
 			return new Cohort();
@@ -85,7 +86,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		
 		goBackToMonths(endOnOrBefore, startDate, endDate);
 		
-		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort);
+		Cohort artCohort = getNewOnArtCohort(gender, startDate.getTime(), endDate.getTime(), cohort,new ArrayList<>());
 		if (artCohort == null || artCohort.size() == 0)
 			return new Cohort();
 		

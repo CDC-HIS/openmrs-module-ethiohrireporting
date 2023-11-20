@@ -34,11 +34,11 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	@Autowired
 	private VlQuery vlQuery;
 	
-	/*
-	 * -11 is because calendar library start count month from zero,
-	 * the idea is to check all record from past twelve months
-	 */
-	private int STARTING_FROM_MONTHS = 12;
+	private List<Integer> lastEncounterIds;
+	
+	public List<Integer> getLastEncounterIds() {
+		return lastEncounterIds;
+	}
 	
 	@Autowired
 	public HivPvlsQuery(DbSessionFactory sessionFactory) {
@@ -46,22 +46,15 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 		super.setSessionFactory(sessionFactory);
 	}
 	
-	private void setDate(Date end) {
+	public void setData(Date start, Date end, List<Integer> encounters) {
 		
-		if (endDate != end) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(end);
-			calendar.add(Calendar.MONTH, -STARTING_FROM_MONTHS);
-			startDate = calendar.getTime();
-			endDate = end;
-			List<Integer> lastEncounterIds = getBaseEncounters(DATE_VIRAL_TEST_RESULT_RECEIVED, startDate, endDate);
-			vlQuery.loadInitialCohort(startDate, endDate, lastEncounterIds);
-		}
-		
+		startDate = start;
+		endDate = end;
+		lastEncounterIds = encounters;
+		vlQuery.loadInitialCohort(startDate, endDate, lastEncounterIds);
 	}
 	
 	public Cohort getPatientsWithViralLoadSuppressed(String gender, Date endOnOrBefore) {
-		setDate(endOnOrBefore);
 		Cohort cohort = vlQuery.getViralLoadSuppressed();
 		
 		if (Objects.isNull(gender) || gender.isEmpty())
@@ -80,7 +73,6 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getPatientWithViralLoadCount(String gender, Date endOnOrBefore) {
-		setDate(endOnOrBefore);
 		if (gender == null || gender.isEmpty())
 			return vlQuery.cohort;
 		
@@ -100,7 +92,6 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getPatientWithViralLoadCountLowLevelViremia(String gender, Date endOnOrBefore) {
-		setDate(endOnOrBefore);
 		
 		StringBuilder sql = super.baseQuery(HIV_VIRAL_LOAD_STATUS);
 		sql.append("and " + OBS_ALIAS + "value_coded = " + conceptQuery(HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA));

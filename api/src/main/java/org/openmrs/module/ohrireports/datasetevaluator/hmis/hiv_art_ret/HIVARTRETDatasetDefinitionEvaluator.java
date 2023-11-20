@@ -6,7 +6,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.NO;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -237,7 +236,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(cohort, YES);
+				Cohort pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(cohort, YES, new ArrayList<>());
 				if (parameter.isPregnant == YES) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {

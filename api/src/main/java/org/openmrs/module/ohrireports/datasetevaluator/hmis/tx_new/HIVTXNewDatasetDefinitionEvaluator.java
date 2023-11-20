@@ -13,6 +13,7 @@ import org.openmrs.CohortMembership;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -23,6 +24,7 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { HIVTXNewDatasetDefinition.class })
 public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -32,7 +34,11 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 	private String column_3_name = "Number";
 	private PatientQueryService patientQuery;
 
+	@Autowired
+	private EncounterQuery encounterQuery;
+
 	List<Person> persons = new ArrayList<>();
+	List<Integer> encounter = new ArrayList<>();
 
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
@@ -40,6 +46,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		_datasetDefinition = (HIVTXNewDatasetDefinition) dataSetDefinition;
 		patientQuery = Context.getService(PatientQueryService.class);
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		encounter = encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getEndDate());
 		buildDataSet(dataSet);
 
 		return dataSet;
@@ -171,7 +178,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		Cohort cohort = new Cohort();
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
 			cohort = patientQuery.getNewOnArtCohort("", _datasetDefinition.getStartDate(),
-					_datasetDefinition.getEndDate(), null);
+					_datasetDefinition.getEndDate(), null,encounter);
 			persons = patientQuery.getPersons(cohort);
 			return cohort.getMemberIds().size();
 		}
@@ -222,7 +229,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES);
+				Cohort pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES,encounter);
 				if (parameter.isPregnant == YES) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {

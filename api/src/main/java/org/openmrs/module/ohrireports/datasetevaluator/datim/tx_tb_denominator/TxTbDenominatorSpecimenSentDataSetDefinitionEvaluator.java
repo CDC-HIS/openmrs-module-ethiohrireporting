@@ -15,6 +15,7 @@ import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorSpecimenSentDataSetDefinition;
@@ -35,7 +36,8 @@ public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements Da
 	
 	private TxTbDenominatorSpecimenSentDataSetDefinition hdsd;
 	
-	private PatientQueryService patientQuery;
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	@Autowired
 	private TBQuery tbQuery;
@@ -45,10 +47,10 @@ public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements Da
 		
 		hdsd = (TxTbDenominatorSpecimenSentDataSetDefinition) dataSetDefinition;
 		
-		patientQuery = Context.getService(PatientQueryService.class);
-		patientQuery = Context.getService(PatientQueryService.class);
+		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		tbQuery.setEncountersByScreenDate(encounter);
 		
-		Cohort cohort = patientQuery.getArtStartedCohort("", null, hdsd.getEndDate(), null, null);
+		Cohort cohort = tbQuery.getActiveOnArtCohort("UNDERNOURISHED", null, hdsd.getEndDate(), null, encounter);
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),

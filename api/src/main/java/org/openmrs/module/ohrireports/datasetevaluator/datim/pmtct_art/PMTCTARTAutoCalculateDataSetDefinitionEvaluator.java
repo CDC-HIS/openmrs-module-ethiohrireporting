@@ -30,9 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PMTCTARTAutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {
 
     private EvaluationContext context;
-    private int total = 0;
-    private int minCount = 0;
-    private int maxCount = 4;
     List<Obs> obses = new ArrayList<>();
     private PMTCTARTAutoCalculateDataSetDefinition hdsd;
 

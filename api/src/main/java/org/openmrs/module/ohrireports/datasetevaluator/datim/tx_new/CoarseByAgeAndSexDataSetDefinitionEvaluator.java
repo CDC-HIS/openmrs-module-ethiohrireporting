@@ -9,6 +9,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.CoarseByAgeAndSexDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -28,6 +29,9 @@ public class CoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalu
 	
 	private int total = 0;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	private PatientQueryService patientQuery;
 	
 	@Override
@@ -38,8 +42,9 @@ public class CoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalu
 		patientQuery = Context.getService(PatientQueryService.class);
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		DataSetRow femaleDateSet = new DataSetRow();
+		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
 		
-		Cohort femalCohort = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort femalCohort = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
 		
 		List<Person> persons = patientQuery.getPersons(femalCohort);
 		
@@ -54,7 +59,7 @@ public class CoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalu
 		set.addRow(femaleDateSet);
 		
 		persons.clear();
-		Cohort maleCohort = patientQuery.getNewOnArtCohort("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort maleCohort = patientQuery.getNewOnArtCohort("M", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
 		persons = patientQuery.getPersons(maleCohort);
 		DataSetRow maleDataSet = new DataSetRow();
 		maleDataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Male");

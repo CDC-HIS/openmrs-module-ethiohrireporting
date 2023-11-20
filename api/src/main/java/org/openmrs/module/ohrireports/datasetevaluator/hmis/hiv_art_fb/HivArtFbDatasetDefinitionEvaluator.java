@@ -5,6 +5,7 @@ import java.util.List;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_fb.HivArtFbDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -20,11 +21,15 @@ public class HivArtFbDatasetDefinitionEvaluator implements DataSetEvaluator {
 	@Autowired
 	private HivArtFbQuery fbQuery;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		HivArtFbDatasetDefinition _DatasetDefinition = (HivArtFbDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_DatasetDefinition, evalContext);
-		fbQuery.setDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate());
+		fbQuery.setDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate(),
+		    encounterQuery.getAliveFollowUpEncounters(_DatasetDefinition.getEndDate()));
 		List<Person> persons = fbQuery.getPersons(new Cohort(fbQuery.GetPatientsOnFamilyPlanning()));
 		HivArtFbDatasetBuilder datasetBuilder = new HivArtFbDatasetBuilder(persons, dataSet,
 		        _DatasetDefinition.getDescription(), "HIV_ART_FP");

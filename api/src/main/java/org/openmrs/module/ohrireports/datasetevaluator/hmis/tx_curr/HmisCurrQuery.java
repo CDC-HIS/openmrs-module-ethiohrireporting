@@ -29,6 +29,8 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 	
 	private Cohort baseCohort;
 	
+	List<Integer> encounters;
+	
 	public Cohort getBaseCohort() {
 		return baseCohort;
 	}
@@ -39,9 +41,10 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 		setSessionFactory(sessionFactory);
 	}
 	
-	public void loadInitialCohort(Date end) {
+	public void loadInitialCohort(Date end, List<Integer> _encounters) {
 		endDate = end;
-		baseCohort = getActiveOnArtCohort("", null, end, null);
+		encounters = _encounters;
+		baseCohort = getActiveOnArtCohort("", null, end, null, encounters);
 	}
 	
 	public Cohort getCohortByGender(String gender, Cohort cohort) {
@@ -61,7 +64,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		query.setParameterList("latestEncounter", getLatestEncounterIds());
+		query.setParameterList("latestEncounter", encounters);
 		
 		if (cohort != null && cohort.size() > 0)
 			query.setParameterList("cohorts", cohort.getMemberIds());
@@ -84,7 +87,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 		sql.append(" group by " + CONCEPT_BASE_ALIAS_OBS + "value_coded");
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		query.setParameterList("latestEncounter", getLatestEncounterIds());
+		query.setParameterList("latestEncounter", encounters);
 		query.setParameterList("cohorts", cohort.getMemberIds());
 		
 		List list = query.list();
@@ -148,7 +151,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:cohorts)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		query.setParameterList("latestEncounter", getLatestEncounterIds());
+		query.setParameterList("latestEncounter", encounters);
 		query.setParameterList("cohorts", cohort.getMemberIds());
 		
 		return getDictionary(query);

@@ -19,6 +19,7 @@ import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
@@ -41,10 +42,13 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 	@Autowired
 	private TBQuery tbQuery;
 	
-	private PatientQueryService patientQuery;
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	@Autowired
 	private AggregateBuilder _AggregateBuilder;
+	
+	private List<Integer> encounters;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -52,10 +56,11 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 		hdsd = (TxTbNumeratorARTByAgeAndSexDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		patientQuery = Context.getService(PatientQueryService.class);
+		encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		tbQuery.setEncountersByScreenDate(encounters);
 		
-		Cohort newOnArtCohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
-		Cohort alreadyOnArtCohort = patientQuery.getArtStartedCohort("", null, hdsd.getEndDate(), null, newOnArtCohort);
+		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
+		Cohort alreadyOnArtCohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
 		
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 		
@@ -68,19 +73,21 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 	}
 	
 	private void buildRowWithAggregate(SimpleDataSet set, Cohort cohort, String type) {
-		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "F");
+		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "F",
+		    encounters);
 		
-		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "M");
+		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "M",
+		    encounters);
 		
 		DataSetRow positiveDescriptionDsRow = new DataSetRow();
 		positiveDescriptionDsRow.addColumnValue(new DataSetColumn("", "Category", String.class), type);
 		set.addRow(positiveDescriptionDsRow);
-		_AggregateBuilder.setPersonList(patientQuery.getPersons(femaleCohort));
+		_AggregateBuilder.setPersonList(tbQuery.getPersons(femaleCohort));
 		
 		DataSetRow _femalePositive = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(_femalePositive, "F");
 		set.addRow(_femalePositive);
-		_AggregateBuilder.setPersonList(patientQuery.getPersons(maleCohort));
+		_AggregateBuilder.setPersonList(tbQuery.getPersons(maleCohort));
 		
 		DataSetRow _malePositive = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(_malePositive, "M");

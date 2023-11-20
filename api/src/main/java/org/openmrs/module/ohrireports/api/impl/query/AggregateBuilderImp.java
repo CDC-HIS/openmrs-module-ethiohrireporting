@@ -1,7 +1,6 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
-import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.springframework.stereotype.Service;
 
 @Service

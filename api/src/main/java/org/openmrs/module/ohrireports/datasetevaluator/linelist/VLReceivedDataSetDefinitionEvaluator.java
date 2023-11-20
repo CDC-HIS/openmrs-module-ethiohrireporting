@@ -3,14 +3,15 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MRN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
@@ -34,6 +35,9 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private List<Integer> baseEncounters;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
@@ -42,7 +46,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		patientQueryService = Context.getService(PatientQueryService.class);
 		
-		baseEncounters = patientQueryService.getBaseEncounters(DATE_VIRAL_TEST_RESULT_RECEIVED,
+		baseEncounters = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED),
 		    _DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate());
 		vlQuery.loadInitialCohort(_DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate(), baseEncounters);
 		

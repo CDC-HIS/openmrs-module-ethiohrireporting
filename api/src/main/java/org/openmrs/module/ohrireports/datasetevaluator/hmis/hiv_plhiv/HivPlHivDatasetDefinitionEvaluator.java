@@ -5,6 +5,7 @@ import java.util.List;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -20,11 +21,15 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
 	@Autowired
 	private HivPlvHivQuery hivPlvHivQuery;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		HivPlHivDatasetDefinition _datasetDefinition = (HivPlHivDatasetDefinition) dataSetDefinition;
-		hivPlvHivQuery.setDates(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+		hivPlvHivQuery.setDates(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate(),
+		    encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getEndDate()));
 		
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		switch (_datasetDefinition.getHivPvlHivType()) {

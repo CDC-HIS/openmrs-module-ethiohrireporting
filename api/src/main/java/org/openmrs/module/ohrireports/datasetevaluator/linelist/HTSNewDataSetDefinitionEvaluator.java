@@ -10,6 +10,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.ArtQuery;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.HTSNewDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -30,6 +31,9 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private PatientQueryService patientQuery;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
@@ -38,13 +42,12 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		patientQuery = Context.getService(PatientQueryService.class);
-		
-		Cohort cohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
-		List<Integer> baseEncounters = patientQuery.getBaseEncountersByFollowUpDate(hdsd.getStartDate(), hdsd.getEndDate());
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		Cohort cohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
-		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(baseEncounters, cohort);
+		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(encounters, cohort);
 		
 		HashMap<Integer, Object> artStartDictionary = artQuery.getArtStartDate(cohort, hdsd.getStartDate(),
 		    hdsd.getEndDate());

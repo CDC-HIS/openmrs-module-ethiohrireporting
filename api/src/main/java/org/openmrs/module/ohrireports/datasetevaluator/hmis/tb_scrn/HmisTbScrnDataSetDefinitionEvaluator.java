@@ -10,6 +10,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_scrn.HmisTbScrnDataSetDefinition;
@@ -30,8 +31,8 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private String column_3_name = "Number";
 	@Autowired
 	private TBQuery tbQuery;
-
-	private PatientQueryService patientService;
+	@Autowired
+	private EncounterQuery encounterQuery;
 
 	private HmisTbScrnDataSetDefinition hdsd;
 
@@ -46,16 +47,14 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 		context = evalContext;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, context);
 
-		patientService = Context.getService(PatientQueryService.class);
-		
-		
-		Cohort newOnARTCohort = patientService.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
-		Cohort existingOnARTCohort = patientService.getArtStartedCohort("",null, hdsd.getEndDate(),
-				null, newOnARTCohort);
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		Cohort newOnARTCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null,encounters);
+		Cohort existingOnARTCohort = new Cohort(tbQuery.getArtStartedCohort("",null, hdsd.getEndDate(),
+				null, newOnARTCohort,encounters));
 
 		Cohort newOnARTScreenedCohort = tbQuery.getTBScreenedCohort(newOnARTCohort, hdsd.getStartDate(),
 				hdsd.getEndDate());
-		persons = patientService.getPersons(newOnARTScreenedCohort);
+		persons = tbQuery.getPersons(newOnARTScreenedCohort);
 
 		data.addRow(
 				buildRow("HIV_TB_SCRN",
@@ -79,7 +78,7 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 		Cohort newOnARTScreenedPositiveCohort = tbQuery.getCohortByTbScreenedPositive(newOnARTCohort,
 				hdsd.getStartDate(), hdsd.getEndDate(), "");
 
-		persons = patientService.getPersons(newOnARTScreenedPositiveCohort);
+		persons = tbQuery.getPersons(newOnARTScreenedPositiveCohort);
 
 		data.addRow(buildRow("HIV_TB_SCRN_P", "Screened Positive for TB", Integer.class,
 		 persons.size()));
@@ -93,7 +92,7 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 				gettbscrnByAgeAndGender(15, 150, Gender.Female)));
 		
 		Cohort existingScreenedOnArtCohort = tbQuery.getTBScreenedCohort(existingOnARTCohort, hdsd.getStartDate(), hdsd.getEndDate());
-		persons = patientService
+		persons = tbQuery
 				.getPersons(existingScreenedOnArtCohort);
 
 		data.addRow(buildRow("HIV_TB_SCRN_ART", "Number of PLHIVs PREVIOUSLY on ART and screened for TB",
@@ -109,7 +108,7 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 				gettbscrnByAgeAndGender(15, 150, Gender.Female)));
 
 		Cohort existingScreenedPositiveCohort = tbQuery.getCohortByTbScreenedPositive(existingScreenedOnArtCohort, hdsd.getStartDate(), hdsd.getEndDate(),"");
-		persons = patientService.getPersons(existingScreenedPositiveCohort);
+		persons = tbQuery.getPersons(existingScreenedPositiveCohort);
 
 		data.addRow(buildRow("HIV_TB_SCRN_ART_P", "Screened Positive for TB", Integer.class, persons.size()));
 		data.addRow(buildRow("HIV_TB_SCRN_ART_P. 1", "< 15 years, Male", Integer.class,

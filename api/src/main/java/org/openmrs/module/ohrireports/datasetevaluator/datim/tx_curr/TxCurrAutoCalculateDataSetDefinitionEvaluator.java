@@ -1,20 +1,10 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_curr;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-import org.openmrs.Concept;
-import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.TxCurrAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -25,8 +15,6 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
-import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { TxCurrAutoCalculateDataSetDefinition.class })
@@ -38,17 +26,20 @@ public class TxCurrAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 	
 	private PatientQueryService patientQueryService;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (TxCurrAutoCalculateDataSetDefinition) dataSetDefinition;
 		
 		patientQueryService = Context.getService(PatientQueryService.class);
-		
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
 		DataSetRow dataSet = new DataSetRow();
 		
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
-		    patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null).size());
+		    patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters).size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;

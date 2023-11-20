@@ -10,10 +10,10 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.MILD_MAL_NUTRI
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MODERATE_MAL_NUTRITION;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SEVERE_MAL_NUTRITION;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hibernate.Query;
@@ -40,11 +40,11 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 		setSessionFactory(sessionFactory);
 	}
 	
-	public void setDates(Date _start, Date _date) {
+	public void setDates(Date _start, Date _date, List<Integer> encounters) {
 		startDate = _start;
 		endDate = _date;
 		if (baseCohort == null)
-			baseCohort = getActiveOnArtCohort("", startDate, endDate, null);
+			baseCohort = getActiveOnArtCohort("", startDate, endDate, null, encounters);
 	}
 	
 	public Set<Integer> getAssessedPatients() {

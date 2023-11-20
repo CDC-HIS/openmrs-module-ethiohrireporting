@@ -11,6 +11,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.ArtQuery;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TxCurrDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -33,15 +34,17 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private TxCurrDataSetDefinition hdsd;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		patientQuery = Context.getService(PatientQueryService.class);
-		List<Integer> latestEncounters = patientQuery
-		        .getBaseEncountersByFollowUpDate(hdsd.getStartDate(), hdsd.getEndDate());
-		Cohort cohort = patientQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		List<Integer> latestEncounters = encounterQuery.getLatestDateByFollowUpDate(hdsd.getEndDate());
+		Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
 		HashMap<Integer, Object> treatmentHashMap = artQuery.getTreatmentEndDates(hdsd.getEndDate(), latestEncounters);
@@ -70,7 +73,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
 			
-			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge());
+			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(hdsd.getEndDate()));
 			
 			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
 			

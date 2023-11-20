@@ -13,6 +13,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -30,11 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { FineByAgeAndSexDataSetDefinition.class })
 public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
-	private EvaluationContext context;
-	
 	private FineByAgeAndSexDataSetDefinition hdsd;
 	
-	private Concept artConcept;
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	private int total = 0;
 	
@@ -51,12 +51,12 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		total = 0;
 		hdsd = (FineByAgeAndSexDataSetDefinition) dataSetDefinition;
-		context = evalContext;
+		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		
 		patientQuery = Context.getService(PatientQueryService.class);
 		
-		artConcept = conceptService.getConceptByUuid(ART_START_DATE);
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		Cohort femaleCohort = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort femaleCohort = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
 		
 		// Female aggregation
 		List<Person> persons = patientQuery.getPersons(femaleCohort);
@@ -67,7 +67,7 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 		persons.clear();
 		
 		// Male aggregation
-		Cohort maleCohort = patientQuery.getNewOnArtCohort("M", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort maleCohort = patientQuery.getNewOnArtCohort("M", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
 		persons = patientQuery.getPersons(maleCohort);
 		
 		DataSetRow maleDataSet = new DataSetRow();

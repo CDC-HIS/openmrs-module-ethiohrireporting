@@ -24,11 +24,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Cohort;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.ColumnBuilder;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr.AggregateByAgeAndRegiment.LEVEL;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr.HmisCurrQuery.Regiment;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AggregateByAgeGenderAndPregnancyStatus extends ColumnBuilder {
 	
@@ -36,15 +38,18 @@ public class AggregateByAgeGenderAndPregnancyStatus extends ColumnBuilder {
 	
 	SimpleDataSet data;
 	
+	List<Integer> encounters;
+	
 	Cohort firstLineCohort, secondLineCohort, thirdLineCohort;
 	
 	public AggregateByAgeGenderAndPregnancyStatus(HmisCurrQuery hmisCurrQuery, SimpleDataSet data, Cohort firstLineCohort,
-	    Cohort secondLineCohort, Cohort thirdLineCohort) {
+	    Cohort secondLineCohort, Cohort thirdLineCohort, List<Integer> _encounters) {
 		this.hmisCurrQuery = hmisCurrQuery;
 		this.data = data;
 		this.firstLineCohort = firstLineCohort;
 		this.secondLineCohort = secondLineCohort;
 		this.thirdLineCohort = thirdLineCohort;
+		encounters = _encounters;
 		buildDataSet();
 	}
 	
@@ -100,7 +105,7 @@ public class AggregateByAgeGenderAndPregnancyStatus extends ColumnBuilder {
 		
 		Cohort maleCohort = hmisCurrQuery.getGenderSpecificCohort("M", cohort);
 		Cohort femaleCohort = hmisCurrQuery.getGenderSpecificCohort("F", cohort);
-		Cohort pregnantCohort = hmisCurrQuery.getPatientByPregnantStatus(femaleCohort, YES);
+		Cohort pregnantCohort = hmisCurrQuery.getPatientByPregnantStatus(femaleCohort, YES, encounters);
 		Cohort nonPregnantFemaleCohort = HMISUtilies.getOuterUnion(femaleCohort, pregnantCohort);
 		
 		List<Regiment> maleRegiments = hmisCurrQuery.getPatientCountByRegiment(regimentConceptUUIDS, maleCohort);

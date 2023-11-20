@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TXTBReport implements ReportManager {
 	
+	public static String tb_art = "TB-ART";
+	
 	public static String numerator = "TB Treatment";
 	
 	public static String denominator = "TB Screening";
@@ -43,7 +45,7 @@ public class TXTBReport implements ReportManager {
 	public List<Parameter> getParameters() {
 		
 		Parameter types = new Parameter("type", "TB Treatment Status", String.class);
-		types.addToWidgetConfiguration("codedOptions", numerator + "," + denominator);
+		types.addToWidgetConfiguration("codedOptions", numerator + "," + denominator + "," + tb_art);
 		
 		types.setRequired(false);
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);

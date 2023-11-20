@@ -15,6 +15,7 @@ import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorAutoCalculateDataSetDefinition;
@@ -38,12 +39,10 @@ public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements D
 	@Autowired
 	private TBQuery tbQuery;
 	
-	private PatientQueryService patientService;
-	
 	private TxTbDenominatorAutoCalculateDataSetDefinition hdsd;
 	
-	// HashMap<Integer, Concept> patientStatus = new HashMap<>();
-	private String title = "Number of ART patients who were started on TB treatment during the reporting period";
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	@Autowired
 	private ConceptService conceptService;
@@ -57,9 +56,9 @@ public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements D
 		hdsd = (TxTbDenominatorAutoCalculateDataSetDefinition) dataSetDefinition;
 		context = evalContext;
 		
-		patientService = Context.getService(PatientQueryService.class);
-		
-		Cohort cohort = patientService.getArtStartedCohort("", null, hdsd.getEndDate(), null, null);
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		tbQuery.setEncountersByScreenDate(encounters);
+		Cohort cohort = new Cohort(tbQuery.getArtStartedCohort(encounters, null, hdsd.getEndDate(), null));
 		
 		cohort = tbQuery.getTBScreenedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate());
 		

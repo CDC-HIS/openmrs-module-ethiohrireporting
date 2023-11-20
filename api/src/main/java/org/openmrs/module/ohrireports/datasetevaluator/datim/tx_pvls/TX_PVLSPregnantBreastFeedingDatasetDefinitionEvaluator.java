@@ -22,6 +22,7 @@ import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSPregnantBreastfeedingDatasetDefinition;
@@ -43,7 +44,8 @@ public class TX_PVLSPregnantBreastFeedingDatasetDefinitionEvaluator implements D
 	@Autowired
 	private VlQuery vlQuery;
 	
-	private PatientQueryService patientQueryService;
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	private Date start, end = new Date();
 	
@@ -52,7 +54,6 @@ public class TX_PVLSPregnantBreastFeedingDatasetDefinitionEvaluator implements D
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		txDatasetDefinition = (TX_PVLSPregnantBreastfeedingDatasetDefinition) dataSetDefinition;
-		patientQueryService = Context.getService(PatientQueryService.class);
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(txDatasetDefinition.getEndDate());
@@ -61,8 +62,8 @@ public class TX_PVLSPregnantBreastFeedingDatasetDefinitionEvaluator implements D
 		end = txDatasetDefinition.getEndDate();
 		
 		if (vlQuery.start != start || vlQuery.end != end || vlQuery.getVlTakenEncounters().isEmpty()) {
-			List<Integer> laIntegers = patientQueryService.getBaseEncounters(DATE_VIRAL_TEST_RESULT_RECEIVED, start, end);
-			
+			List<Integer> laIntegers = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED), start,
+			    end);
 			vlQuery.loadInitialCohort(start, end, laIntegers);
 		}
 		

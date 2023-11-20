@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.Query;
-import org.openmrs.Encounter;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;

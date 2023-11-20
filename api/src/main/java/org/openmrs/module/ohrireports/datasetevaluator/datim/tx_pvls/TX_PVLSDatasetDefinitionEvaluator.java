@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
@@ -31,6 +33,9 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
 	private VlQuery vlQuery;
+	
+	@Autowired
+	private EncounterQuery encounterQuery;
 	
 	private PatientQueryService patientQueryService;
 	
@@ -56,7 +61,8 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 		end = txDatasetDefinition.getEndDate();
 		
 		if (vlQuery.start != start || vlQuery.end != end || vlQuery.getVlTakenEncounters().isEmpty()) {
-			List<Integer> laIntegers = patientQueryService.getBaseEncounters(DATE_VIRAL_TEST_RESULT_RECEIVED, start, end);
+			List<Integer> laIntegers = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED), start,
+			    end);
 			
 			vlQuery.loadInitialCohort(start, end, laIntegers);
 		}
@@ -83,10 +89,12 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		// // #region Target test indication
 		// DataSetRow targetDataSetRow = new DataSetRow();
-		// targetDataSetRow.addColumnValue(new DataSetColumn("label", "", String.class), targetDesc);
+		// targetDataSetRow.addColumnValue(new DataSetColumn("label", "", String.class),
+		// targetDesc);
 		// dataSet.addRow(targetDataSetRow);
 		
-		// persons = patientQueryService.getPersons(vlQuery.getTargetViralLoad(_cohort));
+		// persons =
+		// patientQueryService.getPersons(vlQuery.getTargetViralLoad(_cohort));
 		// _AggregateBuilder.setPersonList(persons);
 		
 		// DataSetRow femaleTargetRow = new DataSetRow();

@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tb_prev;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Objects;
 
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev.TbPrevDominatorDatasetDefinition;
@@ -33,6 +35,8 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
 	List<Integer> baseEncounters = new ArrayList<>();
 	private Date endDate = null;
+	@Autowired
+	private EncounterQuery encounterQuery;
 
 	@Autowired
 	private AggregateBuilder _AggregateBuilder;
@@ -43,13 +47,12 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
 		hdsd = (TbPrevDominatorDatasetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+	
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
-		Calendar subSixMonth = Calendar.getInstance();
-		subSixMonth.setTime(hdsd.getStartDate());
-		subSixMonth.add(Calendar.MONTH, -6);
-		Date prevSixMonth = subSixMonth.getTime();
+		Date prevSixMonth = getPrevSixMonth();
+	
 		if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-			baseEncounters = tbQuery.getBaseEncounters(TPT_START_DATE, prevSixMonth, hdsd.getStartDate());
+			baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
 
 		endDate = hdsd.getEndDate();
 		Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_START_DATE, prevSixMonth,
@@ -63,14 +66,22 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
 		} else {
 			Cohort newOnARTCohort = new Cohort(
-					tbQuery.getArtStartedCohort("", prevSixMonth, endDate, onArtCorCohort, null));
-			Cohort oldOnACohort = new Cohort(tbQuery.getArtStartedCohort("", null, prevSixMonth, onArtCorCohort, null));
+					tbQuery.getArtStartedCohort("", prevSixMonth, endDate, onArtCorCohort, null,baseEncounters));
+			Cohort oldOnACohort = new Cohort(tbQuery.getArtStartedCohort("", null, prevSixMonth, onArtCorCohort, null,baseEncounters));
 
 			buildRowForDisaggregation(set, newOnARTCohort, oldOnACohort);
 
 		}
 
 		return set;
+	}
+
+	private Date getPrevSixMonth() {
+		Calendar subSixMonth = Calendar.getInstance();
+		subSixMonth.setTime(hdsd.getStartDate());
+		subSixMonth.add(Calendar.MONTH, -6);
+		Date prevSixMonth = subSixMonth.getTime();
+		return prevSixMonth;
 	}
 
 	private void buildRowForDisaggregation(SimpleDataSet set, Cohort newOnARTCohort, Cohort oldOnACohort) {

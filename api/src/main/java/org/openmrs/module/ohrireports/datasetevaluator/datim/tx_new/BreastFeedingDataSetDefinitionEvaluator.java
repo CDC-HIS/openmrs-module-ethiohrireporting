@@ -12,6 +12,7 @@ import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.BreastFeedingStatusDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -41,6 +42,9 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 	private PatientQueryService patientQuery;
 	
 	@Autowired
+	private EncounterQuery encounterQuery;
+	
+	@Autowired
 	private EvaluationService evaluationService;
 	
 	@Override
@@ -60,7 +64,9 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 	}
 	
 	public int getNumberOfEnrolledBreastFeeding() {
-		Cohort pList = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		
+		Cohort pList = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
 		queryBuilder.select("distinct obs.personId").from(Obs.class, "obs").whereEqual("obs.concept", breastFeeding).and()
 		        .whereEqual("obs.valueCoded", breastFeedingYes).and().whereIn("obs.personId", pList.getMemberIds());

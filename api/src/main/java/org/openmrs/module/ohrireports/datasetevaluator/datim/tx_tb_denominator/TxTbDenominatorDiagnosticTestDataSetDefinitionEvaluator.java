@@ -5,6 +5,7 @@ import java.util.List;
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorDiagnosticTestDataSetDefinition;
@@ -26,13 +27,17 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 	@Autowired
 	private TBQuery tbQuery;
 	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (TxTbDenominatorDiagnosticTestDataSetDefinition) dataSetDefinition;
-		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		tbQuery.setEncountersByScreenDate(encounters);
 		
-		Cohort cohort = patientQueryService.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null);
+		Cohort cohort = tbQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),

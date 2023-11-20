@@ -162,9 +162,7 @@ public abstract class BaseEthiOhriQuery {
 	}
 	
 	protected StringBuilder personIdQuery(String conditions, String outerQuery) {
-		
 		StringBuilder sql = new StringBuilder();
-		
 		sql.append("select distinct " + PERSON_ID_ALIAS_OBS + " person_id from obs as obpid" + " where encounter_id in ");
 		sql.append("(select Max(" + PERSON_ID_SUB_ALIAS_OBS + "encounter_id) from obs as obpidsub where ");
 		sql.append(conditions);

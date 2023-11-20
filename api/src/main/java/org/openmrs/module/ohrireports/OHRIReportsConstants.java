@@ -82,7 +82,6 @@ public class OHRIReportsConstants {
 	
 	public final static String NEXT_VISIT_DATE = "5096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// public final static String POSITIVE = "6378487b-584d-4422-a6a6-56c8830873ff";
 	public final static String POSITIVE = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String NEGATIVE = "664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -120,7 +119,11 @@ public class OHRIReportsConstants {
 	
 	public final static String TREATMENT_END_DATE = "164384AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String TB_ACTIVE_DATE = "159948AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String TB_SCREENING_DATE = "179497a0-6f07-469f-bb2e-9b85644a82af";
+	
+	public final static String TB_TREATMENT_STATUS = "d4bc3007-3ba8-40ae-8d64-830bcbde56e2";
 	
 	public final static String TB_DIAGNOSTIC_TEST_RESULT = "c20140f7-d45d-4b44-a1b9-0534861a615d";
 	
