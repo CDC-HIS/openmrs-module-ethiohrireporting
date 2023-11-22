@@ -123,19 +123,13 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 			if (_age == 0) {
                 dispenseValue = (double) patientWithDispenseDay.get(person.getPersonId());
-				if (dispenseValue <= maxDispenseDay && dispenseValue >= minDispenseDay) {
+				if (dispenseValue >= minDispenseDay && dispenseValue <= maxDispenseDay) {
 					count++;
 
 				}
-				if (minDispenseDay == 0.0 && dispenseValue >= maxDispenseDay) {
-					count++;
-				}
-				if (maxDispenseDay == 0.0 && dispenseValue >= minDispenseDay) {
-					count++;
-				}
+
 			}
 		}
-		// total = total + count;
 		return count;
 	}
 
@@ -143,28 +137,21 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		int count = 0;
 		int _age = 0;
         double dispenseValue = 0.0d;
-		List<Integer> persoIntegers = new ArrayList<>();
+		List<Integer> personIntegers = new ArrayList<>();
 		for (Person person : personList) {
-			_age = person.getAge(hdsd.getEndDate());
-			if (!gender.equals(person.getGender())||persoIntegers.contains(person.getPersonId()))
+			if (!gender.equals(person.getGender()) || personIntegers.contains(person.getPersonId()))
 				continue;
+			_age = person.getAge(hdsd.getEndDate());
+
 			if (_age >= minAge && _age <= maxAge) {
-				if (minDispenseDay > 0 && dispenseValue <= maxDispenseDay && dispenseValue >= minDispenseDay) {
-					count++;
-
-				} else if (minDispenseDay == 0 && maxDispenseDay == 89.0 && dispenseValue <= maxDispenseDay) {
-					count++;
-
-				} else if (maxDispenseDay == 0 && minDispenseDay == 180.0 && dispenseValue >= minDispenseDay) {
-					count++;
-
+				if (dispenseValue >= minDispenseDay && dispenseValue <= maxDispenseDay) {
+					personIntegers.add(person.getPersonId());
 				}
-				persoIntegers.add(person.getPersonId());
-			}
 
+			}
 		}
-		// total = total + count;
-		// clearCountedPerson(persoIntegers);
+
+		 clearCountedPerson(personIntegers);
 		return count;
 	}
 

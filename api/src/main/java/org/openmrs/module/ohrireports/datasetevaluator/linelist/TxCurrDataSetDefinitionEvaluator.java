@@ -30,20 +30,16 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	@Autowired
 	private ArtQuery artQuery;
 	
-	private PatientQueryService patientQuery;
-	
-	private TxCurrDataSetDefinition hdsd;
-	
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
+		TxCurrDataSetDefinition hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
-		patientQuery = Context.getService(PatientQueryService.class);
-		List<Integer> latestEncounters = encounterQuery.getLatestDateByFollowUpDate(hdsd.getEndDate());
+		PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
+		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
@@ -53,7 +49,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(latestEncounters, cohort);
 		DataSetRow row = new DataSetRow();
 		
-		if (persons.size() > 0) {
+		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
