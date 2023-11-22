@@ -40,6 +40,8 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
 		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
+		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
@@ -52,6 +54,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		DataSetRow row = new DataSetRow();
 		
+		if (!persons.isEmpty()) {
 		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();

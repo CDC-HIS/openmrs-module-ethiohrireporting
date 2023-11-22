@@ -23,13 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { TxTbDenominatorARTByAgeAndSexDataSetDefinition.class })
 public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
-	private TxTbDenominatorARTByAgeAndSexDataSetDefinition hdsd;
-	
 	@Autowired
 	private TBQuery tbQuery;
-	
-	@Autowired
-	private EncounterQuery encounterQuery;
 	
 	@Autowired
 	private AggregateBuilder _AggregateBuilder;
@@ -37,14 +32,15 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TxTbDenominatorARTByAgeAndSexDataSetDefinition) dataSetDefinition;
+		TxTbDenominatorARTByAgeAndSexDataSetDefinition hdsd = (TxTbDenominatorARTByAgeAndSexDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounters);
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
-		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
-		Cohort alreadyOnArtCohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
+		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), cohort,
+		    tbQuery.getBaseEncounter());
+		Cohort alreadyOnArtCohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getStartDate(), cohort,
+		    tbQuery.getBaseEncounter());
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 		
 		buildRowWithAggregate(set, newOnArtCohort, "New On ART");
