@@ -30,7 +30,6 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 
-;
 
 @Component
 public class TX_CUR_Report implements ReportManager {

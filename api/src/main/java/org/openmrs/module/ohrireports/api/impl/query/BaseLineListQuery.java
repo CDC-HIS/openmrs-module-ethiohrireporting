@@ -104,6 +104,21 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 		return getDictionary(query);
 	}
 	
+	public HashMap<Integer, Object> getByResult(String concept, Cohort cohort, List<Integer> encounterIds) {
+		
+		StringBuilder sql = baseConceptQuery(concept);
+		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
+		sql.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:cohorts)");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
+		query.setParameterList("encounters", encounterIds);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return getDictionary(query);
+		
+	}
+	
 	protected HashMap<Integer, Object> getDictionary(Query query) {
 		List list = query.list();
 		HashMap<Integer, Object> dictionary = new HashMap<>();

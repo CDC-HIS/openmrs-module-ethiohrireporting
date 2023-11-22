@@ -40,7 +40,7 @@ public class HMISUtilies {
 		return new Cohort(list);
 
 	}
-
+	
 	public static HashMap<Integer, Object> getDictionary(Query query) {
 		List list = query.list();
 		HashMap<Integer, Object> dictionary = new HashMap<>();

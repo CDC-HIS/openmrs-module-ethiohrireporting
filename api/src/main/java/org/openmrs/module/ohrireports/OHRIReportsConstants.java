@@ -53,6 +53,8 @@ public class OHRIReportsConstants {
 	
 	public final static String MRN_PATIENT_IDENTIFIERS = "f85081e2-b4be-4e48-b3a4-7994b69bb101";
 	
+	public final static String UAN_PATIENT_IDENTIFIERS = "d956f302-1723-4eca-9548-fb7e66706d34";
+	
 	public final static String OPENMRS_PATIENT_IDENTIFIERS = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public final static String DISPENSED_DOSE = "ddf10471-2e25-4010-b539-fff2c2900780";
@@ -147,7 +149,13 @@ public class OHRIReportsConstants {
 	
 	public final static String SPECIMEN_SENT = "161934AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String DATE_COUNSELING_GIVEN = "72a28ebe-77ba-4592-9291-ac91e46ea770";
+	
+	public final static String CXC_SCREENING_DATE = "c7ecf767-325a-41c2-80a7-79c91762ab3e";
+	
 	public final static String CXCA_FIRST_TIME_SCREENING = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
+	
+	public final static String CXCA_TREATMENT_TYPE = "6b78badd-0b92-47f8-b16c-46559d5179b2";
 	
 	public final static String CXCA_TREATMENT_TYPE_NO_TREATMENT = "1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -161,7 +169,7 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TREATMENT_STARTING_DATE = "163526AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String CXCA_TYPE_OF_SCREENING = "9bd94bd2-059c-4273-8b6b-31a8e02c6f02";
+	public final static String CXCA_TYPE_OF_SCREENING = "2c6f75a8-f35c-4671-939e-ebcc680c48a0";
 	
 	public final static String CXCA_TYPE_OF_SCREENING_FIRST_TIME = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
@@ -169,7 +177,7 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TYPE_OF_SCREENING_POST_TREATMENT = "3f4a6148-39c1-4980-81c6-6d703367c4a6";
 	
-	public final static String SCREENING_STRATEGY = "53ff5cd0-0f37-4190-87b1-9eb439a15e94";
+	public final static String SCREENING_STRATEGY = "c842a287-f94c-48ee-a370-bd6540a0d1af";
 	
 	public final static String HPV_DNA_SCREENING_RESULT = "159859AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -303,6 +311,8 @@ public class OHRIReportsConstants {
 	public final static String TPT_TYPE = "54084c9e-bc87-4d95-89fc-eb9a2cffb592";
 	
 	public final static String TPT_ADHERENCE = "23d97715-589c-4dcf-bb86-70e26bba2269";
+	
+	public final static String ARV_ADHERENCE = "b1a646d3-78ff-4dd5-823a-5bef7d69ff3d";
 	
 	public final static String TPT_DISCONTINUED_DATE = "162281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

@@ -32,12 +32,13 @@ public class PatientQueryServiceImp extends BaseOpenmrsService implements Patien
 		return patientQueryDao.getActiveOnArtCohort(gender, startOnOrAfter, endOnOrBefore, cohort, encounters);
 		
 	}
-
+	
 	@Override
-	public HashMap<Integer, Object> getObsValue(Cohort cohort, String conceptUUID, PatientQueryImpDao.ObsValueType type, List<Integer> encounters) {
-		return patientQueryDao.getObValue(conceptUUID,cohort,type,encounters);
+	public HashMap<Integer, Object> getObsValue(Cohort cohort, String conceptUUID, PatientQueryImpDao.ObsValueType type,
+	        List<Integer> encounters) {
+		return patientQueryDao.getObValue(conceptUUID, cohort, type, encounters);
 	}
-
+	
 	@Override
 	public List<Person> getPersons(Cohort cohort) {
 		return patientQueryDao.getPersons(cohort);
