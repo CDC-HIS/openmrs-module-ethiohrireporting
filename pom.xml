@@ -136,7 +136,7 @@
 	<build>
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>src/main/webapp.resources</directory>
 				<filtering>false</filtering>
 				<excludes>
 					<exclude>**/*.xml</exclude>
@@ -144,7 +144,7 @@
 				</excludes>
 			</resource>
 			<resource>
-				<directory>src/main/resources</directory>
+				<directory>src/main/webapp.resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>**/*.xml</include>
@@ -154,7 +154,7 @@
 		</resources>
 		<testResources>
 			<testResource>
-				<directory>src/test/resources</directory>
+				<directory>src/test/webapp.resources</directory>
 				<filtering>false</filtering>
 				<excludes>
 					<exclude>**/*.xml</exclude>
@@ -162,7 +162,7 @@
 				</excludes>
 			</testResource>
 			<testResource>
-				<directory>src/test/resources</directory>
+				<directory>src/test/webapp.resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>**/*.xml</include>
@@ -178,7 +178,7 @@
 				<version>1.7</version>
 				<executions>
 					<execution>
-						<phase>generate-test-resources</phase>
+						<phase>generate-test-webapp.resources</phase>
 						<goals>
 							<goal>parse-version</goal>
 						</goals>

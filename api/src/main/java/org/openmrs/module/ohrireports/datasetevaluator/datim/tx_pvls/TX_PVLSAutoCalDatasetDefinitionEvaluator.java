@@ -35,20 +35,12 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
-	private PatientQueryService patientQueryService;
-	
-	private TX_PVLSAutoCalcDatasetDefinition txDatasetDefinition;
-	
-	private Cohort cohort;
-	
 	private Date start, end;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		txDatasetDefinition = (TX_PVLSAutoCalcDatasetDefinition) dataSetDefinition;
-		
-		patientQueryService = Context.getService(PatientQueryService.class);
+		TX_PVLSAutoCalcDatasetDefinition txDatasetDefinition = (TX_PVLSAutoCalcDatasetDefinition) dataSetDefinition;
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(txDatasetDefinition.getEndDate());
@@ -61,7 +53,7 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 			    end);
 			vlQuery.loadInitialCohort(start, end, laIntegers);
 		}
-		cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery.getViralLoadSuppressed();
+		Cohort cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery.getViralLoadSuppressed();
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		DataSetRow setRow = new DataSetRow();

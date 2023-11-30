@@ -246,24 +246,32 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 			case DATE_VALUE:
 				rawQuery = " select ob.person_id,ob.value_datetime from obs as ob WHERE ob.value_datetime is not null ";
 				break;
-			case CONCEPT:
+			case CONCEPT_NAME:
 				rawQuery = "select ob.person_id, cn.name from obs as ob \n"
 				        + "inner join concept_name as cn on cn.concept_id = ob.concept_id\n"
 				        + "WHERE cn.locale_preferred =1 ";
 				break;
+			case CONCEPT_UUID:
+				rawQuery = "select ob.person_id, c.uuid from obs as ob \n"
+				        + " inner join concept as c on c.concept_id = ob.value_coded where";
+				break;
 		}
+		if (rawQuery.endsWith("where")) {
+			rawQuery.concat(" and ");
+		}
+		
 		sqlBuilder.append(rawQuery);
-		sqlBuilder.append(" and ob.concept_id = ").append(conceptQuery(conceptUUId));
+		sqlBuilder.append(" ob.concept_id = ").append(conceptQuery(conceptUUId));
 		sqlBuilder.append(" and ob.encounter_id in (:encounters)");
-		sqlBuilder.append(" and ob.person_id in (:cohort)");
+		sqlBuilder.append(" and ob.person_id in (:ids)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
 		query.setParameterList("encounters", encounter);
-		query.setParameterList("cohort", cohort.getActiveMemberships());
+		query.setParameterList("ids", cohort.getMemberIds());
 		return HMISUtilies.getDictionary(query);
 	}
 	
 	public enum ObsValueType {
-		NUMERIC_VALUE, DATE_VALUE, CONCEPT
+		NUMERIC_VALUE, DATE_VALUE, CONCEPT_NAME, CONCEPT_UUID
 	}
 }

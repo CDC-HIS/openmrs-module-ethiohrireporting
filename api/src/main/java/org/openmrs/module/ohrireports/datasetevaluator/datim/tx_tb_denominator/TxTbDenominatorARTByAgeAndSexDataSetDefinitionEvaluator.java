@@ -54,15 +54,11 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 	}
 	
 	private void buildRowWithAggregate(SimpleDataSet set, Cohort cohort, String type) {
-		Cohort femalePositiveCohort = tbQuery.getCohortByTbScreenedPositive(cohort, hdsd.getStartDate(), hdsd.getEndDate(),
-		    "F");
-		Cohort femaleNegativeCohort = tbQuery.getCohortByTbScreenedNegative(cohort, hdsd.getStartDate(), hdsd.getEndDate(),
-		    "F");
+		Cohort femalePositiveCohort = tbQuery.getCohortByTbScreenedPositive(cohort, "F");
+		Cohort femaleNegativeCohort = tbQuery.getCohortByTbScreenedNegative(cohort, "F");
 		
-		Cohort malePositiveCohort = tbQuery.getCohortByTbScreenedPositive(cohort, hdsd.getStartDate(), hdsd.getEndDate(),
-		    "M");
-		Cohort maleNegativeCohort = tbQuery.getCohortByTbScreenedNegative(cohort, hdsd.getStartDate(), hdsd.getEndDate(),
-		    "M");
+		Cohort malePositiveCohort = tbQuery.getCohortByTbScreenedPositive(cohort, "M");
+		Cohort maleNegativeCohort = tbQuery.getCohortByTbScreenedNegative(cohort, "M");
 		
 		DataSetRow positiveDescriptionDsRow = new DataSetRow();
 		positiveDescriptionDsRow.addColumnValue(new DataSetColumn("", "Category", String.class), type + "/Screen Positive ");

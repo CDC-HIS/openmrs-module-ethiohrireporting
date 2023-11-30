@@ -20,10 +20,11 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { TxCurrARVDataSetDefinition.class })
 public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -51,33 +52,33 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
 		Cohort baseCohort  = patientQueryService.getActiveOnArtCohort("",null,hdsd.getEndDate(),null,encounters);
 		personList = patientQueryService.getPersons(baseCohort);
-         patientWithDispenseDay = patientQueryService.getObsValue(baseCohort,ARV_DISPENSED_IN_DAYS, PatientQueryImpDao.ObsValueType.NUMERIC_VALUE,encounters);
+		patientWithDispenseDay = patientQueryService.getObsValue(baseCohort,ARV_DISPENSED_IN_DAYS, PatientQueryImpDao.ObsValueType.CONCEPT_UUID,encounters);
 
 		DataSetRow femaleDateSet = new DataSetRow();
 		femaleDateSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Female");
 
 		femaleDateSet.addColumnValue(
 				new DataSetColumn("3munknownAge", "<3 months of ARVs (not MMD)  Unknown Age", Integer.class),
-				getUnknownAgeByGender(0.0, 89.0,"F"));
+				getUnknownAgeByGender(Arrays.asList(ARV_30_Day,ARV_60_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("3m<15", "<3 months of ARVs (not MMD) <15", Integer.class),
-				getEnrolledByAgeAndGender(0.0, 89.0, 0, 14,"F"));
+				getBelow15(Arrays.asList(ARV_30_Day,ARV_60_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("3m15+", "<3 months of ARVs (not MMD) 15+", Integer.class),
-				getEnrolledByAgeAndGender(0.0, 89.0, 15, 200,"F"));
+				getAbove15(Arrays.asList(ARV_30_Day,ARV_60_Day),"F"));
 
 		femaleDateSet.addColumnValue(new DataSetColumn("5munknownAge", "3-5 months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(90.0, 179.0,"F"));
+				getUnknownAgeByGender(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("5m<15", "3-5 months of ARVs <15", Integer.class),
-				getEnrolledByAgeAndGender(90.0, 179.0, 0, 14,"F"));
+				getBelow15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("5m15+", "3-5 months of ARVs 15+", Integer.class),
-				getEnrolledByAgeAndGender(90.0, 179.0, 15, 200,"F"));
+				getAbove15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"F"));
 
 		femaleDateSet.addColumnValue(
 				new DataSetColumn("6munknownAge", "6 or more months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(180.0, 0.0,"F"));
+				getUnknownAgeByGender(Arrays.asList(ARV_180_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("6m<15", "6 or more months of ARVs <15", Integer.class),
-				getEnrolledByAgeAndGender(180.0, 0.0, 0, 14,"F"));
+				getBelow15(Arrays.asList(ARV_180_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("6m15+", "6 or more months of ARVs 15+", Integer.class),
-				getEnrolledByAgeAndGender(180.0, 0.0, 15, 200,"F"));
+				getAbove15(Arrays.asList(ARV_180_Day),"F"));
 
 		set.addRow(femaleDateSet);
 
@@ -86,35 +87,36 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		maleDataSet.addColumnValue(
 				new DataSetColumn("3munknownAge", "<3 months of ARVs (not MMD)  Unknown Age", Integer.class),
-				getUnknownAgeByGender(0.0, 89.0,"M"));
+				getUnknownAgeByGender(Arrays.asList(ARV_30_Day,ARV_60_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("3m<15", "<3 months of ARVs (not MMD) <15", Integer.class),
-				getEnrolledByAgeAndGender(0.0, 89.0, 0, 14,"M"));
+				getBelow15(Arrays.asList(ARV_30_Day,ARV_60_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("3m15+", "<3 months of ARVs (not MMD) 15+", Integer.class),
-				getEnrolledByAgeAndGender(0.0, 89.0, 15, 200,"M"));
+				getAbove15(Arrays.asList(ARV_30_Day,ARV_60_Day),"M"));
 
 		maleDataSet.addColumnValue(new DataSetColumn("5munknownAge", "3-5 months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(90.0, 179.0,"M"));
+				getUnknownAgeByGender(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("5m<15", "3-5 months of ARVs <15", Integer.class),
-				getEnrolledByAgeAndGender(90.0, 179.0, 0, 14,"M"));
+				getBelow15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("5m15+", "3-5 months of ARVs 15+", Integer.class),
-				getEnrolledByAgeAndGender(90.0, 179.0, 15, 200,"M"));
+				getAbove15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"M"));
 
 		maleDataSet.addColumnValue(
 				new DataSetColumn("6munknownAge", "6 or more months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(180.0, 0.0,"M"));
+				getUnknownAgeByGender(Arrays.asList(ARV_180_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("6m<15", "6 or more months of ARVs <15", Integer.class),
-				getEnrolledByAgeAndGender(180.0, 0.0, 0, 14,"M"));
+				getBelow15(Arrays.asList(ARV_180_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("6m15+", "6 or more months of ARVs 15+", Integer.class),
-				getEnrolledByAgeAndGender(180.0, 0.0, 15, 200,"M"));
+				getAbove15(Arrays.asList(ARV_180_Day),"M"));
 
 		set.addRow(maleDataSet);
 		return set;
 	}
 
-	private int getUnknownAgeByGender(double minDispenseDay, double maxDispenseDay,String gender) {
+	private int getUnknownAgeByGender(List<String> dispenseDayInConceptUUId, String gender) {
 		int count = 0;
 		int _age =0;
-        double dispenseValue;
+        String dispenseValue;
+		List<Integer> personIds = new ArrayList<>();
 		for (Person person : personList) {
             if(!gender.equals(person.getGender()))
                 continue;
@@ -122,30 +124,34 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
             _age = person.getAge(hdsd.getEndDate());
 
 			if (_age == 0) {
-                dispenseValue = (double) patientWithDispenseDay.get(person.getPersonId());
-				if (dispenseValue >= minDispenseDay && dispenseValue <= maxDispenseDay) {
+                dispenseValue = (String) patientWithDispenseDay.get(person.getPersonId());
+				if (dispenseDayInConceptUUId.contains(dispenseValue)) {
+					personIds.add(person.getPersonId());
 					count++;
 
 				}
 
 			}
 		}
+		clearCountedPerson(personIds);
+
 		return count;
 	}
 
-	private int getEnrolledByAgeAndGender(double minDispenseDay, double maxDispenseDay ,int minAge, int maxAge,String gender) {
+	private int getAbove15(List<String> dispenseDayInConceptUUId,String gender) {
 		int count = 0;
 		int _age = 0;
-        double dispenseValue = 0.0d;
+        String dispenseValue ;
 		List<Integer> personIntegers = new ArrayList<>();
 		for (Person person : personList) {
 			if (!gender.equals(person.getGender()) || personIntegers.contains(person.getPersonId()))
 				continue;
 			_age = person.getAge(hdsd.getEndDate());
-
-			if (_age >= minAge && _age <= maxAge) {
-				if (dispenseValue >= minDispenseDay && dispenseValue <= maxDispenseDay) {
+			if (_age >= 15 ) {
+				   dispenseValue =  (String) patientWithDispenseDay.get(person.getPersonId());
+    				if (dispenseDayInConceptUUId.contains(dispenseValue)) {
 					personIntegers.add(person.getPersonId());
+					count++;
 				}
 
 			}
@@ -154,7 +160,30 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		 clearCountedPerson(personIntegers);
 		return count;
 	}
+	private int getBelow15(List<String> dispenseDayInConceptUUId,String gender) {
+		int count = 0;
+		int _age = 0;
+		String dispenseValue ;
+		List<Integer> personIntegers = new ArrayList<>();
+		for (Person person : personList) {
+			if (!gender.equals(person.getGender()) || personIntegers.contains(person.getPersonId()))
+				continue;
+			_age = person.getAge(hdsd.getEndDate());
 
+			if (_age < 15 ) {
+				dispenseValue =  (String) patientWithDispenseDay.get(person.getPersonId());
+				if (dispenseDayInConceptUUId.contains(dispenseValue)) {
+					personIntegers.add(person.getPersonId());
+					count++;
+
+				}
+
+			}
+		}
+
+		clearCountedPerson(personIntegers);
+		return count;
+	}
 	private void clearCountedPerson(List<Integer> personIds) {
 		for (int pId : personIds) {
 			obses.removeIf(p -> p.getPersonId().equals(pId));

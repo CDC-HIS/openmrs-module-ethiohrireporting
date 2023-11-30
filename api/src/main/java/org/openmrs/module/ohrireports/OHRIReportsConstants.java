@@ -115,7 +115,19 @@ public class OHRIReportsConstants {
 	
 	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d94b14";
 	
-	public final static String ARV_DISPENSED_IN_DAYS = "3a0709e9-d7a8-44b9-9512-111db5ce3989";
+	public final static String ARV_DISPENSED_IN_DAYS = "f3911009-1a8f-42ee-bdfc-1e343c2839aa";
+	
+	public final static String ARV_30_Day = "f21b86a8-95b6-4ef6-ad36-d6f9ee92e1d9";
+	
+	public final static String ARV_60_Day = "b8089716-0f10-40cb-b3a6-2974cc9bb760";
+	
+	public final static String ARV_90_Day = "957f6483-9a63-4507-a35e-e5ce03084c97";
+	
+	public final static String ARV_120_Day = "12822d43-7b58-4409-ae33-339a5f8ed6f5";
+	
+	public final static String ARV_150_Day = "1b00b65e-d720-4c8e-932d-d3a73d006a3d";
+	
+	public final static String ARV_180_Day = "a3a2bb3f-748d-417a-bdb3-7d3b1a747ba2";
 	
 	public final static String TREATMENT_END_DATE = "164384AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

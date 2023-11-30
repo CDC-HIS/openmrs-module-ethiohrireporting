@@ -37,12 +37,10 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
-	private PatientQueryService patientQueryService;
-	
 	@Autowired
 	private AggregateBuilder _AggregateBuilder;
 	
-	private Date start, end = new Date();
+	private Date end = new Date();
 	
 	private TX_PVLSDatasetDefinition txDatasetDefinition;
 	
@@ -52,12 +50,12 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		txDatasetDefinition = (TX_PVLSDatasetDefinition) dataSetDefinition;
-		patientQueryService = Context.getService(PatientQueryService.class);
+		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(txDatasetDefinition.getEndDate());
 		calendar.add(Calendar.MONTH, -_VALID_MONTHS_OF_VIRAL_LOAD_TEST);
-		start = calendar.getTime();
+		Date start = calendar.getTime();
 		end = txDatasetDefinition.getEndDate();
 		
 		if (vlQuery.start != start || vlQuery.end != end || vlQuery.getVlTakenEncounters().isEmpty()) {

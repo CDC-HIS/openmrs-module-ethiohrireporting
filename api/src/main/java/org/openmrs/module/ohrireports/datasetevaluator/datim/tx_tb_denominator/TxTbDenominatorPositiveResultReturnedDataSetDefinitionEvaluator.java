@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_denominator;
 
+import java.util.Arrays;
 import java.util.List;
 import org.openmrs.annotation.Handler;
 import org.openmrs.Cohort;
@@ -15,6 +16,8 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
 
 @Handler(supports = { TxTbDenominatorPositiveResultReturnedDataSetDefinition.class })
 public class TxTbDenominatorPositiveResultReturnedDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -32,15 +35,17 @@ public class TxTbDenominatorPositiveResultReturnedDataSetDefinitionEvaluator imp
 		
 		hdsd = (TxTbDenominatorPositiveResultReturnedDataSetDefinition) dataSetDefinition;
 		
-		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounter);
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		encounters = encounterQuery.getEncounters(Arrays.asList(TB_SCREENING_DATE), hdsd.getStartDate(), hdsd.getEndDate(),
+		    encounters);
+		tbQuery.setEncountersByScreenDate(encounters);
 		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounter);
+		Cohort cohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients who had a positive result returned for bacteriological diagnosis of active TB disease");
-		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class),
-		    tbQuery.getTBDiagnosticPositiveResult(cohort, hdsd.getStartDate(), hdsd.getEndDate()).size());
+		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class), tbQuery.getTBDiagnosticPositiveResult(cohort)
+		        .size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;
