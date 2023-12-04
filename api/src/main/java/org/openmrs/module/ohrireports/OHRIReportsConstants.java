@@ -342,8 +342,6 @@ public class OHRIReportsConstants {
 	// public final static String RESTART = "ee957295-85b9-4433-bf12-45886cdc7dd1";
 	public final static String RESTART = "162904AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// 162904AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
 	
 	// Prep

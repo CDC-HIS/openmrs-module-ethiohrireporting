@@ -9,38 +9,33 @@
  */
 package org.openmrs.module.ohrireports.reports.linelist;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.TxCurrDataSetDefinition;
-import org.openmrs.module.reporting.evaluation.parameter.Mapped;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.HTSNewDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
-import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
-import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 
 @Component
-public class TX_CUR_Report implements ReportManager {
+public class TXNewReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "86a28f40-7987-482b-bc49-2d32451d00d9";
+		return "4d7b385f-331f-400c-8592-f539f4565d9d";
 	}
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-TX_CURR";
+		return LINE_LIST_REPORT + "-TX_New";
 	}
 	
 	@Override
@@ -50,12 +45,7 @@ public class TX_CUR_Report implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		
-		Parameter endDate = new Parameter("endDate", "On Month", Date.class);
-		endDate.setRequired(true);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(true);
-		return Arrays.asList(endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 		
 	}
 	
@@ -65,36 +55,28 @@ public class TX_CUR_Report implements ReportManager {
 		reportDefinition.setUuid(getUuid());
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
-		
 		reportDefinition.setParameters(getParameters());
-		TxCurrDataSetDefinition txCurrDataSetDefinition = new TxCurrDataSetDefinition();
-		txCurrDataSetDefinition.addParameters(getParameters());
-		txCurrDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		
+		HTSNewDataSetDefinition htsNewDataSetDefinition = new HTSNewDataSetDefinition();
+		htsNewDataSetDefinition.addParameters(getParameters());
+		htsNewDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Tx-Currt", map(txCurrDataSetDefinition, "endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("TX-New", EthiOhriUtil.map(htsNewDataSetDefinition));
+		
 		return reportDefinition;
-	}
-	
-	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String mappings) {
-		if (parameterizable == null) {
-			throw new IllegalArgumentException("Parameterizable cannot be null");
-		}
-		if (mappings == null) {
-			mappings = ""; // probably not necessary, just to be safe
-		}
-		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("a1ee4c33-f087-4af9-8efc-edf007e5c277", reportDefinition);
+		
+		ReportDesign design = ReportManagerUtil.createExcelDesign("a4ae3c0a-bad8-4efe-8b8d-c2762c13f5c0", reportDefinition);
 		
 		return Arrays.asList(design);
 	}
 	
 	@Override
 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {
-		return new ArrayList<>();
+		return null;
 	}
 	
 	@Override

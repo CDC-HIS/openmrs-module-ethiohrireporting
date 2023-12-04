@@ -234,6 +234,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		return new Cohort(q.list());
 	}
 	
+	@Override
 	public HashMap<Integer, Object> getObValue(String conceptUUId, Cohort cohort, @NotNull ObsValueType type,
 	        List<Integer> encounter) {
 		

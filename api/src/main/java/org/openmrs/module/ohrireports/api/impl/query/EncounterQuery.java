@@ -4,7 +4,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,10 +92,10 @@ public class EncounterQuery extends BaseEthiOhriQuery {
             return new ArrayList<>();
 
         StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join ");
-        builder.append(
-                "(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+        builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
 
-        builder.append(" where obs_enc.concept_id in ").append(conceptQuery(questionConcept));
+        builder.append(" where obs_enc.concept_id in ")
+                .append(conceptQuery(questionConcept));
 
         if (start != null)
             builder.append(" and obs_enc.value_datetime >= :start ");
