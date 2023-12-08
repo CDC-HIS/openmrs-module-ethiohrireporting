@@ -1,33 +1,17 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_scrn;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HPV_DNA_SCREENING_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.POSITIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.NEGATIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_SCREENING_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_NEGATIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_POSITIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_SUSPICIOUS_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_ASCUS_POSITIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_NEGATIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_GREATER_ASCUS_SUSPICIOUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_SCREENING_ACCEPTED_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
+import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCADatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -41,7 +25,9 @@ import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Handler(supports = { CXCADatasetDefinition.class })
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+
+@Handler(supports = {CXCADatasetDefinition.class})
 public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
     private int total = 0;
     private int minCount = 0;
@@ -74,58 +60,96 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
     private EvaluationContext context;
     private List<Integer> onArtFemalePatients;
     private List<Integer> currentPatients;
+    @Autowired
+    private CervicalCancerQuery cervicalCancerQuery;
+
+    @Autowired
+    private AggregateBuilder aggregateBuilder;
 
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
         cxcaDatasetDefinition = (CXCADatasetDefinition) dataSetDefinition;
         context = evalContext;
-        loadConcepts();
         SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-        List<Integer> personIdList = getCXCAScreened();
-        List<Integer> personFirstScreeningList = getPatientByScreeningType(personIdList);
+        //loadConcepts();
+        cervicalCancerQuery.setStartDate(cxcaDatasetDefinition.getStartDate());
+        cervicalCancerQuery.setEndDate(cxcaDatasetDefinition.getEndDate());
+        Cohort baseCohort = cervicalCancerQuery.getByScreeningType(cxcaDatasetDefinition.getScreeningType());
 
-        Set<Integer> negativePatient = new HashSet<>();
-        negativePatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, negativeConcept));
-        negativePatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaNegativeConcept));
-        negativePatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyNegativeConcept));
 
-        persons.addAll(getPatients(new ArrayList<>(negativePatient)));
 
-        DataSetRow negativeDataSetRow = new DataSetRow();
-        buildDataSet(negativeDataSetRow, "Negative");
-        dataSet.addRow(negativeDataSetRow);
+        Cohort negativeCohort = cervicalCancerQuery.getNegativeResult(baseCohort);
+        List<Person> negativeCxCaPersonList = cervicalCancerQuery.getPersons(negativeCohort);
+        aggregateBuilder.setPersonList(negativeCxCaPersonList);
+        DataSetRow negativeCxCaRow = new DataSetRow();
+        aggregateBuilder.buildDataSetColumnForScreening(negativeCxCaRow, "Negative");
+        dataSet.addRow(negativeCxCaRow);
 
-        Set<Integer> positivePatient = new HashSet<>();
-        positivePatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, positiveConcept));
-        positivePatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaPositiveConcept));
-        positivePatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyASCUSPositiveConcept));
+        Cohort positiveCohort = cervicalCancerQuery.getPositiveResult(baseCohort);
+        List<Person> positiveCxCaPersonList = cervicalCancerQuery.getPersons(positiveCohort);
+        aggregateBuilder.setPersonList(positiveCxCaPersonList);
+        DataSetRow positiveCxCaRow = new DataSetRow();
+        aggregateBuilder.buildDataSetColumnForScreening(positiveCxCaRow, "Positive");
+        dataSet.addRow(positiveCxCaRow);
 
-        persons.addAll(getPatients(new ArrayList<>(positivePatient)));
+        Cohort suspiciousCohort = cervicalCancerQuery.getSuspectedResult(baseCohort);
+        List<Person> suspeciousCxCaPersonList = cervicalCancerQuery.getPersons(suspiciousCohort);
+        aggregateBuilder.setPersonList(suspeciousCxCaPersonList);
+        DataSetRow suspiciousCxCaRow = new DataSetRow();
+        aggregateBuilder.buildDataSetColumnForScreening(suspiciousCxCaRow, "Suspicious");
+        dataSet.addRow(suspiciousCxCaRow);
 
-        DataSetRow positiveDataset = new DataSetRow();
-        buildDataSet(positiveDataset, "Positive");
-        dataSet.addRow(positiveDataset);
 
-        Set<Integer> suspectedPatient = new HashSet<>();
-        suspectedPatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, unknownConcept));
-        suspectedPatient.addAll(
-                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaSuspiciousConcept));
-        suspectedPatient.addAll(getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept,
-                cytologyGreaterASCUSSuspiciousConcept));
+        //DataSetRow positive
 
-        persons.addAll(getPatients(new ArrayList<>(suspectedPatient)));
 
-        DataSetRow suspectedDataSetRow = new DataSetRow();
-        buildDataSet(suspectedDataSetRow, "Suspected");
-        dataSet.addRow(suspectedDataSetRow);
+
+
+        //        List<Integer> personIdList = getCXCAScreened();
+//        List<Integer> personFirstScreeningList = getPatientByScreeningType(personIdList);
+//
+//        Set<Integer> negativePatient = new HashSet<>();
+//        negativePatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, negativeConcept));
+//        negativePatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaNegativeConcept));
+//        negativePatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyNegativeConcept));
+//
+//        persons.addAll(getPatients(new ArrayList<>(negativePatient)));
+//
+//        DataSetRow negativeDataSetRow = new DataSetRow();
+//        buildDataSet(negativeDataSetRow, "Negative");
+//        dataSet.addRow(negativeDataSetRow);
+//
+//        Set<Integer> positivePatient = new HashSet<>();
+//        positivePatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, positiveConcept));
+//        positivePatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaPositiveConcept));
+//        positivePatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept, cytologyASCUSPositiveConcept));
+//
+//        persons.addAll(getPatients(new ArrayList<>(positivePatient)));
+//
+//        DataSetRow positiveDataset = new DataSetRow();
+//        buildDataSet(positiveDataset, "Positive");
+//        dataSet.addRow(positiveDataset);
+//
+//        Set<Integer> suspectedPatient = new HashSet<>();
+//        suspectedPatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, hpvAndDNAScreeningResultConcept, unknownConcept));
+//        suspectedPatient.addAll(
+//                getScreeningTypeCohort(personFirstScreeningList, viaScreeningResultConcept, viaSuspiciousConcept));
+//        suspectedPatient.addAll(getScreeningTypeCohort(personFirstScreeningList, cytologyResultConcept,
+//                cytologyGreaterASCUSSuspiciousConcept));
+
+        //  persons.addAll(getPatients(new ArrayList<>(suspectedPatient)));
+
+//        DataSetRow suspectedDataSetRow = new DataSetRow();
+//        buildDataSet(suspectedDataSetRow, "Suspected");
+//        dataSet.addRow(suspectedDataSetRow);
 
         return dataSet;
     }
@@ -159,11 +183,11 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         unknownConcept = conceptService.getConceptByUuid(UNKNOWN);
         viaScreeningResultConcept = conceptService.getConceptByUuid(VIA_SCREENING_RESULT);
         viaNegativeConcept = conceptService.getConceptByUuid(VIA_NEGATIVE);
-        viaPositiveConcept = conceptService.getConceptByUuid(VIA_POSITIVE);
+        viaPositiveConcept = conceptService.getConceptByUuid(VIA_POSITIVE_ELIGIBLE_FOR_CRYO);
         viaSuspiciousConcept = conceptService.getConceptByUuid(VIA_SUSPICIOUS_RESULT);
         cytologyResultConcept = conceptService.getConceptByUuid(CYTOLOGY_RESULT);
         cytologyNegativeConcept = conceptService.getConceptByUuid(CYTOLOGY_NEGATIVE);
-        cytologyASCUSPositiveConcept = conceptService.getConceptByUuid(CYTOLOGY_ASCUS_POSITIVE);
+        cytologyASCUSPositiveConcept = conceptService.getConceptByUuid(CYTOLOGY_ASCUS);
         cytologyGreaterASCUSSuspiciousConcept = conceptService.getConceptByUuid(CYTOLOGY_GREATER_ASCUS_SUSPICIOUS);
         cxcaScreeningTypeConcept = conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING);
 

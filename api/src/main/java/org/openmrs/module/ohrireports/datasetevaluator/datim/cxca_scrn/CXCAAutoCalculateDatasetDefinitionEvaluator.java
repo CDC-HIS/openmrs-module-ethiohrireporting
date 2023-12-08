@@ -6,7 +6,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_SCREENING
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_POST_TREATMENT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CXCA_TYPE_OF_SCREENING_RESCREEN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_ASCUS_POSITIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_ASCUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_GREATER_ASCUS_SUSPICIOUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_NEGATIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.CYTOLOGY_RESULT;
@@ -16,7 +16,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.POSITIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_NEGATIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_POSITIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_POSITIVE_ELIGIBLE_FOR_CRYO;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_SCREENING_RESULT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIA_SUSPICIOUS_RESULT;
 
@@ -27,10 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCAAutoCalculateDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -94,16 +96,18 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
         private List<Integer> onArtFemalePatients;
         private List<Integer> currentPatients;
 
+        @Autowired
+        private CervicalCancerQuery cervicalCancerQuery;
         @Override
         public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
                         throws EvaluationException {
 
                 cxcaDatasetDefinition = (CXCAAutoCalculateDatasetDefinition) dataSetDefinition;
                 context = evalContext;
-                loadConcepts();
+                Cohort baseCohort = cervicalCancerQuery.loadCxCaScreeningForDatim(cxcaDatasetDefinition.getEndDate());
                 SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
                 DataSetRow dataSetRow = new DataSetRow();
-                dataSetRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), GetAllCount());
+                dataSetRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), baseCohort.size());
                 dataSet.addRow(dataSetRow);
                 return dataSet;
         }
@@ -118,11 +122,11 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
                 unknownConcept = conceptService.getConceptByUuid(UNKNOWN);
                 viaScreeningResultConcept = conceptService.getConceptByUuid(VIA_SCREENING_RESULT);
                 viaNegativeConcept = conceptService.getConceptByUuid(VIA_NEGATIVE);
-                viaPositiveConcept = conceptService.getConceptByUuid(VIA_POSITIVE);
+                viaPositiveConcept = conceptService.getConceptByUuid(VIA_POSITIVE_ELIGIBLE_FOR_CRYO);
                 viaSuspiciousConcept = conceptService.getConceptByUuid(VIA_SUSPICIOUS_RESULT);
                 cytologyResultConcept = conceptService.getConceptByUuid(CYTOLOGY_RESULT);
                 cytologyNegativeConcept = conceptService.getConceptByUuid(CYTOLOGY_NEGATIVE);
-                cytologyASCUSPositiveConcept = conceptService.getConceptByUuid(CYTOLOGY_ASCUS_POSITIVE);
+                cytologyASCUSPositiveConcept = conceptService.getConceptByUuid(CYTOLOGY_ASCUS);
                 cytologyGreaterASCUSSuspiciousConcept = conceptService
                                 .getConceptByUuid(CYTOLOGY_GREATER_ASCUS_SUSPICIOUS);
         cxcaScreeningTypeConcept = conceptService.getConceptByUuid(CXCA_TYPE_OF_SCREENING);

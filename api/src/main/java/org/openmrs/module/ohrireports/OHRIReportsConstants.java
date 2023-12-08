@@ -157,6 +157,26 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TREATMENT_TYPE = "6b78badd-0b92-47f8-b16c-46559d5179b2";
 	
+	public final static String REASON_FOR_REFERRAL = "52106755-062c-4cd5-a627-2373f5a0cef0";
+	
+	public final static String FEEDBACK = "98105b54-7453-4717-8bd2-249b7dcbdb98";
+	
+	public final static String REFERRAL_CONFIRMED_DATE = "88571a39-5caf-4260-b8d6-d0e28ca37410";
+	
+	public final static String CX_CA_SCREENING_OFFERED = "fc5ec0e6-8e56-4a23-8bf9-fbe464da12c7";
+	
+	public final static String CX_CA_SCREENING_ACCEPTED = "1b1dc36e-fe65-4f4b-8304-09fbd9c106ad";
+	
+	public final static String LINKED_TO_CX_CA_UNIT = "a3998691-d9cc-492b-81f2-7bd28a6e413b";
+	
+	public final static String BIOPSY_SAMPLE_COLLECTED_DATE = "5c93668e-6206-4cce-bdf9-7c6fb02991df";
+	
+	public final static String BIOPSY_RESULT_RECEIVED_DATE = "5c93668e-6206-4cce-bdf9-7c6fb02991df";
+	
+	public final static String DATE_OF_REFERRAL_TO_OTHER_HF = "5c93668e-6206-4cce-bdf9-7c6fb02991df";
+	
+	public final static String BIOPSY_RESULT = "df94b4c4-8a3a-46b2-be5b-e948403081a0";
+	
 	public final static String CXCA_TREATMENT_TYPE_NO_TREATMENT = "1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String CXCA_TREATMENT_TYPE_CRYOTHERAPY = "162812AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -169,7 +189,11 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TREATMENT_STARTING_DATE = "163526AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String DATE_LINKED_TO_CXCA_UNIT = "2df6bd1b-c200-4363-8293-0d72ef24e8b7";
+	
 	public final static String CXCA_TYPE_OF_SCREENING = "2c6f75a8-f35c-4671-939e-ebcc680c48a0";
+	
+	public final static String CXCA_FIRST_TIME_SCREENING_TYPE = "165269AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String CXCA_TYPE_OF_SCREENING_FIRST_TIME = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
@@ -179,23 +203,45 @@ public class OHRIReportsConstants {
 	
 	public final static String SCREENING_STRATEGY = "c842a287-f94c-48ee-a370-bd6540a0d1af";
 	
+	public final static String HPV_DNA_SAMPLE_COLLECTION_DATE = "8b57d62c-c9a3-454a-b1af-929ca69603ce";
+	
 	public final static String HPV_DNA_SCREENING_RESULT = "159859AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String HPV_DNA_RESULT_RECEIVED_DATE = "510f2a47-3761-4903-b7eb-8ea389cecfe9";
+	
+	public final static String HPV_SUB_TYPE = "7bb81ac2-7a2a-4870-b965-fd3883d36f20";
 	
 	public final static String VIA_SCREENING_RESULT = "ff6b60e4-7310-4ddc-98ce-a2910c32a7a0";
 	
+	public final static String VIA_SCREENING_DATE = "f46c7ed3-65c3-451c-a8e1-4c615f795db1";
+	
 	public final static String VIA_NEGATIVE = "a08ab377-30bc-4ef6-bb9d-4cf6a0564ccc";
 	
-	public final static String VIA_POSITIVE = "7bc7c4f3-a636-478d-8a3f-65116093e37a";
+	public final static String VIA_POSITIVE_ELIGIBLE_FOR_CRYO = "7bc7c4f3-a636-478d-8a3f-65116093e37a";
+	
+	public final static String VIA_POSITIVE_NON_ELIGIBLE_FOR_CRYO = "be297cab-5ae6-4e7c-8657-b82730b7b8f1";
 	
 	public final static String VIA_SUSPICIOUS_RESULT = "159008AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String COLPOSCOPY_EXAM_DATE = "eb135e8e-5e19-4d6e-ad71-c6bdab26f73d";
+	
+	public final static String COLPOSCOPY_EXAM_FINDING = "93bf2a3e-1675-44c9-b7ee-b8ba9cb32b22";
+	
+	public final static String COLPOSCOPY_LOW_GRADE_SIL = "f0f52e6c-56fa-44c6-a81e-a3a7ac8548c4";
+	
+	public final static String COLPOSCOPY_HIGH_GRADE_SIL = "7276fa8a-3bab-4bd7-b647-8e9c8536ef30";
 	
 	public final static String CXCA_SCREENING_ACCEPTED_DATE = "8cb69148-cdce-448e-90c6-f582b5c169da";
 	
 	public final static String CYTOLOGY_RESULT = "9e5c5bd8-276c-497b-9ea1-9a5c9f94faa7";
 	
+	public final static String CYTOLOGY_RESULT_RECEIVED_DATE = "f0892f21-406c-446b-abd5-bb62f3ea2387";
+	
 	public final static String CYTOLOGY_NEGATIVE = "5e4fc757-0b14-49ae-b3b7-419666f41e15";
 	
-	public final static String CYTOLOGY_ASCUS_POSITIVE = "145822AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String CYTOLOGY_SAMPLE_COLLECTION_DATE = "3b5034de-ce0f-4017-80ab-17746ab3fe15";
+	
+	public final static String CYTOLOGY_ASCUS = "145822AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String CYTOLOGY_GREATER_ASCUS_SUSPICIOUS = "912a5c48-8b07-4fd7-b2c3-ccb94fde7c68";
 	

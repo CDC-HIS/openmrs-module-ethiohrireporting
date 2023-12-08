@@ -57,7 +57,7 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
 		data.addRow(buildColumn("2","VIA Screening Result",gettbscrnByAgeAndGender(20,24,Gender.Female)));
 		viaScreeningResultConcept=conceptService.getConceptByUuid(VIA_SCREENING_RESULT);
 		viaNegativeConcept = conceptService.getConceptByUuid(VIA_NEGATIVE);
-        viaPositiveConcept = conceptService.getConceptByUuid(VIA_POSITIVE);
+        viaPositiveConcept = conceptService.getConceptByUuid(VIA_POSITIVE_ELIGIBLE_FOR_CRYO);
         viaSuspiciousConcept = conceptService.getConceptByUuid(VIA_SUSPICIOUS_RESULT);
 
 		obses = getScreeningTypeCohort(viaScreeningResultConcept, viaNegativeConcept);
@@ -199,7 +199,7 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
 			.and()
 			.whereIn("obs.valueCoded", Arrays.asList(
 				conceptService.getConceptByUuid(VIA_NEGATIVE),
-				conceptService.getConceptByUuid(VIA_POSITIVE),
+				conceptService.getConceptByUuid(VIA_POSITIVE_ELIGIBLE_FOR_CRYO),
 				conceptService.getConceptByUuid(VIA_SUSPICIOUS_RESULT)))
 			.whereBetweenInclusive("obs.obsDatetime", hdsd.getStartDate(),
 							hdsd.getEndDate())

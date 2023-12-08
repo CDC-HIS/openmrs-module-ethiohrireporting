@@ -89,6 +89,33 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
     }
 
+    public void buildDataSetColumnForScreening(DataSetRow dataSet, String screeningResult) {
+        subTotalCount = 0;
+        lowerBoundAge = 14;
+        upperBoundAge = 50;
+        int minCount = lowerBoundAge + 1;
+        int maxCount = minCount + ageInterval;
+
+        dataSet.addColumnValue(new DataSetColumn("CxCaScreeningResult", "CxCa Screening Result", String.class),
+                screeningResult);
+        dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
+                getPersonCountByUnknownAge());
+
+        while (minCount <= upperBoundAge) {
+            if (minCount == upperBoundAge) {
+                dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
+                        getPersonByAge(upperBoundAge, 200));
+            } else {
+                dataSet.addColumnValue(
+                        new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
+                        getPersonByAge(minCount, maxCount));
+            }
+            minCount = maxCount + 1;
+            maxCount = minCount + ageInterval;
+        }
+        dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
+    }
+
     @Override
     public void buildDataSetColumn(DataSetRow row, String gender, int middleAge) {
         row.addColumnValue(new DataSetColumn("gender", "Gender", String.class),
@@ -102,7 +129,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
 
         row.addColumnValue(new DataSetColumn(middleAge + "+", middleAge + "+", Integer.class),
                 getCountByMiddleAge(gender, middleAge, _above));
-  
+
     }
 
     protected int getEnrolledByAgeAndGender(int min, int max, String gender) {
@@ -117,6 +144,28 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
 
             age = person.getAge(calculateAgeFrom);
             if (person.getGender().equals(gender) && age >= min && age <= max) {
+                countedPersons.add(person);
+                countedPatientId.add(person.getPersonId());
+                count++;
+            }
+        }
+        incrementTotalCount(count);
+        clearProcessedPersons(countedPersons);
+        return count;
+    }
+
+    protected int getPersonByAge(int min, int max) {
+        int count = 0;
+        int age = 0;
+        List<Person> countedPersons = new ArrayList<>();
+
+        for (Person person : persons) {
+
+            if (countedPatientId.contains(person.getPersonId()))
+                continue;
+
+            age = person.getAge(calculateAgeFrom);
+            if (age >= min && age <= max) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;
@@ -150,6 +199,31 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         clearProcessedPersons(countedPersons);
         return count;
     }
+
+    protected int getPersonCountByUnknownAge() {
+        int count = 0;
+        int age = 0;
+
+        List<Person> countedPersons = new ArrayList<>();
+
+        for (Person person : persons) {
+
+            if (countedPatientId.contains(person.getPersonId()))
+                continue;
+
+            age = person.getAge(calculateAgeFrom);
+            if ((Objects.isNull(person.getAge()) ||
+                    age <= 0)) {
+                countedPersons.add(person);
+                countedPatientId.add(person.getPersonId());
+                count++;
+            }
+        }
+        incrementTotalCount(count);
+        clearProcessedPersons(countedPersons);
+        return count;
+    }
+
 
     protected void incrementTotalCount(int count) {
         if (count > 0)

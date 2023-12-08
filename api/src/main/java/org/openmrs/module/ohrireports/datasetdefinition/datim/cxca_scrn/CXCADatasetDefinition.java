@@ -20,13 +20,13 @@ public class CXCADatasetDefinition extends BaseDataSetDefinition {
 	private EncounterType encounterType;
 	
 	@ConfigurationProperty
-	private Concept screeningType;
+	private String screeningType;
 	
-	public Concept getScreeningType() {
+	public String getScreeningType() {
 		return screeningType;
 	}
 	
-	public void setScreeningType(Concept screeningType) {
+	public void setScreeningType(String screeningType) {
 		this.screeningType = screeningType;
 	}
 	

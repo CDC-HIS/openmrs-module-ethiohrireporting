@@ -5,7 +5,6 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.CervicalCancerDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.linelist.cervicalCancer.CervicalCancerLIneListQuery;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -30,7 +29,7 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 	CervicalCancerDataSetDefinition _dataSetDefinition;
 	
 	@Autowired
-	private CervicalCancerLIneListQuery cancerLIneListQuery;
+	private CervicalCancerLIneListQuery cervicalCancerLineListQuery;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -42,70 +41,138 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		Cohort baseCohort = cervicalCancerQuery.loadScreenedCohort();
 		List<Person> persons = cervicalCancerQuery.getPersons(baseCohort);
 		
-		HashMap<Integer, Object> mrnIdentifierHashMap = cancerLIneListQuery.getIdentifier(baseCohort,
+		HashMap<Integer, Object> mrnIdentifierHashMap = cervicalCancerLineListQuery.getIdentifier(baseCohort,
 		    MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uanIdentifierHashMap = cancerLIneListQuery.getIdentifier(baseCohort,
+		HashMap<Integer, Object> uanIdentifierHashMap = cervicalCancerLineListQuery.getIdentifier(baseCohort,
 		    UAN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> followUpDate = cancerLIneListQuery.getObsValueDate(cervicalCancerQuery.getBaseEncounter(),
-		    FOLLOW_UP_DATE, baseCohort);
-		HashMap<Integer, Object> counselledDate = cancerLIneListQuery.getObsValueDate(
+		HashMap<Integer, Object> followUpDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), FOLLOW_UP_DATE, baseCohort);
+		HashMap<Integer, Object> counselledDate = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), DATE_COUNSELING_GIVEN, baseCohort);
-		HashMap<Integer, Object> screeningReceivedDate = cancerLIneListQuery.getObsValueDate(
+		HashMap<Integer, Object> screeningReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), CXC_SCREENING_DATE, baseCohort);
-		HashMap<Integer, Object> artStartDate = cancerLIneListQuery.getArtStartDate(baseCohort,
-		    _dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate());
-		HashMap<Integer, Object> followUpStatus = cancerLIneListQuery.getFollowUpStatus(
+		HashMap<Integer, Object> treatmentReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), CXCA_TREATMENT_STARTING_DATE, baseCohort);
+		HashMap<Integer, Object> nextVisitDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), NEXT_VISIT_DATE, baseCohort);
+		HashMap<Integer, Object> dateLinkedToCxCaUnit = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), DATE_LINKED_TO_CXCA_UNIT, baseCohort);
+		HashMap<Integer, Object> cxcaScreeningAcceptedDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), CXCA_SCREENING_ACCEPTED_DATE, baseCohort);
+		HashMap<Integer, Object> hpvDnaSampleCollectionDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), HPV_DNA_SAMPLE_COLLECTION_DATE, baseCohort);
+		HashMap<Integer, Object> hpvDnaResultReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), HPV_DNA_RESULT_RECEIVED_DATE, baseCohort);
+		HashMap<Integer, Object> viaScreeningDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), VIA_SCREENING_DATE, baseCohort);
+		HashMap<Integer, Object> cytologySampleCollectionDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), CYTOLOGY_SAMPLE_COLLECTION_DATE, baseCohort);
+		HashMap<Integer, Object> cytologyResultReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), CYTOLOGY_RESULT_RECEIVED_DATE, baseCohort);
+		HashMap<Integer, Object> colposcopyExamDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), COLPOSCOPY_EXAM_DATE, baseCohort);
+		HashMap<Integer, Object> biopsySampleCollectionDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), BIOPSY_SAMPLE_COLLECTED_DATE, baseCohort);
+		HashMap<Integer, Object> biopsyResultReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), BIOPSY_RESULT_RECEIVED_DATE, baseCohort);
+		HashMap<Integer, Object> dateOfReferralToOtherHF = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), DATE_OF_REFERRAL_TO_OTHER_HF, baseCohort);
+		HashMap<Integer, Object> referralConfirmedDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), REFERRAL_CONFIRMED_DATE, baseCohort);
+		
+		HashMap<Integer, Object> artStartDate = cervicalCancerLineListQuery.getObsValueDate(
+		    cervicalCancerQuery.getBaseEncounter(), ART_START_DATE, baseCohort);
+		HashMap<Integer, Object> followUpStatus = cervicalCancerLineListQuery.getFollowUpStatus(
 		    cervicalCancerQuery.getCurrentEncounter(), baseCohort);
-		HashMap<Integer, Object> regimentHashMap = cancerLIneListQuery.getRegiment(
+		HashMap<Integer, Object> regimentHashMap = cervicalCancerLineListQuery.getRegiment(
 		    cervicalCancerQuery.getCurrentEncounter(), baseCohort);
-		HashMap<Integer, Object> adherence = cancerLIneListQuery.getByResult(ARV_ADHERENCE, baseCohort,
+		HashMap<Integer, Object> adherence = cervicalCancerLineListQuery.getByResult(ARV_ADHERENCE, baseCohort,
 		    cervicalCancerQuery.getCurrentEncounter());
-		HashMap<Integer, Object> screeningType = cancerLIneListQuery.getByResult(CXCA_TYPE_OF_SCREENING, baseCohort,
+		HashMap<Integer, Object> screeningType = cervicalCancerLineListQuery.getByResult(CXCA_TYPE_OF_SCREENING, baseCohort,
 		    cervicalCancerQuery.getBaseEncounter());
-		HashMap<Integer, Object> screeningMechanism = cancerLIneListQuery.getByResult(SCREENING_STRATEGY, baseCohort,
+		HashMap<Integer, Object> hpvSubType = cervicalCancerLineListQuery.getByResult(HPV_SUB_TYPE, baseCohort,
 		    cervicalCancerQuery.getBaseEncounter());
-		HashMap<Integer, Object> hpvScreeningResult = cancerLIneListQuery.getByResult(HPV_DNA_SCREENING_RESULT, baseCohort,
+		HashMap<Integer, Object> screeningMechanism = cervicalCancerLineListQuery.getByResult(SCREENING_STRATEGY,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> hpvScreeningResult = cervicalCancerLineListQuery.getByResult(HPV_DNA_SCREENING_RESULT,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> colposcopyExamFinding = cervicalCancerLineListQuery.getByResult(COLPOSCOPY_EXAM_FINDING,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> cytologyResult = cervicalCancerLineListQuery.getByResult(CYTOLOGY_RESULT, baseCohort,
 		    cervicalCancerQuery.getBaseEncounter());
-		HashMap<Integer, Object> viaScreeningResult = cancerLIneListQuery.getByResult(VIA_SCREENING_RESULT, baseCohort,
+		HashMap<Integer, Object> viaScreeningResult = cervicalCancerLineListQuery.getByResult(VIA_SCREENING_RESULT,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> biopsyResult = cervicalCancerLineListQuery.getByResult(BIOPSY_RESULT, baseCohort,
 		    cervicalCancerQuery.getBaseEncounter());
-		HashMap<Integer, Object> cxcaTreatmentReceived = cancerLIneListQuery.getByResult(CXCA_TREATMENT_TYPE, baseCohort,
+		HashMap<Integer, Object> cxcaTreatmentReceived = cervicalCancerLineListQuery.getByResult(CXCA_TREATMENT_TYPE,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> reasonForReferral = cervicalCancerLineListQuery.getByResult(REASON_FOR_REFERRAL,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> feedback = cervicalCancerLineListQuery.getByResult(FEEDBACK, baseCohort,
 		    cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> cxcaScreeningOffered = cervicalCancerLineListQuery.getByResult(CX_CA_SCREENING_OFFERED,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> cxcaScreeningAccepted = cervicalCancerLineListQuery.getByResult(CX_CA_SCREENING_ACCEPTED,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> linkedToCxCaUnit = cervicalCancerLineListQuery.getByResult(LINKED_TO_CX_CA_UNIT,
+		    baseCohort, cervicalCancerQuery.getBaseEncounter());
 		
 		DataSetRow row;
 		for (Person person : persons) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), uanIdentifierHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
+			addColumnValue("MRN", "MRN", uanIdentifierHashMap, row, person);
+			addColumnValue("UAN", "UAN", mrnIdentifierHashMap, row, person);
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge(_dataSetDefinition.getEndDate()));
-			row.addColumnValue(new DataSetColumn("followUp", "Follow-Up Date", String.class),
-			    followUpDate.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("followUpStatus", "Follow-Up Status", String.class),
-			    followUpStatus.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("artStartDate", "Art Start Date", String.class),
-			    artStartDate.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("regiment", "Regiment", String.class),
-			    regimentHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class),
-			    adherence.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("ScreeningVisitType", "Screening Visit Type", String.class),
-			    screeningType.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("counseledGiven", "Date Counseled For CCA", String.class),
-			    counselledDate.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("dateScreeningReceived", "Date Screening Received", String.class),
-			    screeningReceivedDate.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("screeningMechanism", "Screening Mechanism", String.class),
-			    screeningMechanism.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("hpvScreeningResult", "HPV Screening Result", String.class),
-			    hpvScreeningResult.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("viaScreeningResult", "VIA Screening Result", String.class),
-			    viaScreeningResult.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("cxcaTreatmentResult", "Type Of Treatment Received", String.class),
-			    cxcaTreatmentReceived.get(person.getPersonId()));
+			addColumnValue("followUp", "Follow-Up Date", followUpDate, row, person);
+			addColumnValue("followUpStatus", "Follow-Up Status", followUpStatus, row, person);
+			addColumnValue("artStartDate", "Art Start Date", artStartDate, row, person);
+			addColumnValue("regimen", "Regimen", regimentHashMap, row, person);
+			addColumnValue("adherence", "Adherence", adherence, row, person);
+			addColumnValue("ScreeningVisitType", "Screening Visit Type", screeningType, row, person);
+			addColumnValue("counseledGiven", "Date Counseled For CCA", counselledDate, row, person);
+			addColumnValue("counseledGiven", "Date Counseled For CCA", counselledDate, row, person);
+			addColumnValue("screeningMechanism", "Screening Mechanism", screeningMechanism, row, person);
+			addColumnValue("hpvScreeningResult", "HPV Screening Result", hpvScreeningResult, row, person);
+			addColumnValue("viaScreeningResult", "VIA Screening Result", viaScreeningResult, row, person);
+			addColumnValue("cxcaTreatmentResult", "Type Of Treatment Received", cxcaTreatmentReceived, row, person);
+			addColumnValue("cxcaTreatmentReceived", "Date Treatment Received", treatmentReceivedDate, row, person);
+			addColumnValue("nextVisitDate", "Next Visit Date", nextVisitDate, row, person);
+			addColumnValue("dateLinkedToCxCaUnit", "Date Linked To CxCa Unit", dateLinkedToCxCaUnit, row, person);
+			addColumnValue("cxcaScreeningAcceptedDate", "Cx_Ca Screening Accepted Date", cxcaScreeningAcceptedDate, row,
+			    person);
+			addColumnValue("hpvDnaSampleCollectionDate", "HPV DNA Sample Collection Date", hpvDnaSampleCollectionDate, row,
+			    person);
+			addColumnValue("hpvDnaResultReceivedDate", "HPV DNA Result Received Date", hpvDnaResultReceivedDate, row, person);
+			addColumnValue("hpvSubType", "HPV Sub Type", hpvSubType, row, person);
+			addColumnValue("viaScreeningDate", "VIA Screening Date", viaScreeningDate, row, person);
+			addColumnValue("cytologySampleCollectionDate", "Cytology Sample Collection Date", cytologySampleCollectionDate,
+			    row, person);
+			addColumnValue("cytologyResultReceivedDate", "Cytology Result Received Date", cytologyResultReceivedDate, row,
+			    person);
+			addColumnValue("cytologyResult", "Cytology Result", cytologyResult, row, person);
+			addColumnValue("colposcopyExamDate", "Colposcopy Exam Date", colposcopyExamDate, row, person);
+			addColumnValue("colposcopyExamFinding", "Colposcopy Exam Finding", colposcopyExamFinding, row, person);
+			addColumnValue("biopsyResultReceivedDate", "Biopsy Result Received Date", biopsyResultReceivedDate, row, person);
+			addColumnValue("biopsySampleCollectionDate", "Biopsy Sample Collection Date", biopsySampleCollectionDate, row,
+			    person);
+			addColumnValue("biopsyResult", "Biopsy Result", biopsyResult, row, person);
+			addColumnValue("dateOfReferralToOtherHF", "Referral/link Date Referred to Other HF", dateOfReferralToOtherHF,
+			    row, person);
+			addColumnValue("reasonForReferral", "Reason for Referral", reasonForReferral, row, person);
+			addColumnValue("feedback", "Feedback", feedback, row, person);
+			addColumnValue("referralConfirmedDate", "Referral Confirmed Date", referralConfirmedDate, row, person);
+			addColumnValue("cxcaScreeningOffered", "CX_CA Screening Offered", cxcaScreeningOffered, row, person);
+			addColumnValue("cxcaScreeningAccepted", "CX_CA Screening Accepted", cxcaScreeningAccepted, row, person);
+			addColumnValue("linkedToCxCaUnit", "Linked To CX CA Unit", linkedToCxCaUnit, row, person);
 			
 			dataSet.addRow(row);
 		}
 		
 		return dataSet;
+	}
+	
+	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
+		row.addColumnValue(new DataSetColumn(name, label, String.class), object.get(person.getPersonId()));
 	}
 }
