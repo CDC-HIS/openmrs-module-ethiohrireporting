@@ -104,7 +104,7 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
 
                 cxcaDatasetDefinition = (CXCAAutoCalculateDatasetDefinition) dataSetDefinition;
                 context = evalContext;
-                Cohort baseCohort = cervicalCancerQuery.loadCxCaScreeningForDatim(cxcaDatasetDefinition.getEndDate());
+                Cohort baseCohort = cervicalCancerQuery.loadCxCaScreeningForDatim(cxcaDatasetDefinition.getStartDate(),cxcaDatasetDefinition.getEndDate());
                 SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
                 DataSetRow dataSetRow = new DataSetRow();
                 dataSetRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), baseCohort.size());

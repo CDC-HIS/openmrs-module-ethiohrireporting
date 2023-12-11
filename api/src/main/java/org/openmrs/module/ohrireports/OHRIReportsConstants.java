@@ -9,6 +9,8 @@
  */
 package org.openmrs.module.ohrireports;
 
+import groovy.lang.GString;
+
 public class OHRIReportsConstants {
 	
 	/**
@@ -152,6 +154,10 @@ public class OHRIReportsConstants {
 	public final static String DATE_COUNSELING_GIVEN = "72a28ebe-77ba-4592-9291-ac91e46ea770";
 	
 	public final static String CXC_SCREENING_DATE = "c7ecf767-325a-41c2-80a7-79c91762ab3e";
+	
+	public final static String CXCA_SCREENING_DONE = "01c546b4-e08a-4c0c-82ef-d387cab6bbbf";
+	
+	public final static String CXCA_SCREENING_DONE_YES = "165619AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String CXCA_FIRST_TIME_SCREENING = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	

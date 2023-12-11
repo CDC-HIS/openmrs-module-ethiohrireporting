@@ -5,6 +5,7 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -79,13 +80,13 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		return baseCohort;
 	}
 	
-	public Cohort loadCxCaScreeningForDatim(Date endDate) {
+	public Cohort loadCxCaScreeningForDatim(Date startDate, Date endDate) {
 		String stringQuery = "\n" + "select ps.person_id from\n" + "\n"
 		        + "(select distinct  ob.person_id from obs as ob inner join  \n" + "\n"
 		        + "(select max(ib.value_datetime) as value_datetime,ib.person_id \n"
 		        + " from obs as ib  where ib.concept_id = "
 		        + conceptQuery(DATE_COUNSELING_GIVEN)
-		        + " and ib.value_datetime<= :joinEndDate1 \n"
+		        + " and ib.value_datetime>= :joinStartDate1 and ib.value_datetime<= :joinEndDate1 \n"
 		        + "  group by ib.person_id \n "
 		        + "  \n"
 		        + " ) as o\n"
@@ -102,7 +103,7 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "(select max(ib.value_datetime) as value_datetime,ib.person_id \n"
 		        + " from obs as ib  where ib.concept_id = "
 		        + conceptQuery(FOLLOW_UP_DATE)
-		        + " and ib.value_datetime<= :joinEndDate2 \n"
+		        + " and ib.value_datetime>= :joinStartDate2 and ib.value_datetime<= :joinEndDate2 \n"
 		        + "  group by ib.person_id \n"
 		        + "  \n"
 		        + " ) as o\n"
@@ -118,11 +119,22 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + conceptQuery(FOLLOW_UP_STATUS)
 		        + " and ob.value_coded in "
 		        + conceptQuery(Arrays.asList(ALIVE, RESTART))
-		        + " ) as fs \n" + "on fs.person_id = d.person_id and d.encounter_id = fs.encounter_id ";
+		        + " ) as fs \n"
+		        + "on fs.person_id = d.person_id and d.encounter_id = fs.encounter_id "
+		        + "inner join\n"
+		        + "\n"
+		        + "(select person_id \n"
+		        + "from obs where concept_id = "
+		        + conceptQuery(CXCA_SCREENING_DONE)
+		        + "and value_coded = "
+		        + conceptQuery(CXCA_SCREENING_DONE_YES)
+		        + ") as cxcasd on cxcasd.person_id = d.person_id";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		
 		query.setDate("joinEndDate1", endDate);
+		query.setDate("joinStartDate1", startDate);
 		query.setDate("joinEndDate2", endDate);
+		query.setDate("joinStartDate2", startDate);
 		
 		return new Cohort(query.list());
 		

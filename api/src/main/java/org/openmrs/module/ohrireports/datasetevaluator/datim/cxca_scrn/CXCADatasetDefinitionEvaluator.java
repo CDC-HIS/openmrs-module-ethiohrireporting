@@ -76,11 +76,12 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         cervicalCancerQuery.setStartDate(cxcaDatasetDefinition.getStartDate());
         cervicalCancerQuery.setEndDate(cxcaDatasetDefinition.getEndDate());
         Cohort baseCohort = cervicalCancerQuery.getByScreeningType(cxcaDatasetDefinition.getScreeningType());
-
+        aggregateBuilder.setCalculateAgeFrom(cxcaDatasetDefinition.getEndDate());
 
 
         Cohort negativeCohort = cervicalCancerQuery.getNegativeResult(baseCohort);
         List<Person> negativeCxCaPersonList = cervicalCancerQuery.getPersons(negativeCohort);
+
         aggregateBuilder.setPersonList(negativeCxCaPersonList);
         DataSetRow negativeCxCaRow = new DataSetRow();
         aggregateBuilder.buildDataSetColumnForScreening(negativeCxCaRow, "Negative");

@@ -121,8 +121,8 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		for (Person person : persons) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
-			addColumnValue("MRN", "MRN", uanIdentifierHashMap, row, person);
-			addColumnValue("UAN", "UAN", mrnIdentifierHashMap, row, person);
+			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
+			addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge(_dataSetDefinition.getEndDate()));
 			addColumnValue("followUp", "Follow-Up Date", followUpDate, row, person);
 			addColumnValue("followUpStatus", "Follow-Up Status", followUpStatus, row, person);
