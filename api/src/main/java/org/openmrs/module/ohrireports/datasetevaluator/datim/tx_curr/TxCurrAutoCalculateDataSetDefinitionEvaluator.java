@@ -33,7 +33,7 @@ public class TxCurrAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 		hdsd = (TxCurrAutoCalculateDataSetDefinition) dataSetDefinition;
 		
 		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
 		DataSetRow dataSet = new DataSetRow();
 		
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),

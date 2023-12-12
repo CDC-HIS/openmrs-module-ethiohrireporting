@@ -73,7 +73,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                         : "Male");
         dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
                 getEnrolledByUnknownAge(gender));
-        dataSet.addColumnValue(new DataSetColumn("below 1", "> below 1 ", Integer.class),
+        dataSet.addColumnValue(new DataSetColumn("below 1", "below <1 ", Integer.class),
                 getEnrolledByAgeAndGender(0, 1, gender));
         while (minCount <= upperBoundAge) {
             if (minCount == upperBoundAge) {
