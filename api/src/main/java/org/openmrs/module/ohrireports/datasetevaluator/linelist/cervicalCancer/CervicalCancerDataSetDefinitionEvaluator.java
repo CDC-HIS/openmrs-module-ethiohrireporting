@@ -5,10 +5,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.CervicalCancerDataSetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
-import org.openmrs.module.reporting.dataset.DataSetColumn;
-import org.openmrs.module.reporting.dataset.DataSetRow;
-import org.openmrs.module.reporting.dataset.SimpleDataSet;
+import org.openmrs.module.reporting.dataset.*;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -117,7 +114,11 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		HashMap<Integer, Object> linkedToCxCaUnit = cervicalCancerLineListQuery.getByResult(LINKED_TO_CX_CA_UNIT,
 		    baseCohort, cervicalCancerQuery.getBaseEncounter());
 		
-		DataSetRow row;
+		DataSetRow row = new DataSetRow();
+		row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "Total");
+		row.addColumnValue(new DataSetColumn("UAN", "UAN", Integer.class), baseCohort.getSize());
+		dataSet.addRow(row);
+		
 		for (Person person : persons) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());

@@ -4,8 +4,8 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_scrn.CxcaScreening;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -20,6 +20,41 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	private DbSessionFactory sessionFactory;
 	
 	private Cohort baseCohort;
+	
+	private CxcaScreening firstScreening;
+	
+	private CxcaScreening reScreening;
+	
+	private CxcaScreening postScreening;
+	
+	public CxcaScreening getFirstScreening() {
+		return firstScreening;
+	}
+	
+	public void setFirstScreening(CxcaScreening firstScreening) {
+		this.firstScreening = firstScreening;
+	}
+	
+	public CxcaScreening getReScreening() {
+		return reScreening;
+	}
+	
+	public int getTotalCohortCount() {
+		return reScreening.getTotal() + firstScreening.getTotal() + postScreening.getTotal();
+		
+	}
+	
+	public void setReScreening(CxcaScreening reScreening) {
+		this.reScreening = reScreening;
+	}
+	
+	public CxcaScreening getPostScreening() {
+		return postScreening;
+	}
+	
+	public void setPostScreening(CxcaScreening postScreening) {
+		this.postScreening = postScreening;
+	}
 	
 	@Autowired
 	private EncounterQuery encounterQuery;

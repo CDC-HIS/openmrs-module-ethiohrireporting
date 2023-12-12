@@ -10,6 +10,7 @@ import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_scrn.HmisCxCaScrnDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -35,7 +36,9 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
 		
 	@Autowired
 	private ConceptService conceptService;
-	
+
+	@Autowired
+	private CervicalCancerQuery cervicalCancerQuery;
 	@Autowired
 	private EvaluationService evaluationService;
 	List<Obs> obses = new ArrayList<>();
@@ -49,7 +52,7 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
 		context = evalContext;
 		cxcaScreenedPatientsID=getPatientByScreeningType();
 		
-		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);	
+		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 
 		data.addRow(buildColumn("1","Cervical Cancer screening by type of test",0));
         data.addRow(buildColumn("1. 1","Screened by VIA",getVIAScreeningPatients()));
