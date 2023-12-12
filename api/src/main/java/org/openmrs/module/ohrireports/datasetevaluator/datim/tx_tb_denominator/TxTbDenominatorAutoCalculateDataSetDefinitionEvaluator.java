@@ -1,5 +1,16 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_denominator;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
@@ -23,19 +34,12 @@ public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements D
 	@Autowired
 	private TBQuery tbQuery;
 	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		TxTbDenominatorAutoCalculateDataSetDefinition hdsd = (TxTbDenominatorAutoCalculateDataSetDefinition) dataSetDefinition;
 		
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounters);
-		Cohort cohort = new Cohort(tbQuery.getArtStartedCohort(encounters, null, hdsd.getEndDate(), null));
-		
-		cohort = tbQuery.getTBScreenedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate());
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		

@@ -40,7 +40,7 @@ public class AutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator
 		hdsd = (AutoCalculateDataSetDefinition) dataSetDefinition;
 		
 		patientQuery = Context.getService(PatientQueryService.class);
-		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), patientQuery

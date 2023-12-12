@@ -29,7 +29,6 @@ public class HivArtFbQuery extends PatientQueryImpDao {
 	public HivArtFbQuery(DbSessionFactory sessionFactory) {
 		
 		setSessionFactory(sessionFactory);
-		
 		this.sessionFactory = sessionFactory;
 	}
 	

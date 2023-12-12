@@ -26,26 +26,15 @@ public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements Dat
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
-	private TxTbNumeratorAutoCalculateDataSetDefinition hdsd;
-	
 	@Autowired
 	private TBQuery tbQuery;
-	
-	private List<Integer> encounters;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
+		TxTbNumeratorAutoCalculateDataSetDefinition hdsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
 		
-		encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		encounters = encounterQuery.getEncounters(Arrays.asList(TB_TREATMENT_START_DATE), hdsd.getStartDate(),
-		    hdsd.getEndDate(), encounters);
-		tbQuery.setEncountersByScreenDate(encounters);
-		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
-		
-		cohort = tbQuery.getTBTreatmentStartedCohort(cohort, "", encounters);
+		Cohort cohort = tbQuery.getNumerator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), cohort

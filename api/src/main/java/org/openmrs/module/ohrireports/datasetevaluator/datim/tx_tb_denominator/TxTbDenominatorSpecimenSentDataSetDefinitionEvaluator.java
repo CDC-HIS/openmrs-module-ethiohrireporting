@@ -24,9 +24,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_D
 public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	@Autowired
 	private TBQuery tbQuery;
 	
 	@Override
@@ -34,20 +31,15 @@ public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements Da
 		
 		TxTbDenominatorSpecimenSentDataSetDefinition hdsd = (TxTbDenominatorSpecimenSentDataSetDefinition) dataSetDefinition;
 		
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		encounters = encounterQuery.getEncounters(Arrays.asList(TB_SCREENING_DATE), hdsd.getStartDate(), hdsd.getEndDate(),
-		    encounters);
-		tbQuery.setEncountersByScreenDate(encounters);
-		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("UNDERNOURISHED", null, hdsd.getEndDate(), null, encounters);
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients who had a specimen sent for bacteriological diagnosis of active TB disease");
 		
-		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class), tbQuery.getSpecimenSent(cohort)
-		        .getMemberIds().size());
+		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class),
+		    tbQuery.getSpecimenSent(cohort, hdsd.getStartDate(), hdsd.getEndDate()).getMemberIds().size());
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		

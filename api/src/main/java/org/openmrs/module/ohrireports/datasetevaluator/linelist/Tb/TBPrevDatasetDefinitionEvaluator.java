@@ -75,7 +75,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		patientQuery = Context.getService(PatientQueryService.class);
-		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(hdsd.getEndDate());
+		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(hdsd.getStartDate(), hdsd.getEndDate());
 		if (hdsd.getTptStatus().equals("start")) {
 			baseTPTStartDateEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE), hdsd.getStartDate(),
 			    hdsd.getEndDate());

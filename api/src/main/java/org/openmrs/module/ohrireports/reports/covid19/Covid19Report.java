@@ -8,7 +8,7 @@
 //  * graphic logo is a trademark of OpenMRS Inc.
 //  */
 // package org.openmrs.module.ohrireports.reports.covid19;
-
+//
 // import org.openmrs.api.ConceptService;
 // import org.openmrs.api.EncounterService;
 // import org.openmrs.module.ohrireports.reports.converter.OHRIDataConverter;
@@ -32,51 +32,51 @@
 // import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.stereotype.Component;
-
+//
 // import java.util.Arrays;
 // import java.util.Collections;
 // import java.util.List;
-
+//
 // import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
+//
 // @Component
 // public class Covid19Report implements ReportManager {
-
+//
 // 	@Autowired
 // 	EncounterService encounterService;
-
+//
 // 	@Autowired
 // 	ConceptService conceptService;
-
+//
 // 	@Autowired
 // 	PatientDataLibrary pdl;
-
+//
 // 	@Autowired
 // 	EncounterDataLibrary edl;
-
+//
 // 	@Autowired
 // 	OHRIDataConverter odc;
-
+//
 // 	@Override
 // 	public String getUuid() {
 // 		return COVID19_REPORT_UUID;
 // 	}
-
+//
 // 	@Override
 // 	public String getName() {
 // 		return "COVID-19 Report";
 // 	}
-
+//
 // 	@Override
 // 	public String getDescription() {
 // 		return null;
 // 	}
-
+//
 // 	@Override
 // 	public List<Parameter> getParameters() {
 // 		return null;
 // 	}
-
+//
 // 	@Override
 // 	public ReportDefinition constructReportDefinition() {
 // 		ReportDefinition reportDefinition = new ReportDefinition();
@@ -84,19 +84,19 @@
 // 		reportDefinition.setName(getName());
 // 		reportDefinition.setDescription(getDescription());
 // 		reportDefinition.setParameters(getParameters());
-
+//
 // 		EncounterCohortDefinition ecd = new EncounterCohortDefinition();
 // 		ecd.addEncounterType(encounterService.getEncounterTypeByUuid(COVID_ASSESSMENT_ENCOUNTER_TYPE));
 // 		reportDefinition.setBaseCohortDefinition(Mapped.mapStraightThrough(ecd));
-
+//
 // 		EncounterDataSetDefinition edsd = new EncounterDataSetDefinition();
 // 		edsd.addRowFilter(getEncounterQuery());
 // 		addColumns(edsd);
-
+//
 // 		reportDefinition.addDataSetDefinition("COVID-19", edsd, Collections.EMPTY_MAP);
 // 		return reportDefinition;
 // 	}
-
+//
 // 	private void addColumns(EncounterDataSetDefinition edsd) {
 // 		edsd.addColumn("Client ID", new PatientIdDataDefinition(), "");
 // 		edsd.addColumn("Name", pdl.getName(), "");
@@ -186,41 +186,41 @@
 // 		edsd.addColumn("Long COVID Description", edl.getObsValue(COVID19_LONG_COVID_DESCRIPTION), "",
 // 		    new ObsValueConverter());
 // 	}
-
+//
 // 	private void addColumnAsTrueOrFalse(EncounterDataSetDefinition edsd, String name, String questionConcept,
 // 	        String answerConcept) {
 // 		edsd.addColumn(name, edl.getObsValue(questionConcept, answerConcept), "", odc.getObsValueCodedExistsConverter());
 // 	}
-
+//
 // 	private Mapped<? extends EncounterQuery> getEncounterQuery() {
 // 		CompositionEncounterQuery ceq = new CompositionEncounterQuery();
 // 		ceq.addSearch("positiveRdt", getEncounterQuery(COVID19_RAPID_ANTIGEN_RESULT));
 // 		ceq.addSearch("positivePcr", getEncounterQuery(COVID19_DIAGNOSTIC_PCR_RESULT));
 // 		ceq.setCompositionString("positiveRdt or positivePcr");
-
+//
 // 		return Mapped.mapStraightThrough(ceq);
 // 	}
-
+//
 // 	private Mapped<? extends EncounterQuery> getEncounterQuery(String conceptUuid) {
 // 		CodedObsForEncounterQuery cofeq = new CodedObsForEncounterQuery();
 // 		cofeq.setQuestion(conceptService.getConceptByUuid(conceptUuid));
 // 		cofeq.addConceptToInclude(conceptService.getConceptByUuid(POSITIVE));
-
+//
 // 		return Mapped.mapStraightThrough(cofeq);
 // 	}
-
+//
 // 	@Override
 // 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
 // 		ReportDesign design = ReportManagerUtil.createCsvReportDesign(COVID19_REPORT_DESIGN_UUID, reportDefinition);
-
+//
 // 		return Arrays.asList(design);
 // 	}
-
+//
 // 	@Override
 // 	public List<ReportRequest> constructScheduledRequests(ReportDefinition reportDefinition) {
 // 		return null;
 // 	}
-
+//
 // 	@Override
 // 	public String getVersion() {
 // 		return "1.0.0-SNAPSHOT";

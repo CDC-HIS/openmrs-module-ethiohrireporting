@@ -35,12 +35,14 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	public List<Integer> getLatestDateByFollowUpDate(Date end) {
+	public List<Integer> getLatestDateByFollowUpDate(Date start, Date end) {
 		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
 		builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
 		
 		builder.append(" where obs_enc.concept_id =").append(conceptQuery(FOLLOW_UP_DATE));
 		
+		if (start != null)
+			builder.append(" and obs_enc.value_datetime >= :start ");
 		if (end != null)
 			builder.append(" and obs_enc.value_datetime <= :end ");
 		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
@@ -49,9 +51,10 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		
 		Query q = getCurrentSession().createSQLQuery(builder.toString());
 		
+		if (start != null)
+			q.setDate("start", start);
 		if (end != null)
 			q.setDate("end", end);
-		
 		List list = q.list();
 		
 		if (list != null) {
@@ -61,8 +64,8 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		}
 	}
 	
-	public List<Integer> getAliveFollowUpEncounters(Date end) {
-		List<Integer> allEncounters = getLatestDateByFollowUpDate(end);
+	public List<Integer> getAliveFollowUpEncounters(Date start, Date end) {
+		List<Integer> allEncounters = getLatestDateByFollowUpDate(start, end);
 		
 		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS)
 		        + " and ob.value_coded in " + conceptQuery(Arrays.asList(ALIVE, RESTART))

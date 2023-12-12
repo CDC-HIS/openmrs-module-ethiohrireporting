@@ -73,7 +73,8 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                         : "Male");
         dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
                 getEnrolledByUnknownAge(gender));
-
+        dataSet.addColumnValue(new DataSetColumn("below 1", "> below 1 ", Integer.class),
+                getEnrolledByAgeAndGender(0, 1, gender));
         while (minCount <= upperBoundAge) {
             if (minCount == upperBoundAge) {
                 dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
@@ -124,7 +125,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
 
         row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
                 getEnrolledByUnknownAge(gender));
-        row.addColumnValue(new DataSetColumn("<" + middleAge, "<" + middleAge, Integer.class),
+        row.addColumnValue(new DataSetColumn(">" + middleAge, "<" + middleAge, Integer.class),
                 getCountByMiddleAge(gender, middleAge, _below));
 
         row.addColumnValue(new DataSetColumn(middleAge + "+", middleAge + "+", Integer.class),
@@ -143,7 +144,11 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                 continue;
 
             age = person.getAge(calculateAgeFrom);
-            if (person.getGender().equals(gender) && age >= min && age <= max) {
+            if (person.getGender().equals(gender) && min==0 && age < max) {
+                countedPersons.add(person);
+                countedPatientId.add(person.getPersonId());
+                count++;
+            }else if (person.getGender().equals(gender) && age >= min && age <= max) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;

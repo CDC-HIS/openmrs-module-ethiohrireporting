@@ -34,6 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = {TxCurrFineByAgeAndSexDataSetDefinition.class})
 public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
+
+    private TxCurrFineByAgeAndSexDataSetDefinition hdsd;
+    private String title = "Number of adults and children Currently enrolling on antiretroviral therapy (ART)";
+    private PatientQueryService patientQueryService;
     @Autowired
     private AggregateBuilder aggregateBuilder;
     @Autowired
@@ -48,7 +52,8 @@ public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetE
 
         PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 
-        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+        aggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
+        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,hdsd.getEndDate());
         Cohort baseCohort = patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
         personList = patientQueryService.getPersons(baseCohort);
 

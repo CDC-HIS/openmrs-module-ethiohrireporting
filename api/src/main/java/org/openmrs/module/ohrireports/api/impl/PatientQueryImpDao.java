@@ -20,6 +20,7 @@ import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -143,7 +144,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	public Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort,
 	        List<Integer> encounters) {
 		
-		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, null, encounters);
+		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, cohort, encounters);
 		
 		return onTreatmentCohort;
 		
@@ -269,6 +270,17 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		query.setParameterList("encounters", encounter);
 		query.setParameterList("ids", cohort.getMemberIds());
 		return HMISUtilies.getDictionary(query);
+	}
+	
+	public Cohort getCohort(List<Integer> encounterIds) {
+		StringBuilder sqlBuilder = new StringBuilder(
+		        "select distinct (person_id) from obs where encounter_id in (:encounterIds) ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		query.setParameterList("encounterIds", encounterIds);
+		
+		return new Cohort(query.list());
+		
 	}
 	
 	public enum ObsValueType {

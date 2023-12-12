@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
@@ -39,7 +40,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		TxCurrDataSetDefinition hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
-		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
@@ -49,7 +50,6 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(latestEncounters, cohort);
 		HashMap<Integer, Object> dispensDayHashMap = artQuery
 		        .getConceptName(latestEncounters, cohort, ARV_DISPENSED_IN_DAYS);
-		
 		DataSetRow row = new DataSetRow();
 		
 		if (!persons.isEmpty()) {
@@ -77,10 +77,13 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
 			
 			row.addColumnValue(new DataSetColumn("TreatmentEndDate", "Treatment End Date", Date.class), treatmentEndDate);
+			
 			row.addColumnValue(new DataSetColumn("TreatmentEndDateETC", "Treatment End Date ETH", String.class),
 			    artQuery.getEthiopianDate(treatmentEndDate));
+			
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),
 			    regimentHashMap.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("arvDispensDay", "ARV Dispense Day", String.class),
 			    dispensDayHashMap.get(person.getPersonId()));
 			

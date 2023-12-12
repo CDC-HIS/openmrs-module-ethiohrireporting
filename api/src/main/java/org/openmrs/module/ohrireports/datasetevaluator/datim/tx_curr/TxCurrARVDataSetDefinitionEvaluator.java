@@ -21,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { TxCurrARVDataSetDefinition.class })
@@ -49,10 +51,11 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
         PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,hdsd.getEndDate());
 		Cohort baseCohort  = patientQueryService.getActiveOnArtCohort("",null,hdsd.getEndDate(),null,encounters);
 		personList = patientQueryService.getPersons(baseCohort);
-		patientWithDispenseDay = patientQueryService.getObsValue(baseCohort,ARV_DISPENSED_IN_DAYS, PatientQueryImpDao.ObsValueType.CONCEPT_UUID,encounters);
+         patientWithDispenseDay = patientQueryService.getObsValue(baseCohort,ARV_DISPENSED_IN_DAYS, PatientQueryImpDao.ObsValueType.CONCEPT_UUID,encounters);
+
 
 		DataSetRow femaleDateSet = new DataSetRow();
 		femaleDateSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Female");
@@ -115,16 +118,16 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private int getUnknownAgeByGender(List<String> dispenseDayInConceptUUId, String gender) {
 		int count = 0;
 		int _age =0;
-        String dispenseValue;
+		String dispenseValue;
 		List<Integer> personIds = new ArrayList<>();
 		for (Person person : personList) {
-            if(!gender.equals(person.getGender()))
-                continue;
+			if(!gender.equals(person.getGender()))
+				continue;
 
-            _age = person.getAge(hdsd.getEndDate());
+			_age = person.getAge(hdsd.getEndDate());
 
 			if (_age == 0) {
-                dispenseValue = (String) patientWithDispenseDay.get(person.getPersonId());
+				dispenseValue = (String) patientWithDispenseDay.get(person.getPersonId());
 				if (dispenseDayInConceptUUId.contains(dispenseValue)) {
 					personIds.add(person.getPersonId());
 					count++;
@@ -141,15 +144,15 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private int getAbove15(List<String> dispenseDayInConceptUUId,String gender) {
 		int count = 0;
 		int _age = 0;
-        String dispenseValue ;
+		String dispenseValue ;
 		List<Integer> personIntegers = new ArrayList<>();
 		for (Person person : personList) {
 			if (!gender.equals(person.getGender()) || personIntegers.contains(person.getPersonId()))
 				continue;
 			_age = person.getAge(hdsd.getEndDate());
 			if (_age >= 15 ) {
-				   dispenseValue =  (String) patientWithDispenseDay.get(person.getPersonId());
-    				if (dispenseDayInConceptUUId.contains(dispenseValue)) {
+				dispenseValue =  (String) patientWithDispenseDay.get(person.getPersonId());
+				if (dispenseDayInConceptUUId.contains(dispenseValue)) {
 					personIntegers.add(person.getPersonId());
 					count++;
 				}
@@ -157,7 +160,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 			}
 		}
 
-		 clearCountedPerson(personIntegers);
+		clearCountedPerson(personIntegers);
 		return count;
 	}
 	private int getBelow15(List<String> dispenseDayInConceptUUId,String gender) {
@@ -189,7 +192,6 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 			obses.removeIf(p -> p.getPersonId().equals(pId));
 		}
 	}
-
 
 
 }
