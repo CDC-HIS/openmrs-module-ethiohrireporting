@@ -246,11 +246,11 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                 continue;
             age = person.getAge(calculateAgeFrom);
             if (person.getGender().equals(gender)) {
-                if (range == _below && age < middleAge) {
+                if (Objects.equals(range, _below) && age < middleAge) {
                     countedPersons.add(person);
                     countedPatientId.add(person.getPersonId());
                     count++;
-                } else if (range == _above && age >= middleAge) {
+                } else if (Objects.equals(range, _above) && age >= middleAge) {
                     countedPersons.add(person);
                     countedPatientId.add(person.getPersonId());
                     count++;

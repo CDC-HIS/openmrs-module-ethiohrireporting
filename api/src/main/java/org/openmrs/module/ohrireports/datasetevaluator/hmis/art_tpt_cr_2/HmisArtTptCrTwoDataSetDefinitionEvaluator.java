@@ -113,12 +113,10 @@ public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluat
 		baseEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null,
 				_dataSetDefinition.getEndDate(),
 				tptEncounterEncounter);
-		Cohort cohort = tbQuery.getCohort(baseTPTStartedEncounter);
+		Cohort cohort = tbQuery.getCohort(baseEncounter);
 
-		List<Integer> tptCompletedEncounterEncounter = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE),
+        return encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE),
 				null, _dataSetDefinition.getEndDate(), cohort);
-
-		return tptCompletedEncounterEncounter;
 
 	}
 

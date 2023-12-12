@@ -54,22 +54,22 @@ public class TBQuery extends PatientQueryImpDao {
 		screenedOnDateEncounters = encounters;
 	}
 
-	public Cohort getCohortByTbScreenedNegative(Cohort cohort, Date startDate, Date endDate, String gender) {
+	public Cohort getCohortByTbScreenedNegative(Cohort cohort,String gender) {
 		
-		Query query = getTBScreenedByResult(cohort, startDate, endDate, gender, NEGATIVE);
+		Query query = getTBScreenedByResult(cohort,  gender, NEGATIVE);
 
 		return new Cohort(query.list());
 	}
 
-	public Cohort getCohortByTbScreenedPositive(Cohort cohort, Date startDate, Date endDate, String gender) {
+	public Cohort getCohortByTbScreenedPositive(Cohort cohort,  String gender) {
 		
 
-		Query query = getTBScreenedByResult(cohort, startDate, endDate, gender, POSITIVE);
+		Query query = getTBScreenedByResult(cohort, gender, POSITIVE);
 
 		return new Cohort(query.list());
 	}
 
-	private Query getTBScreenedByResult(Cohort cohort, Date startDate, Date endDate, String gender,
+	private Query getTBScreenedByResult(Cohort cohort, String gender,
 			String resultConcept) {
 		StringBuilder sql = baseQuery(TB_SCREENING_RESULT);
 		sql.append(" and " + OBS_ALIAS + "value_coded = " + conceptQuery(resultConcept));
@@ -87,13 +87,13 @@ public class TBQuery extends PatientQueryImpDao {
 		return query;
 	}
 
-	public Cohort getSpecimenSent(Cohort cohort, Date startDate, Date endDate) {
-		Query query = getByResultTypeQuery(cohort, startDate, endDate, SPECIMEN_SENT, YES);
+	public Cohort getSpecimenSent(Cohort cohort) {
+		Query query = getByResultTypeQuery(cohort, SPECIMEN_SENT, YES);
 		return new Cohort(query.list());
 	}
 
-	public Cohort getSmearOnly(Cohort cohort, Date startDate, Date endDate) {
-		Query query = getByResultTypeQuery(cohort, startDate, endDate, DIAGNOSTIC_TEST, SMEAR_ONLY);
+	public Cohort getSmearOnly(Cohort cohort) {
+		Query query = getByResultTypeQuery(cohort, DIAGNOSTIC_TEST, SMEAR_ONLY);
 		return new Cohort(query.list());
 
 	}
@@ -105,21 +105,21 @@ public class TBQuery extends PatientQueryImpDao {
 
 	}
 
-	public Cohort getOtherThanLFMResult(Cohort cohort, Date startDate, Date endDate) {
-		Query query = getByResultTypeQuery(cohort, startDate, endDate, DIAGNOSTIC_TEST,
+	public Cohort getOtherThanLFMResult(Cohort cohort) {
+		Query query = getByResultTypeQuery(cohort, DIAGNOSTIC_TEST,
 				ADDITIONAL_TEST_OTHERTHAN_GENE_XPERT);
 		return new Cohort(query.list());
 
 	}
 
-	public Cohort getTBDiagnosticPositiveResult(Cohort cohort, Date startDate, Date endDate) {
-		Query query = getByResultTypeQuery(cohort, startDate, endDate, TB_DIAGNOSTIC_TEST_RESULT, POSITIVE);
+	public Cohort getTBDiagnosticPositiveResult(Cohort cohort) {
+		Query query = getByResultTypeQuery(cohort, TB_DIAGNOSTIC_TEST_RESULT, POSITIVE);
 
 		return new Cohort(query.list());
 
 	}
 
-	private Query getByResultTypeQuery(Cohort cohort, Date startDate, Date endDate, String ConceptQuestionUUId,
+	private Query getByResultTypeQuery(Cohort cohort,String ConceptQuestionUUId,
 			String answerUUId) {
 		StringBuilder sqBuilder = basePersonIdQuery(ConceptQuestionUUId, answerUUId);
 		sqBuilder.append(" and " + PERSON_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
@@ -147,21 +147,24 @@ public class TBQuery extends PatientQueryImpDao {
 		return query;
 	}
 
-	public Cohort getTBScreenedCohort(Cohort cohort, Date starDate, Date endDate) {
+	public Cohort getTBScreenedCohort(Cohort cohort, Date startDate, Date endDate) {
 		StringBuilder sql = baseQuery(TB_SCREENING_DATE);
 		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
 		sql.append(" and  " + OBS_ALIAS + "person_id in (:cohorts)");
 
+		sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start");
+		sql.append(" and ").append(OBS_ALIAS).append("value_datetime <= :end");
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
 		query.setParameterList("encounters", screenedOnDateEncounters);
 		query.setParameterList("cohorts", cohort.getMemberIds());
 
+		query.setDate("start",startDate);
+		query.setDate("end",endDate);
 		return new Cohort(query.list());
 	}
 
-	public Cohort getTBTreatmentStartedCohort(Cohort cohort, Date starDate, Date endDate, String gender,List<Integer> treatmentStatedDateEncounters) {
-			//getBaseEncounters(TB_TREATMENT_START_DATE, starDate, endDate);
+	public Cohort getTBTreatmentStartedCohort(Cohort cohort, String gender,List<Integer> treatmentStatedDateEncounters) {
 
 		StringBuilder sql = baseQuery(TB_TREATMENT_START_DATE);
 		sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");

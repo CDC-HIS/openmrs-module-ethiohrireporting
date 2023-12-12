@@ -33,6 +33,6 @@ omod/src/main/compass/sass-external/*
 omod/.rubygems
 omod/.rubygems-provided
 
-# Bower resources #
+# Bower webapp.resources #
 bower_components
 ~/*

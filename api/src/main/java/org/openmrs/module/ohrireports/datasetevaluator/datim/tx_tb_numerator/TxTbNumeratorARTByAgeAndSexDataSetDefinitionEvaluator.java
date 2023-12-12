@@ -1,12 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_numerator;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +27,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+
 @Handler(supports = { TxTbNumeratorARTByAgeAndSexDataSetDefinition.class })
 public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -57,6 +52,8 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		encounters = encounterQuery.getEncounters(Arrays.asList(TB_TREATMENT_START_DATE), hdsd.getStartDate(),
+		    hdsd.getEndDate(), encounters);
 		tbQuery.setEncountersByScreenDate(encounters);
 		
 		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
@@ -73,11 +70,9 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 	}
 	
 	private void buildRowWithAggregate(SimpleDataSet set, Cohort cohort, String type) {
-		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "F",
-		    encounters);
+		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "F", encounters);
 		
-		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "M",
-		    encounters);
+		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "M", encounters);
 		
 		DataSetRow positiveDescriptionDsRow = new DataSetRow();
 		positiveDescriptionDsRow.addColumnValue(new DataSetColumn("", "Category", String.class), type);

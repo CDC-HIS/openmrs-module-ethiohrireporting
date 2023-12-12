@@ -80,8 +80,7 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 		Calendar subSixMonth = Calendar.getInstance();
 		subSixMonth.setTime(hdsd.getStartDate());
 		subSixMonth.add(Calendar.MONTH, -6);
-		Date prevSixMonth = subSixMonth.getTime();
-		return prevSixMonth;
+        return subSixMonth.getTime();
 	}
 
 	private void buildRowForDisaggregation(SimpleDataSet set, Cohort newOnARTCohort, Cohort oldOnACohort) {
@@ -89,18 +88,28 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 		DataSetRow dataSetRow = new DataSetRow();
 		dataSetRow.addColumnValue(new DataSetColumn("", "", String.class), "Newly enrolled on ART");
 		_AggregateBuilder.setPersonList(tbQuery.getPersons(newOnARTCohort));
+		DataSetRow femaleDataRowNew = new DataSetRow();
 
-		_AggregateBuilder.buildDataSetColumn(dataSetRow, "F", 15);
-		_AggregateBuilder.buildDataSetColumn(dataSetRow, "M", 15);
-		set.addRow(dataSetRow);
+		_AggregateBuilder.buildDataSetColumn(femaleDataRowNew, "F", 15);
+		set.addRow(femaleDataRowNew);
+
+		DataSetRow maleDataRowNew = new DataSetRow();
+		_AggregateBuilder.buildDataSetColumn(maleDataRowNew, "M", 15);
+		set.addRow(maleDataRowNew);
+
 
 		DataSetRow dataSetRowPrev = new DataSetRow();
-		dataSetRowPrev.addColumnValue(new DataSetColumn("", "", String.class), "Perviously enrolled on ART");
+		dataSetRowPrev.addColumnValue(new DataSetColumn("", "", String.class), "Previously enrolled on ART");
 
 		_AggregateBuilder.setPersonList(tbQuery.getPersons(oldOnACohort));
-		_AggregateBuilder.buildDataSetColumn(dataSetRowPrev, "F", 15);
-		_AggregateBuilder.buildDataSetColumn(dataSetRowPrev, "M", 15);
-		set.addRow(dataSetRowPrev);
+
+		DataSetRow femaleRowPrev = new DataSetRow();
+		_AggregateBuilder.buildDataSetColumn(femaleRowPrev, "F", 15);
+		set.addRow(femaleRowPrev);
+
+		DataSetRow maleRowPrev = new DataSetRow();
+		_AggregateBuilder.buildDataSetColumn(maleRowPrev, "M", 15);
+		set.addRow(maleRowPrev);
 	}
 
 	private void buildRowForTotalValue(SimpleDataSet set, int total) {

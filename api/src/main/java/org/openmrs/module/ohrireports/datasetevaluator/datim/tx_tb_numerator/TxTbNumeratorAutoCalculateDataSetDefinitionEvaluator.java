@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_numerator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -16,6 +17,8 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
 
 @Handler(supports = { TxTbNumeratorAutoCalculateDataSetDefinition.class })
 public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -36,11 +39,13 @@ public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements Dat
 		hdsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
 		
 		encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		encounters = encounterQuery.getEncounters(Arrays.asList(TB_TREATMENT_START_DATE), hdsd.getStartDate(),
+		    hdsd.getEndDate(), encounters);
 		tbQuery.setEncountersByScreenDate(encounters);
 		
 		Cohort cohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
 		
-		cohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
+		cohort = tbQuery.getTBTreatmentStartedCohort(cohort, "", encounters);
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), cohort

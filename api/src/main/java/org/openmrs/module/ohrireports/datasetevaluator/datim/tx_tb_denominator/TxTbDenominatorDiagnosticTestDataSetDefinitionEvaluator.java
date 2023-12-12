@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_denominator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -19,6 +20,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
+
 @Handler(supports = { TxTbDenominatorDiagnosticTestDataSetDefinition.class })
 public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -35,6 +38,8 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 		
 		hdsd = (TxTbDenominatorDiagnosticTestDataSetDefinition) dataSetDefinition;
 		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		encounters = encounterQuery.getEncounters(Arrays.asList(TB_SCREENING_DATE), hdsd.getStartDate(), hdsd.getEndDate(),
+		    encounters);
 		tbQuery.setEncountersByScreenDate(encounters);
 		
 		Cohort cohort = tbQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
@@ -42,13 +47,12 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients whose specimen were sent for the following diagnosis test");
-		dataSet.addColumnValue(new DataSetColumn("smear", "Smear Only", Integer.class),
-		    tbQuery.getSmearOnly(cohort, hdsd.getStartDate(), hdsd.getEndDate()));
+		dataSet.addColumnValue(new DataSetColumn("smear", "Smear Only", Integer.class), tbQuery.getSmearOnly(cohort));
 		dataSet.addColumnValue(new DataSetColumn("mwrd",
 		        "mWRD : Molecular WHO Recommended Diagnostic PCR (with or without other testing)", Integer.class), tbQuery
 		        .getLFMResult(cohort, hdsd.getStartDate(), hdsd.getEndDate()));
 		dataSet.addColumnValue(new DataSetColumn("additional", "Additional test Other than mWRD ", Integer.class),
-		    tbQuery.getOtherThanLFMResult(cohort, hdsd.getStartDate(), hdsd.getEndDate()));
+		    tbQuery.getOtherThanLFMResult(cohort));
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;

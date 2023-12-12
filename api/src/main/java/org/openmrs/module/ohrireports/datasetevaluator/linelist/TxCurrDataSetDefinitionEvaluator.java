@@ -1,7 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.MRN_PATIENT_IDENTIFIERS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.OPENMRS_PATIENT_IDENTIFIERS;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,15 +22,13 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+
 @Handler(supports = { TxCurrDataSetDefinition.class })
 public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
 	private ArtQuery artQuery;
-	
-	private PatientQueryService patientQuery;
-	
-	private TxCurrDataSetDefinition hdsd;
 	
 	@Autowired
 	private EncounterQuery encounterQuery;
@@ -40,10 +36,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
+		TxCurrDataSetDefinition hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
-		patientQuery = Context.getService(PatientQueryService.class);
-		List<Integer> latestEncounters = encounterQuery.getLatestDateByFollowUpDate(hdsd.getEndDate());
+		PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
+		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
@@ -51,9 +47,12 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(latestEncounters, cohort);
 		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(latestEncounters, cohort);
+		HashMap<Integer, Object> dispensDayHashMap = artQuery
+		        .getConceptName(latestEncounters, cohort, ARV_DISPENSED_IN_DAYS);
+		
 		DataSetRow row = new DataSetRow();
 		
-		if (persons.size() > 0) {
+		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
@@ -82,6 +81,8 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    artQuery.getEthiopianDate(treatmentEndDate));
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),
 			    regimentHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("arvDispensDay", "ARV Dispense Day", String.class),
+			    dispensDayHashMap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("Status", "Status", String.class), statusHashMap.get(person.getPersonId()));
 			data.addRow(row);
