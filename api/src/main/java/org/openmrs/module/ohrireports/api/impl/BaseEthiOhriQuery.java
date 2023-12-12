@@ -1,7 +1,10 @@
 package org.openmrs.module.ohrireports.api.impl;
 
+import org.openmrs.Cohort;
+
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 
+import java.util.HashMap;
 import java.util.List;
 
 public abstract class BaseEthiOhriQuery {
@@ -219,4 +222,5 @@ public abstract class BaseEthiOhriQuery {
 		        + SUB_QUERY_JOIN_BASE_ALIAS_OBS + " person_id)");
 		
 	}
+	
 }

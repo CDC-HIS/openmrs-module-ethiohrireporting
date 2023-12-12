@@ -34,23 +34,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { TxTbDenominatorSpecimenSentDataSetDefinition.class })
 public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
-	private TxTbDenominatorSpecimenSentDataSetDefinition hdsd;
-	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
 	@Autowired
 	private TBQuery tbQuery;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TxTbDenominatorSpecimenSentDataSetDefinition) dataSetDefinition;
+		TxTbDenominatorSpecimenSentDataSetDefinition hdsd = (TxTbDenominatorSpecimenSentDataSetDefinition) dataSetDefinition;
 		
-		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounter);
-		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("UNDERNOURISHED", null, hdsd.getEndDate(), null, encounter);
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),

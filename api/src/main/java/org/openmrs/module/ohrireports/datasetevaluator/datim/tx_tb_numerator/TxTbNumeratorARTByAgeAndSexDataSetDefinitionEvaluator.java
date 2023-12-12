@@ -7,6 +7,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.xml.bind.SchemaOutputResolver;
+
 @Handler(supports = { TxTbNumeratorARTByAgeAndSexDataSetDefinition.class })
 public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -43,12 +46,7 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 	private TBQuery tbQuery;
 	
 	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	@Autowired
 	private AggregateBuilder _AggregateBuilder;
-	
-	private List<Integer> encounters;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -56,11 +54,12 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 		hdsd = (TxTbNumeratorARTByAgeAndSexDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounters);
+		Cohort cohort = tbQuery.getNumerator(hdsd.getStartDate(), hdsd.getEndDate());
 		
-		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
-		Cohort alreadyOnArtCohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
+		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), cohort,
+		    tbQuery.getBaseEncounter());
+		Cohort alreadyOnArtCohort = new Cohort(tbQuery.getArtStartedCohort(tbQuery.getBaseEncounter(), null,
+		    hdsd.getStartDate(), cohort));
 		
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 		
@@ -73,11 +72,9 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 	}
 	
 	private void buildRowWithAggregate(SimpleDataSet set, Cohort cohort, String type) {
-		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "F",
-		    encounters);
+		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "F", tbQuery.getBaseEncounter());
 		
-		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate(), "M",
-		    encounters);
+		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "M", tbQuery.getBaseEncounter());
 		
 		DataSetRow positiveDescriptionDsRow = new DataSetRow();
 		positiveDescriptionDsRow.addColumnValue(new DataSetColumn("", "Category", String.class), type);

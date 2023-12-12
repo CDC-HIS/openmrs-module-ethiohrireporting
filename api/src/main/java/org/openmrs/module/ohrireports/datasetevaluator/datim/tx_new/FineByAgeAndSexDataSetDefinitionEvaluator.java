@@ -51,7 +51,7 @@ public class FineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluat
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		total = 0;
 		hdsd = (FineByAgeAndSexDataSetDefinition) dataSetDefinition;
-		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		patientQuery = Context.getService(PatientQueryService.class);
 		

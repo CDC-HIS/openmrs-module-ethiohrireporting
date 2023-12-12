@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
@@ -34,33 +35,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { TxTbDenominatorAutoCalculateDataSetDefinition.class })
 public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
-	private EvaluationContext context;
-	
 	@Autowired
 	private TBQuery tbQuery;
-	
-	private TxTbDenominatorAutoCalculateDataSetDefinition hdsd;
-	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	@Autowired
-	private ConceptService conceptService;
-	
-	@Autowired
-	private EvaluationService evaluationService;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TxTbDenominatorAutoCalculateDataSetDefinition) dataSetDefinition;
-		context = evalContext;
+		TxTbDenominatorAutoCalculateDataSetDefinition hdsd = (TxTbDenominatorAutoCalculateDataSetDefinition) dataSetDefinition;
 		
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounters);
-		Cohort cohort = new Cohort(tbQuery.getArtStartedCohort(encounters, null, hdsd.getEndDate(), null));
-		
-		cohort = tbQuery.getTBScreenedCohort(cohort, hdsd.getStartDate(), hdsd.getEndDate());
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), cohort
@@ -70,100 +53,4 @@ public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements D
 		return set;
 	}
 	
-	public int getTBscreenedInReportingPeriod() {
-		List<Integer> tbscreened = new ArrayList<>();
-		List<Obs> obstbstarted = new ArrayList<>();
-		List<Integer> dispense = getDispenseDose();
-		if (dispense == null || dispense.size() == 0) {
-			return tbscreened.size();
-		}
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class, "obs")
-				.whereEqual("obs.concept",
-						conceptService.getConceptByUuid(TB_SCREENING_DATE))
-				.and()
-				.whereGreater("obs.valueDatetime", hdsd.getStartDate())
-				.and().whereLess("obs.valueDatetime", hdsd.getEndDate()).orderDesc("obs.personId, obs.obsDatetime");
-		obstbstarted = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-		for (Obs obs : obstbstarted) {
-			if (!tbscreened.contains(obs.getPersonId())) {
-				tbscreened.add(obs.getPersonId());
-			}
-		}
-		return tbscreened.size();
-	}
-	
-	public List<Integer> getDispenseDose() {
-		List<Integer> pList = getDatimValidTreatmentEndDatePatients();
-		List<Integer> patients = new ArrayList<>();
-		if (pList == null || pList.size() == 0)
-			return patients;
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class, "obs")
-				.whereEqual("obs.concept",
-						conceptService.getConceptByUuid(ARV_DISPENSED_IN_DAYS))
-				.and().whereIn("obs.personId", pList).whereLess("obs.obsDatetime", hdsd.getEndDate())
-				.orderDesc("obs.personId,obs.obsDatetime");
-		List<Obs> arvObs = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-		for (Obs obs : arvObs) {
-			if (!patients.contains(obs.getPersonId())) {
-				patients.add(obs.getPersonId());
-			}
-		}
-		return patients;
-	}
-	
-	private List<Integer> getDatimValidTreatmentEndDatePatients() {
-
-		List<Integer> patientsId = getListOfALiveORRestartPatientObservertions();
-		List<Integer> patients = new ArrayList<>();
-		if (patientsId == null || patientsId.size() == 0)
-			return patients;
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs");
-		queryBuilder.from(Obs.class, "obs")
-				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-				.and()
-				.whereEqual("obs.concept", conceptService.getConceptByUuid(TREATMENT_END_DATE))
-				.and()
-				.whereGreater("obs.valueDatetime", hdsd.getEndDate())
-				.and()
-				.whereLess("obs.obsDatetime", hdsd.getEndDate())
-				.whereIdIn("obs.personId", patientsId)
-				.orderDesc("obs.personId,obs.obsDatetime");
-		for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
-			if (!patients.contains(obs.getPersonId())) {
-				patients.add(obs.getPersonId());
-			}
-		}
-		return patients;
-	}
-	
-	private List<Integer> getListOfALiveORRestartPatientObservertions() {
-
-		List<Integer> uniqiObs = new ArrayList<>();
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-
-		queryBuilder.select("obs")
-				.from(Obs.class, "obs")
-				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-				.and()
-				.whereEqual("obs.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
-				.and()
-				.whereIn("obs.valueCoded",
-						Arrays.asList(conceptService.getConceptByUuid(ALIVE), conceptService.getConceptByUuid(RESTART)))
-				.and().whereLess("obs.obsDatetime", hdsd.getEndDate());
-		queryBuilder.orderDesc("obs.personId,obs.obsDatetime");
-
-		List<Obs> liveObs = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-
-		for (Obs obs : liveObs) {
-			if (!uniqiObs.contains(obs.getPersonId())) {
-				uniqiObs.add(obs.getPersonId());
-				// patientStatus.put(obs.getPersonId(), obs.getValueCoded());
-			}
-		}
-
-		return uniqiObs;
-	}
 }

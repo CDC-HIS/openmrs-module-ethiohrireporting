@@ -9,6 +9,8 @@
  */
 package org.openmrs.module.ohrireports;
 
+import java.sql.Statement;
+
 public class OHRIReportsConstants {
 	
 	/**
@@ -52,6 +54,8 @@ public class OHRIReportsConstants {
 	public final static String ALL_PATIENTS_COHORT_UUID = "895d0025-84e2-4306-bdd9-66acc150ec21";
 	
 	public final static String MRN_PATIENT_IDENTIFIERS = "f85081e2-b4be-4e48-b3a4-7994b69bb101";
+	
+	public final static String UAN_PATIENT_IDENTIFIERS = "td956f302-1723-4eca-9548-fb7e66706d34";
 	
 	public final static String OPENMRS_PATIENT_IDENTIFIERS = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
 	
@@ -115,7 +119,19 @@ public class OHRIReportsConstants {
 	
 	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d94b14";
 	
-	public final static String ARV_DISPENSED_IN_DAYS = "3a0709e9-d7a8-44b9-9512-111db5ce3989";
+	public final static String ARV_DISPENSED_IN_DAYS = "f3911009-1a8f-42ee-bdfc-1e343c2839aa";
+	
+	public final static String ARV_30_Day = "fba421cf-a483-4329-b8b1-6a3ef16081bc";
+	
+	public final static String ARV_60_Day = "75d94023-7804-44f8-9998-9d678488af3e";
+	
+	public final static String ARV_90_Day = "4abbd98d-0c07-42f4-920c-7bbf0f5824dc";
+	
+	public final static String ARV_120_Day = "684c450f-878b-4b96-ab1b-2b539c30f033";
+	
+	public final static String ARV_150_Day = "fa23df4a-dd90-4a0b-a1c9-b44b7f820c93";
+	
+	public final static String ARV_180_Day = "e5f7cc4d-922a-4838-8c75-af9bdbb59bc8";
 	
 	public final static String TREATMENT_END_DATE = "164384AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

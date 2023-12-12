@@ -22,20 +22,13 @@ public class TxTbDenominatorPositiveResultReturnedDataSetDefinitionEvaluator imp
 	@Autowired
 	private TBQuery tbQuery;
 	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	private TxTbDenominatorPositiveResultReturnedDataSetDefinition hdsd;
-	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TxTbDenominatorPositiveResultReturnedDataSetDefinition) dataSetDefinition;
+		TxTbDenominatorPositiveResultReturnedDataSetDefinition hdsd = (TxTbDenominatorPositiveResultReturnedDataSetDefinition) dataSetDefinition;
 		
-		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounter);
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounter);
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients who had a positive result returned for bacteriological diagnosis of active TB disease");

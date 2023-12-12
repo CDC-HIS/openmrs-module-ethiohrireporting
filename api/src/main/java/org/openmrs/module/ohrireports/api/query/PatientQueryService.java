@@ -19,7 +19,10 @@ public interface PatientQueryService extends OpenmrsService {
 	
 	Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort,
 	        List<Integer> encounters);
-	HashMap<Integer,Object> getObsValue(Cohort cohort, String conceptUUID, PatientQueryImpDao.ObsValueType type,List<Integer> encounters);
+	
+	HashMap<Integer, Object> getObsValue(Cohort cohort, String conceptUUID, PatientQueryImpDao.ObsValueType type,
+	        List<Integer> encounters);
+	
 	List<Person> getPersons(Cohort cohort);
 	
 	Cohort getPatientByPregnantStatus(Cohort patient, String ConceptUUID, List<Integer> encounters);

@@ -37,6 +37,7 @@ public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetE
     private TxCurrFineByAgeAndSexDataSetDefinition hdsd;
     private String title = "Number of adults and children Currently enrolling on antiretroviral therapy (ART)";
     private PatientQueryService patientQueryService;
+    @Autowired
     private AggregateBuilder aggregateBuilder;
     @Autowired
     private EncounterQuery encounterQuery;
@@ -50,7 +51,8 @@ public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetE
 
         patientQueryService = Context.getService(PatientQueryService.class);
 
-        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+        aggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
+        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,hdsd.getEndDate());
         Cohort baseCohort = patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
         personList = patientQueryService.getPersons(baseCohort);
 

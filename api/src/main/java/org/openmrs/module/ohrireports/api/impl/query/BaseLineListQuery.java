@@ -18,14 +18,27 @@ import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
 import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.ohrireports.helper.EthiopianDateConverter;
 
+/**
+ * Specialized methods for retrieving value of particular cohort with given concept value type as
+ * key value pair
+ */
 public class BaseLineListQuery extends BaseEthiOhriQuery {
 	
 	private DbSessionFactory sessionFactory;
 	
+	/**
+	 * @param _SessionFactory
+	 */
 	public BaseLineListQuery(DbSessionFactory _SessionFactory) {
 		sessionFactory = _SessionFactory;
 	}
 	
+	/**
+	 * @param cohort
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
 	public HashMap<Integer, Object> getArtStartDate(Cohort cohort, Date startDate, Date endDate) {
 		
 		StringBuilder sql = baseValueDateQuery(ART_START_DATE);
@@ -68,35 +81,46 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 		
 	}
 	
-	public HashMap<Integer, Object> getRegiment(List<Integer> baseEncounters,Cohort cohort) {
+	public HashMap<Integer, Object> getRegiment(List<Integer> baseEncounters, Cohort cohort) {
 
-		Query query = getObs(baseEncounters,REGIMEN, cohort);
-		List list = query.list();
-		HashMap<Integer, Object> dictionary = new HashMap<>();
-		int personId = 0;
-		Object[] objects;
-		for (Object object : list) {
-			objects = (Object[]) object;
-			personId = (Integer) objects[0];
+        Query query = getObs(baseEncounters, REGIMEN, cohort);
+        List list = query.list();
+        HashMap<Integer, Object> dictionary = new HashMap<>();
+        int personId = 0;
+        Object[] objects;
+        for (Object object : list) {
+            objects = (Object[]) object;
+            personId = (Integer) objects[0];
 
-			if (dictionary.get((Integer) personId) == null) {
-				dictionary.put(personId, objects[1]);
-			}
+            if (dictionary.get((Integer) personId) == null) {
+                dictionary.put(personId, objects[1]);
+            }
 
-		}
+        }
 
-		return dictionary;
+        return dictionary;
 
-	}
+    }
 	
+	/**
+	 * @param baseEncounters
+	 * @param cohort
+	 * @return
+	 */
 	public HashMap<Integer, Object> getFollowUpStatus(List<Integer> baseEncounters, Cohort cohort) {
 		return getDictionary(getObs(baseEncounters, FOLLOW_UP_STATUS, cohort));
 	}
 	
+	/**
+	 * @param cohort
+	 * @param identifierType
+	 * @return
+	 */
 	public HashMap<Integer, Object> getIdentifier(Cohort cohort, String identifierType) {
 		StringBuilder sql = new StringBuilder("SELECT pi.patient_id,pi.identifier FROM patient_identifier as pi ");
-		sql.append("inner join patient_identifier_type as pit on pit.patient_identifier_type_id = pi.identifier_type and pit.uuid ='"
-		        + identifierType + "' and pi.patient_id in (:cohort) ");
+		sql.append(
+		    "inner join patient_identifier_type as pit on pit.patient_identifier_type_id = pi.identifier_type and pit.uuid ='")
+		        .append(identifierType).append("' and pi.patient_id in (:cohort) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setParameterList("cohort", cohort.getMemberIds());
@@ -105,23 +129,23 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 	}
 	
 	protected HashMap<Integer, Object> getDictionary(Query query) {
-		List list = query.list();
-		HashMap<Integer, Object> dictionary = new HashMap<>();
-		int personId = 0;
-		Object[] objects;
-		for (Object object : list) {
+        List list = query.list();
+        HashMap<Integer, Object> dictionary = new HashMap<>();
+        int personId = 0;
+        Object[] objects;
+        for (Object object : list) {
 
-			objects = (Object[]) object;
-			personId = (Integer) objects[0];
+            objects = (Object[]) object;
+            personId = (Integer) objects[0];
 
-			if (dictionary.get((Integer) personId) == null) {
-				dictionary.put(personId, objects[1]);
-			}
+            if (dictionary.get((Integer) personId) == null) {
+                dictionary.put(personId, objects[1]);
+            }
 
-		}
+        }
 
-		return dictionary;
-	}
+        return dictionary;
+    }
 	
 	protected Query getObs(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseConceptQuery(concept);
@@ -193,5 +217,15 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 		}
 		return ethiopianDate == null ? "" : ethiopianDate.getDay() + "/" + ethiopianDate.getMonth() + "/"
 		        + ethiopianDate.getYear();
+	}
+	
+	/**
+	 * @param encounters
+	 * @param cohort
+	 * @param arvDispensedInDays
+	 * @return
+	 */
+	public HashMap<Integer, Object> getConceptName(List<Integer> encounters, Cohort cohort, String arvDispensedInDays) {
+		return getDictionary(getObs(encounters, arvDispensedInDays, cohort));
 	}
 }

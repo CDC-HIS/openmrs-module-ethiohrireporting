@@ -46,7 +46,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		_datasetDefinition = (HIVTXNewDatasetDefinition) dataSetDefinition;
 		patientQuery = Context.getService(PatientQueryService.class);
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		encounter = encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getEndDate());
+		encounter = encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getStartDate(),_datasetDefinition.getEndDate());
 		buildDataSet(dataSet);
 
 		return dataSet;

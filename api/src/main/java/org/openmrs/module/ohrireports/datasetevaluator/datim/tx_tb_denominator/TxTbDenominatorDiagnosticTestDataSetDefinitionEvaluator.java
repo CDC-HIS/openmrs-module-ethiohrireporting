@@ -27,17 +27,11 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 	@Autowired
 	private TBQuery tbQuery;
 	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (TxTbDenominatorDiagnosticTestDataSetDefinition) dataSetDefinition;
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounters);
-		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),

@@ -51,9 +51,11 @@ public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSe
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
         patientQueryService = Context.getService(PatientQueryService.class);
 
-        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,hdsd.getEndDate());
         Cohort baseCohort  = patientQueryService.getActiveOnArtCohort("",null,hdsd.getEndDate(),null,encounters);
         personList = patientQueryService.getPersons(baseCohort);
+
+        aggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 
         aggregateBuilder.setPersonList(personList);
 
