@@ -94,7 +94,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		return data;
 	}
-
+	
 	private String getStringIdentifier(Object patientIdentifier) {
 		return Objects.isNull(patientIdentifier) ? "--" : patientIdentifier.toString();
 	}

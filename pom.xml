@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -128,7 +128,7 @@
 				<scope>provided</scope>
 			</dependency>
 
-			
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -136,7 +136,7 @@
 	<build>
 		<resources>
 			<resource>
-				<directory>src/main/webapp.resources</directory>
+				<directory>src/main/resources</directory>
 				<filtering>false</filtering>
 				<excludes>
 					<exclude>**/*.xml</exclude>
@@ -144,7 +144,7 @@
 				</excludes>
 			</resource>
 			<resource>
-				<directory>src/main/webapp.resources</directory>
+				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>**/*.xml</include>
@@ -154,7 +154,7 @@
 		</resources>
 		<testResources>
 			<testResource>
-				<directory>src/test/webapp.resources</directory>
+				<directory>src/test/resources</directory>
 				<filtering>false</filtering>
 				<excludes>
 					<exclude>**/*.xml</exclude>
@@ -162,7 +162,7 @@
 				</excludes>
 			</testResource>
 			<testResource>
-				<directory>src/test/webapp.resources</directory>
+				<directory>src/test/resources</directory>
 				<filtering>true</filtering>
 				<includes>
 					<include>**/*.xml</include>
@@ -178,7 +178,7 @@
 				<version>1.7</version>
 				<executions>
 					<execution>
-						<phase>generate-test-webapp.resources</phase>
+						<phase>generate-test-resources</phase>
 						<goals>
 							<goal>parse-version</goal>
 						</goals>
@@ -227,8 +227,8 @@
 	<properties>
 		<openmrsPlatformVersion>2.1.1</openmrsPlatformVersion>
 		<reportingVersion>1.19.0</reportingVersion>
-		 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		 <calculationVersion>1.1</calculationVersion>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<calculationVersion>1.1</calculationVersion>
 		<serialization.xstreamVersion>0.2.11</serialization.xstreamVersion>
 		<cohortVersion>3.0.0-SNAPSHOT</cohortVersion>
 	</properties>

@@ -38,10 +38,8 @@ public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements Da
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients who had a specimen sent for bacteriological diagnosis of active TB disease");
 		
-		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class), tbQuery.getSpecimenSent(cohort, hdsd
-				.getStartDate(),
-				hdsd.getEndDate())
-		        .getMemberIds().size());
+		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class),
+		    tbQuery.getSpecimenSent(cohort, hdsd.getStartDate(), hdsd.getEndDate()).getMemberIds().size());
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		

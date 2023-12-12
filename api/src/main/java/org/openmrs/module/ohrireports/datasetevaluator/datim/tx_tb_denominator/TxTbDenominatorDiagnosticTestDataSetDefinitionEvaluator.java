@@ -39,12 +39,13 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients whose specimen were sent for the following diagnosis test");
-		dataSet.addColumnValue(new DataSetColumn("smear", "Smear Only", Integer.class), tbQuery.getSmearOnly(cohort,hdsd.getStartDate(),hdsd.getEndDate()));
+		dataSet.addColumnValue(new DataSetColumn("smear", "Smear Only", Integer.class),
+		    tbQuery.getSmearOnly(cohort, hdsd.getStartDate(), hdsd.getEndDate()));
 		dataSet.addColumnValue(new DataSetColumn("mwrd",
 		        "mWRD : Molecular WHO Recommended Diagnostic PCR (with or without other testing)", Integer.class), tbQuery
 		        .getLFMResult(cohort, hdsd.getStartDate(), hdsd.getEndDate()));
 		dataSet.addColumnValue(new DataSetColumn("additional", "Additional test Other than mWRD ", Integer.class),
-		    tbQuery.getOtherThanLFMResult(cohort,hdsd.getStartDate(),hdsd.getEndDate()));
+		    tbQuery.getOtherThanLFMResult(cohort, hdsd.getStartDate(), hdsd.getEndDate()));
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;
