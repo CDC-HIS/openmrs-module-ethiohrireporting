@@ -42,7 +42,8 @@ public class TxMlTransferOutByAgeAndSexDataSetDefinitionEvaluator implements Dat
 		
 		aggregateBuilder.setCalculateAgeFrom(_datasetDefinition.getEndDate());
 		aggregateBuilder.setPersonList(mlQuery.getPersons(cohort));
-		
+		aggregateBuilder.setLowerBoundAge(0);
+		aggregateBuilder.setUpperBoundAge(65);
 		DataSetRow femaleDateSet = new DataSetRow();
 		aggregateBuilder.buildDataSetColumn(femaleDateSet, "F");
 		set.addRow(femaleDateSet);

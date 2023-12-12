@@ -40,7 +40,8 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 		    hdsd.getStartDate(), cohort));
 		
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
-		
+		_AggregateBuilder.setLowerBoundAge(0);
+		_AggregateBuilder.setUpperBoundAge(65);
 		buildRowWithAggregate(set, newOnArtCohort,
 		    "Number of patients starting TB treatment who newly started ART during the reporting period:");
 		buildRowWithAggregate(set, alreadyOnArtCohort,

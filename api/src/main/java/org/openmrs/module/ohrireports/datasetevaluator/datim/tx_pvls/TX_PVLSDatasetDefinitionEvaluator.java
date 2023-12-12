@@ -75,7 +75,8 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		List<Person> persons = patientQueryService.getPersons(_cohort);
 		_AggregateBuilder.setPersonList(persons);
-		
+		_AggregateBuilder.setLowerBoundAge(0);
+		_AggregateBuilder.setUpperBoundAge(65);
 		DataSetRow femaleRow = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(femaleRow, "F");
 		dataSet.addRow(femaleRow);

@@ -46,6 +46,8 @@ public class TxMlDiedByAgeAndSexDataSetDefinitionEvaluator implements DataSetEva
 		
 		Cohort cohort = mlQuery.getDied(mlQuery.cohort);
 		aggregateBuilder.setCalculateAgeFrom(_datasetDefinition.getEndDate());
+		aggregateBuilder.setLowerBoundAge(0);
+		aggregateBuilder.setUpperBoundAge(65);
 		aggregateBuilder.setPersonList(mlQuery.getPersons(cohort));
 		
 		DataSetRow femaleDateSet = new DataSetRow();
