@@ -46,15 +46,13 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 		hdsd = (HmisTbScrnDataSetDefinition) dataSetDefinition;
 		context = evalContext;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, context);
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounters);
 
+		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(),hdsd.getEndDate());
 		Cohort newOnARTCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null,encounters);
 		Cohort existingOnARTCohort = new Cohort(tbQuery.getArtStartedCohort("",null, hdsd.getEndDate(),
 				null, newOnARTCohort,encounters));
 
-		Cohort newOnARTScreenedCohort = tbQuery.getTBScreenedCohort(newOnARTCohort, hdsd.getStartDate(),
-				hdsd.getEndDate());
+		Cohort newOnARTScreenedCohort = tbQuery.getTBScreenedCohort(newOnARTCohort, encounters);
 		persons = tbQuery.getPersons(newOnARTScreenedCohort);
 
 		data.addRow(
@@ -91,7 +89,7 @@ public class HmisTbScrnDataSetDefinitionEvaluator implements DataSetEvaluator {
 		data.addRow(buildRow("HIV_TB_SCRN_P.4", ">= 15 years, female", Integer.class,
 				gettbscrnByAgeAndGender(15, 150, Gender.Female)));
 		
-		Cohort existingScreenedOnArtCohort = tbQuery.getTBScreenedCohort(existingOnARTCohort, hdsd.getStartDate(), hdsd.getEndDate());
+		Cohort existingScreenedOnArtCohort = tbQuery.getTBScreenedCohort(existingOnARTCohort,encounters);
 		persons = tbQuery
 				.getPersons(existingScreenedOnArtCohort);
 

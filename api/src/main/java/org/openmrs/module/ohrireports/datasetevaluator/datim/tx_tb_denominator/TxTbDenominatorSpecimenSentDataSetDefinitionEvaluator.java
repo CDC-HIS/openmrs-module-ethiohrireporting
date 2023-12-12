@@ -24,9 +24,6 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_D
 public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	@Autowired
 	private TBQuery tbQuery;
 	
 	@Override
@@ -34,12 +31,7 @@ public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements Da
 		
 		TxTbDenominatorSpecimenSentDataSetDefinition hdsd = (TxTbDenominatorSpecimenSentDataSetDefinition) dataSetDefinition;
 		
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		encounters = encounterQuery.getEncounters(Arrays.asList(TB_SCREENING_DATE), hdsd.getStartDate(), hdsd.getEndDate(),
-		    encounters);
-		tbQuery.setEncountersByScreenDate(encounters);
-		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("UNDERNOURISHED", null, hdsd.getEndDate(), null, encounters);
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		

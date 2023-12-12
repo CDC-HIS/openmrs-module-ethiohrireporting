@@ -225,18 +225,12 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 
     }
 
-	private void getTxTb(DataSetRow row, Person person) {
-		row.addColumnValue(new DataSetColumn("SpecimenSent", "Specimen Sent", String.class),
-				specimen.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("LF_LAM-result", "LF_LAM Result", String.class),
-				_LAMResults.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("Gene_Xpert-Result", "Gene_Xpert Result", String.class),
-				geneXpertResult.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("OtherTBDiagnosticTest", "Other TB Diagnostic Test", String.class),
-				OtherDiagnosticTest.get(person.getPersonId()));
-		row.addColumnValue(
-				new DataSetColumn("OtherTBDiagnosticResult", "Other TB Diagnostic Test Result", String.class),
-				OtherDiagResult.get(person.getPersonId()));
-	}
+    private void getTxTb(DataSetRow row, Person person) {
+        row.addColumnValue(new DataSetColumn("SpecimenSent", "Specimen Sent", String.class), specimen.get(person.getPersonId()));
+        row.addColumnValue(new DataSetColumn("LF_LAM-result", "LF_LAM Result", String.class), _LAMResults.get(person.getPersonId()));
+        row.addColumnValue(new DataSetColumn("Gene_Xpert-Result", "Gene_Xpert Result", String.class), geneXpertResult.get(person.getPersonId()));
+        row.addColumnValue(new DataSetColumn("OtherTBDiagnosticTest", "Other TB Diagnostic Test", String.class), OtherDiagnosticTest.get(person.getPersonId()));
+        row.addColumnValue(new DataSetColumn("OtherTBDiagnosticResult", "Other TB Diagnostic Test Result", String.class), OtherDiagResult.get(person.getPersonId()));
+    }
 
 }

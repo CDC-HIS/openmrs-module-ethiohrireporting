@@ -44,7 +44,6 @@ public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluat
 	@Autowired
 	private EncounterQuery encounterQuery;
 	private List<Integer> baseEncounter;
-	private List<Integer> baseTPTStartedEncounter;
 
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
@@ -115,8 +114,10 @@ public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluat
 				tptEncounterEncounter);
 		Cohort cohort = tbQuery.getCohort(baseEncounter);
 
-        return encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE),
+		List<Integer> tptCompletedEncounter = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE),
 				null, _dataSetDefinition.getEndDate(), cohort);
+
+		return tptCompletedEncounter;
 
 	}
 

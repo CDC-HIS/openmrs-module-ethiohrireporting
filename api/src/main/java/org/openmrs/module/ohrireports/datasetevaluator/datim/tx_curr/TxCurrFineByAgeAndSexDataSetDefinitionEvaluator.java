@@ -39,7 +39,6 @@ public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetE
     private TxCurrFineByAgeAndSexDataSetDefinition hdsd;
     private String title = "Number of adults and children Currently enrolling on antiretroviral therapy (ART)";
     private PatientQueryService patientQueryService;
->>>>>>> temp
     @Autowired
     private AggregateBuilder aggregateBuilder;
     @Autowired
