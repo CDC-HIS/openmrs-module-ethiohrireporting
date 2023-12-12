@@ -34,8 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = {TxCurrFineByAgeAndSexDataSetDefinition.class})
 public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
-<<<<<<< HEAD
-=======
+
     private TxCurrFineByAgeAndSexDataSetDefinition hdsd;
     private String title = "Number of adults and children Currently enrolling on antiretroviral therapy (ART)";
     private PatientQueryService patientQueryService;
