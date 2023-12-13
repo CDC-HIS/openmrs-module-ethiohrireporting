@@ -58,7 +58,8 @@ public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetE
         personList = patientQueryService.getPersons(baseCohort);
 
         aggregateBuilder.setPersonList(personList);
-
+        aggregateBuilder.setLowerBoundAge(0);
+        aggregateBuilder.setUpperBoundAge(65);
         DataSetRow femaleDateSet = new DataSetRow();
         aggregateBuilder.buildDataSetColumn(femaleDateSet, "F");
         set.addRow(femaleDateSet);

@@ -58,7 +58,8 @@ public class TBARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private void buildRow(Cohort cohort) {
 		List<Person> persons = tbQuery.getPersons(cohort);
 		_AggregateBuilder.setPersonList(persons);
-		
+		_AggregateBuilder.setLowerBoundAge(0);
+		_AggregateBuilder.setUpperBoundAge(65);
 		DataSetRow femaleSetRow = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(femaleSetRow, "F");
 		simpleDataSet.addRow(femaleSetRow);

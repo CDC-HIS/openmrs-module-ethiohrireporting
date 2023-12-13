@@ -10,6 +10,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
+import org.springframework.stereotype.Component;
 
 public class PatientQueryServiceImp extends BaseOpenmrsService implements PatientQueryService {
 	

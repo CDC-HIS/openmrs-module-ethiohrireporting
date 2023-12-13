@@ -52,7 +52,8 @@ public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSe
         personList = patientQueryService.getPersons(baseCohort);
 
         aggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
-
+        aggregateBuilder.setLowerBoundAge(0);
+        aggregateBuilder.setUpperBoundAge(65);
         aggregateBuilder.setPersonList(personList);
 
         DataSetRow femaleDateSet = new DataSetRow();

@@ -42,7 +42,8 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		Cohort alreadyOnArtCohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getStartDate(), cohort,
 		    tbQuery.getBaseEncounter());
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
-		
+		_AggregateBuilder.setLowerBoundAge(0);
+		_AggregateBuilder.setUpperBoundAge(65);
 		buildRowWithAggregate(set, newOnArtCohort, "New On ART");
 		buildRowWithAggregate(set, alreadyOnArtCohort, "Already On ART");
 		

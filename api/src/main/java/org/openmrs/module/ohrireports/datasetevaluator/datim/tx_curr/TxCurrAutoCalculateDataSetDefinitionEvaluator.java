@@ -22,9 +22,7 @@ public class TxCurrAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 	
 	private TxCurrAutoCalculateDataSetDefinition hdsd;
 	
-	private String title = "Number of adults and children currently enrolling on antiretroviral therapy (ART)";
-	
-	private PatientQueryService patientQueryService;
+	private String title = "Number of adults and children currently enrolling on antiperspirant therapy (ART)";
 	
 	@Autowired
 	private EncounterQuery encounterQuery;
@@ -34,7 +32,7 @@ public class TxCurrAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 		
 		hdsd = (TxCurrAutoCalculateDataSetDefinition) dataSetDefinition;
 		
-		patientQueryService = Context.getService(PatientQueryService.class);
+		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
 		DataSetRow dataSet = new DataSetRow();
 		
