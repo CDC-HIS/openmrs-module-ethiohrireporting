@@ -241,22 +241,22 @@ public class HMISReport implements ReportManager {
 		            "Number of ART patients who started TPT 12 months prior to the reporting period that completed a full course of therapy",
 		            EthiOhriUtil.map(artTptCr2));
 		
-		// HmisCxCaScrnDataSetDefinition cxcaScrn = new HmisCxCaScrnDataSetDefinition();
-		// cxcaScrn.setParameters(getParameters());
-		// cxcaScrn.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		// reportDefinition.addDataSetDefinition("Cervical Cancer screening by type of test", EthiOhriUtil.map(cxcaScrn));
+		HmisCxCaScrnDataSetDefinition cxcaScrn = new HmisCxCaScrnDataSetDefinition();
+		cxcaScrn.setParameters(getParameters());
+		cxcaScrn.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition("Cervical Cancer screening by type of test", EthiOhriUtil.map(cxcaScrn));
 		
-		// HmisCxCaRxDataSetDefinition cxcaRx = new HmisCxCaRxDataSetDefinition();
-		// cxcaRx.setParameters(getParameters());
-		// cxcaRx.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		// reportDefinition.addDataSetDefinition("Treatment of precancerous cervical lesion", EthiOhriUtil.map(cxcaRx));
+		HmisCxCaRxDataSetDefinition cxcaRx = new HmisCxCaRxDataSetDefinition();
+		cxcaRx.setParameters(getParameters());
+		cxcaRx.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition("Treatment of precancerous cervical lesion", EthiOhriUtil.map(cxcaRx));
 		
-		// TbLbLfLamDataSetDefinition tblblflam = new TbLbLfLamDataSetDefinition();
-		// tblblflam.setParameters(getParameters());
-		// tblblflam.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		// reportDefinition.addDataSetDefinition(
-		//     "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay",
-		//     EthiOhriUtil.map(tblblflam));
+		TbLbLfLamDataSetDefinition tblblflam = new TbLbLfLamDataSetDefinition();
+		tblblflam.setParameters(getParameters());
+		tblblflam.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition(
+		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay",
+		    EthiOhriUtil.map(tblblflam));
 		
 		return reportDefinition;
 	}
