@@ -56,8 +56,8 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
         cxcaScreeningHmisQuery.setEndDate(hdsd.getEndDate());
         context = evalContext;
 
-        Cohort viaScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(VIA, SCREENING_STRATEGY);
-        Cohort hpvScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(HPV_DNA_SCREENING_VIA_TRIAGE, SCREENING_STRATEGY);
+        Cohort viaScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(SCREENING_STRATEGY,VIA );
+        Cohort hpvScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(SCREENING_STRATEGY, HPV_DNA_SCREENING_VIA_TRIAGE);
         int totalScreenedCohort = viaScreenedCohort.size() + hpvScreenedCohort.size();
 
         SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
@@ -90,11 +90,11 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
         data.addRow(buildColumn("2.1. 4", "30 - 49 years"
                 , getCohortSizeByAgeAndGender(30, 49, Gender.Female)));
         data.addRow(buildColumn("2.1. 5", ">= 50 years"
-                , getCohortSizeByAgeAndGender(51, 150, Gender.Female)));
+                , getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
 
         personList = cxcaScreeningHmisQuery.getPersons(viaPrecancerousLesion);
         data.addRow(buildColumn("2.3", "Precancerous Lesion:"
-                , viaPositiveEligibleForCrypto.size() + viaPositiveNonEligibleForCrypto.size()));
+                , viaPrecancerousLesion.size()));
         data.addRow(buildColumn("2.3. 1", "15 - 19 years"
                 , getCohortSizeByAgeAndGender(15, 19, Gender.Female)));
         data.addRow(buildColumn("2.3. 2", "20 - 24 years"
@@ -104,7 +104,7 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
         data.addRow(buildColumn("2.3. 4", "30 - 49 years"
                 , getCohortSizeByAgeAndGender(30, 49, Gender.Female)));
         data.addRow(buildColumn("2.3. 5", ">= 50 years"
-                , getCohortSizeByAgeAndGender(51, 150, Gender.Female)));
+                , getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
 
         personList = cxcaScreeningHmisQuery.getPersons(viaSuspiciousCxCa);
         data.addRow(buildColumn("2.4", "Suspicious cancerous Lesion:"
@@ -118,7 +118,7 @@ public class HmisCxCaScrnDataSetDefinitionEvaluator implements DataSetEvaluator 
         data.addRow(buildColumn("2.4. 4", "30 - 49 years"
                 , getCohortSizeByAgeAndGender(30, 49, Gender.Female)));
         data.addRow(buildColumn("2.4. 5", ">= 50 years"
-                , getCohortSizeByAgeAndGender(51, 150, Gender.Female)));
+                , getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
 
 
         Cohort hpvDNATestPositive = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(HPV_DNA_SCREENING_RESULT, POSITIVE);

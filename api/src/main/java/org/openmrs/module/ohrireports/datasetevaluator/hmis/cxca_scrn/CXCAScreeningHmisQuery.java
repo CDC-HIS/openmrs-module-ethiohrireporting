@@ -68,8 +68,9 @@ public class CXCAScreeningHmisQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getCohortByConceptAndBaseEncounter(String questionConcept, String answerConcept) {
-		String stringQuery = "SELECT person_id\n" + "FROM obs\n" + "WHERE concept_id = " + conceptQuery(answerConcept)
-		        + "AND value_coded = " + conceptQuery(questionConcept) + "and encounter_id in ( :baseEncounter)";
+		String stringQuery = "SELECT distinct person_id\n" + "FROM obs\n" + "WHERE concept_id = "
+		        + conceptQuery(questionConcept) + "AND value_coded = " + conceptQuery(answerConcept)
+		        + "and encounter_id in ( :baseEncounter)";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		query.setParameterList("baseEncounter", baseEncounter);
