@@ -9,7 +9,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REGIMEN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_UUID;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_OUT_UUID;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SERVICE_DELIVERY_POINT_NUMBER_MRN;
@@ -123,7 +123,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 			tDataSetDefinition.setEndDate(Calendar.getInstance().getTime());
 		
 		List<Patient> patients = getPatientsWithArt();
-		transferredConcept = conceptService.getConceptByUuid(TRANSFERRED_UUID);
+		transferredConcept = conceptService.getConceptByUuid(TRANSFERRED_OUT_UUID);
 		for (Patient patient : patients) {
 			Obs artStartDate = getArtStartDate(patient);
 			
