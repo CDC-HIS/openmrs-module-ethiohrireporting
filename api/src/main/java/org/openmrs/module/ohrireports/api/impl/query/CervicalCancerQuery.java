@@ -100,7 +100,7 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort loadScreenedCohort() {
-
+		
 		StringBuilder stringBuilder = baseQuery(DATE_COUNSELING_GIVEN);
 		
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");

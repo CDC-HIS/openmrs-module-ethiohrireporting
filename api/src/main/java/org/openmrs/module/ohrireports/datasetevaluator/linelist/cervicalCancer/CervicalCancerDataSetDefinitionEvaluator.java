@@ -46,8 +46,9 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		    cervicalCancerQuery.getBaseEncounter(), FOLLOW_UP_DATE, baseCohort);
 		HashMap<Integer, Object> counselledDate = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), DATE_COUNSELING_GIVEN, baseCohort);
-		HashMap<Integer, Object> screeningReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
-		    cervicalCancerQuery.getBaseEncounter(), CXC_SCREENING_ACCEPTED_DATE, baseCohort);
+		//		HashMap<Integer, Object> screeningReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
+		//		    cervicalCancerQuery.getBaseEncounter(), CXC_SCREENING_ACCEPTED_DATE, baseCohort);
+		
 		HashMap<Integer, Object> treatmentReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), CXCA_TREATMENT_STARTING_DATE, baseCohort);
 		HashMap<Integer, Object> nextVisitDate = cervicalCancerLineListQuery.getObsValueDate(
