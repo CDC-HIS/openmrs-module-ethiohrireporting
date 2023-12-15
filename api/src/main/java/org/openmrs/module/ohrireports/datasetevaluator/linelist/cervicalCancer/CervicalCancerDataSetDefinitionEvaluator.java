@@ -47,7 +47,7 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		HashMap<Integer, Object> counselledDate = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), DATE_COUNSELING_GIVEN, baseCohort);
 		HashMap<Integer, Object> screeningReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
-		    cervicalCancerQuery.getBaseEncounter(), CXC_SCREENING_DATE, baseCohort);
+		    cervicalCancerQuery.getBaseEncounter(), CXC_SCREENING_ACCEPTED_DATE, baseCohort);
 		HashMap<Integer, Object> treatmentReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), CXCA_TREATMENT_STARTING_DATE, baseCohort);
 		HashMap<Integer, Object> nextVisitDate = cervicalCancerLineListQuery.getObsValueDate(
@@ -55,7 +55,7 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		HashMap<Integer, Object> dateLinkedToCxCaUnit = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), DATE_LINKED_TO_CXCA_UNIT, baseCohort);
 		HashMap<Integer, Object> cxcaScreeningAcceptedDate = cervicalCancerLineListQuery.getObsValueDate(
-		    cervicalCancerQuery.getBaseEncounter(), CXCA_SCREENING_ACCEPTED_DATE, baseCohort);
+		    cervicalCancerQuery.getBaseEncounter(), CXC_SCREENING_ACCEPTED_DATE, baseCohort);
 		HashMap<Integer, Object> hpvDnaSampleCollectionDate = cervicalCancerLineListQuery.getObsValueDate(
 		    cervicalCancerQuery.getBaseEncounter(), HPV_DNA_SAMPLE_COLLECTION_DATE, baseCohort);
 		HashMap<Integer, Object> hpvDnaResultReceivedDate = cervicalCancerLineListQuery.getObsValueDate(
@@ -101,8 +101,8 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		    baseCohort, cervicalCancerQuery.getBaseEncounter());
 		HashMap<Integer, Object> biopsyResult = cervicalCancerLineListQuery.getByResult(BIOPSY_RESULT, baseCohort,
 		    cervicalCancerQuery.getBaseEncounter());
-		HashMap<Integer, Object> cxcaTreatmentReceived = cervicalCancerLineListQuery.getByResult(CXCA_TREATMENT_TYPE,
-		    baseCohort, cervicalCancerQuery.getBaseEncounter());
+		HashMap<Integer, Object> cxcaTreatmentReceived = cervicalCancerLineListQuery.getByResult(
+		    CXCA_TREATMENT_PRECANCEROUS_LESIONS, baseCohort, cervicalCancerQuery.getBaseEncounter());
 		HashMap<Integer, Object> reasonForReferral = cervicalCancerLineListQuery.getByResult(REASON_FOR_REFERRAL,
 		    baseCohort, cervicalCancerQuery.getBaseEncounter());
 		HashMap<Integer, Object> feedback = cervicalCancerLineListQuery.getByResult(FEEDBACK, baseCohort,
