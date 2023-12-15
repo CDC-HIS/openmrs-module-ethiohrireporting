@@ -284,6 +284,18 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		
 	}
 	
+	public List<Integer> getEncounterIds(List<Integer> encounterIds, Cohort cohort) {
+		StringBuilder sqlBuilder = new StringBuilder(
+		        "select distinct (encounter_id) from obs where encounter_id in (:encounterIds) and person_id in (:cohort) ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		query.setParameterList("encounterIds", encounterIds);
+		query.setParameterList("cohort", cohort.getMemberIds());
+		
+		return (List<Integer>) query.list();
+		
+	}
+	
 	public enum ObsValueType {
 		NUMERIC_VALUE, DATE_VALUE, CONCEPT_NAME, CONCEPT_UUID
 	}

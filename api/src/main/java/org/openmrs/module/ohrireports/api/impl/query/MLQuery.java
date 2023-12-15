@@ -6,16 +6,18 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.util.Arrays.*;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies.getDictionary;
 
 @Component
 public class MLQuery extends PatientQueryImpDao {
@@ -63,7 +65,7 @@ public class MLQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getDied(Cohort cohort) {
-		return getByConcept(Arrays.asList(DIED), cohort);
+		return getByConcept(asList(DIED), cohort);
 	}
 	
 	public HashMap<Integer, BigDecimal> getInterruptionMonth(Date endDate) {
@@ -76,7 +78,6 @@ public class MLQuery extends PatientQueryImpDao {
 	private HashMap<Integer, BigDecimal> getInterruptionMonthByFollowUpStatus() {
 		StringBuilder sqlBuilder = new StringBuilder(
 		        " SELECT ob.person_id, FLOOR (TIMESTAMPDIFF(MONTH, artDate.value_datetime, treatmentEnd.value_datetime)");
-		
 		sqlBuilder
 		        .append(" + DATEDIFF(   treatmentEnd.value_datetime,    artDate.value_datetime + INTERVAL TIMESTAMPDIFF(MONTH, artDate.value_datetime,");
 		sqlBuilder
@@ -96,7 +97,7 @@ public class MLQuery extends PatientQueryImpDao {
 		sqlBuilder
 		        .append(" and ob_followup.encounter_id in (:followUpEncounter) ) as treatmentEnd on treatmentEnd.person_id =ob.person_id");
 		sqlBuilder.append(" where ob.concept_id =  ").append(conceptQuery(FOLLOW_UP_STATUS))
-		        .append(" AND ob.value_coded in ").append(conceptQuery(Arrays.asList(LOST_TO_FOLLOW_UP, DROP)))
+		        .append(" AND ob.value_coded in ").append(conceptQuery(asList(LOST_TO_FOLLOW_UP, DROP)))
 		        .append(" and ob.person_id in (:personIds) and ob.encounter_id in (:betweenEncounters) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
@@ -106,7 +107,7 @@ public class MLQuery extends PatientQueryImpDao {
 		query.setParameterList("artEncounter", baseEncounter);
 		query.setParameterList("betweenEncounters", baseEncounter);
 		
-		return getDictionary(query);
+		return HMISUtilies.getDictionaryWithBigDecimal(query);
 	}
 	
 	private HashMap<Integer, BigDecimal> getInterruptionMonthByTreatmentEnd(Date end) {
@@ -142,34 +143,15 @@ public class MLQuery extends PatientQueryImpDao {
 		query.setParameterList("artEncounter", baseEncounter);
 		query.setParameterList("betweenEncounters", baseEncounter);
 		
-		return getDictionary(query);
+		return HMISUtilies.getDictionaryWithBigDecimal(query);
 	}
 	
-	protected HashMap<Integer, BigDecimal> getDictionary(Query query) {
-        List list = query.list();
-        HashMap<Integer, BigDecimal> dictionary = new HashMap<>();
-        int personId = 0;
-        Object[] objects;
-        for (Object object : list) {
-
-            objects = (Object[]) object;
-            personId = (Integer) objects[0];
-
-            if (dictionary.get((Integer) personId) == null) {
-                dictionary.put(personId, (BigDecimal) objects[1]);
-            }
-
-        }
-
-        return dictionary;
-    }
-	
 	public Cohort getStopOrRefused(Cohort cohort) {
-		return getByConcept(Arrays.asList(STOP), cohort);
+		return getByConcept(asList(STOP), cohort);
 	}
 	
 	public Cohort getTransferredOut(Cohort cohort) {
-		return getByConcept(Arrays.asList(TRANSFER_OUT), cohort);
+		return getByConcept(asList(TRANSFER_OUT), cohort);
 	}
 	
 	private Cohort getByConcept(List<String> followUpStatus, Cohort cohort) {
@@ -189,7 +171,7 @@ public class MLQuery extends PatientQueryImpDao {
 	private Cohort getCohort(Date end, Cohort cohort, List<Integer> encounter) {
 		StringBuilder sql = new StringBuilder("select person_id from obs");
 		sql.append(" where concept_id =  ").append(conceptQuery(FOLLOW_UP_STATUS)).append(" AND value_coded in ")
-		        .append(conceptQuery(Arrays.asList(LOST_TO_FOLLOW_UP, DEAD, DROP, TRANSFER_OUT)))
+		        .append(conceptQuery(asList(LOST_TO_FOLLOW_UP, DEAD, DROP, TRANSFER_OUT)))
 		        .append(" and person_id in (:personIds) and encounter_id in (:betweenEncounters) ");
 		sql.append("Union ");
 		

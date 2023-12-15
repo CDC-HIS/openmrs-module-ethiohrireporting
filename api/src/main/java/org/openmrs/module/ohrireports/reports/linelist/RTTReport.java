@@ -1,7 +1,7 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.MLDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.RTTDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -17,16 +17,16 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPO
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
 
 @Component
-public class MLReport implements ReportManager {
+public class RTTReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "b6cdc1b5-fb53-41c6-b027-2e492db8fb3e";
+		return "e7190bdd-e40a-4e52-becf-d78828ea27d0";
 	}
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- TX_ML Line list";
+		return LINE_LIST_REPORT + "- TX_RTT Line list";
 	}
 	
 	@Override
@@ -47,16 +47,16 @@ public class MLReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		MLDataSetDefinition mlDataSetDefinition = new MLDataSetDefinition();
-		mlDataSetDefinition.addParameters(getParameters());
+		RTTDataSetDefinition rttDataSetDefinition = new RTTDataSetDefinition();
+		rttDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("TX_ML Line List", EthiOhriUtil.map(mlDataSetDefinition));
+		reportDefinition.addDataSetDefinition("TX_RTT Line List", EthiOhriUtil.map(rttDataSetDefinition));
 		return reportDefinition;
 	}
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("646e6c28-2d1e-4e8b-b51a-fcb0ce16033b", reportDefinition);
+		ReportDesign design = ReportManagerUtil.createExcelDesign("608ae68c-8ca7-41c7-bc4f-0d2f943f18f7", reportDefinition);
 		return Arrays.asList(design);
 	}
 	

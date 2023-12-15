@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +56,23 @@ public class HMISUtilies {
 				dictionary.put(personId, objects[1]);
 			}
 
+		}
+
+		return dictionary;
+	}
+	
+	public static HashMap<Integer, BigDecimal> getDictionaryWithBigDecimal(Query query) {
+		List list = query.list();
+		HashMap<Integer, BigDecimal> dictionary = new HashMap<>();
+		int personId = 0;
+		Object[] objects;
+		for (Object object : list) {
+			objects = (Object[]) object;
+			personId = (Integer) objects[0];
+
+			if (dictionary.get((Integer) personId) == null) {
+				dictionary.put(personId, (BigDecimal) objects[1]);
+			}
 		}
 
 		return dictionary;
