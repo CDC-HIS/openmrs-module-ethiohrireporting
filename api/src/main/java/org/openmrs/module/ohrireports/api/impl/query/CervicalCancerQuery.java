@@ -100,9 +100,6 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort loadScreenedCohort() {
-		//baseEncounter = encounterQuery.getEncounters(Arrays.asList(CXC_SCREENING_DATE),getStartDate(),getEndDate());
-		//List<Integer> onArtEncounters =  encounterQuery.getAliveFollowUpEncounters(getEndDate());
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(DATE_COUNSELING_GIVEN), getStartDate(), getEndDate());
 		
 		StringBuilder stringBuilder = baseQuery(DATE_COUNSELING_GIVEN);
 		
