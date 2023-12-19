@@ -39,8 +39,8 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		HashMap<Integer, Object> artStartDateHashMap = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
 		    ART_START_DATE, cohort);
-		HashMap<Integer, Object> treatmentEndDateHashMap = rttLineListQuery.getObsValueDate(
-		    rttLineListQuery.getBaseEncounter(), TREATMENT_END_DATE, cohort);
+		HashMap<Integer, Object> returnedFollowUpDate = rttLineListQuery.getObsValueDate(
+		    rttLineListQuery.getBaseEncounter(), FOLLOW_UP_DATE, cohort);
 		
 		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByResult(WEIGHT, cohort,
 		    rttLineListQuery.getBaseEncounter());
@@ -54,19 +54,16 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		DataSetRow row;
 		if (persons.size() > 0) {
-			
 			row = new DataSetRow();
-			
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
-			
 			data.addRow(row);
 		}
 		
 		for (Person person : persons) {
 			
 			Date artStartDate = rttLineListQuery.getDate(artStartDateHashMap.get(person.getPersonId()));
-			Date treatmentEndDate = rttLineListQuery.getDate(treatmentEndDateHashMap.get(person.getPersonId()));
+			Date treatmentEndDate = rttLineListQuery.getDate(returnedFollowUpDate.get(person.getPersonId()));
 			
 			row = new DataSetRow();
 			
