@@ -1,14 +1,5 @@
 package org.openmrs.module.ohrireports.api.impl;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PREGNANT_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REASON_FOR_ART_ELIGIBILITY;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-
-import java.util.*;
-
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Restrictions;
@@ -20,8 +11,11 @@ import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQueryDao {
@@ -47,7 +41,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	public Cohort getNewOnArtCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
 	        List<Integer> encounters) {
 		
-		Cohort transferInCohort = transferredInFacility(endOrBefore);
+		Cohort transferInCohort = transferredInFacility(encounters);
 		
 		Collection<?> list = getArtStartedCohort(gender, startOnOrAfter, endOrBefore, cohort, transferInCohort, encounters);
 		
@@ -217,19 +211,14 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	
 	@NotNull
 	@Contract("_ -> new")
-	private Cohort transferredInFacility(Date endOnOrBefore) {
-		
+	private Cohort transferredInFacility(List<Integer> encounters) {
 		StringBuilder sql = baseQuery(REASON_FOR_ART_ELIGIBILITY);
 		
 		sql.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(TRANSFERRED_IN));
-		
-		if (endOnOrBefore != null)
-			sql.append(" and ").append(OBS_ALIAS).append("obs_datetime <= :endOnOrBefore ");
+		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounter) ");
 		
 		Query q = getSession().createSQLQuery(sql.toString());
-		
-		if (endOnOrBefore != null)
-			q.setTimestamp("endOnOrBefore", endOnOrBefore);
+		q.setParameterList("encounter", encounters);
 		
 		return new Cohort(q.list());
 	}
