@@ -94,7 +94,6 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 		currentEncounter = baseEncounter = refineBaseEncounter();
 	}
 	
-	//TOOD: ecounter as res in list
 	private List<Integer> refineBaseEncounter() {
 		List<String> conceptUUIDs = Arrays.asList(CXCA_TREATMENT_TYPE_THERMOCOAGULATION, CXCA_TREATMENT_TYPE_LEEP,
 		    CXCA_TREATMENT_TYPE_CRYOTHERAPY);
