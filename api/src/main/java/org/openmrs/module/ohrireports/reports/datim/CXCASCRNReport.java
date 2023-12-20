@@ -60,13 +60,13 @@ public class CXCASCRNReport implements ReportManager {
 		    EthiOhriUtil.map(firstTimeScreeningCxcaDatasetDefinition));
 		
 		CXCADatasetDefinition rescreenDatasetDefinition = new CXCADatasetDefinition();
-		rescreenDatasetDefinition.setScreeningType(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
+		rescreenDatasetDefinition.setScreeningType(CXCA_TYPE_OF_SCREENING_RESCREEN);
 		rescreenDatasetDefinition.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition("Rescreen after pervious negative or suspected cancer",
 		    EthiOhriUtil.map(rescreenDatasetDefinition));
 		
 		CXCADatasetDefinition postTreatmentDatasetDefinition = new CXCADatasetDefinition();
-		postTreatmentDatasetDefinition.setScreeningType(CXCA_TYPE_OF_SCREENING_RESCREEN);
+		postTreatmentDatasetDefinition.setScreeningType(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
 		postTreatmentDatasetDefinition.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition("Post-treatment follow-up ", EthiOhriUtil.map(postTreatmentDatasetDefinition));
 		
