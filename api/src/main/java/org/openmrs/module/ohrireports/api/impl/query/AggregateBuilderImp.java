@@ -117,6 +117,32 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
     }
 
+    public void buildDataSetColumnForTreatment(DataSetRow dataSet, String treatmentType){
+        subTotalCount = 0;
+        lowerBoundAge = 14;
+        upperBoundAge = 65;
+
+        int minCount = lowerBoundAge + 1;
+        int maxCount = minCount + ageInterval;
+
+        dataSet.addColumnValue(new DataSetColumn("CxCaTreatmentType", "CxCa Treatment Type", String.class),
+                treatmentType);
+        dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
+                getPersonCountByUnknownAge());
+        while (minCount <= upperBoundAge) {
+            if (minCount == upperBoundAge) {
+                dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
+                        getPersonByAge(upperBoundAge, 200));
+            } else {
+                dataSet.addColumnValue(
+                        new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
+                        getPersonByAge(minCount, maxCount));
+            }
+            minCount = maxCount + 1;
+            maxCount = minCount + ageInterval;
+        }
+        dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
+    }
     @Override
     public void buildDataSetColumn(DataSetRow row, String gender, int middleAge) {
         row.addColumnValue(new DataSetColumn("gender", "Gender", String.class),

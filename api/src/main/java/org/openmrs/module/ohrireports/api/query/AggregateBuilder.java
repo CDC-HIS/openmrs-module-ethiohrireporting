@@ -26,6 +26,8 @@ public interface AggregateBuilder extends OpenmrsService {
 	
 	void buildDataSetColumnForScreening(DataSetRow dataSet, String screeningResult);
 	
+	void buildDataSetColumnForTreatment(DataSetRow dataSet, String screeningResult);
+	
 	// Build data set using middle age and gender, the middle age is use for
 	// dissociation the lower and upper age limit
 	void buildDataSetColumn(DataSetRow row, String gender, int middleAge);
