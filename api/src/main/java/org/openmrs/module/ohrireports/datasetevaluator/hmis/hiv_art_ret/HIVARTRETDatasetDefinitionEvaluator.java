@@ -1,13 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_ret;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
-import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.NO;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
@@ -23,6 +15,14 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
+
 @Handler(supports = { HIVARTRETDatasetDefinition.class })
 public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
@@ -35,28 +35,37 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	@Autowired
 	private HivArtRetQuery hivArtRetQuery;
-
 	List<Person> persons = new ArrayList<>();
-
+	private boolean isNetRetention = false;
+	Cohort currentCohort ;
+	Cohort pregnantCohort;
+	List<Integer> currentEncounter ;
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
 		_datasetDefinition = (HIVARTRETDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		//this forbid the initializeRetentionCohort method to not be called twice for per single report execution
+		isNetRetention = _datasetDefinition.getNetRetention();
+		if (!isNetRetention) {
+			hivArtRetQuery.initializeRetentionCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+		}
+		currentCohort = isNetRetention ? hivArtRetQuery.netRetCohort : hivArtRetQuery.retCohort;
+		currentEncounter = isNetRetention ? hivArtRetQuery.netRetEncounter : hivArtRetQuery.retEncounter;
+		 pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(currentCohort, YES, currentEncounter);
 		buildDataSet(dataSet);
 
 		return dataSet;
 	}
 
 	public void buildDataSet(SimpleDataSet dataSet) {
-		if (!_datasetDefinition.getNetRetention()) {
+		if (isNetRetention) {
 			DataSetRow headerDataSetRow = new DataSetRow();
 			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
 					"HIV_ART_RET");
 			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
 					"ART retention rate (Percentage of adult and children on ART treatment after 12 month of initiation of ARV therapy )");
-			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, String.class),
-					getPercentage()+"%");
+			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Double.class), hivArtRetQuery.getPercentage() + "%");
 			dataSet.addRow(headerDataSetRow);
 		}
 		dataSet.addRow(buildColumn(" ",
@@ -180,30 +189,19 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 	}
 
 	private Integer getHTXNew(QueryParameter parameter) {
-		Cohort cohort = new Cohort();
 
+		int count = 0;
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
-
-			if (_datasetDefinition.getNetRetention()) {
-				cohort = hivArtRetQuery.getPatientRetentionCohortNet(parameter.gender, _datasetDefinition.getStartDate(),
-						_datasetDefinition.getEndDate(), cohort);
-			} else {
-				cohort = hivArtRetQuery.getPatientRetentionCohort(parameter.gender, _datasetDefinition.getStartDate(),
-						_datasetDefinition.getEndDate(), cohort);
-			}
-			persons = hivArtRetQuery.getPersons(cohort);
-
-			return cohort.getMemberIds().size();
+				persons = hivArtRetQuery.getPersons(currentCohort);
+			return  currentCohort.size();
 		}
 
 		if (parameter.maxAge < 1) {
 
 			List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {
-				if (person.getAge() < parameter.maxAge && person.getGender().equals(parameter.gender)) {
+				if (person.getGender().equals(parameter.gender) && person.getAge(_datasetDefinition.getEndDate()) < parameter.maxAge) {
 					countPersons.add(person);
-					cohort.addMembership(new CohortMembership(person.getPersonId()));
-
 				}
 
 			}
@@ -212,11 +210,13 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		// For older than 50 or 65 generalization
 		else if (parameter.maxAge >= 200) {
+			int age;
 			List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {
-				if (person.getAge() >= parameter.minAge && person.getGender().equals(parameter.gender)) {
+				age = person.getAge(_datasetDefinition.getEndDate());
+				if (person.getGender().equals(parameter.gender) && age >= parameter.minAge) {
 					countPersons.add(person);
-					cohort.addMembership(new CohortMembership(person.getPersonId()));
+					count++;
 				}
 
 			}
@@ -226,53 +226,45 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		// For Age Range
 		else {
 			List<Person> countPersons = new ArrayList<>();
-			for (Person person : persons) {
-				if (person.getAge() >= parameter.minAge && person.getAge() <= parameter.maxAge
-						&& person.getGender().equals(parameter.gender)) {
-					countPersons.add(person);
-					cohort.addMembership(new CohortMembership(person.getPersonId()));
-				}
+				if (Objects.equals(parameter.isPregnant, YES)) {
+					for (Person person : persons) {
+						if (pregnantCohort.contains(person.getPersonId()) &&
+							person.getAge(_datasetDefinition.getEndDate()) >= parameter.minAge &&
+							person.getAge() <= parameter.maxAge) {
+							countPersons.add(person);
+							count++;
+						}
 
-			}
-
-			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(cohort, YES, new ArrayList<>());
-				if (parameter.isPregnant == YES) {
-
-					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {
-						persons.removeIf(p -> p.getPersonId().equals(cohortMembership.getPatientId()));
 					}
-					cohort = pregnantCohort;
+					persons.removeAll(countPersons);
 
-				} else {
-					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {
-						persons.removeIf(p -> p.getPersonId().equals(cohortMembership.getPatientId()));
-						cohort.removeMembership(cohortMembership);
+				} else if(parameter.gender.equals("F")){
+					for (Person person : persons) {
+						if (!(pregnantCohort.contains(person.getPersonId())) &&
+								person.getAge(_datasetDefinition.getEndDate()) >= parameter.minAge &&
+								person.getAge() <= parameter.maxAge) {
+							countPersons.add(person);
+							count++;
+						}
+
+					}
+					persons.removeAll(countPersons);
+				}else {
+				for (Person person : persons) {
+					if (person.getGender().equals(parameter.gender) && person.getAge(_datasetDefinition.getEndDate()) >= parameter.minAge && person.getAge() <= parameter.maxAge) {
+						countPersons.add(person);
+						count++;
 					}
 
 				}
+				persons.removeAll(countPersons);
 			}
 
 		}
-		return cohort.getMemberIds().size();
+		return count;
 	}
 
 
-	private int getPercentage() {
-
-		Cohort cohortRet, cohortRetNet;
-		cohortRet = hivArtRetQuery.getPatientRetentionCohortNet("", _datasetDefinition.getStartDate(),
-				_datasetDefinition.getEndDate(), new Cohort());
-
-		cohortRetNet = hivArtRetQuery.getPatientRetentionCohort("", _datasetDefinition.getStartDate(),
-				_datasetDefinition.getEndDate(), new Cohort());
-		
-				if(cohortRetNet.size()==0)
-				return 0;
-		int percentage = (cohortRet.size()/cohortRetNet.size())/100;
-
-		return percentage;
-	}
 
 	/**
 	 * QueryParameter
