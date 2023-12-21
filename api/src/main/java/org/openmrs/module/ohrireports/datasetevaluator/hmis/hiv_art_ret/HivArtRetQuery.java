@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,7 +52,9 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	public double getPercentage() {
 		if(retCohort.size()==0)
 			return 0;
-		return (netRetCohort.size() / retCohort.size()) / 100;
+		double value = (retCohort.size()*100.00)/netRetCohort.size() ;
+		DecimalFormat decimalFormat = new DecimalFormat("###.##");
+		return  Double.parseDouble(decimalFormat.format(value));
 	}
 
 	public void setCalculatedDate(Date _startDate, Date _endDate) {
