@@ -330,6 +330,7 @@ public class OHRIReportsConstants {
 	public final static String PATIENT_STATUS = "160433AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String FOLLOW_UP_STATUS = "222f64a8-a603-4d2e-b70e-2d90b622bb04";
+	public  final static  String POSITIVE_TRACKING = "f28bb488-0f83-417c-98ba-06ea5f1765e3";
 	
 	public final static String TRANSFERRED_UUID = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
