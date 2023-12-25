@@ -22,6 +22,8 @@ public class OHRIReportsConstants {
 	
 	public final static String HTS_FOLLOW_UP_ENCOUNTER_TYPE = "136b2ded-22a3-4831-a39a-088d35a50ef5";
 	
+	public final static String PREP_FOLLOW_UP_ENCOUNTER_TYPE = "bc423d48-af6f-4354-af22-fec8ff1c0308";
+	
 	public final static String COVID_VACCINATION_ENCOUNTER_TYPE = "5b37ce7a-c55e-4226-bdc8-5af04025a6de";
 	
 	public final static String HTS_RETROSPECTIVE_ENCOUNTER_TYPE = "79c1f50f-f77d-42e2-ad2a-d29304dde2fe";
@@ -117,7 +119,7 @@ public class OHRIReportsConstants {
 	
 	public final static String FOLLOW_UP_DATE = "b8cd8630-56dd-495e-8c84-e36a636febe7";
 	
-	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d94b14";
+	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d9f4b14";
 	
 	public final static String ARV_DISPENSED_IN_DAYS = "f3911009-1a8f-42ee-bdfc-1e343c2839aa";
 	
@@ -351,6 +353,39 @@ public class OHRIReportsConstants {
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
 	
 	// Prep
+	
+	public final static String PREP_SCREENED_DATE = "bd09b775-0294-4775-9615-964d98e06a4f";
+	
+	public final static String PREP_STARTED_DATE = "163526AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PREP_FOLLOWUP_STATUS = "b8cd8630-56dd-495e-8c84-e36a636febe7";
+	
+	public final static String UNIQUE_IDENTIFICATION_CODE = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PREP_NEXT_VISIT_DATE = "c596f199-4d76-4eca-b3c4-ffa631c0aee9";
+	
+	public final static String PREP_REGIMEN = "722ff3de-e2d1-4df4-8d05-ca881dc7073b";
+	
+	public final static String PREP_DOSE = "f3911009-1a8f-42ee-bdfc-1e343c2839aa";
+	
+	public final static String PREP_DOSE_END_DATE = "1dcc457b-638c-4103-887b-4e8581e052f8";
+	
+	public final static String SELF_IDENTIFYING_FSW = "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String HAVE_HIV_POSITIVE_PARTNER = "1436AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String HIV_TEST_FINAL_RESULT = "40d1c129-5373-4005-95b1-409e56db9743";
+	
+	public final static String TB_SCREENED_RESULT = "160108AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String STI_SCREENING_RESULT = "7a643a93-3f11-4ad0-acfa-b15f2d7c8ddc";
+	
+	public final static String EGFR_ESTIMATE = "165570AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PREP_MISSED_TABLETS = "a10bb1c2-64a5-4f62-9d2f-05ef1b261fb8";
+	
+	public final static String REASON_FOR_STOPPING_PREP = "4bf84596-dd44-4b81-a638-4617e189a89d";
+	
 	public final static String DISCORDANT_COUPLE = "6096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String FEMALE_SEX_WORKER = "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";

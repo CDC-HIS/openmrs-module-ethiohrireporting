@@ -61,6 +61,7 @@ public class CxCaTreatmentHMISQuery extends PatientQueryImpDao {
 		currentEncounter = baseEncounter = refineBaseEncounter();
 	}
 	
+	@Autowired
 	public CxCaTreatmentHMISQuery(DbSessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 		setSessionFactory(sessionFactory);
