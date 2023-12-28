@@ -219,6 +219,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
             return new ArrayList<Integer>();
         }
     }
+	
 	public List<Integer> getEncounters(List<String> questionConcept, Date start, Date end,String encounterTypeUUID) {
 
 		if (questionConcept == null || questionConcept.isEmpty())
@@ -259,7 +260,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 			return new ArrayList<Integer>();
 		}
 	}
-
+	
 	public List<Integer> getEncounters(List<String> questionConcept, Date start, Date endDate, Cohort cohort) {
         if (questionConcept == null || questionConcept.isEmpty())
             return new ArrayList<>();

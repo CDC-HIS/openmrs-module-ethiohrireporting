@@ -45,8 +45,9 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("where pa.voided = false and " + OBS_ALIAS + "voided = false ");
 		return sql;
 	}
-	protected StringBuilder baseQuery(String conceptQuestionUUid,String encounterTypeUUID) {
-
+	
+	protected StringBuilder baseQuery(String conceptQuestionUUid, String encounterTypeUUID) {
+		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select distinct " + OBS_ALIAS + "person_id from obs as ob ");
 		sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");

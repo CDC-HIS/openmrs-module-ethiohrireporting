@@ -53,7 +53,7 @@ public class OHRIReportsConstants {
 	
 	public final static String MRN_PATIENT_IDENTIFIERS = "f85081e2-b4be-4e48-b3a4-7994b69bb101";
 	
-	public final static String UAN_PATIENT_IDENTIFIERS = "td956f302-1723-4eca-9548-fb7e66706d34";
+	public final static String UAN_PATIENT_IDENTIFIERS = "d956f302-1723-4eca-9548-fb7e66706d34";
 	
 	public final static String OPENMRS_PATIENT_IDENTIFIERS = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
 	
@@ -201,11 +201,21 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TREATMENT_TYPE_CRYOTHERAPY = "162812AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String LINKED_TO_CARE_DATE = "902faabc-57bd-4fdf-bcaa-e3f8866ebbaf";
+	
 	public final static String CXCA_TREATMENT_TYPE_THERMOCOAGULATION = "166706AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String CXCA_TREATMENT_TYPE_LEEP = "165084AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String CXCA_TREATMENT_TYPE_OTHER_TREATMENT = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String OTHER = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING = "e96ea7a2-5285-41d3-bb0d-4f199cf5b8ee";
+	
+	public final static String IO_MANAGEMENT = "f6ce58c8-1346-48ab-8f62-74edd9b8a7b7";
+	
+	public final static String FINAL_OUT_COME_DATE = "e83fbaa5-073b-4a6d-b8ba-23f41d0c7302";
+	
+	public final static String ON_ADHERENCE = "d0409cbe-1932-446a-a2d6-149922204080";
 	
 	public final static String CXCA_TREATMENT_STARTING_DATE = "163526AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -330,7 +340,8 @@ public class OHRIReportsConstants {
 	public final static String PATIENT_STATUS = "160433AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String FOLLOW_UP_STATUS = "222f64a8-a603-4d2e-b70e-2d90b622bb04";
-	public  final static  String POSITIVE_TRACKING = "f28bb488-0f83-417c-98ba-06ea5f1765e3";
+	
+	public final static String POSITIVE_TRACKING = "f28bb488-0f83-417c-98ba-06ea5f1765e3";
 	
 	public final static String TRANSFERRED_UUID = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -385,6 +396,10 @@ public class OHRIReportsConstants {
 	
 	public final static String ARV_ADHERENCE = "b1a646d3-78ff-4dd5-823a-5bef7d69ff3d";
 	
+	public final static String POSITIVE_TRACKING_REGISTRATION_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
+	
+	public final static String KNOWN_POSITIVE_ON_ART = "95daa4f8-b45d-4dee-b5d0-5f9446d22c19";
+	
 	public final static String TPT_DISCONTINUED_DATE = "162281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -426,9 +441,13 @@ public class OHRIReportsConstants {
 	
 	public final static String LINKED_TO_CARE_TREATMENT = "c1bb9738-10aa-4905-bb5d-af4e55b4bb69";
 	
-	public final static String STARTED_ART_OR_kNOWN_POSITIVE_ON_ART = "1149AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String STARTED_ART = "1149AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String FINAL_OUT_COME = "4599ebf7-6120-4593-80f0-72458b9fadad";
+	public final static String ENTRE_POINT = "dd282c99-ea69-44e7-9252-aff0198cc1e8";
+	
+	public final static String DECLINED = "127750AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String FINAL_OUT_COME = "413b265c-87ef-4988-a7bc-1bfc6b5e5528";
 	
 	public final static String LOST_TO_FOLLOW_UP = "5240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
