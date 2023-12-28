@@ -24,6 +24,8 @@ public class OHRIReportsConstants {
 	
 	public final static String PREP_FOLLOW_UP_ENCOUNTER_TYPE = "bc423d48-af6f-4354-af22-fec8ff1c0308";
 	
+	public final static String PREP_SCREENING_ENCOUNTER_TYPE = "8c2b6a9b-4795-417d-affe-2530a753b715";
+	
 	public final static String COVID_VACCINATION_ENCOUNTER_TYPE = "5b37ce7a-c55e-4226-bdc8-5af04025a6de";
 	
 	public final static String HTS_RETROSPECTIVE_ENCOUNTER_TYPE = "79c1f50f-f77d-42e2-ad2a-d29304dde2fe";
@@ -358,7 +360,7 @@ public class OHRIReportsConstants {
 	
 	public final static String PREP_STARTED_DATE = "163526AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String PREP_FOLLOWUP_STATUS = "b8cd8630-56dd-495e-8c84-e36a636febe7";
+	public final static String PREP_FOLLOWUP_STATUS = "1f3a74f3-cafd-4bd0-9e3c-5251bd0c05e5";
 	
 	public final static String UNIQUE_IDENTIFICATION_CODE = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

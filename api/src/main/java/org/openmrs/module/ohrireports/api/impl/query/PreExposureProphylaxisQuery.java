@@ -23,11 +23,21 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
-	private List<Integer> baseEncounter;
+	private List<Integer> baseFollowupEncounter;
 	
-	public List<Integer> getBaseEncounter() {
-		return baseEncounter;
+	public List<Integer> getBaseFollowupEncounter() {
+		return baseFollowupEncounter;
 	}
+	
+	//	public List<Integer> getBaseScreeningEncounter() {
+	//		return baseScreeningEncounter;
+	//	}
+	
+	public void setBaseScreeningEncounter(List<Integer> baseScreeningEncounter) {
+		this.baseScreeningEncounter = baseScreeningEncounter;
+	}
+	
+	public List<Integer> baseScreeningEncounter;
 	
 	private List<Integer> currentEncounter;
 	
@@ -49,9 +59,9 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), startDate, endDate,
+		baseFollowupEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), startDate, endDate,
 		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		currentEncounter = baseEncounter;
+		currentEncounter = baseFollowupEncounter;
 	}
 	
 	@Autowired
@@ -65,7 +75,7 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
-		query.setParameterList("encounters", baseEncounter);
+		query.setParameterList("encounters", baseFollowupEncounter);
 		
 		baseCohort = new Cohort(query.list());
 		return baseCohort;
