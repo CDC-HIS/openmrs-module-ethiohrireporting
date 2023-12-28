@@ -1,7 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fb;
 
-import java.util.List;
-
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
@@ -14,6 +12,8 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Handler(supports = { HivArtFbDatasetDefinition.class })
 public class HivArtFbDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -31,6 +31,7 @@ public class HivArtFbDatasetDefinitionEvaluator implements DataSetEvaluator {
 		fbQuery.setDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate(),
 		    encounterQuery.getAliveFollowUpEncounters(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate()));
 		List<Person> persons = fbQuery.getPersons(new Cohort(fbQuery.GetPatientsOnFamilyPlanning()));
+		
 		HivArtFbDatasetBuilder datasetBuilder = new HivArtFbDatasetBuilder(persons, dataSet,
 		        _DatasetDefinition.getDescription(), "HIV_ART_FP");
 		datasetBuilder.buildDataset();

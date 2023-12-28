@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.api.impl;
 
 import org.hibernate.Criteria;
 import org.hibernate.Query;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -181,7 +182,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		criteria.setCacheable(false);
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.in("personId", pIntegers));
-		
+		criteria.addOrder(Order.desc("birthdate"));
 		return criteria.list();
 		
 	}
@@ -191,8 +192,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		StringBuilder sql = baseQuery(PREGNANT_STATUS);
 		if (encounters == null || encounters.isEmpty())
 			return new Cohort();
-		sql.append(" and ").append(OBS_ALIAS).append("value_coded = (select concept_id from concept where uuid='")
-		        .append(conceptUUID).append("')");
+		sql.append(" and ").append(OBS_ALIAS).append("value_coded =").append(conceptQuery(conceptUUID));
 		
 		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
 		if (patient != null && !patient.isEmpty())
