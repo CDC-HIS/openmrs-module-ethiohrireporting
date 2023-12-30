@@ -1,30 +1,65 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PR_EP_STARTED;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_TENOFOVIR_DRUG;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_FTC_DRUG;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_3TC_DRUG;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FEMALE_SEX_WORKER;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DISCORDANT_COUPLE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.EXPOSURE_TYPE;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.Query;
+import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
 
 @Component
 public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	private DbSessionFactory sessionFactory;
 	
-	private Date startDate, endDate;
+	private Date startDate;
+	
+	private Date endDate;
+	
+	private List<Integer> baseEncounter;
+	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
+	private List<Integer> currentEncounter;
+	
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	public Date getEndDate() {
+		return endDate;
+	}
+	
+	public void setEndDate(Date endDate, String filteringDate, String encounterTypeUUid) {
+		this.endDate = endDate;
+		baseEncounter = encounterQuery.getEncounters(Arrays.asList(filteringDate), startDate, endDate);
+		currentEncounter = baseEncounter = refineBaseEncounter(encounterTypeUUid);
+	}
+	
+	private List<Integer> refineBaseEncounter(String encounterTypeUUid) {
+		StringBuilder stringQuery = new StringBuilder("select distinct ob.encounter_id from obs as ob ");
+		stringQuery.append("Inner join encounter enc on ob.encounter_id = enc.encounter_id ");
+		stringQuery.append("Inner join encounter_type et on  et.encounter_type_id = enc.encounter_type ");
+		stringQuery.append(" where ob.encounter_id in (:baseEncounter) ");
+		stringQuery.append(" and et.uuid = '").append(encounterTypeUUid).append("'");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery.toString());
+		
+		query.setParameterList("baseEncounter", baseEncounter);
+		List<Integer> response = (List<Integer>) query.list();
+		return response;
+	}
 	
 	@Autowired
 	public HivPrEpQuery(DbSessionFactory sessionFactory) {
@@ -32,10 +67,10 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		super.setSessionFactory(sessionFactory);
 	}
 	
-	public void initializeDate(Date start, Date end) {
+	/*public void initializeDate(Date start, Date end) {
 		startDate = start;
 		endDate = end;
-	}
+	}*/
 	
 	public Set<Integer> getPatientOnPrEpCurr() {
         StringBuilder sql = personIdQuery(getCurrQueryClauses(), "");
@@ -97,6 +132,16 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		
 	}
 	
+	public Cohort getCategoryOnPrep(String clientCategoryUUid, Cohort cohort) {
+		
+		String stringQuery = "select distinct ob.person_id from obs as ob " + " where person_id in (:cohorts) "
+		        + "and  concept_id = " + conceptQuery(clientCategoryUUid) + " and value_coded = " + conceptQuery(YES);
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		return new Cohort(query.list());
+	}
+	
 	public Integer getDiscordantCoupleOnPrep(Boolean isCurrent) {
 		
 		String condition = " and " + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(DISCORDANT_COUPLE) + "";
@@ -135,6 +180,15 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		
 		return query.list().size();
 		
+	}
+	
+	public Cohort getCohortByConceptAndBaseEncounter(String questionConcept) {
+		String stringQuery = "SELECT distinct person_id\n" + "FROM obs\n" + "WHERE concept_id = "
+		        + conceptQuery(questionConcept) + "and encounter_id in ( :baseEncounter)";
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
+		query.setParameterList("baseEncounter", baseEncounter);
+		return new Cohort(query.list());
 	}
 	
 }

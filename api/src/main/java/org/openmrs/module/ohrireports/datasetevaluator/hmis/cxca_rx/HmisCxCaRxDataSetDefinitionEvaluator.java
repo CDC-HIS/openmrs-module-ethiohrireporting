@@ -3,7 +3,6 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.cxca_rx;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -12,6 +11,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_rx.HmisCxCaRxDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.Gender;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -20,7 +20,6 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -136,7 +135,3 @@ public class HmisCxCaRxDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 }
 
-enum Gender {
-    Female,
-    Male
-}

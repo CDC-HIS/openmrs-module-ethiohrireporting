@@ -34,7 +34,7 @@ public class HivPrEpCatagoriesDatasetDefinitionEvaluators implements DataSetEval
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		query.initializeDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate());
+		//query.initializeDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate());
 		int total = 0;
 		int occupationCount = query.getCountByExposureType(OCCUPATIONAL);
 		int sexualAssaultCount = query.getCountByExposureType(SEXUAL_ASSAULT);
