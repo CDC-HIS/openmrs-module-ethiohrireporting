@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.HivLinkageNewCtQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -22,8 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Handler(supports = { HIVLinkageNewCtDatasetDefinition.class })
 public class HIVLinkageNewCtDatasetDefinitionEvaluator implements DataSetEvaluator {
 
-	private HIVLinkageNewCtDatasetDefinition _datasetDefinition;
-	private String baseName = "HIV_LINKAGE_NEW_CT ";
+    private String baseName = "HIV_LINKAGE_NEW_CT ";
 	private String column_3_name = "Number";
 
 	@Autowired
@@ -34,12 +34,12 @@ public class HIVLinkageNewCtDatasetDefinitionEvaluator implements DataSetEvaluat
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
-		
-		_datasetDefinition = (HIVLinkageNewCtDatasetDefinition) dataSetDefinition;
+
+        HIVLinkageNewCtDatasetDefinition _datasetDefinition = (HIVLinkageNewCtDatasetDefinition) dataSetDefinition;
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		hivLinkageNewCtQuery.initialize(_datasetDefinition.getStartDate(),_datasetDefinition.getEndDate());
+		hivLinkageNewCtQuery.initialize(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
 		buildDataSet(dataSet);
 
@@ -82,26 +82,26 @@ public class HIVLinkageNewCtDatasetDefinitionEvaluator implements DataSetEvaluat
 		Integer count = 0;
 		switch (aggregateType) {
 			case TOTAL:
-				count = hivLinkageNewCtQuery.getTotalOnHivePatient();
+				count = hivLinkageNewCtQuery.totalCount;
 				break;
 			case LINKED_TO_CARE_TREATMENT:
-				count = hivLinkageNewCtQuery.getLinkedToCareCohort().size();
+				count = hivLinkageNewCtQuery.countOfLinkedToCareAndTreatment();
 				break;
 			case KNOWN_ON_ART:
-				count = hivLinkageNewCtQuery.getKnownCohort().size();
+				count = hivLinkageNewCtQuery.countOfKnownOnArt();
 				break;
 			case LOST_TO_FOLLOW_UP:
-				count = hivLinkageNewCtQuery.getLostToFollowUpCohort().size();
+				count = hivLinkageNewCtQuery.countOfLostToFollowUp();
 				break;
 			case REFERRED_TO_OTHER_FACILITY:
-				count = hivLinkageNewCtQuery.getReferToOtherCohort().size();
+				count = hivLinkageNewCtQuery.countOfReferred();
 
 				break;
 			case DIED:
-				count = hivLinkageNewCtQuery.getDiedCohort().size();
+				count = hivLinkageNewCtQuery.countOfDied();
 				break;
 			default:
-				count = hivLinkageNewCtQuery.getOthersCohort();
+				count = hivLinkageNewCtQuery.countOfOther();
 				break;
 		}
 		return count;

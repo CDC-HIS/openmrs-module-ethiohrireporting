@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.reports.hmis;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
@@ -266,7 +267,7 @@ public class HMISReport implements ReportManager {
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
 		ReportDesign design = ReportManagerUtil.createExcelDesign("d15829f9-ad58-4421-8d82-11dd80ffaeb2", reportDefinition);
 		
-		return Arrays.asList(design);
+		return Collections.singletonList(design);
 	}
 	
 	@Override
