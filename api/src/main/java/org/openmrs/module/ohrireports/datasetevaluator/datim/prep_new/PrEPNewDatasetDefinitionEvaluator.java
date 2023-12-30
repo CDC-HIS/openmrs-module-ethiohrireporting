@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.datim.pr_ep_new;
+package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_new;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_FTC_DRUG;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_TENOFOVIR_DRUG;

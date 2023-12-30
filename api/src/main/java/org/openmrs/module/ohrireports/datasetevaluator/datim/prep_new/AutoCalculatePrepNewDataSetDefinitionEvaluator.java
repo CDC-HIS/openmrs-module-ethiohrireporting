@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.datim.pr_ep_new;
+package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_new;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.PR_EP_STARTED;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_3TC_DRUG;

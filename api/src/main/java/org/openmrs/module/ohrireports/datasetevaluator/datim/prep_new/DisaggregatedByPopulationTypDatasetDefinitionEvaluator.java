@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.datim.pr_ep_new;
+package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_new;
 
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.DisaggregatedByPopulationTypDatasetDefinition;
