@@ -26,7 +26,6 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
     private EncounterQuery encounterQuery;
     public List<Integer> baseEncounter;
     public Cohort baseCohort;
-
     public void initialize(Date startOnOrAfter, Date endOnOrBefore) {
         baseEncounter = encounterQuery.getEncounters(Collections.singletonList(HIV_CONFIRMED_DATE), startOnOrAfter, endOnOrBefore, POSITIVE_TRACKING);
         baseCohort = getCohort(baseEncounter);
@@ -37,7 +36,6 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
         setLinkage();
         setConcepts();
     }
-
     private void setConcepts() {
        List<String> uuids =Arrays.asList(YES, NO, STARTED_ART, ON_ADHERENCE, IO_MANAGEMENT, KNOWN_POSITIVE_ON_ART, CONFIRMED_REFERRAL, LOST_TO_FOLLOW_UP, STARTED_ART_IN_OTHER_FACILITY, REFERRED_TX_NOT_INITIATED, DIED, DECLINED, OTHER);
         Query query = sessionFactory.getCurrentSession().createSQLQuery("select concept_id,uuid from concept where uuid in ('" + String.join("','", uuids) + "')");
@@ -96,15 +94,13 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
 
         }
     }
-
     private void setLinkage() {
         setLinkage(LINKED_TO_CARE_TREATMENT);
-        setLinkage(REASON_FOR_ART_ELIGIBILITY);
+        setLinkage(REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY);
         setLinkage(FINAL_OUT_COME);
         setLinkage(STARTED_ART);
         totalCount = linkageList.size();
     }
-
     private void setLinkage(String conceptUUid) {
         String sqlBuilder = "select ob.person_id,ob.value_coded,c.name from obs as ob" +
                 " inner join concept_name as c on c.concept_id = ob.value_coded and c.locale_preferred=1  and c.locale = 'en' "+
@@ -130,7 +126,7 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
             }
         }
     }
-
+    
     private Cohort getCohort(List<Integer> encounterIds) {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery("select distinct (person_id) from obs where encounter_id in (:encounterIds) ");
@@ -154,6 +150,7 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
                 personIdList.add(linkage.getPersonId());
             }
         }
+        
         //Clear list of person ,so they would be counted in other linkage type
         personIdList.forEach(i -> {
             linkageList.removeIf(l -> l.getPersonId() == i);
@@ -172,6 +169,7 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
                 personIdList.add(linkage.getPersonId());
             }
         }
+        
         //Clear list of person ,so they would be counted in other linkage type
         personIdList.forEach(i -> {
             linkageList.removeIf(l -> l.getPersonId() == i);

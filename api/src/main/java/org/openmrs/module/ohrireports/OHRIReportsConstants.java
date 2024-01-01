@@ -121,7 +121,7 @@ public class OHRIReportsConstants {
 	
 	public final static String FOLLOW_UP_DATE = "b8cd8630-56dd-495e-8c84-e36a636febe7";
 	
-	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d9f4b14";
+	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d94b14";
 	
 	public final static String ARV_DISPENSED_IN_DAYS = "f3911009-1a8f-42ee-bdfc-1e343c2839aa";
 	
