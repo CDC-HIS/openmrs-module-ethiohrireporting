@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.datim.pr_ep_ct;
+package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_ct;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_FTC_DRUG;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_TENOFOVIR_DRUG;
@@ -10,10 +10,15 @@ import java.util.Objects;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_3TC_DRUG;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.PR_EP_STARTED;
+
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
+import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -46,17 +51,38 @@ public class PrEPCTDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private List<Obs> obses;
 	
+	@Autowired
+	private PreExposureProphylaxisQuery preExposureProphylaxisQuery;
+	
+	@Autowired
+	private AggregateBuilder aggregateBuilder;
+	
 	@Override
-    public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-            throws EvaluationException {
-        auCDataSetDefinition = (PrEPCTDatasetDefinition) dataSetDefinition;
-        obses = new ArrayList<>();
-        context = evalContext;
-        loadConcepts();
-        SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-        buildDataSet(dataSet);
-        return dataSet;
-    }
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+		auCDataSetDefinition = (PrEPCTDatasetDefinition) dataSetDefinition;
+		
+		context = evalContext;
+		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		aggregateBuilder.setCalculateAgeFrom(auCDataSetDefinition.getEndDate());
+		Cohort cohort = preExposureProphylaxisQuery.getAllPrEPCT();
+		
+		List<Person> prepCTFemalePersonList = preExposureProphylaxisQuery.getPersons(preExposureProphylaxisQuery
+		        .getCohortByGender("F", cohort));
+		aggregateBuilder.setPersonList(prepCTFemalePersonList);
+		DataSetRow prEPFemaleDataSetRow = new DataSetRow();
+		aggregateBuilder.buildDataSetColumn(prEPFemaleDataSetRow, "F");
+		dataSet.addRow(prEPFemaleDataSetRow);
+		
+		List<Person> prepCTMalePersonList = preExposureProphylaxisQuery.getPersons(preExposureProphylaxisQuery
+		        .getCohortByGender("M", cohort));
+		aggregateBuilder.setPersonList(prepCTMalePersonList);
+		DataSetRow prEPMaleDataSetRow = new DataSetRow();
+		aggregateBuilder.buildDataSetColumn(prEPMaleDataSetRow, "M");
+		dataSet.addRow(prEPMaleDataSetRow);
+		
+		return dataSet;
+	}
 	
 	private void loadConcepts() {
 		tdfConcept = conceptService.getConceptByUuid(TDF_TENOFOVIR_DRUG);

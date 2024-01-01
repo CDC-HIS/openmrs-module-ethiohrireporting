@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.datim.pr_ep_ct;
+package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_ct;
 
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTPregnantBreastfeedingDatasetDefinition;

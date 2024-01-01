@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.datim.pr_ep_ct;
+package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_ct;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,10 +8,12 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_3TC_DRUG;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_FTC_DRUG;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_TENOFOVIR_DRUG;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.AutoCalculatePrEPCTDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -40,55 +42,28 @@ public class AutoCalculatePrEPCTDatasetDefinitionEvaluator implements DataSetEva
 	
 	private EvaluationContext context;
 	
+	@Autowired
+	private PreExposureProphylaxisQuery preExposureProphylaxisQuery;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		aucDataset = (AutoCalculatePrEPCTDatasetDefinition) dataSetDefinition;
-		context = evalContext;
-		loadConcepts();
+		
+		preExposureProphylaxisQuery.setStartDate(aucDataset.getStartDate());
+		preExposureProphylaxisQuery.setEndDate(aucDataset.getEndDate());
+		
+		//context = evalContext;
+		//loadConcepts();
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		DataSetRow dRow = new DataSetRow();
-		int count = getAllCount();
+		Cohort cohort = preExposureProphylaxisQuery.getAllPrEPCT();
+		//int count = getAllCount();
 		
-		dRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), count);
+		dRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), cohort.size());
 		dataSet.addRow(dRow);
 		return dataSet;
 	}
 	
-	private void loadConcepts() {
-		tdfConcept = conceptService.getConceptByUuid(TDF_TENOFOVIR_DRUG);
-		tdf_ftcConcept = conceptService.getConceptByUuid(TDF_FTC_DRUG);
-		tdf3tcConcept = conceptService.getConceptByUuid(TDF_3TC_DRUG);
-		prEpStatedConcept = conceptService.getConceptByUuid(PR_EP_STARTED);
-	}
-	
-	public int getAllCount() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("distinct obs.personId").from(Obs.class, "obs")
-		        .whereEqual("obs.encounter.encounterType", aucDataset.getEncounterType())
-		        .whereIn("obs.valueCoded", Arrays.asList(tdfConcept, tdf3tcConcept, tdf_ftcConcept)).and()
-		        .whereLess("obs.obsDatetime", aucDataset.getStartDate()).and().whereIn("obs.personId", getOnPrEpPatients());
-		List<Integer> personIdList = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-		return personIdList.size();
-		
-	}
-	
-	private List<Integer> getPreviouslyOnPrEpPatients() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class, "obs")
-		
-		.whereEqual("obs.concept", prEpStatedConcept).and().whereLess("obs.valueDatetime", aucDataset.getStartDate());
-		return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-	}
-	
-	private List<Integer> getOnPrEpPatients() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class, "obs")
-		        .whereEqual("obs.encounter.encounterType", aucDataset.getEncounterType()).and()
-		        .whereEqual("obs.concept", prEpStatedConcept).and()
-		        .whereBetweenInclusive("obs.valueDatetime", aucDataset.getStartDate(), aucDataset.getEndDate()).and()
-		        .whereIn("obs.personId", getPreviouslyOnPrEpPatients());
-		return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-	}
 }

@@ -24,6 +24,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	private List<Integer> baseEncounter;
 	
+	private Cohort baseCohort;
+	
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
@@ -41,9 +43,9 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		return endDate;
 	}
 	
-	public void setEndDate(Date endDate, String filteringDate, String encounterTypeUUid) {
+	public void setEndDate(Date endDate, String filteringConcept, String encounterTypeUUid) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(filteringDate), startDate, endDate);
+		baseEncounter = encounterQuery.getEncounters(Arrays.asList(filteringConcept), startDate, endDate);
 		currentEncounter = baseEncounter = refineBaseEncounter(encounterTypeUUid);
 	}
 	
@@ -191,4 +193,61 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		return new Cohort(query.list());
 	}
 	
+	public Cohort getAllPrEPCurr() {
+		List<Integer> basePrEPCTEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null, endDate,
+		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		List<Integer> filteredEncounterForPrepCT = filterEncounterByPrePStatusForPrepCT(Arrays.asList(PREP_DOSE_END_DATE),
+		    null, endDate, basePrEPCTEncounter);
+		
+		baseCohort = getCohort(filteredEncounterForPrepCT);
+		
+		return baseCohort;
+	}
+	
+	private List<Integer> filterEncounterByPrePStatusForPrepCT(List<String> questionConcept, Date startDate, Date endDate, List<Integer> encounters) {
+
+		if (encounters.isEmpty())
+			return encounters;
+
+		if (questionConcept == null || questionConcept.isEmpty())
+			return new ArrayList<>();
+
+		StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join ");
+		builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+
+		builder.append(" where obs_enc.concept_id in ")
+				.append(conceptQuery(questionConcept));
+
+		if (startDate != null)
+			builder.append(" and obs_enc.value_datetime <= :start ");
+
+		if (endDate != null)
+			builder.append(" and obs_enc.value_datetime >= :end ");
+		builder.append(" and obs_enc.encounter_id in (:subLatestFollowUpDates)");
+
+		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
+		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
+
+		builder.append(" and ob.concept_id in ").append(conceptQuery(questionConcept));
+		builder.append(" and ob.encounter_id in (:latestFollowUpDates)");
+
+		Query q = sessionFactory.getCurrentSession().createSQLQuery(builder.toString());
+
+		if (startDate != null)
+			q.setDate("start", startDate);
+
+		if (endDate != null)
+			q.setDate("end", endDate);
+
+		q.setParameterList("latestFollowUpDates", encounters);
+		q.setParameterList("subLatestFollowUpDates", encounters);
+
+		List list = q.list();
+
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
 }

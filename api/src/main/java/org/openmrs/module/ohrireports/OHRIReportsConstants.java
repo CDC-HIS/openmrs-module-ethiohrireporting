@@ -374,6 +374,10 @@ public class OHRIReportsConstants {
 	
 	public final static String PREP_FOLLOWUP_STATUS = "1f3a74f3-cafd-4bd0-9e3c-5251bd0c05e5";
 	
+	public final static String NEWLY_STARTED = "488236af-a2fe-4b04-b62c-eabd27b05ea4";
+	
+	public final static String ON_PREP = "166536AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String UNIQUE_IDENTIFICATION_CODE = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String PREP_NEXT_VISIT_DATE = "c596f199-4d76-4eca-b3c4-ffa631c0aee9";

@@ -76,7 +76,7 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
 
         aggregateBuilder.setCalculateAgeFrom(cxcaDatasetDefinition.getEndDate());
 
-       CxcaScreening cxcaScreening = getCxcaScreening(cxcaDatasetDefinition.getScreeningType());
+        CxcaScreening cxcaScreening = getCxcaScreening(cxcaDatasetDefinition.getScreeningType());
 
         List<Person> negativeCxCaPersonList = cervicalCancerQuery.getPersons(cxcaScreening.getNegivetCohort());
 
@@ -101,18 +101,17 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
     }
 
     private CxcaScreening getCxcaScreening(String screeningType) {
-        switch (screeningType){
+        switch (screeningType) {
             case CXCA_FIRST_TIME_SCREENING_TYPE:
                 return cervicalCancerQuery.getFirstScreening();
             case CXCA_TYPE_OF_SCREENING_RESCREEN:
-                return  cervicalCancerQuery.getReScreening();
+                return cervicalCancerQuery.getReScreening();
             case CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
-                return  cervicalCancerQuery.getPostScreening();
+                return cervicalCancerQuery.getPostScreening();
             default:
                 return null;
         }
     }
-
 
 
     private int getEnrolledByAgeAndGender(int min, int max) {

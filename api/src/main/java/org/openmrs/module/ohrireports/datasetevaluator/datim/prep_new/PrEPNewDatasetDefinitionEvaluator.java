@@ -10,10 +10,17 @@ import java.util.Objects;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_3TC_DRUG;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.PR_EP_STARTED;
+
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
+import org.openmrs.module.ohrireports.api.impl.query.PrEPNewQuery;
+import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
+import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.PrEPNewDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -46,145 +53,36 @@ public class PrEPNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private List<Obs> obses;
 	
+	@Autowired
+	private PreExposureProphylaxisQuery preExposureProphylaxisQuery;
+	
+	@Autowired
+	private AggregateBuilder aggregateBuilder;
+	
 	@Override
-    public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-            throws EvaluationException {
-        auCDataSetDefinition = (PrEPNewDatasetDefinition) dataSetDefinition;
-        obses = new ArrayList<>();
-        context = evalContext;
-        loadConcepts();
-        SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-        buildDataSet(dataSet);
-        return dataSet;
-    }
-	
-	private void loadConcepts() {
-		tdfConcept = conceptService.getConceptByUuid(TDF_TENOFOVIR_DRUG);
-		tdf_ftcConcept = conceptService.getConceptByUuid(TDF_FTC_DRUG);
-		tdf3tcConcept = conceptService.getConceptByUuid(TDF_3TC_DRUG);
-		prEpStatedConcept = conceptService.getConceptByUuid(PR_EP_STARTED);
-	}
-	
-	private void buildDataSet(SimpleDataSet simpleDataSet) {
-		getAll("F");
-		DataSetRow femaleSetRow = new DataSetRow();
-		buildDataSet(femaleSetRow, "F");
-		simpleDataSet.addRow(femaleSetRow);
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+		auCDataSetDefinition = (PrEPNewDatasetDefinition) dataSetDefinition;
 		
-		getAll("M");
-		DataSetRow maleSetRow = new DataSetRow();
-		buildDataSet(maleSetRow, "M");
-		simpleDataSet.addRow(maleSetRow);
-	}
-	
-	private void buildDataSet(DataSetRow dataSet, String gender) {
-		total = 0;
-		minCount = 15;
-		maxCount = 19;
+		context = evalContext;
+		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "Gender", Integer.class), gender.equals("F") ? "Female"
-		        : "Male");
-		dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getEnrolledByUnknownAge());
+		aggregateBuilder.setCalculateAgeFrom(auCDataSetDefinition.getEndDate());
+		Cohort cohort = preExposureProphylaxisQuery.getAllNewPrEP();
 		
-		while (minCount <= 50) {
-			if (minCount == 50) {
-				dataSet.addColumnValue(new DataSetColumn("50+", "50+", Integer.class),
-				    getEnrolledByAgeAndGender(50, 200, gender));
-			} else {
-				dataSet.addColumnValue(
-				    new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
-				    getEnrolledByAgeAndGender(minCount, maxCount, gender));
-			}
-			minCount = maxCount + 1;
-			maxCount = minCount + 4;
-		}
-		dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), total);
-	}
-	
-	private int getEnrolledByAgeAndGender(int min, int max, String gender) {
-        int count = 0;
-        List<Integer> personIds = new ArrayList<>();
-        for (Obs obs : obses) {
-
-            if (personIds.contains(obs.getPersonId()))
-                continue;
-
-            if (obs.getPerson().getAge() >= min && obs.getPerson().getAge() <= max) {
-                personIds.add(obs.getPersonId());
-                count++;
-            }
-        }
-        incrementTotalCount(count);
-        clearCountedPerson(personIds);
-        return count;
-    }
-	
-	private int getEnrolledByUnknownAge() {
-        int count = 0;
-        List<Integer> personIds = new ArrayList<>();
-        for (Obs obs : obses) {
-            if (personIds.contains(obs.getPersonId()))
-                continue;
-
-            if (Objects.isNull(obs.getPerson().getAge()) ||
-                    obs.getPerson().getAge() <= 0) {
-                count++;
-                personIds.add(obs.getPersonId());
-            }
-
-        }
-        incrementTotalCount(count);
-        clearCountedPerson(personIds);
-        return count;
-    }
-	
-	private void getAll(String gender) {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder
-		        .select("obs")
-		        .from(Obs.class, "obs")
-		        .whereEqual("obs.encounter.encounterType", auCDataSetDefinition.getEncounterType())
-		        .whereIn("obs.valueCoded", Arrays.asList(tdfConcept, tdf3tcConcept, tdf_ftcConcept))
-		        .and()
-		        .whereEqual("obs.person.gender", gender)
-		        .and()
-		        .whereBetweenInclusive("obs.obsDatetime", auCDataSetDefinition.getStartDate(),
-		            auCDataSetDefinition.getEndDate()).and().whereIn("obs.personId", getOnPrEpPatients());
-		obses = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
+		List<Person> prepNewFemalePersonList = preExposureProphylaxisQuery.getPersons(preExposureProphylaxisQuery
+		        .getCohortByGender("F", cohort));
+		aggregateBuilder.setPersonList(prepNewFemalePersonList);
+		DataSetRow prEPFemaleDataSetRow = new DataSetRow();
+		aggregateBuilder.buildDataSetColumn(prEPFemaleDataSetRow, "F");
+		dataSet.addRow(prEPFemaleDataSetRow);
 		
-	}
-	
-	private List<Integer> getPreviouslyOnPrEpPatients() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class, "obs")
+		List<Person> prepNewMalePersonList = preExposureProphylaxisQuery.getPersons(preExposureProphylaxisQuery
+		        .getCohortByGender("M", cohort));
+		aggregateBuilder.setPersonList(prepNewMalePersonList);
+		DataSetRow prEPMaleDataSetRow = new DataSetRow();
+		aggregateBuilder.buildDataSetColumn(prEPMaleDataSetRow, "M");
+		dataSet.addRow(prEPMaleDataSetRow);
 		
-		.whereEqual("obs.concept", prEpStatedConcept).and()
-		        .whereLess("obs.valueDatetime", auCDataSetDefinition.getStartDate());
-		return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-	}
-	
-	private void incrementTotalCount(int count) {
-		if (count > 0)
-			total = total + count;
-	}
-	
-	private void clearCountedPerson(List<Integer> personIds) {
-        for (int pId : personIds) {
-            obses.removeIf(p -> p.getPersonId().equals(pId));
-        }
-    }
-	
-	private List<Integer> getOnPrEpPatients() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder
-		        .select("obs")
-		        .from(Obs.class, "obs")
-		        .whereEqual("obs.encounter.encounterType", auCDataSetDefinition.getEncounterType())
-		        .and()
-		        .whereEqual("obs.concept", prEpStatedConcept)
-		        .and()
-		        .whereBetweenInclusive("obs.valueDatetime", auCDataSetDefinition.getStartDate(),
-		            auCDataSetDefinition.getEndDate()).and().whereNotInAny("obs.personId", getPreviouslyOnPrEpPatients());
-		return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
+		return dataSet;
 	}
 }

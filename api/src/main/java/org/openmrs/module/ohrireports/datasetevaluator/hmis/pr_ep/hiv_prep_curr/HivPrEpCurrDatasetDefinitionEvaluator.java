@@ -48,7 +48,7 @@ public class HivPrEpCurrDatasetDefinitionEvaluator implements DataSetEvaluator {
         hivPrEPQuery.setEndDate(hivPrepCurrDatasetDefinition.getEndDate(), FOLLOW_UP_DATE, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 
         Cohort prepFollowupCohort = hivPrEPQuery
-                .getCohortByConceptAndBaseEncounter(FOLLOW_UP_DATE);
+                .getAllPrEPCurr();
 
         SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 

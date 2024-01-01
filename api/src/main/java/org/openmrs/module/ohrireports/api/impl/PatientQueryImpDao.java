@@ -187,6 +187,14 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		
 	}
 	
+	public Cohort getCohortByGender(String gender, Cohort cohort) {
+		StringBuilder sql = new StringBuilder("select person_id from person where gender='" + gender
+		        + "' and person_id in (:personIdList)");
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		query.setParameterList("personIdList", cohort.getMemberIds());
+		return new Cohort(query.list());
+	}
+	
 	@Override
 	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, List<Integer> encounters) {
 		StringBuilder sql = baseQuery(PREGNANT_STATUS);
