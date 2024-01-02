@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_denominator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -19,6 +20,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
+
 @Handler(supports = { TxTbDenominatorDiagnosticTestDataSetDefinition.class })
 public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -27,17 +30,11 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 	@Autowired
 	private TBQuery tbQuery;
 	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (TxTbDenominatorDiagnosticTestDataSetDefinition) dataSetDefinition;
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
-		tbQuery.setEncountersByScreenDate(encounters);
-		
-		Cohort cohort = tbQuery.getActiveOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
+		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),

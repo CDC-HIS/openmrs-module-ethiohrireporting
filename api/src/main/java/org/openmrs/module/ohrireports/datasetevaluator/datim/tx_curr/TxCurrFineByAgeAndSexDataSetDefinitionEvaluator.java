@@ -34,9 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = {TxCurrFineByAgeAndSexDataSetDefinition.class})
 public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
+
     private TxCurrFineByAgeAndSexDataSetDefinition hdsd;
     private String title = "Number of adults and children Currently enrolling on antiretroviral therapy (ART)";
     private PatientQueryService patientQueryService;
+    @Autowired
     private AggregateBuilder aggregateBuilder;
     @Autowired
     private EncounterQuery encounterQuery;
@@ -45,17 +47,19 @@ public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetE
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 
-        hdsd = (TxCurrFineByAgeAndSexDataSetDefinition) dataSetDefinition;
+        TxCurrFineByAgeAndSexDataSetDefinition hdsd = (TxCurrFineByAgeAndSexDataSetDefinition) dataSetDefinition;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 
-        patientQueryService = Context.getService(PatientQueryService.class);
+        PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 
-        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+        aggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
+        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,hdsd.getEndDate());
         Cohort baseCohort = patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters);
         personList = patientQueryService.getPersons(baseCohort);
 
         aggregateBuilder.setPersonList(personList);
-
+        aggregateBuilder.setLowerBoundAge(0);
+        aggregateBuilder.setUpperBoundAge(65);
         DataSetRow femaleDateSet = new DataSetRow();
         aggregateBuilder.buildDataSetColumn(femaleDateSet, "F");
         set.addRow(femaleDateSet);

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,10 @@ public class ArtQuery extends BaseLineListQuery {
 		query.setParameterList("lateEncounterIds", lateEncounterIds);
 		return getDictionary(query);
 		
+	}
+	
+	public HashMap<Integer, Object> getConceptName(List<Integer> encounters, Cohort cohort, String conceptsUUid) {
+		return getDictionary(getObs(encounters, conceptsUUid, cohort));
 	}
 	
 }

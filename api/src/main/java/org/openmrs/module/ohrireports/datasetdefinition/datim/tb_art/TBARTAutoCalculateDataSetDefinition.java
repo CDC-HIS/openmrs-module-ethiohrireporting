@@ -42,5 +42,4 @@ public class TBARTAutoCalculateDataSetDefinition extends BaseDataSetDefinition {
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
 	}
-	
 }

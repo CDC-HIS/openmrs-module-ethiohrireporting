@@ -1,7 +1,10 @@
 package org.openmrs.module.ohrireports.api.impl;
 
+import org.openmrs.Cohort;
+
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 
+import java.util.HashMap;
 import java.util.List;
 
 public abstract class BaseEthiOhriQuery {
@@ -98,15 +101,13 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("select " + CONCEPT_BASE_ALIAS_OBS + "person_id,cn.name from obs as  obc");
 		sql.append(" inner join patient as pa on pa.patient_id = " + CONCEPT_BASE_ALIAS_OBS + "person_id ");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
-		sql.append(" inner join concept as c on c.concept_id = " + CONCEPT_BASE_ALIAS_OBS
-		        + " concept_id and c.retired = false ");
+		sql.append(" inner join concept as c on c.concept_id = " + CONCEPT_BASE_ALIAS_OBS + " concept_id  ");
 		sql.append(" inner join concept_name as cn on cn.concept_id = " + CONCEPT_BASE_ALIAS_OBS
 		        + " value_coded and cn.locale_preferred =1 and cn.locale='en' ");
-		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" inner join encounter as e on e.encounter_id = " + CONCEPT_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where pa.voided = false and " + CONCEPT_BASE_ALIAS_OBS + "voided = false ");
+		sql.append(" where obc.concept_id =" + conceptQuery(conceptQuestionUUid));
 		return sql;
 	}
 	
@@ -219,4 +220,5 @@ public abstract class BaseEthiOhriQuery {
 		        + SUB_QUERY_JOIN_BASE_ALIAS_OBS + " person_id)");
 		
 	}
+	
 }

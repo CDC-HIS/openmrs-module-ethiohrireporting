@@ -34,10 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { TxCurrCoarseByAgeAndSexDataSetDefinition.class })
 public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
-
-    private TxCurrCoarseByAgeAndSexDataSetDefinition hdsd;
-
-    private PatientQueryService patientQueryService;
     @Autowired
     private AggregateBuilder aggregateBuilder;
     @Autowired
@@ -47,14 +43,17 @@ public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSe
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
 
-        hdsd = (TxCurrCoarseByAgeAndSexDataSetDefinition) dataSetDefinition;
+        TxCurrCoarseByAgeAndSexDataSetDefinition hdsd = (TxCurrCoarseByAgeAndSexDataSetDefinition) dataSetDefinition;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-        patientQueryService = Context.getService(PatientQueryService.class);
+        PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 
-        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,hdsd.getEndDate());
         Cohort baseCohort  = patientQueryService.getActiveOnArtCohort("",null,hdsd.getEndDate(),null,encounters);
         personList = patientQueryService.getPersons(baseCohort);
 
+        aggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
+        aggregateBuilder.setLowerBoundAge(0);
+        aggregateBuilder.setUpperBoundAge(65);
         aggregateBuilder.setPersonList(personList);
 
         DataSetRow femaleDateSet = new DataSetRow();

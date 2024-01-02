@@ -36,6 +36,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	@Autowired
 	private EncounterQuery encounterQuery;
+	private Cohort pregnantCohort;
 
 	List<Person> persons = new ArrayList<>();
 	List<Integer> encounter = new ArrayList<>();
@@ -46,7 +47,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		_datasetDefinition = (HIVTXNewDatasetDefinition) dataSetDefinition;
 		patientQuery = Context.getService(PatientQueryService.class);
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		encounter = encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getEndDate());
+		encounter = encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getStartDate(),_datasetDefinition.getEndDate());
 		buildDataSet(dataSet);
 
 		return dataSet;
@@ -180,6 +181,8 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 			cohort = patientQuery.getNewOnArtCohort("", _datasetDefinition.getStartDate(),
 					_datasetDefinition.getEndDate(), null,encounter);
 			persons = patientQuery.getPersons(cohort);
+			pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES,encounter);
+
 			return cohort.getMemberIds().size();
 		}
 
@@ -229,7 +232,6 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 
 			if (parameter.isPregnant != UNKNOWN) {
-				Cohort pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES,encounter);
 				if (parameter.isPregnant == YES) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EncounterQuery extends BaseEthiOhriQuery {
 	
-	private DbSessionFactory sessionFactory;
+	private final DbSessionFactory sessionFactory;
 	
 	@Autowired
 	public EncounterQuery(DbSessionFactory _SessionFactory) {
@@ -35,23 +35,26 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		return sessionFactory.getCurrentSession();
 	}
 	
-	public List<Integer> getLatestDateByFollowUpDate(Date end) {
+	public List<Integer> getLatestDateByFollowUpDate(Date start, Date end) {
 		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
 		builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
 		
-		builder.append(" where obs_enc.concept_id =" + conceptQuery(FOLLOW_UP_DATE));
+		builder.append(" where obs_enc.concept_id =").append(conceptQuery(FOLLOW_UP_DATE));
 		
+		if (start != null)
+			builder.append(" and obs_enc.value_datetime >= :start ");
 		if (end != null)
 			builder.append(" and obs_enc.value_datetime <= :end ");
 		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
 		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
-		builder.append(" and ob.concept_id =" + conceptQuery(FOLLOW_UP_DATE));
+		builder.append(" and ob.concept_id =").append(conceptQuery(FOLLOW_UP_DATE));
 		
 		Query q = getCurrentSession().createSQLQuery(builder.toString());
 		
+		if (start != null)
+			q.setDate("start", start);
 		if (end != null)
 			q.setDate("end", end);
-		
 		List list = q.list();
 		
 		if (list != null) {
@@ -61,15 +64,14 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		}
 	}
 	
-	public List<Integer> getAliveFollowUpEncounters(Date end) {
-		List<Integer> allEncounters = getLatestDateByFollowUpDate(end);
+	public List<Integer> getAliveFollowUpEncounters(Date start, Date end) {
+		List<Integer> allEncounters = getLatestDateByFollowUpDate(start, end);
 		
-		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob");
-		builder.append(" where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS));
-		builder.append(" and ob.value_coded in " + conceptQuery(Arrays.asList(ALIVE, RESTART)));
-		builder.append(" and ob.encounter_id in (:encounters)");
+		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS)
+		        + " and ob.value_coded in " + conceptQuery(Arrays.asList(ALIVE, RESTART))
+		        + " and ob.encounter_id in (:encounters)";
 		
-		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		Query q = getCurrentSession().createSQLQuery(builder);
 		q.setParameterList("encounters", allEncounters);
 		
 		List list = q.list();
@@ -94,7 +96,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         builder.append(
                 "(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
 
-        builder.append(" where obs_enc.concept_id in " + conceptQuery(questionConcept));
+        builder.append(" where obs_enc.concept_id in ").append(conceptQuery(questionConcept));
 
         if (start != null)
             builder.append(" and obs_enc.value_datetime >= :start ");
@@ -105,7 +107,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 
         builder.append(" GROUP BY obs_enc.person_id ) as sub ");
         builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
-        builder.append(" and ob.concept_id in " + conceptQuery(questionConcept));
+        builder.append(" and ob.concept_id in ").append(conceptQuery(questionConcept));
         builder.append(" and ob.encounter_id in (:latestFollowUpDates)");
 
         Query q = getCurrentSession().createSQLQuery(builder.toString());

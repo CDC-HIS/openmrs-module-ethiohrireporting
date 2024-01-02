@@ -64,7 +64,7 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 	}
 	
 	public int getNumberOfEnrolledBreastFeeding() {
-		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
 		
 		Cohort pList = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();

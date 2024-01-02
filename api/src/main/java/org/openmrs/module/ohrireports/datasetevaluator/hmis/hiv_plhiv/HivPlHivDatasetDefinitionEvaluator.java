@@ -29,7 +29,7 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		HivPlHivDatasetDefinition _datasetDefinition = (HivPlHivDatasetDefinition) dataSetDefinition;
 		hivPlvHivQuery.setDates(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate(),
-		    encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getEndDate()));
+		    encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate()));
 		
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		switch (_datasetDefinition.getHivPvlHivType()) {

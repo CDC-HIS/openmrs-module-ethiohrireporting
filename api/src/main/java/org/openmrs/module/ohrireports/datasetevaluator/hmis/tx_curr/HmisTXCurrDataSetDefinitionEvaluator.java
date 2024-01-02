@@ -46,7 +46,7 @@ public class HmisTXCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		hdsd = (HmisTXCurrDataSetDefinition) dataSetDefinition;
 		
 		data = new SimpleDataSet(dataSetDefinition, evalContext);
-		List<Integer> aliveFollowUpEncounters = encounterQuery.getAliveFollowUpEncounters(hdsd.getEndDate());
+		List<Integer> aliveFollowUpEncounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
 		
 		hmisCurrQuery.loadInitialCohort(hdsd.getEndDate(), aliveFollowUpEncounters);
 		

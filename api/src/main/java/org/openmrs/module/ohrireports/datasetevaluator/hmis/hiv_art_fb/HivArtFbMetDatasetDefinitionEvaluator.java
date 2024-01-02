@@ -7,6 +7,8 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.IMPLANTABLE_HO
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.INTRAUTERINE_DEVICE;
 
 import java.util.Arrays;
+
+import org.omg.DynamicAny._DynAnyFactoryStub;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_fb.HivArtFbMetDatasetDefinition;
@@ -36,7 +38,7 @@ public class HivArtFbMetDatasetDefinitionEvaluator implements DataSetEvaluator {
 		HivArtFbMetDatasetDefinition _DatasetDefinition = (HivArtFbMetDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_DatasetDefinition, evalContext);
 		fbQuery.setDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate(),
-		    encounterQuery.getAliveFollowUpEncounters(_DatasetDefinition.getEndDate()));
+		    encounterQuery.getAliveFollowUpEncounters(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate()));
 		
 		int oralContraceptive = fbQuery.getPatientByMethodOfFP(ORAL_CONTRACEPTIVE_PILL);
 		int injectable = fbQuery.getPatientByMethodOfFP(INJECTABLE);
