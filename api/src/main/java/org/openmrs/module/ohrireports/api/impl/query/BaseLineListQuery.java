@@ -81,6 +81,11 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 		
 	}
 	
+	/**
+	 * @param baseEncounters
+	 * @param cohort
+	 * @return
+	 */
 	public HashMap<Integer, Object> getRegiment(List<Integer> baseEncounters, Cohort cohort) {
 
         Query query = getObs(baseEncounters, REGIMEN, cohort);
@@ -165,8 +170,8 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 	protected Query getObs(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseConceptQuery(concept);
 		
-		sql.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
-		sql.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:cohorts) ");
+		sql.append(" and  ").append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
+		sql.append(" and  ").append(CONCEPT_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
@@ -179,8 +184,8 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 	protected Query getObsNumber(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseValueNumberQuery(concept);
 		
-		sql.append(" and  " + VALUE_NUMERIC_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
-		sql.append(" and  " + VALUE_NUMERIC_BASE_ALIAS_OBS + "person_id in (:cohorts) ");
+		sql.append(" and  ").append(VALUE_NUMERIC_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
+		sql.append(" and  ").append(VALUE_NUMERIC_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
