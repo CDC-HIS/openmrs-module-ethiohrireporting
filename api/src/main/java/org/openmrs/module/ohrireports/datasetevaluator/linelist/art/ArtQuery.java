@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.api.impl.query;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.art;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
 
@@ -9,6 +9,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

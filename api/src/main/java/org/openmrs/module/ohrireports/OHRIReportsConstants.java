@@ -509,6 +509,8 @@ public class OHRIReportsConstants {
 	 */
 	public final static String FAMILY_PLANNING_METHODS = "374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String DSD_ASSESSMENT_DATE = "78c8abfb-1989-444a-8750-947227f4bde8";
+	
 	public final static String ORAL_CONTRACEPTIVE_PILL = "780AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String INJECTABLE = "5279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";

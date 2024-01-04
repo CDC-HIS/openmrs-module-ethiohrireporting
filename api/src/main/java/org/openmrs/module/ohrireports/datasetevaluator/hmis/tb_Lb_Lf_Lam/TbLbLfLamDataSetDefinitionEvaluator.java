@@ -53,7 +53,7 @@ public class TbLbLfLamDataSetDefinitionEvaluator implements DataSetEvaluator {
 		List<Integer> mwrd = new ArrayList<>();
 		List<Obs> obsmwrd = new ArrayList<>();
 		List<Integer> specimenSents = getTBscreenedInReportingPeriod();
-		if (specimenSents == null || specimenSents.size()==0){
+		if (specimenSents == null || specimenSents.isEmpty()){
 			return mwrd.size();
 		}
 		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();

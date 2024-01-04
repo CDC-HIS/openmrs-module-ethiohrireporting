@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.linelist;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.linkageNew;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
