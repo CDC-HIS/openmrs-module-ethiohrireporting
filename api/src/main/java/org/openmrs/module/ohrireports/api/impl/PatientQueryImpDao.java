@@ -50,90 +50,90 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	}
 	
 	@Override
-	public Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
-			Cohort toBeExcludedCohort, List<Integer> encounters) {
+    public Collection<Integer> getArtStartedCohort(String gender, Date startOnOrAfter, Date endOrBefore, Cohort cohort,
+                                                   Cohort toBeExcludedCohort, List<Integer> encounters) {
 
-		if (encounters.isEmpty() || (cohort != null && cohort.isEmpty()))
-			return new ArrayList<>();
+        if (encounters.isEmpty() || (cohort != null && cohort.isEmpty()))
+            return new ArrayList<>();
 
-		StringBuilder sql = baseQuery(ART_START_DATE);
+        StringBuilder sql = baseQuery(ART_START_DATE);
 
-		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+        sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 
-		if (!Objects.isNull(gender) && !gender.trim().isEmpty())
-			sql.append("and p.gender = '").append(gender).append("' ");
-		if (startOnOrAfter != null)
-			sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start ");
-		if (cohort != null && !cohort.isEmpty())
-			sql.append("and p.person_id in (:personIds) ");
+        if (!Objects.isNull(gender) && !gender.trim().isEmpty())
+            sql.append("and p.gender = '").append(gender).append("' ");
+        if (startOnOrAfter != null)
+            sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start ");
+        if (cohort != null && !cohort.isEmpty())
+            sql.append("and p.person_id in (:personIds) ");
 
-		if (endOrBefore != null)
-			sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
-		if (toBeExcludedCohort != null && !toBeExcludedCohort.isEmpty())
-			sql.append("and p.person_id not in (:toBeExcludedCohort) ");
+        if (endOrBefore != null)
+            sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
+        if (toBeExcludedCohort != null && !toBeExcludedCohort.isEmpty())
+            sql.append("and p.person_id not in (:toBeExcludedCohort) ");
 
-		Query q = getSession().createSQLQuery(sql.toString());
-		q.setParameterList("encounters", encounters);
+        Query q = getSession().createSQLQuery(sql.toString());
+        q.setParameterList("encounters", encounters);
 
-		if (startOnOrAfter != null)
-			q.setTimestamp("start", startOnOrAfter);
+        if (startOnOrAfter != null)
+            q.setTimestamp("start", startOnOrAfter);
 
-		if (endOrBefore != null)
-			q.setTimestamp("end", endOrBefore);
+        if (endOrBefore != null)
+            q.setTimestamp("end", endOrBefore);
 
-		if (cohort != null && !cohort.isEmpty())
-			q.setParameter("personIds", cohort.getMemberIds());
-		if (toBeExcludedCohort != null && !toBeExcludedCohort.isEmpty())
-			q.setParameterList("toBeExcludedCohort", toBeExcludedCohort.getMemberIds());
+        if (cohort != null && !cohort.isEmpty())
+            q.setParameter("personIds", cohort.getMemberIds());
+        if (toBeExcludedCohort != null && !toBeExcludedCohort.isEmpty())
+            q.setParameterList("toBeExcludedCohort", toBeExcludedCohort.getMemberIds());
 
-		List list = q.list();
+        List list = q.list();
 
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
+        if (list != null) {
+            return (List<Integer>) list;
+        } else {
+            return new ArrayList<Integer>();
+        }
 
-	}
+    }
 	
 	public Collection<Integer> getArtStartedCohort(List<Integer> encounters, Date startOnOrAfter, Date endOrBefore,
-			Cohort cohort) {
+                                                   Cohort cohort) {
 
-		if (encounters.isEmpty())
-			return new ArrayList<>();
+        if (encounters.isEmpty())
+            return new ArrayList<>();
 
-		StringBuilder sql = baseQuery(ART_START_DATE);
+        StringBuilder sql = baseQuery(ART_START_DATE);
 
-		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
-		if (startOnOrAfter != null)
-			sql.append(" and " + OBS_ALIAS + "value_datetime >= :start ");
-		if (cohort != null && cohort.size() != 0)
-			sql.append("and p.person_id in (:personIds) ");
+        sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
+        if (startOnOrAfter != null)
+            sql.append(" and " + OBS_ALIAS + "value_datetime >= :start ");
+        if (cohort != null && cohort.size() != 0)
+            sql.append("and p.person_id in (:personIds) ");
 
-		if (endOrBefore != null)
-			sql.append("and " + OBS_ALIAS + "value_datetime <= :end ");
+        if (endOrBefore != null)
+            sql.append("and " + OBS_ALIAS + "value_datetime <= :end ");
 
-		Query q = getSession().createSQLQuery(sql.toString());
-		q.setParameterList("encounters", encounters);
+        Query q = getSession().createSQLQuery(sql.toString());
+        q.setParameterList("encounters", encounters);
 
-		if (startOnOrAfter != null)
-			q.setTimestamp("start", startOnOrAfter);
+        if (startOnOrAfter != null)
+            q.setTimestamp("start", startOnOrAfter);
 
-		if (endOrBefore != null)
-			q.setTimestamp("end", endOrBefore);
+        if (endOrBefore != null)
+            q.setTimestamp("end", endOrBefore);
 
-		if (cohort != null && cohort.size() != 0)
-			q.setParameter("personIds", cohort.getMemberIds());
+        if (cohort != null && cohort.size() != 0)
+            q.setParameter("personIds", cohort.getMemberIds());
 
-		List list = q.list();
+        List list = q.list();
 
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
+        if (list != null) {
+            return (List<Integer>) list;
+        } else {
+            return new ArrayList<Integer>();
+        }
 
-	}
+    }
 	
 	@Override
 	public Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort,
@@ -185,6 +185,17 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		criteria.addOrder(Order.desc("birthdate"));
 		return criteria.list();
 		
+	}
+	
+	public Cohort getAllPLHIVMalnutrition(List<Integer> encounters) {
+		StringBuilder stringBuilder = baseQuery(NUTRITIONAL_SCREENING_RESULT);
+		stringBuilder.append(" and ob.encounter_id in (:encounters)");
+		stringBuilder.append(" and value_coded is not null");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
+		query.setParameterList("encounters", encounters);
+		
+		return new Cohort(query.list());
 	}
 	
 	public Cohort getCohortByGender(String gender, Cohort cohort) {

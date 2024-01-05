@@ -115,6 +115,23 @@ public class PreExposureProphylaxisLineListQuery extends BaseLineListQuery {
 		return query;
 	}
 	
+	public HashMap<Integer, Object> getConceptName(List<Integer> baseEncounters, String concept, Cohort cohort,
+	        String encounterTypeUUid) {
+		return getDictionary(getObs(baseEncounters, concept, cohort, encounterTypeUUid));
+	}
+	
+	public Query getObs(List<Integer> baseEncounters, String concept, Cohort cohort, String encounterTypeUUid) {
+		StringBuilder stringQuery = baseConceptQuery(concept, encounterTypeUUid);
+		stringQuery.append(" and ");
+		stringQuery.append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id in (:encounter) ");
+		stringQuery.append(" and ");
+		stringQuery.append(CONCEPT_BASE_ALIAS_OBS).append("person_id in (:personIds) ");
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery.toString());
+		query.setParameterList("encounter", baseEncounters);
+		query.setParameterList("personIds", cohort.getMemberIds());
+		return query;
+	}
+	
 	protected StringBuilder baseConceptQuery(String conceptQuestionUUid, String encounterTypeUUid) {
 		
 		StringBuilder sql = new StringBuilder();
