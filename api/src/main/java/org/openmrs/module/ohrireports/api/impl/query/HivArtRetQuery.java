@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_ret;
+package org.openmrs.module.ohrireports.api.impl.query;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
@@ -26,11 +26,27 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	private DbSessionFactory sessionFactory;
 	@Autowired
 	private EncounterQuery encounterQuery;
-	List<Integer> retEncounter = new ArrayList<>();
-	List<Integer> netRetEncounter = new ArrayList<>();
-	public Cohort retCohort = new Cohort();
-	public Cohort netRetCohort = new Cohort();
-
+	private List<Integer> retEncounter = new ArrayList<>();
+	private List<Integer> netRetEncounter = new ArrayList<>();
+	private Cohort retCohort = new Cohort();
+	private Cohort netRetCohort = new Cohort();
+	
+	public List<Integer> getRetEncounter() {
+		return retEncounter;
+	}
+	
+	public List<Integer> getNetRetEncounter() {
+		return netRetEncounter;
+	}
+	
+	public Cohort getRetCohort() {
+		return retCohort;
+	}
+	
+	public Cohort getNetRetCohort() {
+		return netRetCohort;
+	}
+	
 	public void initializeRetentionCohort(Date startOnOrAfter, Date endOnOrBefore) {
 		if (getSessionFactory() == null)
 			this.setSessionFactory(sessionFactory);
@@ -50,7 +66,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	}
 
 	public double getPercentage() {
-		if(retCohort.size()==0)
+		if(retCohort.isEmpty())
 			return 0;
 		double value = (retCohort.size()*100.00)/netRetCohort.size() ;
 		DecimalFormat decimalFormat = new DecimalFormat("###.##");

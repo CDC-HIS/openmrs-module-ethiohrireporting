@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_ret;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.HivArtRetQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -50,8 +51,8 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		if (!isNetRetention) {
 			hivArtRetQuery.initializeRetentionCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		}
-		currentCohort = isNetRetention ? hivArtRetQuery.netRetCohort : hivArtRetQuery.retCohort;
-		currentEncounter = isNetRetention ? hivArtRetQuery.netRetEncounter : hivArtRetQuery.retEncounter;
+		currentCohort = isNetRetention ? hivArtRetQuery.getNetRetCohort() : hivArtRetQuery.getRetCohort();
+		currentEncounter = isNetRetention ? hivArtRetQuery.getNetRetEncounter() : hivArtRetQuery.getRetEncounter();
 		 pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(currentCohort, YES, currentEncounter);
 		buildDataSet(dataSet);
 
