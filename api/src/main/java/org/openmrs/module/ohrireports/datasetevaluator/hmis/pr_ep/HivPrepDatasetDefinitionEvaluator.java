@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep.hiv_prep;
+package org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;

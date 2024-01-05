@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep.hiv_p_rep_cat;
+package org.openmrs.module.ohrireports.datasetevaluator.hmis.pep;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SEXUAL_ASSAULT;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
@@ -7,7 +7,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.OCCUPATIONAL;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.NON_OCCUPATIONAL;
 
 import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPrEpCatagoriesDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPEPCategoryDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep.HivPrEpQuery;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -19,8 +19,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Handler(supports = { HivPrEpCatagoriesDatasetDefinition.class })
-public class HivPrEpCatagoriesDatasetDefinitionEvaluators implements DataSetEvaluator {
+@Handler(supports = { HivPEPCategoryDatasetDefinition.class })
+public class HivPEPCategoryDatasetDefinitionEvaluators implements DataSetEvaluator {
 	
 	@Autowired
 	private HivPrEpQuery query;
@@ -30,7 +30,7 @@ public class HivPrEpCatagoriesDatasetDefinitionEvaluators implements DataSetEval
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		HivPrEpCatagoriesDatasetDefinition _DatasetDefinition = (HivPrEpCatagoriesDatasetDefinition) dataSetDefinition;
+		HivPEPCategoryDatasetDefinition _DatasetDefinition = (HivPEPCategoryDatasetDefinition) dataSetDefinition;
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		

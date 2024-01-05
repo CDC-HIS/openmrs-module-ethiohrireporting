@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.DSD_ASSESSMENT_DATE;
 import static org.openmrs.module.ohrireports.RegimentConstant.DSD_CATEGORY;
 
 import org.hibernate.Query;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +40,8 @@ public class DSDQuery extends PatientQueryImpDao {
 	private Cohort baseCohort = new Cohort();
 	public  void generateBaseReport(Date start, Date end){
 		baseEncounter = encounterQuery.getAliveFollowUpEncounters(null,end);
-		baseCohort =  getActiveOnArtCohort("",null,end,null,baseEncounter);
+		List<Integer> latestDSDAssessmentEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE),null,end,baseEncounter);
+		baseCohort =  getActiveOnArtCohort("",null,end,null,latestDSDAssessmentEncounter);
 	}
 	
 	public Cohort getCohortByDSDCategories(String dsdCategoriesUUI){

@@ -28,10 +28,8 @@ public class HivArtFbDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		HivArtFbDatasetDefinition _DatasetDefinition = (HivArtFbDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_DatasetDefinition, evalContext);
-		fbQuery.setDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate(),
-		    encounterQuery.getAliveFollowUpEncounters(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate()));
-		List<Person> persons = fbQuery.getPersons(new Cohort(fbQuery.GetPatientsOnFamilyPlanning()));
-		
+		fbQuery.generateReport(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate());
+		List<Person> persons = fbQuery.getPersons(fbQuery.getCohort());
 		HivArtFbDatasetBuilder datasetBuilder = new HivArtFbDatasetBuilder(persons, dataSet,
 		        _DatasetDefinition.getDescription(), "HIV_ART_FP");
 		datasetBuilder.buildDataset();

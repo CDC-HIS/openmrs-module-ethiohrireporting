@@ -92,7 +92,7 @@ public class OHRIReportsConstants {
 	
 	public final static String POSITIVE = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String NEGATIVE = "664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String NEGATIVE = "5e4fc757-0b14-49ae-b3b7-419666f41e15";
 	
 	public final static String SETTING_OF_HIV_TEST = "13abe5c9-6de2-4970-b348-36d352ee8eeb";
 	
