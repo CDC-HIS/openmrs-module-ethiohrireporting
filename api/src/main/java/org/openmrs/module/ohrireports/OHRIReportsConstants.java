@@ -290,6 +290,8 @@ public class OHRIReportsConstants {
 	
 	public final static String NUTRITIONAL_STATUS = "ae4d72a4-ccf5-49ff-b395-6687c534b1a2";
 	
+	public final static String NUTRITIONAL_SCREENING_RESULT = "2c5b553b-58f8-4462-b14e-0a6a6628a790";
+	
 	public final static String OVERWEIGHT = "114413AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String NORMAL = "1115AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -490,7 +492,7 @@ public class OHRIReportsConstants {
 	
 	public final static String FINAL_OUT_COME = "413b265c-87ef-4988-a7bc-1bfc6b5e5528";
 	
-	public final static String LOST_TO_FOLLOW_UP = "5240AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String LOST_TO_FOLLOW_UP = "27e28afa-b4a6-44e0-b331-ea7250121a0e";
 	
 	public final static String CONFIRMED_REFERRAL = "4680464a-47ba-4b9c-bd62-ec228c2c1822";
 	

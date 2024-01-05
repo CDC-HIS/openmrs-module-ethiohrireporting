@@ -7,16 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REGIMEN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
 import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.ohrireports.helper.EthiopianDateConverter;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 /**
  * Specialized methods for retrieving value of particular cohort with given concept value type as
@@ -109,6 +107,10 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 	 */
 	public HashMap<Integer, Object> getFollowUpStatus(List<Integer> baseEncounters, Cohort cohort) {
 		return getDictionary(getObs(baseEncounters, FOLLOW_UP_STATUS, cohort));
+	}
+	
+	public HashMap<Integer, Object> getNutritionalStatus(List<Integer> baseEncounters, Cohort cohort) {
+		return getDictionary(getObs(baseEncounters, NUTRITIONAL_STATUS, cohort));
 	}
 	
 	/**

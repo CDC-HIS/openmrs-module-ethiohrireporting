@@ -53,13 +53,10 @@ public class AutoCalculatePrEPCTDatasetDefinitionEvaluator implements DataSetEva
 		preExposureProphylaxisQuery.setStartDate(aucDataset.getStartDate());
 		preExposureProphylaxisQuery.setEndDate(aucDataset.getEndDate());
 		
-		//context = evalContext;
-		//loadConcepts();
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		DataSetRow dRow = new DataSetRow();
 		Cohort cohort = preExposureProphylaxisQuery.getAllPrEPCT();
-		//int count = getAllCount();
 		
 		dRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), cohort.size());
 		dataSet.addRow(dRow);

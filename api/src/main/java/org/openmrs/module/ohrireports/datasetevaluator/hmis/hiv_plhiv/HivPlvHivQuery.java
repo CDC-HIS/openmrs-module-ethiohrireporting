@@ -10,16 +10,13 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.MILD_MAL_NUTRI
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MODERATE_MAL_NUTRITION;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.SEVERE_MAL_NUTRITION;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +25,27 @@ import org.springframework.stereotype.Component;
 @Component
 public class HivPlvHivQuery extends PatientQueryImpDao {
 	
-	private Date startDate, endDate;
+	private Date startDate;
+	
+	private Date endDate;
+	
+	private List<Integer> baseEncounter;
+	
+	@Autowired
+	private EncounterQuery encounterQuery;
+	
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	public void setEndDate(Date endDate, String conceptQuestion) {
+		this.endDate = endDate;
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(conceptQuestion), startDate, endDate);
+	}
+	
+	public List<Integer> getBaseEncounter() {
+		return baseEncounter;
+	}
 	
 	private DbSessionFactory sessionFactory;
 	

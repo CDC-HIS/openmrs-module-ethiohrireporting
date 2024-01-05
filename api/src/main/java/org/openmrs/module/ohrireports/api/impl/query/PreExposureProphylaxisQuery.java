@@ -1,17 +1,14 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
 import org.hibernate.Query;
+import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
-import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -31,17 +28,15 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		return baseFollowupEncounter;
 	}
 	
-	//	public List<Integer> getBaseScreeningEncounter() {
-	//		return baseScreeningEncounter;
-	//	}
-	
 	public void setBaseScreeningEncounter(List<Integer> baseScreeningEncounter) {
 		this.baseScreeningEncounter = baseScreeningEncounter;
 	}
 	
 	public List<Integer> baseScreeningEncounter;
 	
-	private List<Integer> currentEncounter;
+	private List<Integer> basePrEPCurrEncounter;
+	
+	private List<Integer> basePrEPCTEncounter;
 	
 	private Date startDate;
 	
@@ -63,7 +58,8 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		this.endDate = endDate;
 		baseFollowupEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), startDate, endDate,
 		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		currentEncounter = baseFollowupEncounter;
+		baseScreeningEncounter = encounterQuery.getEncounters(Arrays.asList(PREP_STARTED_DATE), startDate, endDate,
+		    PREP_SCREENING_ENCOUNTER_TYPE);
 	}
 	
 	@Autowired
@@ -83,6 +79,14 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		return baseCohort;
 	}
 	
+	//	public List<Integer> loadPrepEncounter(){
+	//		StringBuilder stringBuilder = baseQuery(FOLLOW_UP_DATE, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+	//
+	//		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+	//		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
+	//		query.setParameterList("encounters", baseFollowupEncounter);
+	//	}
+	
 	public Cohort getAllNewPrEP() {
 		StringBuilder stringBuilder = baseQuery(PREP_FOLLOWUP_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
@@ -95,27 +99,84 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getAllPrEPCT() {
-		List<Integer> basePrEPCTEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null, endDate,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		List<Integer> filteredEncounterForPrepCT = filterEncounterByPrePStatusForPrepCT(Arrays.asList(PREP_DOSE_END_DATE),
-		    null, endDate, basePrEPCTEncounter);
-		List<Integer> filteredPreviouslyForPrepCT = filterEncounterByPrePStatusForPrepCT(Arrays.asList(FOLLOW_UP_DATE),
-		    startDate, null, filteredEncounterForPrepCT);
-		StringBuilder stringBuilder = baseQuery(PREP_FOLLOWUP_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
-		stringBuilder.append(" and (").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(ON_PREP))
-		        .append(" OR value_coded = ").append(conceptQuery(RESTART)).append(")").append(" OR value_coded = ")
-		        .append(conceptQuery(TRANSFERRED_IN)).append(")");
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
-		query.setParameterList("encounters", filteredEncounterForPrepCT);
-		
-		baseCohort = Cohort.union(new Cohort(query.list()), getPrevouslyNewCohort(filteredPreviouslyForPrepCT));
-		
+		Cohort currCohort = getPrepCurr();
+		Cohort previousCohort = getCohortByFollowupDateAndStatus();
+		Cohort followupCohort = getCohortByStatus();
+		baseCohort = Cohort.union(currCohort, Cohort.union(previousCohort, followupCohort));
 		return baseCohort;
 	}
 	
-	private List<Integer> filterEncounterByPrePStatusForPrepCT(List<String> questionConcept, Date startDate, Date endDate, List<Integer> encounters) {
+	private Cohort getPrepCurr() {
+		basePrEPCTEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null, endDate,
+		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		Cohort cohort = getCohort(baseScreeningEncounter);
+		
+		basePrEPCTEncounter = refineEncounter(cohort, basePrEPCTEncounter);
+		
+		// filter out clients whose dose end date greater than reporting end date
+		basePrEPCurrEncounter = filterEncounterByPrePStatusForPrepCT(Arrays.asList(PREP_DOSE_END_DATE), null, endDate,
+		    basePrEPCTEncounter);
+		cohort = getCohortByPrepStatus(basePrEPCurrEncounter);
+		
+		return cohort;
+	}
+	
+	private Cohort getCohortByFollowupDateAndStatus() {
+		// filter out clients whose followup date less than the reporting period
+		List<Integer> filteredPreviouslyForPrepCT = filterEncounterByPrePStatusForPrepCT(
+		    Collections.singletonList(FOLLOW_UP_DATE), startDate, null, basePrEPCurrEncounter);
+		return getPrevouslyNewCohort(filteredPreviouslyForPrepCT);
+	}
+	
+	private Cohort getCohortByStatus() {
+		List<Integer> encounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), startDate,
+		    endDate, basePrEPCTEncounter);
+		return getCohortByNotInPrepStatus(encounter);
+	}
+	
+	@NotNull
+	private Cohort getCohortByPrepStatus(List<Integer> basePrEPCTEncounter) {
+		Cohort cohort;
+		StringBuilder stringBuilder = baseQuery(PREP_FOLLOWUP_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded in ")
+		        .append(conceptQuery(Arrays.asList(ON_PREP, RESTART, TRANSFERRED_IN)));
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
+		query.setParameterList("encounters", basePrEPCTEncounter);
+		cohort = new Cohort(query.list());
+		return cohort;
+	}
+	
+	private Cohort getCohortByNotInPrepStatus(List<Integer> basePrEPCTEncounter) {
+		Cohort cohort;
+		StringBuilder stringBuilder = baseQuery(PREP_FOLLOWUP_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded not in ")
+		        .append(conceptQuery(Arrays.asList(LOST_TO_FOLLOW_UP, DEAD)));// TODO: check Concept id
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
+		query.setParameterList("encounters", basePrEPCTEncounter);
+		cohort = new Cohort(query.list());
+		return cohort;
+	}
+	
+	private List<Integer> refineEncounter(Cohort cohort, List<Integer> encounter) {
+        StringBuilder sqlBuilder = new StringBuilder("select encounter_id from obs " +
+				"where person_id not in (:personIds) " +
+				"and encounter_id in (:encounter)");
+
+        Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+        query.setParameterList("personIds", cohort.getMemberIds());
+        query.setParameterList("encounter", encounter);
+        List list = query.list();
+
+        if (Objects.isNull(list))
+            return new ArrayList<>();
+
+        return (List<Integer>) list;
+    }
+	
+	private List<Integer> filterEncounterByPrePStatusForPrepCT(List<String> questionConcept, Date startDate, Date endDate,
+                                                               List<Integer> encounters) {
 
         if (encounters.isEmpty())
             return encounters;
@@ -129,8 +190,8 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
         builder.append(" where obs_enc.concept_id in ")
                 .append(conceptQuery(questionConcept));
 
-		if (startDate != null)
-			builder.append(" and obs_enc.value_datetime <= :start ");
+        if (startDate != null)
+            builder.append(" and obs_enc.value_datetime <= :start ");
 
         if (endDate != null)
             builder.append(" and obs_enc.value_datetime >= :end ");
@@ -144,8 +205,8 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 
         Query q = sessionFactory.getCurrentSession().createSQLQuery(builder.toString());
 
-		if (startDate != null)
-			q.setDate("start", startDate);
+        if (startDate != null)
+            q.setDate("start", startDate);
 
         if (endDate != null)
             q.setDate("end", endDate);
@@ -163,6 +224,8 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
     }
 	
 	private Cohort getPrevouslyNewCohort(List<Integer> encounterIds) {
+		if (encounterIds.isEmpty())
+			return null;
 		StringBuilder sqlBuilder = new StringBuilder("select person_id from obs where obs.concept_id =")
 		        .append(conceptQuery(PREP_FOLLOWUP_STATUS));
 		sqlBuilder.append(" and obs.value_coded =").append(conceptQuery(NEWLY_STARTED));
@@ -171,4 +234,5 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		query.setParameterList("encounterIds", encounterIds);
 		return new Cohort(query.list());
 	}
+	
 }
