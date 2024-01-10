@@ -15,17 +15,6 @@ public class HivPlHivDatasetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private Date endDate;
 	
-	@ConfigurationProperty
-	private HivPvlHivType hivPvlHivType;
-	
-	public HivPvlHivType getHivPvlHivType() {
-		return hivPvlHivType;
-	}
-	
-	public void setHivPvlHivType(HivPvlHivType hivPvlHivType) {
-		this.hivPvlHivType = hivPvlHivType;
-	}
-	
 	public Date getStartDate() {
 		return startDate;
 	}

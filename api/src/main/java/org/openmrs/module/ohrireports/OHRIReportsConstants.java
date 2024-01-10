@@ -288,7 +288,7 @@ public class OHRIReportsConstants {
 	 */
 	public final static String UNDERNOURISHED = "123815AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String NUTRITIONAL_STATUS = "ae4d72a4-ccf5-49ff-b395-6687c534b1a2";
+	public final static String NUTRITIONAL_STATUS_ADULT = "ae4d72a4-ccf5-49ff-b395-6687c534b1a2";
 	
 	public final static String NUTRITIONAL_SCREENING_RESULT = "2c5b553b-58f8-4462-b14e-0a6a6628a790";
 	
