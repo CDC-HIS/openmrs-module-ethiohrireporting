@@ -16,7 +16,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE
 @Component
 public class HivPrEpQuery extends PatientQueryImpDao {
 	
-	private DbSessionFactory sessionFactory;
+	private final DbSessionFactory sessionFactory;
 	
 	private Date startDate;
 	
@@ -68,11 +68,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		this.sessionFactory = sessionFactory;
 		super.setSessionFactory(sessionFactory);
 	}
-	
-	/*public void initializeDate(Date start, Date end) {
-		startDate = start;
-		endDate = end;
-	}*/
 	
 	public Set<Integer> getPatientOnPrEpCurr() {
         StringBuilder sql = personIdQuery(getCurrQueryClauses(), "");
@@ -142,22 +137,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		query.setParameterList("cohorts", cohort.getMemberIds());
 		return new Cohort(query.list());
-	}
-	
-	public Integer getDiscordantCoupleOnPrep(Boolean isCurrent) {
-		
-		String condition = " and " + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(DISCORDANT_COUPLE) + "";
-		StringBuilder sql = personIdQuery(isCurrent ? getCurrQueryClauses() : getSubQueryClauses(), condition);
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		
-		query.setParameter("endOnOrAfter", endDate);
-		
-		if (isCurrent)
-			query.setParameterList("drugs", getPrEpDrugs());
-		
-		return query.list().size();
-		
 	}
 	
 	public Set<Integer> getPrEpDrugs() {

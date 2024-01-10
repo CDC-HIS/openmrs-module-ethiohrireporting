@@ -44,6 +44,8 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		List<Person> persons = patientQuery.getPersons(cohort);
 		HashMap<Integer, Object> treatmentHashMap = artQuery.getTreatmentEndDates(hdsd.getEndDate(), latestEncounters);
+		HashMap<Integer, Object> familyPlanningHashMap = artQuery.getConceptName(latestEncounters, cohort,
+		    FAMILY_PLANNING_METHODS);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(latestEncounters, cohort);
 		HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getNutritionalStatus(latestEncounters, cohort);
@@ -88,7 +90,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    dispensDayHashMap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("Status", "Status", String.class), statusHashMap.get(person.getPersonId()));
-			data.addRow(row);
+			
+			row.addColumnValue(new DataSetColumn("familyPlanning", "Family Planning", String.class),
+			    familyPlanningHashMap.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("NutritionalStatus", "Nutritional Status", String.class),
 			    nutritionalStatusHashMap.get(person.getPersonId()));
 			data.addRow(row);

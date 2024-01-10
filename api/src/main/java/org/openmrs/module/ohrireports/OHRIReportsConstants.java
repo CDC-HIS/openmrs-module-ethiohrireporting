@@ -522,4 +522,8 @@ public class OHRIReportsConstants {
 	public final static String IMPLANTABLE_HORMONE = "159589AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String INTRAUTERINE_DEVICE = "5275AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PEP_ENCOUNTER_TYPE = "de4cef7c-0aca-4593-9b5f-64a51c841c9d";
+	
+	public final static String PEP_REGISTRATION_DATE = "4285d9e8-3ab4-4a94-bd4e-4dd92855795c";
 }

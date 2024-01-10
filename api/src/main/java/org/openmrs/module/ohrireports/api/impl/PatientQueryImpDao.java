@@ -139,9 +139,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	public Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort,
 	        List<Integer> encounters) {
 		
-		Cohort onTreatmentCohort = getCurrentOnTreatmentCohort(gender, endOnOrBefore, cohort, encounters);
-		
-		return onTreatmentCohort;
+		return getCurrentOnTreatmentCohort(gender, endOnOrBefore, cohort, encounters);
 		
 	}
 	

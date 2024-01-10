@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class HivPEPCategoryDatasetDefinitionEvaluators implements DataSetEvaluator {
 	
 	@Autowired
-	private HivPrEpQuery query;
+	private PepQuery query;
 	
 	private String column_3_name = "Number";
 	
@@ -34,7 +34,7 @@ public class HivPEPCategoryDatasetDefinitionEvaluators implements DataSetEvaluat
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		//query.initializeDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate());
+		query.generateReport(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate());
 		int total = 0;
 		int occupationCount = query.getCountByExposureType(OCCUPATIONAL);
 		int sexualAssaultCount = query.getCountByExposureType(SEXUAL_ASSAULT);
