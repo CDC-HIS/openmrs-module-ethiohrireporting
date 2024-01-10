@@ -1,14 +1,9 @@
-package org.openmrs.module.ohrireports.datasetevaluator.linelist;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.ml;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.impl.query.ArtQuery;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MLDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.TxCurrDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;

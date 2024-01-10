@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.linelist;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.transferredInOut;
 
 import java.util.Arrays;
 import java.util.Calendar;

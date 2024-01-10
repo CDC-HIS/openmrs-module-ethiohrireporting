@@ -92,7 +92,7 @@ public class OHRIReportsConstants {
 	
 	public final static String POSITIVE = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String NEGATIVE = "664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String NEGATIVE = "5e4fc757-0b14-49ae-b3b7-419666f41e15";
 	
 	public final static String SETTING_OF_HIV_TEST = "13abe5c9-6de2-4970-b348-36d352ee8eeb";
 	
@@ -510,6 +510,8 @@ public class OHRIReportsConstants {
 	 * Family planning methods and others related to family planning
 	 */
 	public final static String FAMILY_PLANNING_METHODS = "374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String DSD_ASSESSMENT_DATE = "78c8abfb-1989-444a-8750-947227f4bde8";
 	
 	public final static String ORAL_CONTRACEPTIVE_PILL = "780AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

@@ -5,7 +5,7 @@ import java.util.Date;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
 
-public class HivPrEpCatagoriesDatasetDefinition extends BaseDataSetDefinition {
+public class HivPEPCategoryDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;

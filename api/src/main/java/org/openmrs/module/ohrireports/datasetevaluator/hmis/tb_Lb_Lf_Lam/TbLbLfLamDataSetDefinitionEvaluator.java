@@ -5,12 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import org.openmrs.Obs;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
+
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.LBLFLAMQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_Lb_Lf_Lam.TbLbLfLamDataSetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
-import org.openmrs.module.reporting.dataset.DataSetColumn;
-import org.openmrs.module.reporting.dataset.MapDataSet;
+import org.openmrs.module.reporting.dataset.*;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
@@ -23,142 +25,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class TbLbLfLamDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
-	private ConceptService conceptService;
-	
-	@Autowired
-	private EvaluationService evaluationService;
-	
-	private EvaluationContext context;
-	
-	private TbLbLfLamDataSetDefinition hdsd;
+	private LBLFLAMQuery lblflamQuery;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TbLbLfLamDataSetDefinition) dataSetDefinition;
-		context = evalContext;
+		TbLbLfLamDataSetDefinition _datasetDefinition = (TbLbLfLamDataSetDefinition) dataSetDefinition;
+		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
+		lblflamQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+		int positiveCount = lblflamQuery.getByResult(POSITIVE).size();
+		int negativeCount = lblflamQuery.getByResult(NEGATIVE).size();
 		
-		MapDataSet data = new MapDataSet(dataSetDefinition, context);
-		
-		data.addData(new DataSetColumn("TB_LB_LF-LAM",
-		        "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay", String.class),
-		    " ");
-		data.addData(new DataSetColumn("TB_LB_LF-LAM. 1", "Positive", Integer.class), getLFLAM(POSITIVE));
-		data.addData(new DataSetColumn("TB_LB_LF-LAM. 2", "Negative", Integer.class), getLFLAM(CYTOLOGY_NEGATIVE));
-		
+		DataSetRow headerRow = buildColumn("TB_LB_LF-LAM",
+		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay", positiveCount
+		            + negativeCount);
+		data.addRow(buildColumn("TB_LB_LF-LAM. 1", "Positive", positiveCount));
+		data.addRow(buildColumn("TB_LB_LF-LAM. 2", "Negative", negativeCount));
 		return data;
 	}
 	
-	public Integer getLFLAM(String result){
-		List<Integer> mwrd = new ArrayList<>();
-		List<Obs> obsmwrd = new ArrayList<>();
-		List<Integer> specimenSents = getTBscreenedInReportingPeriod();
-		if (specimenSents == null || specimenSents.size()==0){
-			return mwrd.size();
-		}
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(LF_LAM_RESULT)).and().whereEqual("obs.valueCoded", conceptService.getConceptByUuid(result)).and().whereIdIn("obs.personId", specimenSents).and().whereLess("obs.obsDatetime", hdsd.getEndDate()).orderDesc("obs.personId, obs.obsDatetime");
-		obsmwrd=evaluationService.evaluateToList(queryBuilder,Obs.class,context);
-		for (Obs obs:obsmwrd){
-			if (!mwrd.contains(obs.getPersonId())){
-				mwrd.add(obs.getPersonId());
-			}
-		}
-		return mwrd.size();
+	private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
+		DataSetRow txCurrDataSetRow = new DataSetRow();
+		txCurrDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), col_1_value);
+		txCurrDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+		
+		txCurrDataSetRow.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), col_3_value);
+		
+		return txCurrDataSetRow;
 	}
-	
-	public List<Integer> getTBscreenedInReportingPeriod(){
-		List<Integer> tbscreened = new ArrayList<>();
-		List<Obs> obstbstarted = new ArrayList<>();
-		List<Integer> dispense = getDispenseDose();
-		if (dispense == null || dispense.size()==0){
-			return tbscreened;
-		}
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class,"obs").whereEqual("obs.concept", conceptService.getConceptByUuid(TB_SCREENING_DATE)).and().whereGreater("obs.valueDatetime", hdsd.getStartDate()).and().whereLess("obs.valueDatetime",hdsd.getEndDate()).and().whereIdIn("obs.personId", dispense).orderDesc("obs.personId, obs.obsDatetime");
-		obstbstarted=evaluationService.evaluateToList(queryBuilder,Obs.class,context);
-		for (Obs obs:obstbstarted){
-			if (!tbscreened.contains(obs.getPersonId())){
-				tbscreened.add(obs.getPersonId());
-			}
-		}
-		return tbscreened;
-	}
-	
-	public List<Integer> getDispenseDose() {
-		List<Integer> pList = getValidTratmentEndDatePatients();
-		List<Integer> patients = new ArrayList<>();
-		if (pList == null || pList.size() == 0)
-			return patients;
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class, "obs").whereEqual("obs.concept", conceptService.getConceptByUuid(ARV_DISPENSED_IN_DAYS)).and().whereIn("obs.personId", pList).whereLess("obs.obsDatetime", hdsd.getEndDate()).orderDesc("obs.personId,obs.obsDatetime");		
-		List<Obs> arvObs = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-		for (Obs obs : arvObs) {
-			if(!patients.contains(obs.getPersonId()))
-				{
-				patients.add(obs.getPersonId());
-				}
-		}
-		return patients;	
-	}
-	
-	private List<Integer> getValidTratmentEndDatePatients() {
-
-		List<Integer> patientsId = getListOfALiveORRestartPatientObservertions();
-		List<Integer> patients = new ArrayList<>();
-        if (patientsId == null || patientsId.size() == 0)
-                return patients;
-        HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-        queryBuilder.select("obs");
-        queryBuilder.from(Obs.class, "obs")
-        .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-        .and()
-        .whereEqual("obs.concept", conceptService.getConceptByUuid(TREATMENT_END_DATE))
-        .and()
-        .whereGreater("obs.valueDatetime", hdsd.getEndDate())
-        .and()
-        .whereLess("obs.obsDatetime", hdsd.getEndDate())
-        .whereIdIn("obs.personId", patientsId)
-        .orderDesc("obs.personId,obs.obsDatetime");
-        for (Obs obs : evaluationService.evaluateToList(queryBuilder, Obs.class, context)) {
-                if(!patients.contains(obs.getPersonId()))
-                        {
-                        patients.add(obs.getPersonId());
-                        }
-        }
-		// patients = evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-				
-		return patients;
-	}
-	
-	private List<Integer> getListOfALiveORRestartPatientObservertions() {
-
-		List<Integer> uniqiObs = new ArrayList<>();
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-
-		queryBuilder.select("obs")
-				.from(Obs.class, "obs")
-				.whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-                .and()
-				.whereEqual("obs.concept", conceptService.getConceptByUuid(FOLLOW_UP_STATUS))
-				.and()
-				.whereIn("obs.valueCoded", Arrays.asList(conceptService.getConceptByUuid(ALIVE),conceptService.getConceptByUuid(RESTART)))
-				.and().whereLess("obs.obsDatetime", hdsd.getEndDate());
-		queryBuilder.orderDesc("obs.personId,obs.obsDatetime");
-
-		List<Obs> liveObs = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-
-		for (Obs obs : liveObs) {
-			if (!uniqiObs.contains(obs.getPersonId())) {
-				uniqiObs.add(obs.getPersonId());
-				// patientStatus.put(obs.getPersonId(), obs.getValueCoded());
-			}
-		}
-
-		return uniqiObs;
-	}
-}
-
-enum Gender {
-	Female, Male
 }

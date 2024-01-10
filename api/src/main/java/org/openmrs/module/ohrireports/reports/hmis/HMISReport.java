@@ -1,6 +1,5 @@
 package org.openmrs.module.ohrireports.reports.hmis;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_intr.HivArt
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_re_arv.HivArtReArvDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPrEpCatagoriesDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPEPCategoryDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_rep.HivPrepDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
@@ -166,7 +165,7 @@ public class HMISReport implements ReportManager {
 		    "HMIS:PrEP Curr (Number of individuals that received oral PrEP during the reporting period)",
 		    EthiOhriUtil.map(hivPrepCurrDatasetDefinition));
 		
-		HivPrEpCatagoriesDatasetDefinition hivPrEpCatagoriesDatasetDefinition = new HivPrEpCatagoriesDatasetDefinition();
+		HivPEPCategoryDatasetDefinition hivPrEpCatagoriesDatasetDefinition = new HivPEPCategoryDatasetDefinition();
 		hivPrEpCatagoriesDatasetDefinition.setParameters(getParameters());
 		reportDefinition
 		        .addDataSetDefinition(

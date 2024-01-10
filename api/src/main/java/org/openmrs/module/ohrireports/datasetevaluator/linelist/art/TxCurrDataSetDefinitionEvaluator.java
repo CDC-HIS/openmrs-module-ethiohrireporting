@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.linelist;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.art;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.impl.query.ArtQuery;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TxCurrDataSetDefinition;

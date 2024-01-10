@@ -10,8 +10,10 @@ import java.util.Set;
 import org.openmrs.Person;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
+import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
+import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.springframework.stereotype.Service;
 
 @Service

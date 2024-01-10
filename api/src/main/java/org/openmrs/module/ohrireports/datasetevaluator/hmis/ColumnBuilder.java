@@ -20,4 +20,14 @@ public abstract class ColumnBuilder {
 		return txCurrDataSetRow;
 	}
 	
+	protected DataSetRow buildColumn(String col_1_value, String col_2_value, String col_3_value) {
+		DataSetRow txCurrDataSetRow = new DataSetRow();
+		txCurrDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), col_1_value);
+		txCurrDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+		
+		txCurrDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class), col_3_value);
+		
+		return txCurrDataSetRow;
+	}
+	
 }

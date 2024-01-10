@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.linelist;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.art;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -9,7 +9,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.impl.query.ArtQuery;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.art.ArtQuery;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.HTSNewDataSetDefinition;
@@ -53,7 +53,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    hdsd.getEndDate());
 		
 		DataSetRow row = new DataSetRow();
-		if (persons.size() > 0) {
+		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");

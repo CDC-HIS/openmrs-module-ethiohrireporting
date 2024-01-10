@@ -7,6 +7,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.IMPLANTABLE_HO
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.INTRAUTERINE_DEVICE;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.omg.DynamicAny._DynAnyFactoryStub;
 import org.openmrs.annotation.Handler;
@@ -30,20 +31,15 @@ public class HivArtFbMetDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private String column_3_name = "Number";
 	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		HivArtFbMetDatasetDefinition _DatasetDefinition = (HivArtFbMetDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_DatasetDefinition, evalContext);
-		fbQuery.setDate(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate(),
-		    encounterQuery.getAliveFollowUpEncounters(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate()));
 		
-		int oralContraceptive = fbQuery.getPatientByMethodOfFP(ORAL_CONTRACEPTIVE_PILL);
-		int injectable = fbQuery.getPatientByMethodOfFP(INJECTABLE);
-		int implants = fbQuery.getPatientByMethodOfFP(IMPLANTABLE_HORMONE);
-		int iucd = fbQuery.getPatientByMethodOfFP(INTRAUTERINE_DEVICE);
+		int oralContraceptive = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(ORAL_CONTRACEPTIVE_PILL));
+		int injectable = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(INJECTABLE));
+		int implants = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(IMPLANTABLE_HORMONE));
+		int iucd = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(INTRAUTERINE_DEVICE));
 		int others = fbQuery.getPatientByMethodOfOtherFP(Arrays.asList(ORAL_CONTRACEPTIVE_PILL, INJECTABLE,
 		    IMPLANTABLE_HORMONE, INTRAUTERINE_DEVICE));
 		

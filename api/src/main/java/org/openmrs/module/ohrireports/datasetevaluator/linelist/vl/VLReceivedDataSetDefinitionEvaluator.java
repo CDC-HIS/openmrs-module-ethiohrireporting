@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.linelist;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.vl;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.MRN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
