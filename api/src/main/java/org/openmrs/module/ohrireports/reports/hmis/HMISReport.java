@@ -173,28 +173,11 @@ public class HMISReport implements ReportManager {
 		            EthiOhriUtil.map(hivPrEpCatagoriesDatasetDefinition));
 		
 		HivPlHivDatasetDefinition hivPlTSPDatasetDefinition = new HivPlHivDatasetDefinition();
-		hivPlTSPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_TSP);
 		hivPlTSPDatasetDefinition.setParameters(getParameters());
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Proportion of clinically undernourished People Living with HIV (PLHIV) who received therapeutic or supplementary food",
 		            EthiOhriUtil.map(hivPlTSPDatasetDefinition));
-		
-		HivPlHivDatasetDefinition hivPlNUTDatasetDefinition = new HivPlHivDatasetDefinition();
-		hivPlNUTDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_NUT);
-		hivPlNUTDatasetDefinition.setParameters(getParameters());
-		reportDefinition
-		        .addDataSetDefinition(
-		            "Number of PLHIV that were nutritionally assessed and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)",
-		            EthiOhriUtil.map(hivPlNUTDatasetDefinition));
-		
-		HivPlHivDatasetDefinition hivPlSUPDatasetDefinition = new HivPlHivDatasetDefinition();
-		hivPlSUPDatasetDefinition.setHivPvlHivType(HivPvlHivType.PLHIV_SUP);
-		hivPlSUPDatasetDefinition.setParameters(getParameters());
-		reportDefinition
-		        .addDataSetDefinition(
-		            "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)",
-		            EthiOhriUtil.map(hivPlSUPDatasetDefinition));
 		
 		HivArtFbDatasetDefinition hivArtFpDatasetDefinition = new HivArtFbDatasetDefinition();
 		hivArtFpDatasetDefinition.setParameters(getParameters());

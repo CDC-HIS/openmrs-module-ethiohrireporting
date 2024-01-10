@@ -185,7 +185,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		
 	}
 	
-	public Cohort getAllPLHIVMalnutrition(List<Integer> encounters) {
+	public Cohort getAllCohortPLHIVMalnutrition(List<Integer> encounters) {
 		StringBuilder stringBuilder = baseQuery(NUTRITIONAL_SCREENING_RESULT);
 		stringBuilder.append(" and ob.encounter_id in (:encounters)");
 		stringBuilder.append(" and value_coded is not null");

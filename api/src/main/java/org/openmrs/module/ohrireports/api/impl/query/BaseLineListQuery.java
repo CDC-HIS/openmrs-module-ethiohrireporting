@@ -115,7 +115,7 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 	}
 	
 	public HashMap<Integer, Object> getNutritionalStatus(List<Integer> baseEncounters, Cohort cohort) {
-		return getDictionary(getObs(baseEncounters, NUTRITIONAL_STATUS, cohort));
+		return getDictionary(getObs(baseEncounters, NUTRITIONAL_STATUS_ADULT, cohort));
 	}
 	
 	/**

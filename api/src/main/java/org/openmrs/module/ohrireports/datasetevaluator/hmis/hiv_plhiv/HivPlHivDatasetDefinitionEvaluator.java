@@ -1,6 +1,8 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_plhiv;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -19,98 +21,176 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
-@Handler(supports = { HivPlHivDatasetDefinition.class })
+@Handler(supports = {HivPlHivDatasetDefinition.class})
 public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
-	
-	@Autowired
-	private HivPlvHivQuery hivPlvHivQuery;
 
-	private String baseName = "HIV_PLHIV_TSP. ";
-	private String COLUMN_3_NAME = "Number";
+    @Autowired
+    private HivPlvHivQuery hivPlvHivQuery;
 
-	List<Person> personList = new ArrayList<>();
-	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	private HivPlHivDatasetDefinition _datasetDefinition;
-	
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+    private String baseName = "HIV_PLHIV_TSP. ";
+    private String COLUMN_3_NAME = "Number";
 
-		_datasetDefinition = (HivPlHivDatasetDefinition) dataSetDefinition;
+    List<Person> personList = new ArrayList<>();
+    List<Person> personPregnantList = new ArrayList<>();
+    List<Person> personNonPregnantList = new ArrayList<>();
 
-		hivPlvHivQuery.setStartDate(_datasetDefinition.getStartDate());
-		hivPlvHivQuery.setEndDate(_datasetDefinition.getEndDate(), FOLLOW_UP_DATE);
+    @Autowired
+    private EncounterQuery encounterQuery;
+    private HivPlHivDatasetDefinition hivplhivDatasetDefinition;
+    private int totalMAM, totalSAM;
 
-		Cohort plhivCohort = hivPlvHivQuery.getAllPLHIVMalnutrition(hivPlvHivQuery.getBaseEncounter());
+    @Override
+    public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 
-		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
+        hivplhivDatasetDefinition = (HivPlHivDatasetDefinition) dataSetDefinition;
 
+        hivPlvHivQuery.setStartDate(hivplhivDatasetDefinition.getStartDate());
+        hivPlvHivQuery.setEndDate(hivplhivDatasetDefinition.getEndDate(), FOLLOW_UP_DATE);
 
-		personList = hivPlvHivQuery.getPersons(plhivCohort);
-		dataSet.addRow(buildColumn("", "Proportion of clinically undernourished People Living with HIV (PLHIV)" +
-				" who received therapeutic or supplementary food", personList.size()));
-		dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1", "Number of PLHIV who were assessed/screened for malnutrition", personList.size()));
-
-		dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
-		dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.2", "< 15 years, Female", getCohortSizeByAgeAndGender(0, 15, Gender.Female)));
-		dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.3", ">= 15 years, Male", getCohortSizeByAgeAndGender(15, 150, Gender.Male)));
-		dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.4", ">= 15 years, Female", getCohortSizeByAgeAndGender(15, 150, Gender.Female)));
-
-		dataSet.addRow(buildColumn("HIV_PLHIV_NUT", "Number of PLHIV who were nutritionally assessed" +
-				"and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)", 0));
-
-		dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM", "Number of PLHIV who were assessed/screened for malnutrition", personList.size()));
-		dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.1", "< 15 years, Mal", personList.size()));
-		dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.2", "< 15 years, Female", personList.size()));
-		dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.3", ">= 15 years, Male", personList.size()));
-		dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.4", ">= 15 years, Female", personList.size()));
+        Cohort plhivCohort = hivPlvHivQuery.getAllCohortPLHIVMalnutrition(hivPlvHivQuery.getBaseEncounter());
+        Cohort plhivMAMCohort = hivPlvHivQuery.getAllNUTMAMForAdult(hivPlvHivQuery.getBaseEncounter(), plhivCohort,
+                Arrays.asList(MILD_MAL_NUTRITION, MODERATE_MAL_NUTRITION));
+        Cohort plhivSAMCohort = hivPlvHivQuery.getAllNUTSAMForAdult(hivPlvHivQuery.getBaseEncounter(),
+                plhivCohort, Collections.singletonList(SEVERE_MAL_NUTRITION));
+        Cohort plhivMAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivMAMCohort);
+        Cohort plhivSAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivSAMCohort);
 
 
+        SimpleDataSet dataSet = new SimpleDataSet(hivplhivDatasetDefinition, evalContext);
 
 
-		
-		return dataSet;
-	}
+        personList = hivPlvHivQuery.getPersons(plhivCohort);
+        dataSet.addRow(buildColumn("", "Proportion of clinically undernourished People Living with HIV (PLHIV)" +
+                " who received therapeutic or supplementary food", personList.size()));
+        dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1", "Number of PLHIV who were assessed/screened for malnutrition", personList.size()));
 
-	private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
-		DataSetRow prepDataSetRow = new DataSetRow();
-		prepDataSetRow.addColumnValue(
-				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-				 col_1_value);
-		prepDataSetRow.addColumnValue(
-				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+        dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.2", "< 15 years, Female", getCohortSizeByAgeAndGender(0, 15, Gender.Female)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.3", ">= 15 years, Male", getCohortSizeByAgeAndGender(15, 150, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.4", ">= 15 years, Female", getCohortSizeByAgeAndGender(15, 150, Gender.Female)));
 
-		prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
-				col_3_value);
+        personList = hivPlvHivQuery.getPersons(plhivMAMCohort);
+        totalMAM = personList.size();
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT", "Number of PLHIV who were nutritionally assessed" +
+                "and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)", totalMAM + totalSAM));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM", "Total MAM", personList.size()));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.2", "< 15 years, Female", getCohortSizeByAgeAndGender(0, 15, Gender.Female)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.3", ">= 15 years, Male", getCohortSizeByAgeAndGender(15, 150, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.4", ">= 15 years, Female", getCohortSizeByAgeAndGender(15, 150, Gender.Female)));
 
-		return prepDataSetRow;
-	}
+        personList = hivPlvHivQuery.getPersons(plhivSAMCohort);
+        totalSAM = personList.size();
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM", "Total SAM", personList.size()));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM.2", "< 15 years, Female", getCohortSizeByAgeAndGender(0, 15, Gender.Female)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM.3", ">= 15 years, Male", getCohortSizeByAgeAndGender(15, 150, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM.4", ">= 15 years, Female", getCohortSizeByAgeAndGender(15, 150, Gender.Female)));
 
-	private Integer getCohortSizeByAgeAndGender(int minAge, int maxAge, Gender gender) {
-		int _age = 0;
-		List<Integer> patients = new ArrayList<>();
-		String _gender = gender.equals(gender.Female) ? "f" : "m";
-		if (maxAge > 1) {
-			maxAge = maxAge + 1;
-		}
-		for (Person person : personList) {
 
-			_age = person.getAge(_datasetDefinition.getEndDate());
+        personList = hivPlvHivQuery.getPersons(plhivMAMSUPCohort);
+        personPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, YES,
+                hivPlvHivQuery.getBaseEncounter()));
+        personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, NO,
+                hivPlvHivQuery.getBaseEncounter()));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP", "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)", totalSAM + totalSAM));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1", "Total MAM who received therapeutic or supplementary food", personList.size()));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.1", "< 15 years, Male",
+                getCohortSizeByAgeGenderAndPregnancyStatus(0, 15, Gender.Male, personList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.2", "< 15 years, Female - pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(0, 15, Gender.Female, personPregnantList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.3", "< 15 years, Female - non-pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(0, 15, Gender.Female, personNonPregnantList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.4", ">= 15 years, Male",
+                getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Male, personList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.5", ">= 15 years, Female - pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Female, personPregnantList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.6", ">= 15 years, Female - non-pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Female, personNonPregnantList)));
 
-			if (!patients.contains(person.getPersonId())
-					&& (_age >= minAge && _age < maxAge)
-					&& (person.getGender().toLowerCase().equals(_gender))) {
 
-				patients.add(person.getPersonId());
+        personList = hivPlvHivQuery.getPersons(plhivSAMSUPCohort);
+        personPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivSAMSUPCohort, YES,
+                hivPlvHivQuery.getBaseEncounter()));
+        personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivSAMSUPCohort, NO,
+                hivPlvHivQuery.getBaseEncounter()));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2", "Total SAM who received therapeutic or supplementary food", personList.size()));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.1", "< 15 years, Male",
+                getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.2", "< 15 years, Female - pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(0, 15, Gender.Female, personPregnantList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.3", "< 15 years, Female - non-pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(0, 15, Gender.Female, personNonPregnantList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.4", ">= 15 years, Male",
+                getCohortSizeByAgeAndGender(15, 150, Gender.Male)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.5", ">= 15 years, Female - pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Female, personPregnantList)));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.6", ">= 15 years, Female - non-pregnant",
+                getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Female, personNonPregnantList)));
 
-			}
-		}
-		return patients.size();
-	}
+        return dataSet;
+    }
+
+    private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
+        DataSetRow prepDataSetRow = new DataSetRow();
+        prepDataSetRow.addColumnValue(
+                new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+                col_1_value);
+        prepDataSetRow.addColumnValue(
+                new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+
+        prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
+                col_3_value);
+
+        return prepDataSetRow;
+    }
+
+    private Integer getCohortSizeByAgeAndGender(int minAge, int maxAge, Gender gender) {
+        int _age = 0;
+        List<Integer> patients = new ArrayList<>();
+        String _gender = gender.equals(gender.Female) ? "f" : "m";
+        if (maxAge > 1) {
+            maxAge = maxAge + 1;
+        }
+        for (Person person : personList) {
+
+            _age = person.getAge(hivplhivDatasetDefinition.getEndDate());
+
+            if (!patients.contains(person.getPersonId())
+                    && (_age >= minAge && _age < maxAge)
+                    && (person.getGender().toLowerCase().equals(_gender))) {
+
+                patients.add(person.getPersonId());
+
+            }
+        }
+        return patients.size();
+    }
+
+    private Integer getCohortSizeByAgeGenderAndPregnancyStatus(int minAge, int maxAge, Gender gender, List<Person> personList1) {
+        int _age = 0;
+        List<Integer> patients = new ArrayList<>();
+        String _gender = gender.equals(gender.Female) ? "f" : "m";
+        if (maxAge > 1) {
+            maxAge = maxAge + 1;
+        }
+        for (Person person : personList1) {
+
+            _age = person.getAge(hivplhivDatasetDefinition.getEndDate());
+
+            if (!patients.contains(person.getPersonId())
+                    && (_age >= minAge && _age < maxAge)
+                    && (person.getGender().toLowerCase().equals(_gender))) {
+
+                patients.add(person.getPersonId());
+
+            }
+        }
+        return patients.size();
+    }
 
 }
