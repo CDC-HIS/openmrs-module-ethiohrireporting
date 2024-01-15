@@ -134,7 +134,7 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 			addColumnValue("ScreeningVisitType", "Screening Visit Type", screeningType, row, person);
 			addColumnValue("counseledGiven", "Date Counseled For CCA", counselledDate, row, person);
 			addColumnValue("counseledGiven", "Date Counseled For CCA", counselledDate, row, person);
-			addColumnValue("screeningMechanism", "Screening Mechanism", screeningMechanism, row, person);
+			addColumnValue("screeningMechanism", "Screening Strategy", screeningMechanism, row, person);
 			addColumnValue("hpvScreeningResult", "HPV Screening Result", hpvScreeningResult, row, person);
 			addColumnValue("viaScreeningResult", "VIA Screening Result", viaScreeningResult, row, person);
 			addColumnValue("cxcaTreatmentResult", "Type Of Treatment Received", cxcaTreatmentReceived, row, person);
