@@ -26,7 +26,7 @@ public class VlReceivedReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-VL Received";
+		return LINE_LIST_REPORT + "- Viral Load";
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class VlReceivedReport implements ReportManager {
 		VLReceivedDataSetDefinition vlDatasetDefinition = new VLReceivedDataSetDefinition();
 		vlDatasetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("VL Received", EthiOhriUtil.map(vlDatasetDefinition));
+		reportDefinition.addDataSetDefinition(" Viral Load ", EthiOhriUtil.map(vlDatasetDefinition));
 		
 		return reportDefinition;
 	}

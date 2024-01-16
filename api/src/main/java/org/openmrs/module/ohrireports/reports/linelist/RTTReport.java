@@ -26,7 +26,7 @@ public class RTTReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- TX_RTT Line list";
+		return LINE_LIST_REPORT + "- TX_RTT";
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class RTTReport implements ReportManager {
 		RTTDataSetDefinition rttDataSetDefinition = new RTTDataSetDefinition();
 		rttDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("TX_RTT Line List", EthiOhriUtil.map(rttDataSetDefinition));
+		reportDefinition.addDataSetDefinition("TX_RTT", EthiOhriUtil.map(rttDataSetDefinition));
 		return reportDefinition;
 	}
 	

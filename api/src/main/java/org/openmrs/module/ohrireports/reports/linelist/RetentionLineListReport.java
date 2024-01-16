@@ -27,7 +27,7 @@ public class RetentionLineListReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- Retention Line list";
+		return LINE_LIST_REPORT + "- ART Retention";
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class RetentionLineListReport implements ReportManager {
 		RetentionLineListDataSetDefinition retDataSetDefinition = new RetentionLineListDataSetDefinition();
 		retDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("Retention Line List", EthiOhriUtil.map(retDataSetDefinition));
+		reportDefinition.addDataSetDefinition("ART Retention", EthiOhriUtil.map(retDataSetDefinition));
 		return reportDefinition;
 	}
 	

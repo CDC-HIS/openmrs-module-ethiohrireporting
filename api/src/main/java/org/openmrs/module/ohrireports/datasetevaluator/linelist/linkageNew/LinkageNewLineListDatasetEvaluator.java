@@ -29,8 +29,6 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
 	/**
 	 * Evaluate a DataSet for the given EvaluationContext
 	 * 
-	 * @param dataSetDefinition
-	 * @param evalContext
 	 * @return the evaluated <code>DataSet</code>
 	 */
 	@Override

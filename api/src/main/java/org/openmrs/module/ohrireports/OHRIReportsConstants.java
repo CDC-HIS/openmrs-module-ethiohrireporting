@@ -349,8 +349,6 @@ public class OHRIReportsConstants {
 	
 	public final static String POSITIVE_TRACKING = "f28bb488-0f83-417c-98ba-06ea5f1765e3";
 	
-	public final static String TRANSFERRED_UUID = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
 	public final static String TRANSFERRED_OUT_UUID = "159492AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String ALIVE = "160429AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -358,8 +356,6 @@ public class OHRIReportsConstants {
 	public final static String DEAD = "160432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String STOP = "1260AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
-	public final static String TRANSFER_OUT = "1693AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DROP = "160431AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

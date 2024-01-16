@@ -26,7 +26,7 @@ public class CervicalCancerReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-Cervical";
+		return LINE_LIST_REPORT + "- Cervical Cancer";
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class CervicalCancerReport implements ReportManager {
 		
 		CervicalCancerDataSetDefinition cancerDataSetDefinition = new CervicalCancerDataSetDefinition();
 		cancerDataSetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("CXCA", EthiOhriUtil.map(cancerDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Cervical Cancer", EthiOhriUtil.map(cancerDataSetDefinition));
 		return reportDefinition;
 	}
 	

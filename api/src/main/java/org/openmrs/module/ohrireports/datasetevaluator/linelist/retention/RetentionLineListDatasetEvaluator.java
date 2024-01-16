@@ -66,7 +66,10 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		        .getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = retentionLineListQuery
 		        .getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
-		
+		//TODO: identify still on treatment  concept
+		//		HashMap<Integer, Object> stillOnTreatmentHashMap = retentionLineListQuery.getConceptName(
+		//				retentionLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);
+		//
 		DataSetRow row;
 		if (!persons.isEmpty()) {
 			

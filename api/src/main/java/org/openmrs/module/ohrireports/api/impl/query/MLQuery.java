@@ -151,7 +151,7 @@ public class MLQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getTransferredOut(Cohort cohort) {
-		return getByConcept(asList(TRANSFER_OUT), cohort);
+		return getByConcept(asList(TRANSFERRED_OUT_UUID), cohort);
 	}
 	
 	private Cohort getByConcept(List<String> followUpStatus, Cohort cohort) {
@@ -171,7 +171,7 @@ public class MLQuery extends PatientQueryImpDao {
 	private Cohort getCohort(Date end, Cohort cohort, List<Integer> encounter) {
 		StringBuilder sql = new StringBuilder("select person_id from obs");
 		sql.append(" where concept_id =  ").append(conceptQuery(FOLLOW_UP_STATUS)).append(" AND value_coded in ")
-		        .append(conceptQuery(asList(LOST_TO_FOLLOW_UP, DEAD, DROP, TRANSFER_OUT)))
+		        .append(conceptQuery(asList(LOST_TO_FOLLOW_UP, DEAD, DROP, TRANSFERRED_OUT_UUID)))
 		        .append(" and person_id in (:personIds) and encounter_id in (:betweenEncounters) ");
 		sql.append("Union ");
 		

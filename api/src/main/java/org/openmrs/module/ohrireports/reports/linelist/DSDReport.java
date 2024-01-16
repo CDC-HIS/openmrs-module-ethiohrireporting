@@ -26,7 +26,7 @@ public class DSDReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-DSD Line list";
+		return LINE_LIST_REPORT + "-DSD ";
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class DSDReport implements ReportManager {
 		DSDDataSetDefinition dsdDataSetDefinition = new DSDDataSetDefinition();
 		dsdDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("DSD Line List", EthiOhriUtil.map(dsdDataSetDefinition));
+		reportDefinition.addDataSetDefinition("DSD ", EthiOhriUtil.map(dsdDataSetDefinition));
 		return reportDefinition;
 	}
 	

@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.reports.linelist;
 
 import org.openmrs.module.ohrireports.api.dao.EthiOhriPatient;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.MLDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -32,7 +33,7 @@ public class TXMLReport implements ReportManager {
 	 */
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT.concat("- Tx_ML");
+		return LINE_LIST_REPORT.concat("-TX_ML");
 	}
 	
 	/**
@@ -61,6 +62,10 @@ public class TXMLReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		
+		MLDataSetDefinition _datasetDefinition = new MLDataSetDefinition();
+		_datasetDefinition.setParameters(getParameters());
+		
+		reportDefinition.addDataSetDefinition("TX_ML", EthiOhriUtil.map(_datasetDefinition));
 		return reportDefinition;
 	}
 	

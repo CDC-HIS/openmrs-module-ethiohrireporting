@@ -14,8 +14,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_UUID;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class HivArtRetQuery extends PatientQueryImpDao {
@@ -62,9 +61,20 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	}
 
 	private void setPatientRetentionCohortNet() {
-		netRetCohort =new Cohort(getArtStartedCohort(netRetEncounter, startDate, endDate, null));
+		netRetCohort = removeTransferredOutPatients();
+		netRetCohort =new Cohort(getArtStartedCohort(netRetEncounter, startDate, endDate, netRetCohort));
 	}
-
+	
+	private Cohort removeTransferredOutPatients() {
+		StringBuilder sqlBuilder = new StringBuilder("select person_id from obs where ");
+		sqlBuilder.append(" encounter_id in (:encounters) and concept_id = ").append(conceptQuery(FOLLOW_UP_STATUS));
+		sqlBuilder.append(" and value_coded <> ").append(conceptQuery(TRANSFERRED_OUT_UUID));
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		query.setParameterList("encounters",netRetEncounter);
+		return new Cohort(query.list());
+	}
+	
 	public double getPercentage() {
 		if(retCohort.isEmpty())
 			return 0;

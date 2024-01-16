@@ -26,7 +26,7 @@ public class PreExposureProphylaxisReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-PREP";
+		return LINE_LIST_REPORT + "- Pre Exposure Prophylaxis";
 	}
 	
 	@Override
@@ -49,7 +49,8 @@ public class PreExposureProphylaxisReport implements ReportManager {
 		
 		PreExposureProphylaxisDataSetDefinition preExposureProphylaxisDataSetDefinition = new PreExposureProphylaxisDataSetDefinition();
 		preExposureProphylaxisDataSetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("PREP", EthiOhriUtil.map(preExposureProphylaxisDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Pre-Exposure Prophylaxis",
+		    EthiOhriUtil.map(preExposureProphylaxisDataSetDefinition));
 		return reportDefinition;
 	}
 	

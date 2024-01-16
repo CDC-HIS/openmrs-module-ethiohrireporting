@@ -99,7 +99,6 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			data.addRow(row);
 			
 		}
-		
 		return data;
 	}
 	

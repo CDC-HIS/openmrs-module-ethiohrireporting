@@ -33,7 +33,7 @@ public class TXTBReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-TX_TB";
+		return LINE_LIST_REPORT + "-TB";
 	}
 	
 	@Override
@@ -70,7 +70,7 @@ public class TXTBReport implements ReportManager {
 		TXTBDataSetDefinition txTBdataSetDefinition = new TXTBDataSetDefinition();
 		txTBdataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("TB-Treatment", EthiOhriUtil.map(txTBdataSetDefinition, "type=${type}"));
+		reportDefinition.addDataSetDefinition("TB", EthiOhriUtil.map(txTBdataSetDefinition, "type=${type}"));
 		
 		return reportDefinition;
 	}

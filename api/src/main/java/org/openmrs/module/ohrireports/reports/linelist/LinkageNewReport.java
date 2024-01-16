@@ -27,7 +27,7 @@ public class LinkageNewReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- Linkage New Line list";
+		return LINE_LIST_REPORT + "- HIV +ve Tracking";
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class LinkageNewReport implements ReportManager {
 		LinkageNewLineListDataSetDefinition dataSetDefinition = new LinkageNewLineListDataSetDefinition();
 		dataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("Linkage New Line List", EthiOhriUtil.map(dataSetDefinition));
+		reportDefinition.addDataSetDefinition("HIV +ve Tracking", EthiOhriUtil.map(dataSetDefinition));
 		return reportDefinition;
 	}
 	

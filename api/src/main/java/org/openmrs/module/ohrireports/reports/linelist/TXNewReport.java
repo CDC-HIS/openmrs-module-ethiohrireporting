@@ -35,7 +35,7 @@ public class TXNewReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-TX_New";
+		return LINE_LIST_REPORT + "-TX_NEW";
 	}
 	
 	@Override
@@ -61,7 +61,7 @@ public class TXNewReport implements ReportManager {
 		htsNewDataSetDefinition.addParameters(getParameters());
 		htsNewDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("TX-New", EthiOhriUtil.map(htsNewDataSetDefinition));
+		reportDefinition.addDataSetDefinition("TX-NEW", EthiOhriUtil.map(htsNewDataSetDefinition));
 		
 		return reportDefinition;
 	}

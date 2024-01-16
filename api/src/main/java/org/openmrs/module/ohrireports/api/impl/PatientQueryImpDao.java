@@ -104,14 +104,14 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 
         StringBuilder sql = baseQuery(ART_START_DATE);
 
-        sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
+        sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
         if (startOnOrAfter != null)
-            sql.append(" and " + OBS_ALIAS + "value_datetime >= :start ");
-        if (cohort != null && cohort.size() != 0)
+            sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start ");
+        if (cohort != null && !cohort.isEmpty())
             sql.append("and p.person_id in (:personIds) ");
 
         if (endOrBefore != null)
-            sql.append("and " + OBS_ALIAS + "value_datetime <= :end ");
+            sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
 
         Query q = getSession().createSQLQuery(sql.toString());
         q.setParameterList("encounters", encounters);
@@ -122,7 +122,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
         if (endOrBefore != null)
             q.setTimestamp("end", endOrBefore);
 
-        if (cohort != null && cohort.size() != 0)
+        if (cohort != null && !cohort.isEmpty())
             q.setParameter("personIds", cohort.getMemberIds());
 
         List list = q.list();

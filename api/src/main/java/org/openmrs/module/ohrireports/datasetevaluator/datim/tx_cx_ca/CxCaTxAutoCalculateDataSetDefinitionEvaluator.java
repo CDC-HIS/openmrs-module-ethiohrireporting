@@ -73,7 +73,7 @@ public class CxCaTxAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 	private List<Integer> getArtstartedPatients() {
 		List<Integer> patientsId = getDatimTxCurrTotalEnrolledPatients();
 		List<Integer> patients = new ArrayList<>();
-        if (patientsId == null || patientsId.size() == 0)
+        if (patientsId.isEmpty())
                 return patients;
         HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
         queryBuilder.select("obs").from(Obs.class, "obs")
