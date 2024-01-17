@@ -7,8 +7,8 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.OCCUPATIONAL;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.NON_OCCUPATIONAL;
 
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.query.PepQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPEPCategoryDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep.HivPrEpQuery;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;

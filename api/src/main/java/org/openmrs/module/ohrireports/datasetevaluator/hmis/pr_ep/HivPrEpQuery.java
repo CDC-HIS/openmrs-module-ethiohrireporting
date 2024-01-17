@@ -149,7 +149,7 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public Integer getCountByExposureType(String uuid) {
 		
-		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id =" + conceptQuery(EXPOSURE_TYPE) + " and "
+		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id =" + conceptQuery(PEP_EXPOSURE_TYPE) + " and "
 		        + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(uuid) + "";
 		StringBuilder sql = personIdQuery(getCurrQueryClauses(), condition);
 		
