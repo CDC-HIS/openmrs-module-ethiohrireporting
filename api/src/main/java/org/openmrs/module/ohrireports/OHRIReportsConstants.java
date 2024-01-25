@@ -179,7 +179,7 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TREATMENT_TYPE = "6b78badd-0b92-47f8-b16c-46559d5179b2";
 	
-	public final static String CXCA_TREATMENT_PRECANCEROUS_LESIONS = "c7ca4fc7-8944-4824-84b0-c299d59a89c0";
+	public final static String CXCA_TREATMENT_PRECANCEROUS_LESIONS = "6b97156c-3795-48d0-a15c-4f2590ffef54";
 	
 	public final static String REASON_FOR_REFERRAL = "52106755-062c-4cd5-a627-2373f5a0cef0";
 	
@@ -231,9 +231,9 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_TYPE_OF_SCREENING_FIRST_TIME = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
-	public final static String CXCA_TYPE_OF_SCREENING_RESCREEN = "13c3ee77-4e7c-4224-ae40-0b2727932a0f";
+	public final static String CXCA_TYPE_OF_SCREENING_RESCREEN = "95b18d5a-c722-4312-bb29-d561f909e596";
 	
-	public final static String CXCA_TYPE_OF_SCREENING_POST_TREATMENT = "3f4a6148-39c1-4980-81c6-6d703367c4a6";
+	public final static String CXCA_TYPE_OF_SCREENING_POST_TREATMENT = "d4fd9773-8886-487e-aa59-9a0dd7fb948c";
 	
 	public final static String SCREENING_STRATEGY = "c842a287-f94c-48ee-a370-bd6540a0d1af";
 	
