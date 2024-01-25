@@ -32,7 +32,7 @@ public class ClientsWithCollectedSamples extends BaseCohortDefinitionManager {
 	public CohortDefinition constructCohortDefinition() {
 		DateObsCohortDefinition cd = (DateObsCohortDefinition) super.constructCohortDefinition();
 		cd.addEncounterType(Context.getEncounterService().getEncounterTypeByUuid(COVID_ASSESSMENT_ENCOUNTER_TYPE));
-		cd.setQuestion(Context.getConceptService().getConceptByUuid(SPECIMEN_COLLECTION_DATE));
+		cd.setQuestion(Context.getConceptService().getConceptByUuid(PMTCT_SPECIMEN_COLLECTION_DATE));
 		cd.setTimeModifier(BaseObsCohortDefinition.TimeModifier.LAST);
 		return cd;
 	}
