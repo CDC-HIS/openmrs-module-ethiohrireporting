@@ -17,10 +17,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -29,18 +27,63 @@ public class EidDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
 	private EidLineListQuery eidQuery;
+	List<PMTCTPatientRapidAntiBody> pmtctPatientRapidAntiBodies = new ArrayList<>();
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		EidDatasetDefinition eidDatasetDefinition = (EidDatasetDefinition) dataSetDefinition;
 		
-		eidQuery.generateReport(eidDatasetDefinition.getStartDate(), eidDatasetDefinition.getEndDate());
-		
 		DataSetRow row = new DataSetRow();
+		
 		row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "Total");
-		row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), eidQuery.getPMTCTPatient().size());
-		dataSet.addRow(row);
+		if(Objects.equals(eidDatasetDefinition.getReportType(), "Test Indication")){
+			eidQuery.generateReport(eidDatasetDefinition.getStartDate(), eidDatasetDefinition.getEndDate());
+			
+			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), eidQuery.getPMTCTPatient().size());
+			dataSet.addRow(row);
+			buildColumn(dataSet);
+			
+			
+		}else {
+			pmtctPatientRapidAntiBodies = eidQuery.getRapidAntiBodyWithPatient(eidDatasetDefinition.getStartDate(),eidDatasetDefinition.getEndDate());
+			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class),pmtctPatientRapidAntiBodies.size());
+			dataSet.addRow(row);
+			buildColumnForRapidAntiBody(dataSet);
+			
+		}
+		
+		
+		return dataSet;
+	}
+	
+	private void buildColumnForRapidAntiBody(SimpleDataSet dataSet) {
+		DataSetRow row;
+		HashMap<Integer,Object> heiCodeHashMap = eidQuery.getResult(PMTCT_HEI_CODE,pmtctPatientRapidAntiBodies.stream().map(PMTCTPatientRapidAntiBody::getPersonId).collect(Collectors.toList()));
+		heiCodeHashMap.forEach((k, p) -> {
+			pmtctPatientRapidAntiBodies.forEach(d -> {
+				if (d.getPersonId() == k) {
+					d.setHeiCode((String) p);
+				}
+			});
+		});
+		for (PMTCTPatientRapidAntiBody pmtctPatientRapidAntiBody:pmtctPatientRapidAntiBodies){
+			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), pmtctPatientRapidAntiBody.getFullName());
+			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), pmtctPatientRapidAntiBody.getGender());
+			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), pmtctPatientRapidAntiBody.getAge());
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), pmtctPatientRapidAntiBody.getMrn());
+			row.addColumnValue(new DataSetColumn("HEI Code", "HEI Code", String.class), pmtctPatientRapidAntiBody.getHeiCode());
+			row.addColumnValue(new DataSetColumn("followUpDate", "Follow Up Date", Date.class),	pmtctPatientRapidAntiBody.getFollowUpDate());
+			row.addColumnValue(new DataSetColumn("RapidAntibodyTestResult", "Rapid Antibody Test Result", String.class),	pmtctPatientRapidAntiBody.getFollowUpDate());
+			
+			dataSet.addRow(row);
+		}
+		
+	}
+	
+	private void buildColumn(SimpleDataSet dataSet) {
+		DataSetRow row;
 		for (Map.Entry<Integer, PMTCTPatient> patientEntry : eidQuery.getPMTCTPatient().entrySet()) {
 			
 			PMTCTPatient pmtctPatient = patientEntry.getValue();
@@ -87,6 +130,7 @@ public class EidDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 			
 		}
-		return dataSet;
 	}
+	
+
 }

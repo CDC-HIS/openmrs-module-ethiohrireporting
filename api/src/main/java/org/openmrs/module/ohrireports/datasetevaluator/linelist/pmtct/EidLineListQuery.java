@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class EidLineListQuery extends BaseLineListQuery {
@@ -32,4 +33,11 @@ public class EidLineListQuery extends BaseLineListQuery {
 		return eidQuery.getPatientEncounterHashMap();
 	}
 	
+	public List<PMTCTPatientRapidAntiBody> getRapidAntiBodyWithPatient(Date start, Date end) {
+		return eidQuery.getPMTCTRapidAntiDote(start, end);
+	}
+	
+	public HashMap<Integer, Object> getResult(String conceptUUId, List<Integer> personId) {
+		return eidQuery.getValueFromHeiEnrollement(conceptUUId, personId);
+	}
 }

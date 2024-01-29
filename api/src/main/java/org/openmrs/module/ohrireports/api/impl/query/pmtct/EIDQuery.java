@@ -6,6 +6,7 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PMTCTEncounter;
 import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.pmtct.PMTCTPatientRapidAntiBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,13 +40,14 @@ public class EIDQuery extends PatientQueryImpDao {
 	}
 	
 	//NOTE: Every encounter with sample collection date in a reporting date should be considered
-	public void generateReportForDATIM(Date start, Date end) {
+	public void generateReport(Date start, Date end) {
 		patientEncounterHashMap = getPMTCTPatientEncounter(start, end);
 	}
 	
 	public void generateReportForLineList(Date start, Date end) {
 		patientEncounterHashMap = getPMTCTPatientEncounterWithAllFields(start, end);
 	}
+	
 	private int getAgeInMonth(Date birthDate, Date asOfDate) {
 		Calendar birthCalendar = Calendar.getInstance();
 		Calendar asOfCalendar = Calendar.getInstance();
@@ -58,12 +60,69 @@ public class EIDQuery extends PatientQueryImpDao {
 		
 	}
 	
+	public List<PMTCTPatientRapidAntiBody> getPMTCTRapidAntiDote(Date start, Date end){
+		StringBuilder sqlBuilder = new StringBuilder("select distinct ob.person_id, concat(pn.given_name,' ',pn.middle_name,' ',pn.family_name), pi.identifier,p.gender,p.birthdate, ob.value_datetime,rapid_result.name as antibody_result from obs as ob inner join encounter as e on ob.encounter_id = e.encounter_id ");
+		sqlBuilder.append(" inner join person as p on p.person_id = ob.person_id ");
+		sqlBuilder.append(" inner join person_name as  pn on pn.person_id = ob.person_id ");
+		sqlBuilder.append(" inner join patient_identifier as pi on pi.patient_id = p.person_id ");
+		sqlBuilder.append(" inner join patient_identifier_type as pit on pit.patient_identifier_type_id = pi.identifier_type and pi.uuid ='").append(MRN_PATIENT_IDENTIFIERS).append("' ");
+		sqlBuilder.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type and et.uuid ='")
+				.append(PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE).append("' ");
+		sqlBuilder.append(getObsAnswerName(PMTCT_RAPID_ANTIBODY_RESULT,"rapid_result"));
+		sqlBuilder.append(" where ob.concept_id = ").append(conceptQuery(PMTCT_FOLLOW_UP_DATE))
+				  .append(" and ob.value_datetime >= :start  and ob.value_datetime <= :end ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		query.setDate("start",start);
+		query.setDate("end",end);
+		
+		List list = query.list();
+		List<PMTCTPatientRapidAntiBody> rapidAntiBodyList = new ArrayList<>();
+		for (Object objects :list){
+			Object[] object = (Object[]) objects;
+			rapidAntiBodyList.add(new PMTCTPatientRapidAntiBody(
+					(int) object[0],
+					(String) object[1],
+					(String) object[2],
+					(String) object[3],
+					getAgeInMonth((Date)object[4],(Date)object[5]),
+					(Date)object[5],
+					(String) object[6]
+					
+			));
+		}
+		
+		return rapidAntiBodyList;
+	}
+	
+	public HashMap<Integer,Object> getValueFromHeiEnrollement(String concept,List<Integer> person)	{
+		StringBuilder sqlBuilder = new StringBuilder("select ob.person_id, cn.name from obs as ob ");
+		sqlBuilder.append(" inner join concept_name as cn on cn.concept_id = ob.value_coded ");
+		sqlBuilder.append(" inner join encounter as e on e.encounter_id = ob.encounter_id ");
+		sqlBuilder.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type and et.uuid='")
+				.append(PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE).append("' ");
+		sqlBuilder.append(" where ob.concept_id = ").append(conceptQuery(concept));
+		sqlBuilder.append(" and ob.person_id in (:personId)");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		query.setParameterList("personId",person);
+		HashMap<Integer,Object> hashMap = new HashMap<>();
+		List list = query.list();
+		for (Object object :list){
+			Object[]objects = (Object[]) object;
+			hashMap.put((Integer) objects[0],objects[1]);
+		}
+		
+		return hashMap;
+	}
+	
 	private HashMap<Integer, PMTCTPatient> getPMTCTPatientEncounter(Date start, Date end) {
 		
-		StringBuilder sqlBuilder = new StringBuilder("select p.person_id,e.encounter_id,p.birthdate,ob.value_datetime,testInd.uuid from obs as ob ");
+		StringBuilder sqlBuilder = new StringBuilder("select  p.person_id, pn.given_name+' '+pn.middle_name+' '+pn.family_name,p.gender,e.encounter_id,p.birthdate,ob.value_datetime,testInd.uuid from obs as ob ");
 		sqlBuilder.append(" inner join person as p on p.person_id = ob.person_id  ");
-		sqlBuilder.append("inner join encounter as e on e.encounter_id = ob.encounter_id ");
-		sqlBuilder.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sqlBuilder.append(" inner join person_name as pn on pn.person_id = ob.person_id ");
+		sqlBuilder.append(" inner join encounter as e on e.encounter_id = ob.encounter_id ");
+		sqlBuilder.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sqlBuilder.append(" inner join ");
 		sqlBuilder.append(" (select tob.encounter_id,tob.person_id, c.uuid from obs as tob inner join concept as c on c.concept_id =tob.value_coded  where tob.concept_id = ")
 				.append(conceptQuery(PMTCT_TEST_INDICATION)).append(" and tob.value_coded in ")
@@ -118,9 +177,9 @@ public class EIDQuery extends PatientQueryImpDao {
 	
 	private HashMap<Integer, PMTCTPatient> getPMTCTPatientEncounterWithAllFields(Date start, Date end) {
 		
-		StringBuilder sqlBuilder = new StringBuilder("select p.person_id," +
+		StringBuilder sqlBuilder = new StringBuilder("select distinct p.person_id," +
 				                                             "pi.identifier, " +
-				                                             "pn.given_name+' '+pn.middle_name+' '+pn.family_name, " +
+				                                             "concat(pn.given_name,' ',pn.middle_name,' ',pn.family_name), " +
 				                                             "p.gender," +
 				                                             "e.encounter_id," +
 				                                             "p.birthdate," +
@@ -261,7 +320,7 @@ public class EIDQuery extends PatientQueryImpDao {
 		        " left join (select tob.encounter_id,tob.person_id, c.name from obs as tob inner join concept_name as c on c.concept_id =tob.value_coded  where tob.concept_id = ")
 		        .append(conceptQuery(conceptUUid)).append(" ) as ").append(alias).append(" on ");
 		sqlBuilder.append(alias).append(".encounter_id = ob.encounter_id and ").append(alias)
-		        .append(".person_id and ob.person_id ");
+		        .append(".person_id = ob.person_id ");
 		return sqlBuilder;
 	}
 	
@@ -270,7 +329,7 @@ public class EIDQuery extends PatientQueryImpDao {
 		        "left join (select tob.encounter_id,tob.person_id, tob.value_datetime from obs as tob  where tob.concept_id = ")
 		        .append(conceptQuery(conceptUUid)).append(") as ").append(alias).append(" on ");
 		sqlBuilder.append(alias).append(".encounter_id = ob.encounter_id and ").append(alias)
-		        .append(".person_id and ob.person_id ");
+		        .append(".person_id = ob.person_id ");
 		return sqlBuilder;
 	}
 	

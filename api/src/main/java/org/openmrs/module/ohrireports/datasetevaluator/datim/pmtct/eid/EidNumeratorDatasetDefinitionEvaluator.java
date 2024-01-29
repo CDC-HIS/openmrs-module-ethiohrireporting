@@ -24,13 +24,13 @@ public class EidNumeratorDatasetDefinitionEvaluator implements DataSetEvaluator 
 		EidNumeratorDatasetDefinition _datasetDefinition = (EidNumeratorDatasetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		eidQuery.generateReportForDATIM(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+		eidQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), eidQuery.getBaseCohort().size());
 		
 		data.addRow(row);
 		
-		return null;
+		return data;
 	}
 }

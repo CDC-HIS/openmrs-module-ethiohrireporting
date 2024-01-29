@@ -41,7 +41,7 @@ public class PMTCTEIDReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter types = new Parameter("type", "Select report type", String.class);
+		Parameter types = new Parameter("reportType", "Select report type", String.class);
 		types.addToWidgetConfiguration("codedOptions", StringUtils.join(param, ","));
 		types.setRequired(false);
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
@@ -67,7 +67,7 @@ public class PMTCTEIDReport implements ReportManager {
 		EidDatasetDefinition dataSetDefinition = new EidDatasetDefinition();
 		dataSetDefinition.addParameters(getParameters());
 		//
-		reportDefinition.addDataSetDefinition("PMTCT_EID", EthiOhriUtil.map(dataSetDefinition, "type=${type}"));
+		reportDefinition.addDataSetDefinition("PMTCT_EID", EthiOhriUtil.map(dataSetDefinition, "reportType=${reportType}"));
 		return reportDefinition;
 	}
 	

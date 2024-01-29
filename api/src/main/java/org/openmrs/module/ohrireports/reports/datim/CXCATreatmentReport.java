@@ -28,7 +28,7 @@ public class CXCATreatmentReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "- CXCA_TREATMENT";
+		return DATIM_REPORT + "- CXCA_TX";
 	}
 	
 	@Override

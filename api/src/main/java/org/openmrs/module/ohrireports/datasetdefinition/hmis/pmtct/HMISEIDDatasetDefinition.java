@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetdefinition.linelist;
+package org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct;
 
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
@@ -7,24 +7,13 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class EidDatasetDefinition extends BaseDataSetDefinition {
+public class HMISEIDDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;
 	
 	@ConfigurationProperty
 	private Date endDate;
-	
-	@ConfigurationProperty
-	private String reportType;
-	
-	public String getReportType() {
-		return reportType;
-	}
-	
-	public void setReportType(String reportType) {
-		this.reportType = reportType;
-	}
 	
 	public Date getStartDate() {
 		return startDate;
