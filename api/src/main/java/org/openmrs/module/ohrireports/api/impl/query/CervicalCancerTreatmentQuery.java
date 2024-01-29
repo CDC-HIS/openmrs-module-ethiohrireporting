@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.api.impl.query;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_treatment.CxCaTreatment;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -40,7 +42,7 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 	
 	private List<Integer> baseEncounter;
 	
-	private List<Integer> currentEncounter;
+	private Cohort alreadyCountedCohort;
 	
 	private Date startDate;
 	
@@ -91,7 +93,7 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 		this.endDate = endDate;
 		baseEncounter = encounterQuery.getEncounters(Arrays.asList(CXCA_TREATMENT_STARTING_DATE, FOLLOW_UP_DATE), startDate,
 		    endDate);
-		currentEncounter = baseEncounter = refineBaseEncounter();
+		baseEncounter = refineBaseEncounter();
 	}
 	
 	private List<Integer> refineBaseEncounter() {
@@ -110,7 +112,7 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getByScreeningType(String typConceptUUiD) {
-		String stringQuery = "SELECT ps.person_id FROM (SELECT DISTINCT ob.person_id\n" + "   FROM obs AS ob\n"
+		String stringQuery = "SELECT distinct ps.person_id FROM (SELECT DISTINCT ob.person_id\n" + "   FROM obs AS ob\n"
 		        + "     INNER JOIN\n" + "     (SELECT MAX(ib.value_datetime) AS value_datetime, ib.person_id\n"
 		        + "      FROM obs AS ib\n" + "      WHERE (\n" + "			CASE \n" + " 			WHEN (ib.concept_id ="
 		        + conceptQuery(CXCA_TREATMENT_STARTING_DATE)
@@ -141,17 +143,27 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 		        + conceptQuery(CXCA_TYPE_OF_SCREENING)
 		        + "        and value_coded = "
 		        + conceptQuery(typConceptUUiD)
-		        + ") AS tos\n" + "ON tos.person_id = ob.person_id  ) AS ps";
+		        + ") AS tos\n" + "ON tos.person_id = ob.person_id ";
+		
+		if (Objects.nonNull(alreadyCountedCohort) && !alreadyCountedCohort.isEmpty()) {
+			stringQuery = stringQuery + " and ob.person_id not in (:alreadyCounted) ";
+		}
+		stringQuery = stringQuery + " ) AS ps ";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		query.setDate("joinStartDate1", startDate);
 		query.setDate("joinStartDate2", startDate);
 		query.setDate("joinEndDate1", endDate);
 		query.setDate("joinEndDate2", endDate);
+		
+		if (Objects.nonNull(alreadyCountedCohort) && !alreadyCountedCohort.isEmpty()) {
+			query.setParameterList("alreadyCounted", alreadyCountedCohort.getMemberIds());
+		}
+		
 		return new Cohort(query.list());
 	}
 	
 	public Cohort getTreatmentByCryotherapy(Cohort cohort) {
-		String stringQuery = "select person_id\n" + "from obs\n" + "where concept_id = "
+		String stringQuery = "select distinct  person_id\n" + "from obs\n" + "where concept_id = "
 		        + conceptQuery(CXCA_TREATMENT_PRECANCEROUS_LESIONS) + "and value_coded = "
 		        + conceptQuery(CXCA_TREATMENT_TYPE_CRYOTHERAPY) + "and encounter_id in (:baseEncounter)"
 		        + "and person_id in (:personIdList)";
@@ -164,7 +176,7 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getTreatmentByLEEP(Cohort cohort) {
-		String stringQuery = "select person_id\n" + "from obs\n" + "where concept_id = "
+		String stringQuery = "select distinct person_id\n" + "from obs\n" + "where concept_id = "
 		        + conceptQuery(CXCA_TREATMENT_PRECANCEROUS_LESIONS) + "and value_coded = "
 		        + conceptQuery(CXCA_TREATMENT_TYPE_LEEP) + "and encounter_id in (:baseEncounter)"
 		        + "and person_id in (:personIdList)";
@@ -177,7 +189,7 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getTreatmentByThermocoagulation(Cohort cohort) {
-		String stringQuery = "select person_id\n" + "from obs\n" + "where concept_id = "
+		String stringQuery = "select distinct person_id\n" + "from obs\n" + "where concept_id = "
 		        + conceptQuery(CXCA_TREATMENT_PRECANCEROUS_LESIONS) + "and value_coded = "
 		        + conceptQuery(CXCA_TREATMENT_TYPE_THERMOCOAGULATION) + "and encounter_id in (:baseEncounter)"
 		        + "and person_id in (:personIdList)";
@@ -192,5 +204,14 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 	public int getTotalCohortCount() {
 		return reScreening.getTotal() + firstScreening.getTotal() + postScreening.getTotal();
 		
+	}
+	
+	public void updateCountedCohort(Cohort countedCohort) {
+		if (Objects.isNull(alreadyCountedCohort)) {
+			alreadyCountedCohort = new Cohort();
+		}
+		for (CohortMembership cohortMembership : countedCohort.getMemberships()) {
+			alreadyCountedCohort.addMembership(cohortMembership);
+		}
 	}
 }

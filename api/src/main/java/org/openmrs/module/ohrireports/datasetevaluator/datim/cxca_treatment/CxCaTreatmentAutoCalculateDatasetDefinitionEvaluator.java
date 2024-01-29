@@ -32,8 +32,8 @@ public class CxCaTreatmentAutoCalculateDatasetDefinitionEvaluator implements Dat
 		cervicalCancerTreatmentQuery.setEndDate(cxCaTreatmentAutoCalculateDatasetDefinition.getEndDate());
 		
 		loadGetCxCaTreatmentByScreeningType(CXCA_FIRST_TIME_SCREENING_TYPE);
-		loadGetCxCaTreatmentByScreeningType(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
 		loadGetCxCaTreatmentByScreeningType(CXCA_TYPE_OF_SCREENING_RESCREEN);
+		loadGetCxCaTreatmentByScreeningType(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		DataSetRow dataSetRow = new DataSetRow();
@@ -49,17 +49,19 @@ public class CxCaTreatmentAutoCalculateDatasetDefinitionEvaluator implements Dat
 		Cohort cryotherapyCohort = cervicalCancerTreatmentQuery.getTreatmentByCryotherapy(cohort);
 		Cohort leepCohort = cervicalCancerTreatmentQuery.getTreatmentByLEEP(cohort);
 		Cohort thermocoagulationCohort = cervicalCancerTreatmentQuery.getTreatmentByThermocoagulation(cohort);
-		
+		cervicalCancerTreatmentQuery.updateCountedCohort(cryotherapyCohort);
+		cervicalCancerTreatmentQuery.updateCountedCohort(leepCohort);
+		cervicalCancerTreatmentQuery.updateCountedCohort(thermocoagulationCohort);
 		switch (conceptUuId) {
 			case CXCA_FIRST_TIME_SCREENING_TYPE:
 				cervicalCancerTreatmentQuery.setFirstScreening(new CxCaTreatment(conceptUuId, cryotherapyCohort, leepCohort,
 				        thermocoagulationCohort));
 				break;
-			case CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
+			case CXCA_TYPE_OF_SCREENING_RESCREEN:
 				cervicalCancerTreatmentQuery.setReScreening(new CxCaTreatment(conceptUuId, cryotherapyCohort, leepCohort,
 				        thermocoagulationCohort));
 				break;
-			case CXCA_TYPE_OF_SCREENING_RESCREEN:
+			case CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
 				cervicalCancerTreatmentQuery.setPostScreening(new CxCaTreatment(conceptUuId, cryotherapyCohort, leepCohort,
 				        thermocoagulationCohort));
 				break;
