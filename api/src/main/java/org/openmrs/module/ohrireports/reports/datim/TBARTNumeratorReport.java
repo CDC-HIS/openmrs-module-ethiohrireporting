@@ -59,16 +59,8 @@ public class TBARTNumeratorReport implements ReportManager {
 		
 		TBARTDataSetDefinition alreadyOnARTSetDefinition = new TBARTDataSetDefinition();
 		alreadyOnARTSetDefinition.addParameters(getParameters());
-		//alreadyOnARTSetDefinition.setNewlyEnrolled(false);
 		reportDefinition.addDataSetDefinition("Disaggregated by Age/Sex/Result Already on ART",
 		    EthiOhriUtil.map(alreadyOnARTSetDefinition));
-		
-		// TBARTDataSetDefinition newlyEnrolledSetDefinition = new TBARTDataSetDefinition();
-		// newlyEnrolledSetDefinition.addParameters(getParameters());
-		// newlyEnrolledSetDefinition.setEncounterType(followUpEncounter);
-		// //newlyEnrolledSetDefinition.setNewlyEnrolled(true);
-		// reportDefinition.addDataSetDefinition("Disaggregated by Age/Sex/Result Newly on ARt",
-		//     EthiOhriUtil.map(newlyEnrolledSetDefinition));
 		
 		return reportDefinition;
 	}

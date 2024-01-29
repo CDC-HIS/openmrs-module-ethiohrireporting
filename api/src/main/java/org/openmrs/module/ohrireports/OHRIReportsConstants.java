@@ -11,9 +11,6 @@ package org.openmrs.module.ohrireports;
 
 public class OHRIReportsConstants {
 	
-	/**
-	 * Encounter types
-	 */
 	public final static String COVID_ASSESSMENT_ENCOUNTER_TYPE = "253a43d3-c99e-415c-8b78-ee7d4d3c1d54";
 	
 	public final static String CARE_AND_TREATMENT_SERVICE_ENROLLMENT_ENCOUNTER_TYPE = "7e54cd64-f9c3-11eb-8e6a-57478ce139b0";
@@ -30,9 +27,6 @@ public class OHRIReportsConstants {
 	
 	public final static String HTS_RETROSPECTIVE_ENCOUNTER_TYPE = "79c1f50f-f77d-42e2-ad2a-d29304dde2fe";
 	
-	/**
-	 * Cohort definitions
-	 */
 	public final static String CLIENTS_ASSESSED_FOR_COVID = "ec373b01-4ba3-488e-a322-9dd6a50cfdf7";
 	
 	public final static String CLIENTS_ENROLLED_TO_CARE = "51bec6f7-df43-426e-a83e-c1ae5501372f";
@@ -73,16 +67,13 @@ public class OHRIReportsConstants {
 	
 	public final static String NO = "1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String UNKNOWN = "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String UNKNOWN = "1175AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	/**
-	 * Associated Concepts
-	 */
 	public final static String VACCINATION_DATE = "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String COVID_TREATMENT_OUTCOME = "a845f3e6-4432-4de4-9fff-37fa270b1a06";
 	
-	public final static String SPECIMEN_COLLECTION_DATE = "159951AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String PMTCT_SPECIMEN_COLLECTION_DATE = "159951AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String COVID_LAB_TEST_CONFIRMATION_DATE = "a51c05e1-5ad5-420d-a082-966d2989b716";
 	
@@ -110,16 +101,13 @@ public class OHRIReportsConstants {
 	
 	public final static String LINKED_TO_CARE_AND_TREATMENT_IN_THIS_FACILITY = "e8e8fe71-adbb-48e7-b531-589985094d30";
 	
-	// public final static String ART_START_DATE =
-	// "159599AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
 	public final static String ART_START_DATE = "ae329187-6232-4142-aa91-22c85bc8e5b5";
 	
 	public final static String TRANSFERRED_IN = "160563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String REASON_FOR_ART_ELIGIBILITY = "613718f1-ecf2-4228-b9c2-6157d574bd0b";
 	
-	public final static String FOLLOW_UP_DATE = "b8cd8630-56dd-495e-8c84-e36a636febe7";
+	public final static String FOLLOW_UP_DATE = "5c118396-52dc-4cac-8860-e6d8e4a7f296";
 	
 	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d94b14";
 	
@@ -201,7 +189,7 @@ public class OHRIReportsConstants {
 	
 	public final static String BIOPSY_RESULT = "df94b4c4-8a3a-46b2-be5b-e948403081a0";
 	
-	public final static String CXCA_TREATMENT_TYPE_NO_TREATMENT = "1107AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String CXCA_TREATMENT_TYPE_NO_TREATMENT = "b0ff6e2e-ff01-4683-859a-9fcd69dff12e";
 	
 	public final static String CXCA_TREATMENT_TYPE_CRYOTHERAPY = "162812AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -275,7 +263,7 @@ public class OHRIReportsConstants {
 	
 	public final static String CYTOLOGY_RESULT_RECEIVED_DATE = "f0892f21-406c-446b-abd5-bb62f3ea2387";
 	
-	public final static String CYTOLOGY_NEGATIVE = "5e4fc757-0b14-49ae-b3b7-419666f41e15";
+	public final static String CYTOLOGY_NEGATIVE = "1229AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String CYTOLOGY_SAMPLE_COLLECTION_DATE = "3b5034de-ce0f-4017-80ab-17746ab3fe15";
 	
@@ -283,9 +271,6 @@ public class OHRIReportsConstants {
 	
 	public final static String CYTOLOGY_GREATER_ASCUS_SUSPICIOUS = "912a5c48-8b07-4fd7-b2c3-ccb94fde7c68";
 	
-	/*
-	 * undernourished concepts
-	 */
 	public final static String UNDERNOURISHED = "123815AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String NUTRITIONAL_STATUS_ADULT = "ae4d72a4-ccf5-49ff-b395-6687c534b1a2";
@@ -304,9 +289,6 @@ public class OHRIReportsConstants {
 	
 	public final static String SEVERE_MAL_NUTRITION = "126598AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	/**
-	 * Viral Load Constant
-	 */
 	public final static String HIV_VIRAL_LOAD_COUNT = "856AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DATE_VIRAL_TEST_RESULT_RECEIVED = "beeede36-cae4-4f6e-b4b9-e39e37353a82";
@@ -319,20 +301,14 @@ public class OHRIReportsConstants {
 	
 	public final static String HIV_VIRAL_LOAD_STATUS = "2dc9ee04-4d12-4606-ae0f-86895bf14a44";
 	
-	public final static String HIV_VIRAL_LOAD_SUPPRESSED = "5d5e42cc-acc4-4069-b3a8-7163e0db5d96";
+	public final static String HIV_VIRAL_LOAD_SUPPRESSED = "167484AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String HIV_VIRAL_LOAD_UNSUPPRESSED = "a6768be6-c08e-464d-8f53-5f4229508e54";
+	public final static String HIV_VIRAL_LOAD_UNSUPPRESSED = "167485AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String HIV_HIGH_VIRAL_LOAD = "162185AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String VIRAL_LOAD_TEST_INDICATION = "6bb5b796-60bc-406c-abd9-fb9362ed5e80";
 	
-	/*
-	 * End Of Viral Load Constant
-	 */
-	/**
-	 * Reports
-	 */
 	public final static String HTS_REPORT_UUID = "3ffa5a53-fc65-4a1e-a434-46dbcf1c2de2";
 	
 	public final static String HTS_FOLLOW_UP_REPORT_UUID = "136b2ded-22a3-4831-a39a-088d35a50ef5";
@@ -359,12 +335,9 @@ public class OHRIReportsConstants {
 	
 	public final static String DROP = "160431AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// public final static String RESTART = "ee957295-85b9-4433-bf12-45886cdc7dd1";
 	public final static String RESTART = "162904AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";
-	
-	// Prep
 	
 	public final static String PREP_SCREENED_DATE = "bd09b775-0294-4775-9615-964d98e06a4f";
 	
@@ -406,7 +379,6 @@ public class OHRIReportsConstants {
 	
 	public final static String FEMALE_SEX_WORKER = "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// pep
 	public final static String PEP_FOLLOWUP_ENCOUNTER = "c7f3c349-8771-432b-8e1e-240a53b3bda3";
 	
 	public final static String PEP_TIME_BETWEEN = "0885bb1e-6a2e-47d0-a597-8e8da07e4e59";
@@ -445,7 +417,6 @@ public class OHRIReportsConstants {
 	
 	public final static String SEXUAL_ASSAULT = "126582AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// #region
 	public final static String UNIQUE_ANTIRETROVAIRAL_THERAPY_UAN = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String SERVICE_DELIVERY_POINT_NUMBER_MRN = "162054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -454,9 +425,6 @@ public class OHRIReportsConstants {
 	
 	public final static String TB_SCREENING_RESULT = "160108AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// #endregion
-	
-	// #region TPT (TB prevention)
 	public final static String TPT_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TPT_TYPE = "54084c9e-bc87-4d95-89fc-eb9a2cffb592";
@@ -479,18 +447,12 @@ public class OHRIReportsConstants {
 	
 	public final static String TPT_DOSE_DAY_TYPE_INH = "ad542a8d-cd7c-4d70-8ef3-829b89c05009";
 	
-	// #endregion
-	
-	// #region Report Group
 	public final static String DATIM_REPORT = "DATIM";
 	
 	public final static String HMIS_REPORT = "HMIS";
 	
 	public final static String LINE_LIST_REPORT = "LINELIST";
 	
-	// #endregion
-	
-	// #region drug concept uuid
 	public final static String TDF_TENOFOVIR_DRUG = "84795AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TDF_FTC_DRUG = "104567AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -499,13 +461,8 @@ public class OHRIReportsConstants {
 	
 	public final static String PREGNANCY_STATUS = "5272AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// #endregion
-	
 	public final static String REPORT_VERSION = "1.0.0-SNAPSHOT";
 	
-	/*
-	 * Linkage Indicators Concepts
-	 */
 	public final static String HIV_CONFIRMED_DATE = "160554AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String LINKED_TO_CARE_TREATMENT = "c1bb9738-10aa-4905-bb5d-af4e55b4bb69";
@@ -530,11 +487,6 @@ public class OHRIReportsConstants {
 	
 	public final static String DIED = "160034AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	// Regimens
-	
-	/*
-	 * Family planning methods and others related to family planning
-	 */
 	public final static String FAMILY_PLANNING_METHODS = "374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DSD_ASSESSMENT_DATE = "78c8abfb-1989-444a-8750-947227f4bde8";
@@ -558,4 +510,51 @@ public class OHRIReportsConstants {
 	public final static String PEP_EXPOSURE_DURATION = "162603AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String PEP_REGISTRATION_DATE = "4285d9e8-3ab4-4a94-bd4e-4dd92855795c";
+	
+	public final static String PMTCT_TEST_INDICATION = "cc8b10f3-a1ff-4d82-8143-a45af803bd56";
+	
+	public final static String PMTCT_SPECIMENT_TYPE = "4c1fed7f-7346-498d-9846-effd0629ecff";
+	
+	public final static String PMTCT_INITIAL_TEST = "42807db4-c4cc-4dc4-9154-a78e1c867f9f";
+	
+	public final static String PMTCT_DIAGNOSTIC_REPEAT_TEST = "ce696718-39b5-4838-80f2-44d7cf40c055";
+	
+	public final static String PMTCT_NINE_MONTH_FOR_PREVIOUS_NEGATIVE_TEST = "45f7234a-c038-450a-8e55-d6e353dce67f";
+	
+	public final static String PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE = "ca7108d6-b4f2-4b46-be1c-d0ddd4f0ed97";
+	
+	public final static String PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE = "d7f3c5d9-2927-41c4-a39f-ad9a6c7cf31d";
+	
+	public final static String PMTCT_CHILD_ENROLLMENT_DATE = "ca7108d6-b4f2-4b46-be1c-d0ddd4f0ed97";
+	
+	public final static String PMTCT_SAMPLE_COLLECTION_DATE = "159951AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_ARV_PROPHYLAXIS = "b7f50074-b9f2-4b0d-9f20-d18b646d822e";
+	
+	public final static String PMTCT_MATERNAL_ART_STATUS = "70961c32-e9aa-4006-9b12-64d0e71978f5";
+	
+	public final static String PMTCT_DNA_PCR_RESULT = "2e770be1-7397-4684-bea6-6632c23b00d7";
+	
+	public final static String PMTCT_NAME_OF_REGIONAL_LAB_NAME = "164422AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_DBS_RESULT_RECEIVED_DATE = "ec2f989b-bdf8-4abe-8601-dc7a99d000eb";
+	
+	public final static String PMTCT_DBS_REFERRAL_TO_REGIONAL_LAB_DATE = "161561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB = "e724050c-cd85-4405-94a0-7a8e3b082d58";
+	
+	public final static String PMTCT_SAMPLE_QUALITY = "165253AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_REASON_FOR_SAMPLE_REJECTION = "38295027-00a8-42a2-9bce-ec12103035bf";
+	
+	public final static String PMTCT_DATE_TEST_PERFORMED_BY_LAB = "164400AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_PLATFORM_USED = "278b3046-d653-4cb2-a4c6-8f4f5d8fb54f";
+	
+	public final static String PMTCT_HEI_CODE = "2b30a270-be1f-4cce-9949-7d7eaba349be";
+	
+	public final static String PMTCT_RAPID_ANTIBODY_RESULT = "aa69908a-989a-4fef-ad65-cbd73ba487b7";
+	
+	public final static String PMTCT_FOLLOW_UP_DATE = "5c118396-52dc-4cac-8860-e6d8e4a7f296";
+	
 }

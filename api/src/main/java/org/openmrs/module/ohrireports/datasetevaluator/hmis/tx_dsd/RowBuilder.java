@@ -8,14 +8,15 @@ import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class RowBuilder extends ColumnBuilder {
 	
-	private final List<Person> personList;
+	private  List<Person> personList = new ArrayList<>();
 	
-	private final Date endDateReport;
+	private  Date endDateReport= Calendar.getInstance().getTime();
 	
 	private List<DataSetRow> rowList;
 	
@@ -28,7 +29,7 @@ public class RowBuilder extends ColumnBuilder {
 	public List<DataSetRow> getRowList() {
 		return rowList;
 	}
-	
+	public RowBuilder(){}
 	public RowBuilder(List<Person> personList, Date endDateReport) {
 		this.personList = personList;
 		this.endDateReport = endDateReport;
