@@ -30,36 +30,10 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 @Handler(supports = {CXCADatasetDefinition.class})
 public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
     private int total = 0;
-    private int minCount = 0;
-    private int maxCount = 4;
     List<Person> persons = new ArrayList<>();
     private CXCADatasetDefinition cxcaDatasetDefinition;
-    private Concept artConcept,
-            cxcaScreenedConcept,
-            treatmentEndDateConcept,
-            hpvAndDNAScreeningResultConcept,
-            positiveConcept,
-            negativeConcept,
-            unknownConcept,
-            viaScreeningResultConcept,
-            viaNegativeConcept,
-            viaPositiveConcept,
-            viaSuspiciousConcept,
-            cytologyResultConcept,
-            cytologyNegativeConcept,
-            cytologyASCUSPositiveConcept,
-            cytologyGreaterASCUSSuspiciousConcept,
-            cxcaScreeningTypeConcept;
-
-    @Autowired
-    private ConceptService conceptService;
-
-    @Autowired
-    private EvaluationService evaluationService;
 
     private EvaluationContext context;
-    private List<Integer> onArtFemalePatients;
-    private List<Integer> currentPatients;
     @Autowired
     private CervicalCancerQuery cervicalCancerQuery;
 
