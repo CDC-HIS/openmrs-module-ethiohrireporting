@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -102,7 +103,7 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		Cohort currCohort = getPrepCurr();
 		Cohort previousCohort = getCohortByFollowupDateAndStatus();
 		Cohort followupCohort = getCohortByStatus();
-		baseCohort = Cohort.union(currCohort, Cohort.union(previousCohort, followupCohort));
+		baseCohort = getUnion(currCohort, getUnion(previousCohort, followupCohort));
 		return baseCohort;
 	}
 	
@@ -235,4 +236,22 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		return new Cohort(query.list());
 	}
 	
+	private Cohort getUnion(Cohort a, Cohort b) {
+		if (a == null && b == null)
+			return new Cohort();
+		if (a == null || a.isEmpty()) {
+			return b;
+		} else if (b == null || b.isEmpty()) {
+			return a;
+		}
+
+		List<Integer> list = new ArrayList<>();
+		for (Integer integer : a.getMemberIds()) {
+			if (!b.getMemberIds().contains(integer)) {
+				list.add(integer);
+			}
+		}
+		return  Cohort.union(new Cohort(list),b);
+
+	}
 }
