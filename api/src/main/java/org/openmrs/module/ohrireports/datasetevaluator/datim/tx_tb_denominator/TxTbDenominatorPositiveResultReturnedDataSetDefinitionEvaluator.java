@@ -1,10 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_denominator;
 
-import java.util.Arrays;
-import java.util.List;
 import org.openmrs.annotation.Handler;
 import org.openmrs.Cohort;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorPositiveResultReturnedDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -17,8 +14,6 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
-
 @Handler(supports = { TxTbDenominatorPositiveResultReturnedDataSetDefinition.class })
 public class TxTbDenominatorPositiveResultReturnedDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -30,13 +25,12 @@ public class TxTbDenominatorPositiveResultReturnedDataSetDefinitionEvaluator imp
 		
 		TxTbDenominatorPositiveResultReturnedDataSetDefinition hdsd = (TxTbDenominatorPositiveResultReturnedDataSetDefinition) dataSetDefinition;
 		
-		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
-		
 		DataSetRow dataSet = new DataSetRow();
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients who had a positive result returned for bacteriological diagnosis of active TB disease");
 		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class),
-		    tbQuery.getTBDiagnosticPositiveResult(cohort, hdsd.getStartDate(), hdsd.getEndDate()).size());
+		    tbQuery.getTBDiagnosticPositiveResult(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(), hdsd.getEndDate())
+		            .size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;

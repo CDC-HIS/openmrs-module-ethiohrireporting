@@ -1,14 +1,10 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_denominator;
 
-import java.util.List;
-
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
-import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -35,12 +31,11 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		TxTbDenominatorARTByAgeAndSexDataSetDefinition hdsd = (TxTbDenominatorARTByAgeAndSexDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		Cohort cohort = tbQuery.getDenominator(hdsd.getStartDate(), hdsd.getEndDate());
+		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(),
+		    tbQuery.getDenomiatorCohort(), tbQuery.getTbScreeningEncounter());
 		
-		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), cohort,
-		    tbQuery.getBaseEncounter());
-		Cohort alreadyOnArtCohort = tbQuery.getActiveOnArtCohort("", null, hdsd.getStartDate(), cohort,
-		    tbQuery.getBaseEncounter());
+		Cohort alreadyOnArtCohort = getAlreadyOnARTCohort(newOnArtCohort, tbQuery.getDenomiatorCohort());
+		
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 		_AggregateBuilder.setLowerBoundAge(0);
 		_AggregateBuilder.setUpperBoundAge(65);
@@ -52,9 +47,11 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 	
 	private void buildRowWithAggregate(SimpleDataSet set, Cohort cohort, String type) {
 		Cohort femalePositiveCohort = tbQuery.getCohortByTbScreenedPositive(cohort, "F");
+		
 		Cohort femaleNegativeCohort = tbQuery.getCohortByTbScreenedNegative(cohort, "F");
 		
 		Cohort malePositiveCohort = tbQuery.getCohortByTbScreenedPositive(cohort, "M");
+		
 		Cohort maleNegativeCohort = tbQuery.getCohortByTbScreenedNegative(cohort, "M");
 		
 		DataSetRow positiveDescriptionDsRow = new DataSetRow();
@@ -86,4 +83,13 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		set.addRow(_maleNegative);
 	}
 	
+	private Cohort getAlreadyOnARTCohort(Cohort newCohort, Cohort allCohort) {
+		Cohort alreadyOnArtCohort = new Cohort();
+		for (CohortMembership membership : allCohort.getMemberships()) {
+			if (!newCohort.contains(membership.getPatientId())) {
+				alreadyOnArtCohort.addMembership(membership);
+			}
+		}
+		return alreadyOnArtCohort;
+	}
 }

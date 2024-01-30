@@ -1,8 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_numerator;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
@@ -18,8 +15,6 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
-
 @Handler(supports = { TxTbNumeratorAutoCalculateDataSetDefinition.class })
 public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -32,13 +27,12 @@ public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements Dat
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		TxTbNumeratorAutoCalculateDataSetDefinition hdsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
-		
-		Cohort cohort = tbQuery.getNumerator(hdsd.getStartDate(), hdsd.getEndDate());
+		TxTbNumeratorAutoCalculateDataSetDefinition dsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
+		tbQuery.generateNumeratorReport(dsd.getStartDate(), dsd.getEndDate());
 		
 		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), cohort
-		        .getMemberIds().size());
+		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), tbQuery
+		        .getNumeratorCohort().size());
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);

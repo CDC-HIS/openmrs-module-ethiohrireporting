@@ -9,10 +9,7 @@ import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -27,6 +24,7 @@ public class TBARTQuery extends PatientQueryImpDao {
     }
 
     private List<Integer> tbTreatmentStartDateEncounter = new ArrayList<>();
+    private List<Integer> activeDiagnosticStartDateEncounter = new ArrayList<>();
     @Autowired
     private EncounterQuery encounterQuery;
 
@@ -92,12 +90,12 @@ public class TBARTQuery extends PatientQueryImpDao {
     }
 
     private Cohort getCurrentOnActiveTB(Cohort cohort, Date start, Date end) {
+        
+        
+        tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_START_DATE), start, end, cohort);
+       activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_ACTIVE_DATE), start, end, cohort);
 
-
-        List<Integer> treatmentStartedEncounter = encounterQuery.getEncounters(Arrays.asList(TB_TREATMENT_START_DATE), start, end, cohort);
-        List<Integer> activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Arrays.asList(TB_ACTIVE_DATE), start, end, cohort);
-
-        Cohort treatmentStartedCohort = getCohort(treatmentStartedEncounter);
+        Cohort treatmentStartedCohort = getCohort(tbTreatmentStartDateEncounter);
         Cohort activeDiagonosticCohort = getCohort(activeDiagnosticStartDateEncounter);
 
         for (CohortMembership treatmentMembership : treatmentStartedCohort.getMemberships()) {
@@ -106,5 +104,9 @@ public class TBARTQuery extends PatientQueryImpDao {
             }
         }
         return activeDiagonosticCohort;
+    }
+    
+    public List<Integer> getActiveDiagnosticStartDateEncounter() {
+        return activeDiagnosticStartDateEncounter;
     }
 }

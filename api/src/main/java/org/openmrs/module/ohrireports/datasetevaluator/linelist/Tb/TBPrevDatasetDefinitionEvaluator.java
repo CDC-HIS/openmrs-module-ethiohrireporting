@@ -17,12 +17,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_ADHERENCE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_COMPLETED_DATE;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -77,11 +72,11 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		patientQuery = Context.getService(PatientQueryService.class);
 		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(hdsd.getStartDate(), hdsd.getEndDate());
 		if (hdsd.getTptStatus().equals("start")) {
-			baseTPTStartDateEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE), hdsd.getStartDate(),
-			    hdsd.getEndDate());
+			baseTPTStartDateEncounters = encounterQuery.getEncounters(Collections.singletonList(TPT_START_DATE),
+			    hdsd.getStartDate(), hdsd.getEndDate());
 			
 		} else {
-			baseTPTStartDateEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE),
+			baseTPTStartDateEncounters = encounterQuery.getEncounters(Collections.singletonList(TPT_COMPLETED_DATE),
 			    hdsd.getStartDate(), hdsd.getEndDate());
 			
 		}

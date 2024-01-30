@@ -32,12 +32,11 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 		hdsd = (TxTbNumeratorARTByAgeAndSexDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		Cohort cohort = tbQuery.getNumerator(hdsd.getStartDate(), hdsd.getEndDate());
 		
-		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), cohort,
-		    tbQuery.getBaseEncounter());
-		Cohort alreadyOnArtCohort = new Cohort(tbQuery.getArtStartedCohort(tbQuery.getBaseEncounter(), null,
-		    hdsd.getStartDate(), cohort));
+		Cohort newOnArtCohort = tbQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(),
+		    tbQuery.getNumeratorCohort(), tbQuery.geTBTreatmentEncounter());
+		Cohort alreadyOnArtCohort = new Cohort(tbQuery.getArtStartedCohort(tbQuery.geTBTreatmentEncounter(), null,
+		    hdsd.getStartDate(), tbQuery.getNumeratorCohort()));
 		
 		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
 		_AggregateBuilder.setLowerBoundAge(0);
@@ -51,9 +50,9 @@ public class TxTbNumeratorARTByAgeAndSexDataSetDefinitionEvaluator implements Da
 	}
 	
 	private void buildRowWithAggregate(SimpleDataSet set, Cohort cohort, String type) {
-		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "F", tbQuery.getBaseEncounter());
+		Cohort femaleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "F", tbQuery.geTBTreatmentEncounter());
 		
-		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "M", tbQuery.getBaseEncounter());
+		Cohort maleCohort = tbQuery.getTBTreatmentStartedCohort(cohort, "M", tbQuery.geTBTreatmentEncounter());
 		
 		DataSetRow positiveDescriptionDsRow = new DataSetRow();
 		positiveDescriptionDsRow.addColumnValue(new DataSetColumn("", "Category", String.class), type);
