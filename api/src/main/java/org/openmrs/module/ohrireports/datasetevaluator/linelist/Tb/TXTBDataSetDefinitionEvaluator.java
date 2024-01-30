@@ -12,11 +12,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_D
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_STATUS;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -73,7 +69,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
             followUpEncounters = encounterQuery.getLatestDateByFollowUpDate(null, hdsd.getEndDate());
             tbQueryLineList.setEncountersByScreenDate(followUpEncounters);
 
-            List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(Arrays.asList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate());
+            List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate());
             cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
 
             tbTxStartDictionary = tbQueryLineList.getTBTreatmentStartDate(cohort, baseEncountersOfTreatmentStartDate);
@@ -81,11 +77,10 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
         } else if (hdsd.getType().equals(TXTBReport.denominator)) {
 
             followUpEncounters = encounterQuery.getLatestDateByFollowUpDate(null, hdsd.getEndDate());
-            tbQueryLineList.setEncountersByScreenDate(followUpEncounters);
+            tbQueryLineList.setEncountersByScreenDate(tbQuery.getFollowUpEncounter());
 
-            List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(Arrays.asList(TB_SCREENING_DATE), hdsd.getStartDate(), hdsd.getEndDate());
+            List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(Collections.singletonList(TB_SCREENING_DATE), hdsd.getStartDate(), hdsd.getEndDate());
             cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
-           // cohort = tbQuery.getTBScreenedCohort(cohort, baseEncountersOfTreatmentStartDate);
 
             screenedResultHashMap = tbQueryLineList.getTBScreenedResult(cohort);
             tbTxStartDictionary = tbQueryLineList.getTBScreenedDate(cohort);
@@ -93,10 +88,10 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
         } else {
             cohort = tbartQuery.getCohortByTBTreatmentStartDate(hdsd.getStartDate(), hdsd.getEndDate());
             followUpEncounters = tbartQuery.getBaseEncounter();
-            tbTxStartDictionary = tbQueryLineList.getTBTreatmentStartDate(cohort, followUpEncounters);
+            tbTxStartDictionary = tbQueryLineList.getTBTreatmentStartDate(cohort, tbartQuery.getTbTreatmentStartDateEncounter());
 
-            tpTreatmentStatus = tbQueryLineList.getByResult(TB_TREATMENT_STATUS, cohort, followUpEncounters);
-            tpActiveDate = tbQueryLineList.getObsValueDate(followUpEncounters, TB_ACTIVE_DATE, cohort);
+            tpTreatmentStatus = tbQueryLineList.getByResult(TB_TREATMENT_STATUS, cohort, tbartQuery.getTbTreatmentStartDateEncounter());
+            tpActiveDate = tbQueryLineList.getObsValueDate(tbartQuery.getActiveDiagnosticStartDateEncounter(), TB_ACTIVE_DATE, cohort);
 
         }
 

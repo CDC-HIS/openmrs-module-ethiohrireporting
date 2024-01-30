@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tb_art;
 
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
@@ -37,9 +38,9 @@ public class TBARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		Cohort activeTBCohort = tbQuery.getCohortByTBTreatmentStartDate(_datasetDefinition.getStartDate(),
 		    _datasetDefinition.getEndDate());
-		Cohort alreadyOnARTCohort = tbQuery.getAlreadyOnArtCohort(activeTBCohort, _datasetDefinition.getStartDate());
 		Cohort newOnARTCohort = tbQuery.getNewOnArtCohort(activeTBCohort, _datasetDefinition.getStartDate(),
 		    _datasetDefinition.getEndDate());
+		Cohort alreadyOnARTCohort = getAlreadyOnARTCohort(newOnARTCohort, activeTBCohort);
 		
 		DataSetRow descRow = new DataSetRow();
 		descRow.addColumnValue(new DataSetColumn("ByAgeAndSexData", "Gender", String.class), "Already On ART");
@@ -69,4 +70,13 @@ public class TBARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		simpleDataSet.addRow(maleSetRow);
 	}
 	
+	private Cohort getAlreadyOnARTCohort(Cohort newCohort, Cohort allCohort) {
+		Cohort alreadyOnArtCohort = new Cohort();
+		for (CohortMembership membership : allCohort.getMemberships()) {
+			if (!newCohort.contains(membership.getPatientId())) {
+				alreadyOnArtCohort.addMembership(membership);
+			}
+		}
+		return alreadyOnArtCohort;
+	}
 }

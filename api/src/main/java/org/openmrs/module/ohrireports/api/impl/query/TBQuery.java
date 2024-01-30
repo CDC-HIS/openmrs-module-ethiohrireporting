@@ -3,12 +3,10 @@ package org.openmrs.module.ohrireports.api.impl.query;
 import java.util.*;
 
 import org.hibernate.Query;
-import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -16,11 +14,14 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 @Component
 public class TBQuery extends PatientQueryImpDao {
 
-    private DbSessionFactory sessionFactory;
-    private List<Integer> baseEncounter = new ArrayList<>();
-
-    public List<Integer> getBaseEncounter() {
-        return baseEncounter;
+    private final DbSessionFactory sessionFactory;
+    private List<Integer> tbTreatmentEncounter = new ArrayList<>();
+    private List<Integer> tbScreeningEncounter = new ArrayList<>();
+    private List<Integer> followUpEncounter = new ArrayList<>();
+    private Cohort numeratorCohort;
+    private Cohort denomiatorCohort;
+    public List<Integer> geTBTreatmentEncounter() {
+        return tbTreatmentEncounter;
     }
     @Autowired
     private EncounterQuery encounterQuery;
@@ -32,28 +33,31 @@ public class TBQuery extends PatientQueryImpDao {
         setSessionFactory(sessionFactory);
 
     }
+    
+    public void generateDenominatorReport(Date start, Date end) {
 
-    public Cohort getDenominator(Date start, Date end) {
-        List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(start,end);
+        tbScreeningEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_SCREENING_DATE), start,end);
+        Cohort cohort = getCohort(tbScreeningEncounter);
+        cohort =   new Cohort(getArtStartedCohort(tbScreeningEncounter,null,end,cohort));
 
-        baseEncounter = encounterQuery.getEncounters(Arrays.asList(TB_SCREENING_DATE), start,end);
-
-        Cohort cohort = getCohort(baseEncounter);
-
-        cohort = new Cohort(getArtStartedCohort(encounters, null, end, cohort));
-        return cohort;
+        denomiatorCohort = new Cohort(getArtStartedCohort(tbScreeningEncounter, null, end, cohort));
+        followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE),null,end,denomiatorCohort);
+        
     }
-    public Cohort getNumerator(Date start,Date end) {
-        baseEncounter = encounterQuery.getAliveFollowUpEncounters(start, end);
-        List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
-                Arrays.asList(TB_TREATMENT_START_DATE), start, end);
-        Cohort cohort = getCohort(baseEncountersOfTreatmentStartDate);
-        cohort = getActiveOnArtCohort("", null,end, cohort, baseEncounter);
-        return cohort;
+    public void generateNumeratorReport(Date start, Date end) {
+        tbTreatmentEncounter = encounterQuery.getEncounters(
+		        Collections.singletonList(TB_TREATMENT_START_DATE), start, end);
+        
+        Cohort cohort = getCohort(tbTreatmentEncounter);
+        
+         cohort =   new Cohort(getArtStartedCohort(tbTreatmentEncounter,null,end,cohort));
+        
+        numeratorCohort = getActiveOnArtCohort("", null,end, cohort, tbTreatmentEncounter);
+        followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE),null,end,numeratorCohort);
     }
 
     public void setEncountersByScreenDate(List<Integer> encounters) {
-        baseEncounter = encounters;
+        tbTreatmentEncounter = encounters;
     }
 
     public Cohort getCohortByTbScreenedNegative(Cohort cohort, String gender) {
@@ -77,7 +81,7 @@ public class TBQuery extends PatientQueryImpDao {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-        query.setParameterList("encounters", baseEncounter);
+        query.setParameterList("encounters", tbScreeningEncounter);
         query.setParameterList("cohorts", cohort.getMemberIds());
         return query;
     }
@@ -114,12 +118,12 @@ public class TBQuery extends PatientQueryImpDao {
 
     private Query getByResultTypeQuery(Cohort cohort, Date startDate, Date endDate, String ConceptQuestionUUId, String answerUUId) {
         StringBuilder sqBuilder = basePersonIdQuery(ConceptQuestionUUId, answerUUId);
-        sqBuilder.append(" and " + PERSON_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
-        sqBuilder.append(" and  " + PERSON_BASE_ALIAS_OBS + "person_id in (:cohorts)");
+        sqBuilder.append(" and ").append(PERSON_BASE_ALIAS_OBS).append("encounter_id in (:encounters)");
+        sqBuilder.append(" and  ").append(PERSON_BASE_ALIAS_OBS).append("person_id in (:cohorts)");
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sqBuilder.toString());
 
-        query.setParameterList("encounters", baseEncounter);
+        query.setParameterList("encounters", tbScreeningEncounter);
         query.setParameterList("cohorts", cohort.getMemberIds());
 
         return query;
@@ -132,7 +136,7 @@ public class TBQuery extends PatientQueryImpDao {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sqBuilder.toString());
 
-        query.setParameterList("encounters", baseEncounter);
+        query.setParameterList("encounters", tbScreeningEncounter);
         query.setParameterList("cohorts", cohort.getMemberIds());
 
         return query;
@@ -226,7 +230,7 @@ public class TBQuery extends PatientQueryImpDao {
     public Cohort getTPTByCompletedConceptCohort(List<Integer> treatmentStatedDateEncounters, Cohort cohort) {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select distinct " + OBS_ALIAS + "person_id from obs as ob ");
+        sql.append("select distinct ").append(OBS_ALIAS).append("person_id from obs as ob ");
         sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");
         sql.append("inner join person as p on pa.patient_id = p.person_id ");
         sql.append("inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.retired = false ");
@@ -249,6 +253,21 @@ public class TBQuery extends PatientQueryImpDao {
 
         return new Cohort(query.list());
     }
-
-
+    
+    
+    public Cohort getDenomiatorCohort() {
+        return denomiatorCohort;
+    }
+    
+    public Cohort getNumeratorCohort() {
+        return numeratorCohort;
+    }
+    
+    public List<Integer> getTbScreeningEncounter() {
+        return tbScreeningEncounter;
+    }
+    
+    public List<Integer> getFollowUpEncounter() {
+        return followUpEncounter;
+    }
 }
