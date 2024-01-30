@@ -54,10 +54,14 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
         Cohort plhivCohort = hivPlvHivQuery.getAllCohortPLHIVMalnutrition(hivPlvHivQuery.getBaseEncounter());
         Cohort plhivMAMCohort = hivPlvHivQuery.getAllNUTMAMForAdult(hivPlvHivQuery.getBaseEncounter(), plhivCohort,
                 Arrays.asList(MILD_MAL_NUTRITION, MODERATE_MAL_NUTRITION));
+
         Cohort plhivSAMCohort = hivPlvHivQuery.getAllNUTSAMForAdult(hivPlvHivQuery.getBaseEncounter(),
                 plhivCohort, Collections.singletonList(SEVERE_MAL_NUTRITION));
+
         Cohort plhivMAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivMAMCohort);
+        totalMAM = hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size();
         Cohort plhivSAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivSAMCohort);
+        totalSAM = hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size();
 
 
         SimpleDataSet dataSet = new SimpleDataSet(hivplhivDatasetDefinition, evalContext);
@@ -74,7 +78,7 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
         dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.4", ">= 15 years, Female", getCohortSizeByAgeAndGender(15, 150, Gender.Female)));
 
         personList = hivPlvHivQuery.getPersons(plhivMAMCohort);
-        totalMAM = personList.size();
+        //totalMAM = personList.size();
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT", "Number of PLHIV who were nutritionally assessed" +
                 "and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)", totalMAM + totalSAM));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM", "Total MAM", personList.size()));
@@ -84,7 +88,7 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.4", ">= 15 years, Female", getCohortSizeByAgeAndGender(15, 150, Gender.Female)));
 
         personList = hivPlvHivQuery.getPersons(plhivSAMCohort);
-        totalSAM = personList.size();
+        //totalSAM = personList.size();
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM", "Total SAM", personList.size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_SAM.2", "< 15 years, Female", getCohortSizeByAgeAndGender(0, 15, Gender.Female)));
