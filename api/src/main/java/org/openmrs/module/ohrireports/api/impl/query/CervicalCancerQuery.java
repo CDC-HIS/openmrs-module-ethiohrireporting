@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_scrn.CxcaScree
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -73,6 +74,12 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	
 	private Date startDate;
 	
+	public void setCountedCohort(Cohort tobeCountedCohort) {
+		this.countedCohort = this.getCohortUnion(countedCohort, tobeCountedCohort);
+	}
+	
+	private Cohort countedCohort;
+	
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -97,6 +104,7 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	public CervicalCancerQuery(DbSessionFactory _SessionFactory) {
 		sessionFactory = _SessionFactory;
 		setSessionFactory(sessionFactory);
+		countedCohort = new Cohort();
 	}
 	
 	public Cohort loadScreenedCohort() {
@@ -173,7 +181,7 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getByScreeningType(String typConceptUUiD) {
-		String stringQuery = "SELECT ps.person_id\n" + "FROM\n" + "  (SELECT DISTINCT ob.person_id\n"
+		String stringQuery = "SELECT distinct ps.person_id\n" + "FROM\n" + "  (SELECT DISTINCT ob.person_id\n"
 		        + "   FROM obs AS ob\n" + "     INNER JOIN\n"
 		        + "     (SELECT MAX(ib.value_datetime) AS value_datetime, ib.person_id\n" + "      FROM obs AS ib\n"
 		        + "      WHERE ib.concept_id = " + conceptQuery(DATE_COUNSELING_GIVEN)
@@ -182,17 +190,24 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "        AND ob.value_datetime = o.value_datetime\n" + "        AND ob.concept_id = "
 		        + conceptQuery(DATE_COUNSELING_GIVEN) + "INNER JOIN\n" + "    (select distinct person_id \n"
 		        + "		from obs \n" + "        where concept_id = " + conceptQuery(CXCA_TYPE_OF_SCREENING)
-		        + "and value_coded = " + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id"
-		        + "  ) AS ps";
+		        + "and value_coded = " + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id";
+		if (countedCohort.getMemberIds().size() > 0) {
+			stringQuery = stringQuery + "  and tos.person_id NOT IN (:personIdList) ";
+		}
+		
+		stringQuery = stringQuery + ") AS ps";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		query.setDate("joinEndDate1", startDate);
 		query.setDate("joinEndDate2", endDate);
+		if (countedCohort.getMemberIds().size() > 0) {
+			query.setParameter("personIdList", countedCohort.getMemberIds());
+		}
 		return new Cohort(query.list());
 	}
 	
 	public Cohort getNegativeResult(Cohort cohort) {
-		String stringQuery = "SELECT cxcaN.person_id FROM (" + "SELECT distinct hpvn.person_id\n" + "FROM obs as hpvn \n"
-		        + "where hpvn.concept_id ="
+		String stringQuery = "SELECT distinct cxcaN.person_id FROM (" + "SELECT distinct hpvn.person_id\n"
+		        + "FROM obs as hpvn \n" + "where hpvn.concept_id ="
 		        + conceptQuery(HPV_DNA_SCREENING_RESULT)
 		        + " and "
 		        + "hpvn.value_coded = "
@@ -363,4 +378,22 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		return currentEncounter;
 	}
 	
+	public Cohort getCohortUnion(Cohort a, Cohort b) {
+        if (a == null && b == null)
+            return new Cohort();
+        if (a == null || a.isEmpty()) {
+            return b;
+        } else if (b == null || b.isEmpty()) {
+            return a;
+        }
+
+        List<Integer> list = new ArrayList<>();
+        for (Integer integer : a.getMemberIds()) {
+            if (!b.getMemberIds().contains(integer)) {
+                list.add(integer);
+            }
+        }
+        return Cohort.union(new Cohort(list), b);
+
+    }
 }

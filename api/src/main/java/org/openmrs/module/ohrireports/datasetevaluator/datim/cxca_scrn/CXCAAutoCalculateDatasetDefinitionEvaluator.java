@@ -72,7 +72,7 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
 	
 	private void loadGetScreening(String conceptUuId) {
 		Cohort cohort = cervicalCancerQuery.getByScreeningType(conceptUuId);
-		
+		cervicalCancerQuery.setCountedCohort(cohort);
 		Cohort negativeCohort = cervicalCancerQuery.getNegativeResult(cohort);
 		Cohort positiveCohort = cervicalCancerQuery.getPositiveResult(cohort);
 		Cohort suspectedCohort = cervicalCancerQuery.getSuspectedResult(cohort);
