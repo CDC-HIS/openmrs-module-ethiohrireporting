@@ -13,6 +13,7 @@ import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
+import org.openmrs.module.ohrireports.api.impl.query.pmtct.ARTQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -28,88 +29,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { PMTCTARTAutoCalculateDataSetDefinition.class })
 public class PMTCTARTAutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator {
-
-    private EvaluationContext context;
-    List<Obs> obses = new ArrayList<>();
-    private PMTCTARTAutoCalculateDataSetDefinition hdsd;
-
-    private Concept artConcept, treatmentConcept, tbScreenDateConcept, tbDiagnosticTestResultConcept, positiveConcept;
-
-    @Autowired
-    private ConceptService conceptService;
-
-    @Autowired
-    private EvaluationService evaluationService;
-
-    @Override
-    public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-            throws EvaluationException {
-
-        hdsd = (PMTCTARTAutoCalculateDataSetDefinition) dataSetDefinition;
-        context = evalContext;
-        setRequiredConcepts();
-
-        DataSetRow dataSet = new DataSetRow();
-        dataSet.addColumnValue(new DataSetColumn("auto-calculate","Numerator", Integer.class), 
-        getTotalCount());
-        SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-        set.addRow(dataSet);
-        return set;
-    }
-
-    private void setRequiredConcepts() {
-        artConcept = conceptService.getConceptByUuid(ART_START_DATE);
-        treatmentConcept = conceptService.getConceptByUuid(TREATMENT_END_DATE);
-        tbScreenDateConcept = conceptService.getConceptByUuid(TB_SCREENING_DATE);
-        tbDiagnosticTestResultConcept = conceptService.getConceptByUuid(TB_DIAGNOSTIC_TEST_RESULT);
-        positiveConcept = conceptService.getConceptByUuid(POSITIVE);
-    }
-
-    private void setObservations() {
-        HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-        queryBuilder.select("obs").from(Obs.class, "obs")
-                .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-                .and()
-                .whereEqual("obs.person.gender", "F")
-                .whereEqual("obs.concept", artConcept)
-                .and()
-                .whereBetweenInclusive("obs.valueDatetime", hdsd.getStartDate(), hdsd.getEndDate())
-                .and()
-                .whereIdIn("obs.personId", getPatientsWithTB());
-
-        obses = evaluationService.evaluateToList(queryBuilder, Obs.class, context);
-
-    }
-
-    private int getTotalCount() {
-        setObservations();
-        List<Integer> personIds = new ArrayList<>();
-        for (Obs obs : obses) {
-            if (personIds.contains(obs.getPersonId()))
-                continue;
-            personIds.add(obs.getPersonId());
-
-        }
-        return personIds.size();
-    }
-
-    private List<Integer> getOnTreatmentPatients() {
-        HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-        queryBuilder.select("distinct obs.personId").from(Obs.class, "obs")
-                .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType()).and()
-                .whereEqual("obs.concept", treatmentConcept).and()
-                .whereGreater("obs.valueDatetime", hdsd.getStartDate());
-        return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-    }
-
-    private List<Integer> getPatientsWithTB() {
-        HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-        queryBuilder.select("distinct obs.personId").from(Obs.class, "obs")
-                .whereEqual("obs.encounter.encounterType", hdsd.getEncounterType())
-                .and().whereEqual("obs.concept", tbDiagnosticTestResultConcept).and()
-                .whereEqual("obs.valueCoded", positiveConcept)
-                .and().whereIdIn("obs.personId", getOnTreatmentPatients());
-        return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-
-    }
+	
+	private EvaluationContext context;
+	
+	private PMTCTARTAutoCalculateDataSetDefinition hdsd;
+	
+	@Autowired
+	private EvaluationService evaluationService;
+	
+	@Autowired
+	private ARTQuery artQuery;
+	
+	@Override
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+		
+		hdsd = (PMTCTARTAutoCalculateDataSetDefinition) dataSetDefinition;
+		context = evalContext;
+		
+		artQuery.setStartDate(hdsd.getStartDate());
+		artQuery.setEndDate(hdsd.getEndDate());
+		
+		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		DataSetRow dataSet = new DataSetRow();
+		dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), artQuery.pmtctARTCohort.size());
+		set.addRow(dataSet);
+		return set;
+	}
 }

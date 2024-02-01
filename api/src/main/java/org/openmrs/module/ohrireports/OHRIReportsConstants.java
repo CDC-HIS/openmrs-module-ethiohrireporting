@@ -557,4 +557,6 @@ public class OHRIReportsConstants {
 	
 	public final static String PMTCT_FOLLOW_UP_DATE = "5c118396-52dc-4cac-8860-e6d8e4a7f296";
 	
+	public final static String PMTCT_BOOKING_DATE = "0fe4faee-0717-4dc0-be3d-1cd52923804a;";
+	
 }

@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.reports.datim;
 
 import java.util.Arrays;
 import java.util.List;
+
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -51,28 +52,27 @@ public class PMTCTARTReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
-		followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
-		PMTCTARTAutoCalculateDataSetDefinition tbADataSet = new PMTCTARTAutoCalculateDataSetDefinition();
-		tbADataSet.addParameters(getParameters());
-		tbADataSet.setEncounterType(followUpEncounter);
+		PMTCTARTAutoCalculateDataSetDefinition pmtctDataSet = new PMTCTARTAutoCalculateDataSetDefinition();
+		pmtctDataSet.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition(
 		    "During pregnancy.Numerator will auto-calculate from the Maternal Regimen Type Desegregates",
-		    EthiOhriUtil.map(tbADataSet));
-		
-		PMTCTARTDataSetDefinition alreadyOnARTSetDefinition = new PMTCTARTDataSetDefinition();
-		alreadyOnARTSetDefinition.addParameters(getParameters());
-		alreadyOnARTSetDefinition.setEncounterType(followUpEncounter);
-		
-		reportDefinition
-		        .addDataSetDefinition("Disaggregated by Regiment Type:", EthiOhriUtil.map(alreadyOnARTSetDefinition));
+		    EthiOhriUtil.map(pmtctDataSet));
 		
 		PMTCTARTDataSetDefinition newlyEnrolledSetDefinition = new PMTCTARTDataSetDefinition();
 		newlyEnrolledSetDefinition.addParameters(getParameters());
+		newlyEnrolledSetDefinition.setPmtctType("NEW_ON_ART");
 		newlyEnrolledSetDefinition.setEncounterType(followUpEncounter);
 		
-		reportDefinition.addDataSetDefinition("Disaggregated by Regiment Type:",
+		reportDefinition.addDataSetDefinition("Disaggregated by Regiment Type: - New on ART",
 		    EthiOhriUtil.map(newlyEnrolledSetDefinition));
+		
+		PMTCTARTDataSetDefinition alreadyOnARTSetDefinition = new PMTCTARTDataSetDefinition();
+		alreadyOnARTSetDefinition.addParameters(getParameters());
+		alreadyOnARTSetDefinition.setPmtctType("ALREADY_ON_ART");
+		reportDefinition.addDataSetDefinition(
+		    "Disaggregated by Regiment Type: - Already on ART at the beginning of current pregnancy",
+		    EthiOhriUtil.map(alreadyOnARTSetDefinition));
 		
 		return reportDefinition;
 	}
