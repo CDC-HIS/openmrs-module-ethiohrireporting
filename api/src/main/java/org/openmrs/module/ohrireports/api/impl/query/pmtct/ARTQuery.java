@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.api.impl.query.pmtct;
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
@@ -68,6 +69,8 @@ public class ARTQuery extends PatientQueryImpDao {
 	
 	private Date endDate;
 	
+	private HashMap<Integer, PMTCTPatient> patientEncounterHashMap;
+	
 	public ARTQuery(DbSessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 		super.setSessionFactory(sessionFactory);
@@ -111,33 +114,32 @@ public class ARTQuery extends PatientQueryImpDao {
 	
 	public Cohort getPMTCTARTCohort() {
 		String stringQuery = "select distinct person_id\n" + "from obs\n" + "where concept_id = "
-		        + conceptQuery(PMTCT_BOOKING_DATE) + "and value_datetime >= :start " + " and value_datetime <= :end "
-		        + " and person_id in (:personIdList)";
+		        + conceptQuery(PMTCT_BOOKING_DATE) + "and value_datetime >= :start " + " and value_datetime <= :end ";
+		if (!baseCohort.getMemberIds().isEmpty())
+			stringQuery = stringQuery + " and person_id in (:personIdList)";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		query.setDate("start", startDate);
 		query.setDate("end", endDate);
-		query.setParameterList("personIdList", baseCohort.getMemberIds());
+		if (!baseCohort.getMemberIds().isEmpty())
+			query.setParameterList("personIdList", baseCohort.getMemberIds());
 		
 		return new Cohort(query.list());
 	}
 	
-	protected HashMap<Integer, Object> getDictionary(Query query) {
-        List list = query.list();
-        HashMap<Integer, Object> dictionary = new HashMap<>();
-        int personId = 0;
-        Object[] objects;
-        for (Object object : list) {
-
-            objects = (Object[]) object;
-            personId = (Integer) objects[0];
-
-            if (dictionary.get((Integer) personId) == null) {
-                dictionary.put(personId, objects[1]);
-            }
-
-        }
-
-        return dictionary;
-    }
+	public Cohort getCohortByPMTCTEnrollmentStatus(String PMTCTEnrollmentType) {
+		if (pmtctARTCohort.getMemberIds().isEmpty())
+			return new Cohort();
+		String stringQuery = "select distinct person_id\\n\" + \"from obs\\n\" + \"where concept_id = "
+		        + conceptQuery(PMTCT_STATUS_AT_ENROLLMENT) + " and value_coded = " + conceptQuery(PMTCTEnrollmentType);
+		if (!pmtctARTCohort.getMemberIds().isEmpty())
+			stringQuery = stringQuery + " and person_id in (:personIdList)";
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
+		
+		if (!pmtctARTCohort.getMemberIds().isEmpty())
+			query.setParameterList("personIdList", pmtctARTCohort.getMemberIds());
+		
+		return new Cohort(query.list());
+		
+	}
 }

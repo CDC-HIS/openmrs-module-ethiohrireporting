@@ -124,6 +124,8 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private String getPercentage(int total) {
+		if (dsdQuery.getBaseCohort().isEmpty())
+			return "0";
 		double value = (double) (total * 100) / dsdQuery.getBaseCohort().size();
 		DecimalFormat decimalFormat = new DecimalFormat("###.##");
 		String output = String.valueOf(Double.parseDouble(decimalFormat.format(value)));

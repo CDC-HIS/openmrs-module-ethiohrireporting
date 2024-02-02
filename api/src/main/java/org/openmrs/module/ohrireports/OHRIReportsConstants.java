@@ -559,4 +559,13 @@ public class OHRIReportsConstants {
 	
 	public final static String PMTCT_BOOKING_DATE = "0fe4faee-0717-4dc0-be3d-1cd52923804a;";
 	
+	public final static String PMTCT_STATUS_AT_ENROLLMENT = "ab192dd0-bb1c-4417-b8f9-4c35dc991b55";
+	
+	public final static String NEW_FROM_ANC = "1726AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String NEW_FROM_PNC = "541f72cb-b3e1-43ad-9086-24d32467dfa5";
+	
+	public final static String NEW_FROM_LD = "164835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String LINKED_FROM_ART = "90f138a5-9a94-488a-b5c9-6daf8b2400d1";
 }
