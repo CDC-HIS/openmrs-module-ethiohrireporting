@@ -1,9 +1,6 @@
 package org.openmrs.module.ohrireports.cohorts.util;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -11,6 +8,8 @@ import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
 import org.openmrs.module.reporting.evaluation.parameter.ParameterizableUtil;
 
 public class EthiOhriUtil {
+	
+	private static final int MONTHS_IN_A_YEAR = 12;
 	
 	public static List<Parameter> getDateRangeParameters() {
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
@@ -53,5 +52,17 @@ public class EthiOhriUtil {
 			mappings = _map + "," + mappings;
 		
 		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
+	}
+	
+	public static int getAgeInMonth(Date birthDate, Date asOfDate) {
+		Calendar birthCalendar = Calendar.getInstance();
+		Calendar asOfCalendar = Calendar.getInstance();
+		birthCalendar.setTime(birthDate);
+		asOfCalendar.setTime(asOfDate);
+		
+		int ageInMonthOfYear = (asOfCalendar.get(Calendar.YEAR) - birthCalendar.get(Calendar.YEAR)) * MONTHS_IN_A_YEAR;
+		
+		return (asOfCalendar.get(Calendar.MONTH) - birthCalendar.get(Calendar.MONTH)) + ageInMonthOfYear;
+		
 	}
 }

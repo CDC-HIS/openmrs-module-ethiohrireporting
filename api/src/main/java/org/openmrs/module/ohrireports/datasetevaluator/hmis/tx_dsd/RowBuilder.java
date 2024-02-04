@@ -48,7 +48,9 @@ public class RowBuilder extends ColumnBuilder {
 	public DataSetRow buildDatasetColumn(String identifier, String description, String value) {
 		return super.buildColumn(identifier, description, value);
 	}
-	
+	public DataSetRow buildDatasetColumn(String identifier, String description, int value) {
+		return super.buildColumn(identifier, description, value);
+	}
 	public void updateDataset(SimpleDataSet dataSet) {
 		for (DataSetRow row : rowList) {
 			dataSet.addRow(row);
