@@ -557,8 +557,22 @@ public class OHRIReportsConstants {
 	
 	public final static String PMTCT_FOLLOW_UP_DATE = "5c118396-52dc-4cac-8860-e6d8e4a7f296";
 	
-	public final static String PMTCT_BOOKING_DATE = "0fe4faee-0717-4dc0-be3d-1cd52923804a;";
+	public final static String PMTCT_BOOKING_DATE = "0fe4faee-0717-4dc0-be3d-1cd52923804a";
 	
+	public final static String PMTCT_REFERRED_DATE = "161561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_DISCHARGE_DATE = "";
+	
+	public final static String REASON_FOR_DISCHARGE = "";
+	
+	public final static String FINAL_PMTCT_OUTCOME = "";
+	
+	public final static String FINAL_OUTCOME_DATE = "";
+	public final static String LATEST_FOLLOWUP_DATE = "";
+	public final static String PMTCT_DOSE = "";
+	public final static String LATEST_VL_STATUS = "";
+
+
 	public final static String PMTCT_STATUS_AT_ENROLLMENT = "ab192dd0-bb1c-4417-b8f9-4c35dc991b55";
 	
 	public final static String NEW_FROM_ANC = "1726AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -568,4 +582,5 @@ public class OHRIReportsConstants {
 	public final static String NEW_FROM_LD = "164835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String LINKED_FROM_ART = "90f138a5-9a94-488a-b5c9-6daf8b2400d1";
+	
 }

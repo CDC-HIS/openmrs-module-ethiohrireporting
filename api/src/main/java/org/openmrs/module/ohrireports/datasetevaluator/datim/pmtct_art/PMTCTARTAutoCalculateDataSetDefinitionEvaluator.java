@@ -51,7 +51,8 @@ public class PMTCTARTAutoCalculateDataSetDefinitionEvaluator implements DataSetE
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), artQuery.pmtctARTCohort.size());
+		dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), artQuery.getPmtctARTCohort()
+		        .size());
 		set.addRow(dataSet);
 		return set;
 	}

@@ -10,10 +10,7 @@ import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -95,6 +92,8 @@ public class ARTQuery extends PatientQueryImpDao {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 		latestFollowUpEncounter = encounterQuery.getAliveFollowUpEncounters(null, endDate);
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCT_BOOKING_DATE), startDate, endDate,
+		    latestFollowUpEncounter);
 		baseCohort = getByPregnantStatus();
 		pmtctARTCohort = getPMTCTARTCohort();
 		newOnARTPMTCTARTCohort = getNewOnArtCohort("F", startDate, endDate, pmtctARTCohort, latestFollowUpEncounter);
