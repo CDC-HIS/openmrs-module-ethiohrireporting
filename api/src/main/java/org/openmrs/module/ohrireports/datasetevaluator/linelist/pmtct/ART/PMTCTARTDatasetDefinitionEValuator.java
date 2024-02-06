@@ -35,7 +35,7 @@ public class PMTCTARTDatasetDefinitionEValuator implements DataSetEvaluator {
 	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, artStartDate, pmtctBookingDate,
 	        statusAtEnrollment, pmtctReferredDate, isPregnant, isBreastFeeding, dischargeDate, reasonForDischarge,
 	        maternalPMTCTFinalOutcome, finalOutcomeDate, latestFollowupDate, regimen, dose, nutritionalStatus,
-			latestVLStatus,adherence, nextVisitDate;
+	        latestVLStatus, adherence, nextVisitDate;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -50,16 +50,16 @@ public class PMTCTARTDatasetDefinitionEValuator implements DataSetEvaluator {
 		List<Person> persons = artQuery.getPersons(baseCohort);
 		
 		loadColumnDictionary(baseCohort);
-
+		
 		DataSetRow row;
-
+		
 		if (persons.size() > 0) {
-
+			
 			row = new DataSetRow();
-
+			
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
-
+			
 			dataSet.addRow(row);
 		}
 		for (Person person : persons) {
@@ -71,7 +71,7 @@ public class PMTCTARTDatasetDefinitionEValuator implements DataSetEvaluator {
 			Date finalOutcomeDate = pmtctARTLineListQuery.getDate(this.finalOutcomeDate.get(person.getPersonId()));
 			Date latestFollowupDate = pmtctARTLineListQuery.getDate(this.latestFollowupDate.get(person.getPersonId()));
 			Date nextVisitDate = pmtctARTLineListQuery.getDate(this.nextVisitDate.get(person.getPersonId()));
-
+			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
@@ -94,17 +94,14 @@ public class PMTCTARTDatasetDefinitionEValuator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("DateOfFinalOutcomeETH", "Date of Final Outcome ETH", String.class),
 			    pmtctARTLineListQuery.getEthiopianDate(finalOutcomeDate));
 			row.addColumnValue(new DataSetColumn("LatestFollowupDateETH", "Latest Follow-up Date ETH", String.class),
-					pmtctARTLineListQuery.getEthiopianDate(latestFollowupDate));
+			    pmtctARTLineListQuery.getEthiopianDate(latestFollowupDate));
 			addColumnValue("Regimen", "Regimen", regimen, row, person);
 			addColumnValue("Dose", "Dose", dose, row, person);
 			addColumnValue("NutritionalStatus", "Nutritional Status", nutritionalStatus, row, person);
 			addColumnValue("LatestVLStatus", "Latest VL Status", latestVLStatus, row, person);
 			addColumnValue("Adherence", "Adherence", adherence, row, person);
 			row.addColumnValue(new DataSetColumn("NextVisitDateETH", "Next Visit Date ETH", String.class),
-					pmtctARTLineListQuery.getEthiopianDate(nextVisitDate));
-
-
-
+			    pmtctARTLineListQuery.getEthiopianDate(nextVisitDate));
 			
 			dataSet.addRow(row);
 			
@@ -133,21 +130,16 @@ public class PMTCTARTDatasetDefinitionEValuator implements DataSetEvaluator {
 		    artQuery.getBaseEncounter());
 		finalOutcomeDate = pmtctARTLineListQuery
 		        .getObsValueDate(artQuery.getBaseEncounter(), FINAL_OUTCOME_DATE, baseCohort);
-		latestFollowupDate = pmtctARTLineListQuery
-		        .getObsValueDate(artQuery.getBaseEncounter(), LATEST_FOLLOWUP_DATE, baseCohort);
-		regimen = pmtctARTLineListQuery
-				.getByResult(REGIMEN, baseCohort, artQuery.getBaseEncounter());
-		dose = pmtctARTLineListQuery
-				.getByResult(PMTCT_DOSE, baseCohort, artQuery.getBaseEncounter());
-		nutritionalStatus = pmtctARTLineListQuery
-				.getByResult(NUTRITIONAL_STATUS_ADULT, baseCohort, artQuery.getBaseEncounter());
-		latestVLStatus = pmtctARTLineListQuery
-				.getByResult(LATEST_VL_STATUS, baseCohort, artQuery.getBaseEncounter());
-		adherence = pmtctARTLineListQuery
-				.getByResult(ARV_ADHERENCE, baseCohort, artQuery.getBaseEncounter());
-		nextVisitDate = pmtctARTLineListQuery
-				.getObsValueDate(artQuery.getBaseEncounter(), NEXT_VISIT_DATE, baseCohort);
-
+		latestFollowupDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), LATEST_FOLLOWUP_DATE,
+		    baseCohort);
+		regimen = pmtctARTLineListQuery.getByResult(REGIMEN, baseCohort, artQuery.getBaseEncounter());
+		dose = pmtctARTLineListQuery.getByResult(PMTCT_DOSE, baseCohort, artQuery.getBaseEncounter());
+		nutritionalStatus = pmtctARTLineListQuery.getByResult(NUTRITIONAL_STATUS_ADULT, baseCohort,
+		    artQuery.getBaseEncounter());
+		latestVLStatus = pmtctARTLineListQuery.getByResult(LATEST_VL_STATUS, baseCohort, artQuery.getBaseEncounter());
+		adherence = pmtctARTLineListQuery.getByResult(ARV_ADHERENCE, baseCohort, artQuery.getBaseEncounter());
+		nextVisitDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), NEXT_VISIT_DATE, baseCohort);
+		
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {

@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.api.impl;
 
+import org.hibernate.Query;
 import org.openmrs.Cohort;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;

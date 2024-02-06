@@ -426,6 +426,8 @@ public class OHRIReportsConstants {
 	
 	public final static String TB_TREATMENT_START_DATE = "1113AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String TB_SCREENED = "feebf47b-c11e-4fa7-bb4b-1a9fc444bcc9";
+	
 	public final static String TB_SCREENING_RESULT = "160108AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TPT_START_DATE = "162320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -575,11 +577,11 @@ public class OHRIReportsConstants {
 	public final static String FINAL_PMTCT_OUTCOME = "";
 	
 	public final static String FINAL_OUTCOME_DATE = "";
+	
 	public final static String LATEST_FOLLOWUP_DATE = "";
-	public final static String PMTCT_DOSE = "";
+	
 	public final static String LATEST_VL_STATUS = "";
-
-
+	
 	public final static String PMTCT_STATUS_AT_ENROLLMENT = "ab192dd0-bb1c-4417-b8f9-4c35dc991b55";
 	
 	public final static String NEW_FROM_ANC = "1726AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
