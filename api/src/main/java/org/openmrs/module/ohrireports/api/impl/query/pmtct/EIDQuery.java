@@ -88,7 +88,7 @@ public class EIDQuery extends PatientQueryImpDao {
 		
 		return rapidAntiBodyList;
 	}
-	
+
 	public HashMap<Integer, Object> getValueFromHEIEnrollment(String concept, List<Integer> person) {
 		StringBuilder sqlBuilder = new StringBuilder("select ob.person_id, cn.name from obs as ob ");
 		sqlBuilder.append(" inner join concept_name as cn on cn.concept_id = ob.value_coded ");
@@ -108,6 +108,87 @@ public class EIDQuery extends PatientQueryImpDao {
 		}
 		
 		return hashMap;
+	}
+	public List getPMTCTHEIPatientEncounterWithAllFields(Date start, Date end) {
+		followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCT_FOLLOW_UP_DATE),null,end,PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE);
+		StringBuilder sqlBuilder = new StringBuilder("select " +
+				                                             /*0*/ "distinct p.person_id," +
+				                                             /*1*/  "pi.identifier, " +
+				                                             /*2*/  "concat(pn.given_name,' ',pn.middle_name,' ',pn.family_name), " +
+				                                             /*3*/   "p.gender," +
+				                                             /*4*/   "e.encounter_id," +
+				                                             /*5*/   "p.birthdate," +
+				                                             /*6*/   "heiCode.value_text as heiCode, "+
+				                                             /*7*/   "infantReferred.name as infantReferred,"+
+				                                             /*8*/    "enrollment.value_datetime as enrollmentDate,"+
+				                                             /*9*/    "arv.name as arv,"+
+				                                             /*10*/   "immunization.name as immunization, "+
+				                                             /*11*/   "motherIntervention.name as intervention,"+
+				                                             /*12*/   "followUpDate.value_datetime as followUpDate,"+
+				                                             /*13*/   "birthWeight.value_numeric as birthWeight, "+
+				                                             /*14*/   "followUpWeight.value_numeric as followUpWeight,"+
+				                                             /*15*/   "growthPattern.name as growthPattern,"+
+				                                             /*16*/   "growthFailed.name as growthFailed,"+
+				                                             /*17*/   "developMilestone.name as developMilestone,"+
+				                                             /*18*/   "reasonForRedFlag.name as reasonForRedFlag,"+
+				                                             /*19*/   "feedingPractice.name as feedingPractice,"+
+				                                             /*20*/   "breastCondition.name as breastCondition,"+
+				                                             /*21*/   "rapidAntibody.name as rapidAntibody,"+
+				                                             /*22*/   "dnaPcrResult.name as dnaPcrResult,"+
+				                                             /*23*/   "sampleCollectionDate.value_datetime as sampleCollectionDate,"+
+				                                             /*24*/   "finalOutComeDate.value_datetime as finalOutComeDate, "+
+				                                             /*25*/   "finalOutCome.name as finalOutCome,"+
+				                                             /*26*/   "conclusion.name as conclusion,"+
+				                                             /*27*/   "decision.name as decision, "+
+				                                             /*28*/	 "dose.name as dose"+
+				                                             " from obs as ob ");
+		sqlBuilder.append(" inner join person as p on p.person_id = ob.person_id  ");
+		sqlBuilder.append(" inner join person_name as  pn on pn.person_id =ob.person_id ");
+		sqlBuilder.append(" inner join patient_identifier as pi on pi.patient_id = p.person_id ");
+		sqlBuilder.append(" inner join patient_identifier_type as pit on pit.patient_identifier_type_id = pi.identifier_type and pi.uuid ='").append(MRN_PATIENT_IDENTIFIERS).append("' ");
+		sqlBuilder.append(" inner join encounter as e on e.encounter_id = ob.encounter_id ");
+		sqlBuilder.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sqlBuilder.append(getQuery(PMTCT_CHILD_ENROLLMENT_DATE, "enrollment", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
+		sqlBuilder.append(getQuery(PMTCT_HEI_CODE, "heiCode", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
+		sqlBuilder.append(getQuery(PMTCT_INFANT_REFERRED_UUID, "infantReferred", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
+		sqlBuilder.append(getObsAnswerName(PMTCT_ARV_PROPHYLAXIS, "arv"));
+		sqlBuilder.append(getObsAnswerName(WEIGHT, "followUpWeight"));
+		sqlBuilder.append(getQuery(PMTCT_IMMUNIZATION, "immunization", PMTCT_IMMUNIZATION_ENCOUNTER_TYPE));
+		sqlBuilder.append(getQuery(PMTCT_MOTHER_INTERVENTION, "motherIntervention", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
+		sqlBuilder.append(getQuery(PMTCT_BIRTH_WEIGHT, "birthWeight", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
+		sqlBuilder.append(getObsAnswerDate(FOLLOW_UP_DATE, "followUpDate"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_GROWTH_PATTERN, "growthPattern"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_GROWTH_FAILER, "growthFailed"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_DEVELOPMENT_MILESTONE, "developMilestone"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_REASON_FOR_RED_FLAG, "reasonForRedFlag"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_FEEDING_PRACTICE, "feedingPractice"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_BREEST_CONDITION, "breastCondition"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_RAPID_ANTIBODY_RESULT, "rapidAntibody"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_DNA_PCR_RESULT, "dnaPcrResult"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_DOSE,"dose"));
+		sqlBuilder.append(getObsAnswerDate(PMTCT_SPECIMEN_COLLECTION_DATE, "sampleCollectionDate"));
+		sqlBuilder.append(getQuery(FINAL_OUT_COME_DATE, "finalOutComeDate", PMTCT_FINAL_OUT_COME_ENCOUNTER_TYPE));
+		sqlBuilder.append(getObsAnswerName(PMTCT_CONCLUSION, "conclusion"));
+		sqlBuilder.append(getObsAnswerName(PMTCT_DESCISION, "decision"));
+		sqlBuilder.append(getQuery(PMTCT_FINAL_OUT_COME, "finalOutCome", PMTCT_FINAL_OUT_COME_ENCOUNTER_TYPE));
+		
+		sqlBuilder.append("and et.uuid= '").append(PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE).append("' ");
+		sqlBuilder.append(" where ob.concept_id = ").append(conceptQuery(PMTCT_SAMPLE_COLLECTION_DATE));
+		sqlBuilder.append(" and ob.encounter_id in (:encounterId) ");
+		if (start != null) sqlBuilder.append(" and ob.value_datetime >= :start ");
+		
+		if (end != null) sqlBuilder.append(" and ob.value_datetime <= :end ");
+		
+		Query q = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		q.setParameterList("encounterId",followUpEncounter);
+		
+		if (start != null) q.setDate("start", start);
+		
+		if (end != null) q.setDate("end", end);
+		
+		List list = q.list();
+		
+		return list;
 	}
 	
 	private HashMap<Integer, PMTCTPatient> getPMTCTPatientEncounter(Date start, Date end, String conceptUUID) {
@@ -316,87 +397,6 @@ public class EIDQuery extends PatientQueryImpDao {
 		return patientEncounters;
 	}
 	
-	public List getPMTCTHEIPatientEncounterWithAllFields(Date start, Date end) {
-		 followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCT_FOLLOW_UP_DATE),null,end,PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE);
-		StringBuilder sqlBuilder = new StringBuilder("select " +
-				                                        /*0*/ "distinct p.person_id," +
-				                                        /*1*/  "pi.identifier, " +
-				                                        /*2*/  "concat(pn.given_name,' ',pn.middle_name,' ',pn.family_name), " +
-				                                        /*3*/   "p.gender," +
-				                                        /*4*/   "e.encounter_id," +
-				                                        /*5*/   "p.birthdate," +
-														/*6*/   "heiCode.value_text as heiCode, "+
-				                                        /*7*/   "infantReferred.name as infantReferred,"+
-														/*8*/    "enrollment.value_datetime as enrollmentDate,"+
-														/*9*/    "arv.name as arv,"+
-														/*10*/   "immunization.name as immunization, "+
-														/*11*/   "motherIntervention.name as intervention,"+
-														/*12*/   "followUpDate.value_datetime as followUpDate,"+
-														/*13*/   "birthWeight.value_numeric as birthWeight, "+
-														/*14*/   "followUpWeight.value_numeric as followUpWeight,"+
-														/*15*/   "growthPattern.name as growthPattern,"+
-														/*16*/   "growthFailed.name as growthFailed,"+
-														/*17*/   "developMilestone.name as developMilestone,"+
-														/*18*/   "reasonForRedFlag.name as reasonForRedFlag,"+
-														/*19*/   "feedingPractice.name as feedingPractice,"+
-														/*20*/   "breastCondition.name as breastCondition,"+
-														/*21*/   "rapidAntibody.name as rapidAntibody,"+
-														/*22*/   "dnaPcrResult.name as dnaPcrResult,"+
-														/*23*/   "sampleCollectionDate.value_datetime as sampleCollectionDate,"+
-														/*24*/   "finalOutComeDate.value_datetime as finalOutComeDate, "+
-														/*25*/   "finalOutCome.name as finalOutCome,"+
-														/*26*/   "conclusion.name as conclusion,"+
-														/*27*/   "decision.name as decision, "+
-														/*28*/	 "dose.name as dose"+
-				                                                    " from obs as ob ");
-		sqlBuilder.append(" inner join person as p on p.person_id = ob.person_id  ");
-		sqlBuilder.append(" inner join person_name as  pn on pn.person_id =ob.person_id ");
-		sqlBuilder.append(" inner join patient_identifier as pi on pi.patient_id = p.person_id ");
-		sqlBuilder.append(" inner join patient_identifier_type as pit on pit.patient_identifier_type_id = pi.identifier_type and pi.uuid ='").append(MRN_PATIENT_IDENTIFIERS).append("' ");
-		sqlBuilder.append(" inner join encounter as e on e.encounter_id = ob.encounter_id ");
-		sqlBuilder.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
-		sqlBuilder.append(getQuery(PMTCT_CHILD_ENROLLMENT_DATE, "enrollment", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
-		sqlBuilder.append(getQuery(PMTCT_HEI_CODE, "heiCode", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
-		sqlBuilder.append(getQuery(PMTCT_INFANT_REFERRED_UUID, "infantReferred", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
-		sqlBuilder.append(getObsAnswerName(PMTCT_ARV_PROPHYLAXIS, "arv"));
-		sqlBuilder.append(getObsAnswerName(WEIGHT, "followUpWeight"));
-		sqlBuilder.append(getQuery(PMTCT_IMMUNIZATION, "immunization", PMTCT_IMMUNIZATION_ENCOUNTER_TYPE));
-		sqlBuilder.append(getQuery(PMTCT_MOTHER_INTERVENTION, "motherIntervention", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
-		sqlBuilder.append(getQuery(PMTCT_BIRTH_WEIGHT, "birthWeight", PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE));
-		sqlBuilder.append(getObsAnswerDate(FOLLOW_UP_DATE, "followUpDate"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_GROWTH_PATTERN, "growthPattern"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_GROWTH_FAILER, "growthFailed"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_DEVELOPMENT_MILESTONE, "developMilestone"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_REASON_FOR_RED_FLAG, "reasonForRedFlag"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_FEEDING_PRACTICE, "feedingPractice"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_BREEST_CONDITION, "breastCondition"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_RAPID_ANTIBODY_RESULT, "rapidAntibody"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_DNA_PCR_RESULT, "dnaPcrResult"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_DOSE,"dose"));
-		sqlBuilder.append(getObsAnswerDate(PMTCT_SPECIMEN_COLLECTION_DATE, "sampleCollectionDate"));
-		sqlBuilder.append(getQuery(FINAL_OUT_COME_DATE, "finalOutComeDate", PMTCT_FINAL_OUT_COME_ENCOUNTER_TYPE));
-		sqlBuilder.append(getObsAnswerName(PMTCT_CONCLUSION, "conclusion"));
-		sqlBuilder.append(getObsAnswerName(PMTCT_DESCISION, "decision"));
-		sqlBuilder.append(getQuery(PMTCT_FINAL_OUT_COME, "finalOutCome", PMTCT_FINAL_OUT_COME_ENCOUNTER_TYPE));
-		
-		sqlBuilder.append("and et.uuid= '").append(PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE).append("' ");
-		sqlBuilder.append(" where ob.concept_id = ").append(conceptQuery(PMTCT_SAMPLE_COLLECTION_DATE));
-		sqlBuilder.append(" and ob.encounter_id in (:encounterId) ");
-		if (start != null) sqlBuilder.append(" and ob.value_datetime >= :start ");
-		
-		if (end != null) sqlBuilder.append(" and ob.value_datetime <= :end ");
-		
-		Query q = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
-		q.setParameterList("encounterId",followUpEncounter);
-		
-		if (start != null) q.setDate("start", start);
-		
-		if (end != null) q.setDate("end", end);
-		
-		List list = q.list();
-		
-		return list;
-	}
 	
 	private StringBuilder getObsAnswerName(String conceptUUid, String alias) {
 		StringBuilder sqlBuilder = new StringBuilder(

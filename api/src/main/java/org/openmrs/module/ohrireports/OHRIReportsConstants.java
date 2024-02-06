@@ -532,7 +532,9 @@ public class OHRIReportsConstants {
 	
 	public final static String PMTCT_SAMPLE_COLLECTION_DATE = "159951AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String PMTCT_ARV_PROPHYLAXIS = "b7f50074-b9f2-4b0d-9f20-d18b646d822e";
+	public final static String PMTCT_ARV_PROPHYLAXIS_STARTED = "b7f50074-b9f2-4b0d-9f20-d18b646d822e";
+	
+	public final static String PMTCT_ARV_PROPHYLAXIS = "39238bfb-ea2c-4cec-a395-4d62574da39b";
 	
 	public final static String PMTCT_MATERNAL_ART_STATUS = "70961c32-e9aa-4006-9b12-64d0e71978f5";
 	
@@ -595,4 +597,6 @@ public class OHRIReportsConstants {
 	public final static String PMTCT_DESCISION = "f0652b88-d1dd-4ec5-add7-8bdda63b5a8a";
 	
 	public final static String PMTCT_FINAL_OUT_COME = "2171d944-a027-417f-a0af-f9c4a88a5ffe";
+	
+	public final static String PMTCT_CONFORMATORY_TEST_DONE = "870d0e93-1afc-42ef-9721-84a1a5c33be9";
 }
