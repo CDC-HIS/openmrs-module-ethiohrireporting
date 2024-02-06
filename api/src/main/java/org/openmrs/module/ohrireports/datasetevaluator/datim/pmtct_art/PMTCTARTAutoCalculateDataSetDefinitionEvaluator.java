@@ -35,9 +35,6 @@ public class PMTCTARTAutoCalculateDataSetDefinitionEvaluator implements DataSetE
 	private PMTCTARTAutoCalculateDataSetDefinition hdsd;
 	
 	@Autowired
-	private EvaluationService evaluationService;
-	
-	@Autowired
 	private ARTQuery artQuery;
 	
 	@Override

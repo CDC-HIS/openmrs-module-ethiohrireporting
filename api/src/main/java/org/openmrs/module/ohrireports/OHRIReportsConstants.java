@@ -568,11 +568,13 @@ public class OHRIReportsConstants {
 	public final static String FINAL_PMTCT_OUTCOME = "";
 	
 	public final static String FINAL_OUTCOME_DATE = "";
+	
 	public final static String LATEST_FOLLOWUP_DATE = "";
+	
 	public final static String PMTCT_DOSE = "";
+	
 	public final static String LATEST_VL_STATUS = "";
-
-
+	
 	public final static String PMTCT_STATUS_AT_ENROLLMENT = "ab192dd0-bb1c-4417-b8f9-4c35dc991b55";
 	
 	public final static String NEW_FROM_ANC = "1726AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -582,5 +584,27 @@ public class OHRIReportsConstants {
 	public final static String NEW_FROM_LD = "164835AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String LINKED_FROM_ART = "90f138a5-9a94-488a-b5c9-6daf8b2400d1";
+	
+	public final static String HEI_ENROLLMENT_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
+	
+	public final static String PMTCT_FINAL_OUTCOME = "2171d944-a027-417f-a0af-f9c4a88a5ffe";
+	
+	public final static String PMTCT_POSITIVE_LINKED_OUTSIDE_FACILITY = "4a00b6e5-8ea1-4d8b-ba40-0b204bf69c01";
+	
+	public final static String PMTCT_POSITIVE_LINKED_WITHIN_FACILITY = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_POSITIVE_LINKED_UNKNOWN = "";
+	
+	public final static String PMTCT_TO = "80782b25-98a1-4920-a676-a039908f3ed1";
+	
+	public final static String PMTCT_LOST_TO_FOLLOWUP = "34a4c62c-4c5c-4e4b-bc13-f68e07eea076";
+	
+	public final static String PMTCT_CONCLUSION = "19c28608-a5c5-4095-8966-4ddac6f93847";
+	
+	public final static String PMTCT_CONCLUSION_NO_EVIDENCE = "57bdda27-1e18-4716-b860-735a045e52bd";
+	
+	public final static String PMTCT_CLINICAL_EVIDENCE_HIV = "c8cde5eb-ef6e-4740-80f9-e879279a3c19";
+	
+	public final static String PMTCT_LAB_EVIDENCE_HIV = "198731de-2a03-418d-a0ba-833accb88f58";
 	
 }
