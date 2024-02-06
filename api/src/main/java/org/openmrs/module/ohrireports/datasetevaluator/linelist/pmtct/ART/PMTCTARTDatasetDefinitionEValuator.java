@@ -126,7 +126,7 @@ public class PMTCTARTDatasetDefinitionEValuator implements DataSetEvaluator {
 		dischargeDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), PMTCT_DISCHARGE_DATE, baseCohort);
 		reasonForDischarge = pmtctARTLineListQuery
 		        .getByResult(REASON_FOR_DISCHARGE, baseCohort, artQuery.getBaseEncounter());
-		maternalPMTCTFinalOutcome = pmtctARTLineListQuery.getByResult(FINAL_PMTCT_OUTCOME, baseCohort,
+		maternalPMTCTFinalOutcome = pmtctARTLineListQuery.getByResult(PMTCT_FINAL_OUTCOME, baseCohort,
 		    artQuery.getBaseEncounter());
 		finalOutcomeDate = pmtctARTLineListQuery
 		        .getObsValueDate(artQuery.getBaseEncounter(), FINAL_OUTCOME_DATE, baseCohort);

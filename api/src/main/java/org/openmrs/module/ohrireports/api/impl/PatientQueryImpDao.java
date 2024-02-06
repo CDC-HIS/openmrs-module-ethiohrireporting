@@ -12,6 +12,7 @@ import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -21,6 +22,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 @Component
 public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQueryDao {
 	
+	@Autowired
 	private DbSessionFactory sessionFactory;
 	
 	public PatientQueryImpDao() {

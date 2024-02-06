@@ -40,13 +40,16 @@ public class PMTCTEncounter {
 	
 	private String platformUsed;
 	
+	private String finalOutCome;
+	
 	private int age;
 	
-	public PMTCTEncounter(Date sampleDate, Integer encounterId, String testType, int age) {
+	public PMTCTEncounter(Date sampleDate, Integer encounterId, String testType, int age, String dnaPcrResult) {
 		this.sampleDate = sampleDate;
 		this.encounterId = encounterId;
 		this.testType = testType;
 		this.age = age;
+		dnaPcrResult = dnaPcrResult;
 	}
 	
 	public PMTCTEncounter(Date sampleDate, Date followUpDate, Integer encounterId, String testType, String arvProphylaxis,
@@ -149,5 +152,13 @@ public class PMTCTEncounter {
 	
 	public int getAge() {
 		return age;
+	}
+	
+	public String getFinalOutCome() {
+		return finalOutCome;
+	}
+	
+	public void setFinalOutCome(String finalOutCome) {
+		this.finalOutCome = finalOutCome;
 	}
 }
