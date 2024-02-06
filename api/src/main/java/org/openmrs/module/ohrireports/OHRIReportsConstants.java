@@ -9,6 +9,9 @@
  */
 package org.openmrs.module.ohrireports;
 
+import org.apache.poi.openxml4j.opc.internal.unmarshallers.PackagePropertiesUnmarshaller;
+import org.omg.CORBA.PUBLIC_MEMBER;
+
 public class OHRIReportsConstants {
 	
 	public final static String COVID_ASSESSMENT_ENCOUNTER_TYPE = "253a43d3-c99e-415c-8b78-ee7d4d3c1d54";
@@ -529,7 +532,9 @@ public class OHRIReportsConstants {
 	
 	public final static String PMTCT_SAMPLE_COLLECTION_DATE = "159951AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String PMTCT_ARV_PROPHYLAXIS = "b7f50074-b9f2-4b0d-9f20-d18b646d822e";
+	public final static String PMTCT_ARV_PROPHYLAXIS_STARTED = "b7f50074-b9f2-4b0d-9f20-d18b646d822e";
+	
+	public final static String PMTCT_ARV_PROPHYLAXIS = "39238bfb-ea2c-4cec-a395-4d62574da39b";
 	
 	public final static String PMTCT_MATERNAL_ART_STATUS = "70961c32-e9aa-4006-9b12-64d0e71978f5";
 	
@@ -542,6 +547,8 @@ public class OHRIReportsConstants {
 	public final static String PMTCT_DBS_REFERRAL_TO_REGIONAL_LAB_DATE = "161561AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB = "e724050c-cd85-4405-94a0-7a8e3b082d58";
+	
+	public final static String PMTCT_INFANT_REFERRED_UUID = "a0b16ce2-80a8-4b26-9168-74a6f64adb09";
 	
 	public final static String PMTCT_SAMPLE_QUALITY = "165253AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -557,4 +564,39 @@ public class OHRIReportsConstants {
 	
 	public final static String PMTCT_FOLLOW_UP_DATE = "5c118396-52dc-4cac-8860-e6d8e4a7f296";
 	
+	public final static String PMTCT_POSITIVE_WITH_OUTSIDE_FACILITY = "4a00b6e5-8ea1-4d8b-ba40-0b204bf69c01";
+	
+	public final static String PMTCT_POSITIVE_WITHIN_FACILITY = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_BIRTH_WEIGHT = "5916AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_MOTHER_INTERVENTION = "6b60a8c6-da45-4f10-9135-e5e5d4b2a1b9";
+	
+	public final static String PMTCT_FINAL_OUT_COME_ENCOUNTER_TYPE = "7a35d870-f997-40fe-aef6-1648ccc36aa9";
+	
+	public final static String PMTCT_IMMUNIZATION_ENCOUNTER_TYPE = "1a548c84-2170-47d5-9a23-56fcad902f63";
+	
+	public final static String PMTCT_IMMUNIZATION = "886AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_GROWTH_PATTERN = "eea6b3e8-efc6-448e-9d01-c2462e2cf727";
+	
+	public final static String PMTCT_GROWTH_FAILER = "bbf0b810-d865-481c-8012-c446e1679fbd";
+	
+	public final static String PMTCT_DEVELOPMENT_MILESTONE = "d646c980-b04d-46a0-8a49-4800506ad64c";
+	
+	public final static String PMTCT_REASON_FOR_RED_FLAG = "104e6fa9-efb5-4be9-b115-415e96671ab5";
+	
+	public final static String PMTCT_FEEDING_PRACTICE = "164858AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String PMTCT_BREEST_CONDITION = "00ed2ac0-aacc-402b-b587-7a4bbe1321d5";
+	
+	public final static String PMTCT_DOSE = "ec9670c2-ee1f-42db-aea1-d238fb4fc33f";
+	
+	public final static String PMTCT_CONCLUSION = "19c28608-a5c5-4095-8966-4ddac6f93847";
+	
+	public final static String PMTCT_DESCISION = "f0652b88-d1dd-4ec5-add7-8bdda63b5a8a";
+	
+	public final static String PMTCT_FINAL_OUT_COME = "2171d944-a027-417f-a0af-f9c4a88a5ffe";
+	
+	public final static String PMTCT_CONFORMATORY_TEST_DONE = "870d0e93-1afc-42ef-9721-84a1a5c33be9";
 }

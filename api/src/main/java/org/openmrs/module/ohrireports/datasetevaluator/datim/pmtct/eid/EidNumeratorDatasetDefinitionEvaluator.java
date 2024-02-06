@@ -13,6 +13,9 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.PMTCT_INITIAL_TEST;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.PMTCT_SAMPLE_COLLECTION_DATE;
+
 @Handler(supports = { EidNumeratorDatasetDefinition.class })
 public class EidNumeratorDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -24,7 +27,8 @@ public class EidNumeratorDatasetDefinitionEvaluator implements DataSetEvaluator 
 		EidNumeratorDatasetDefinition _datasetDefinition = (EidNumeratorDatasetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		eidQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+		eidQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate(),
+		    PMTCT_SAMPLE_COLLECTION_DATE);
 		
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), eidQuery.getBaseCohort().size());

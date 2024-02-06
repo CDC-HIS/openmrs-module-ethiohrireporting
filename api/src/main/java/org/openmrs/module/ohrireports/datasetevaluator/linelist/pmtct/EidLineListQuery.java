@@ -38,6 +38,10 @@ public class EidLineListQuery extends BaseLineListQuery {
 	}
 	
 	public HashMap<Integer, Object> getResult(String conceptUUId, List<Integer> personId) {
-		return eidQuery.getValueFromHeiEnrollement(conceptUUId, personId);
+		return eidQuery.getValueFromHEIEnrollment(conceptUUId, personId);
+	}
+	
+	public List getHeiListObjects(Date start, Date end) {
+		return eidQuery.getPMTCTHEIPatientEncounterWithAllFields(start, end);
 	}
 }

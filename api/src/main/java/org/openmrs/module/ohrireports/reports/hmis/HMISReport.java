@@ -25,6 +25,10 @@ import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPlHivD
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISEIDDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEIABTSTDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEIARVDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEICOTRDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.pr_ep_curr.HivPrEpCurrDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_Lb_Lf_Lam.TbLbLfLamDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_scrn.HmisTbScrnDataSetDefinition;
@@ -237,10 +241,25 @@ public class HMISReport implements ReportManager {
 		
 		TbLbLfLamDataSetDefinition tblblflam = new TbLbLfLamDataSetDefinition();
 		tblblflam.setParameters(getParameters());
-		tblblflam.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition(
 		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay",
 		    EthiOhriUtil.map(tblblflam));
+		
+		HMISEIDDatasetDefinition hmiseidDatasetDefinition = new HMISEIDDatasetDefinition();
+		hmiseidDatasetDefinition.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("PMTCT - EID", EthiOhriUtil.map(hmiseidDatasetDefinition));
+		
+		HMISHEICOTRDatasetDefinition hmisheicotrDatasetDefinition = new HMISHEICOTRDatasetDefinition();
+		hmisheicotrDatasetDefinition.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("MTCT_HEI_COTR", EthiOhriUtil.map(hmisheicotrDatasetDefinition));
+		
+		HMISHEIARVDatasetDefinition hmisheiarvDatasetDefinition = new HMISHEIARVDatasetDefinition();
+		hmisheiarvDatasetDefinition.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("RMH_PMTCT_IARV", EthiOhriUtil.map(hmisheiarvDatasetDefinition));
+		
+		HMISHEIABTSTDatasetDefinition hmisheiabtstDatasetDefinition = new HMISHEIABTSTDatasetDefinition();
+		hmisheiabtstDatasetDefinition.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("MTCT_HEI_ABTST", EthiOhriUtil.map(hmisheiabtstDatasetDefinition));
 		
 		return reportDefinition;
 	}
