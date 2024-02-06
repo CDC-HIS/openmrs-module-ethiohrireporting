@@ -8,6 +8,7 @@ import org.openmrs.api.context.Context;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt.HmisArtTptDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_1.HmisArtTptCrOneDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_2.HmisArtTptCrTwoDataSetDefinition;
@@ -25,6 +26,7 @@ import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPlHivD
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
+import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISARTDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISEIDDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEIABTSTDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEIARVDatasetDefinition;
@@ -245,6 +247,9 @@ public class HMISReport implements ReportManager {
 		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay",
 		    EthiOhriUtil.map(tblblflam));
 		
+		HMISARTDatasetDefinition hmisartDatasetDefinition = new HMISARTDatasetDefinition();
+		hmisartDatasetDefinition.setParameters(getParameters());
+		reportDefinition.addDataSetDefinition("PMTCT", EthiOhriUtil.map(hmisartDatasetDefinition));
 		HMISEIDDatasetDefinition hmiseidDatasetDefinition = new HMISEIDDatasetDefinition();
 		hmiseidDatasetDefinition.setParameters(getParameters());
 		reportDefinition.addDataSetDefinition("PMTCT - EID", EthiOhriUtil.map(hmiseidDatasetDefinition));

@@ -76,7 +76,7 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	}
 	
 	public double getPercentage() {
-		if(retCohort.isEmpty())
+		if(retCohort.isEmpty() || netRetCohort.isEmpty())
 			return 0;
 		double value = (retCohort.size()*100.00)/netRetCohort.size() ;
 		DecimalFormat decimalFormat = new DecimalFormat("###.##");

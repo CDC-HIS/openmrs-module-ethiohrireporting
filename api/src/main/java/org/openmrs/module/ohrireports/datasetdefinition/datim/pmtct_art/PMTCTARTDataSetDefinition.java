@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art;
 
 import java.util.Date;
 
+import org.openmrs.Cohort;
 import org.openmrs.EncounterType;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
@@ -18,6 +19,9 @@ public class PMTCTARTDataSetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private EncounterType encounterType;
+	
+	@ConfigurationProperty
+	private String pmtctType;
 	
 	public Date getStartDate() {
 		return startDate;
@@ -43,4 +47,11 @@ public class PMTCTARTDataSetDefinition extends BaseDataSetDefinition {
 		this.encounterType = encounterType;
 	}
 	
+	public String getPmtctType() {
+		return pmtctType;
+	}
+	
+	public void setPmtctType(String pmtctType) {
+		this.pmtctType = pmtctType;
+	}
 }
