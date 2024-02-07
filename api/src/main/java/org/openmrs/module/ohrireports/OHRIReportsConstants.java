@@ -574,16 +574,12 @@ public class OHRIReportsConstants {
 	
 	public final static String REASON_FOR_DISCHARGE = "";
 	
-	public final static String FINAL_PMTCT_OUTCOME = "";
-	
 	public final static String FINAL_OUTCOME_DATE = "";
 	
 	public final static String LATEST_FOLLOWUP_DATE = "";
 	
-
 	public final static String PMTCT_DOSE = "";
 	
-
 	public final static String LATEST_VL_STATUS = "";
 	
 	public final static String PMTCT_STATUS_AT_ENROLLMENT = "ab192dd0-bb1c-4417-b8f9-4c35dc991b55";
@@ -618,7 +614,6 @@ public class OHRIReportsConstants {
 	
 	public final static String PMTCT_LAB_EVIDENCE_HIV = "198731de-2a03-418d-a0ba-833accb88f58";
 	
-
 	public final static String PMTCT_POSITIVE_WITH_OUTSIDE_FACILITY = "4a00b6e5-8ea1-4d8b-ba40-0b204bf69c01";
 	
 	public final static String PMTCT_POSITIVE_WITHIN_FACILITY = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -644,10 +639,6 @@ public class OHRIReportsConstants {
 	public final static String PMTCT_FEEDING_PRACTICE = "164858AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String PMTCT_BREEST_CONDITION = "00ed2ac0-aacc-402b-b587-7a4bbe1321d5";
-	
-	//public final static String PMTCT_DOSE = "ec9670c2-ee1f-42db-aea1-d238fb4fc33f";
-	
-	//public final static String PMTCT_CONCLUSION = "19c28608-a5c5-4095-8966-4ddac6f93847";
 	
 	public final static String PMTCT_DESCISION = "f0652b88-d1dd-4ec5-add7-8bdda63b5a8a";
 	

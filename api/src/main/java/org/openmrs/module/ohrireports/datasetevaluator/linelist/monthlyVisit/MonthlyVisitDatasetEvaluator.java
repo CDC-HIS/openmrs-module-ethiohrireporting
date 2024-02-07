@@ -49,8 +49,8 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> weight = monthlyVisitQuery.getByResult(WEIGHT, monthlyVisitQuery.getBaseCohort(),
 		    monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(TPT_DOSE_DAY_TYPE_INH, monthlyVisitQuery.getBaseCohort(),
-		    monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(TPT_DOSE_DAY_TYPE_INH,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> nextVisitDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
 		    NEXT_VISIT_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> tbScreening = monthlyVisitQuery.getByResult(TB_SCREENED, monthlyVisitQuery.getBaseCohort(),
