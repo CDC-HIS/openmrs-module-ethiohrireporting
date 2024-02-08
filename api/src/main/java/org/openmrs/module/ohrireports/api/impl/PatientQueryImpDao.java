@@ -137,6 +137,25 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 
     }
 	
+	public Cohort getArtStartedCohort(Date startOnOrAfter, Date endOrBefore) {
+		StringBuilder sql = baseQuery(ART_START_DATE);
+		
+		if (startOnOrAfter != null)
+			sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start ");
+		
+		if (endOrBefore != null)
+			sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
+		
+		Query q = getSession().createSQLQuery(sql.toString());
+		if (startOnOrAfter != null)
+			q.setTimestamp("start", startOnOrAfter);
+		
+		if (endOrBefore != null)
+			q.setTimestamp("end", endOrBefore);
+		
+		return new Cohort(q.list());
+	}
+	
 	@Override
 	public Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort,
 	        List<Integer> encounters) {

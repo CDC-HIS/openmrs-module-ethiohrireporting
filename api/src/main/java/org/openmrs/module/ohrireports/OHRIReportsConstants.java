@@ -82,6 +82,8 @@ public class OHRIReportsConstants {
 	
 	public final static String FINAL_COVID19_TEST_RESULT = "5da5c21b-969f-41bd-9091-e40d4c707544";
 	
+	public final static String SCHEDULE_TYPE = "b3f60308-cda4-41f9-af08-b98d2c1562c7";
+	
 	public final static String NEXT_VISIT_DATE = "5096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String POSITIVE = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";

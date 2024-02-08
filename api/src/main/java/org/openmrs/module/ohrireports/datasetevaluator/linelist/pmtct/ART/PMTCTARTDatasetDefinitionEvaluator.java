@@ -22,7 +22,7 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { PMTCTARTClientDataSetDefinition.class })
-public class PMTCTARTDatasetDefinitionEValuator implements DataSetEvaluator {
+public class PMTCTARTDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
 	private PMTCTARTLineListQuery pmtctARTLineListQuery;
