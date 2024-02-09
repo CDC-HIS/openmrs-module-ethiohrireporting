@@ -14,6 +14,8 @@ import org.omg.CORBA.PUBLIC_MEMBER;
 
 public class OHRIReportsConstants {
 	
+	public final static String MOBILE_NUMBER_ATTERIBUTE = "1794bcad-b2d2-47ae-8e26-1d4ec31ade13";
+	
 	public final static String COVID_ASSESSMENT_ENCOUNTER_TYPE = "253a43d3-c99e-415c-8b78-ee7d4d3c1d54";
 	
 	public final static String CARE_AND_TREATMENT_SERVICE_ENROLLMENT_ENCOUNTER_TYPE = "7e54cd64-f9c3-11eb-8e6a-57478ce139b0";

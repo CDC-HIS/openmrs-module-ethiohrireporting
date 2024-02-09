@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.monthlyVisit;
 
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
@@ -49,8 +50,8 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> weight = monthlyVisitQuery.getByResult(WEIGHT, monthlyVisitQuery.getBaseCohort(),
 		    monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(TPT_DOSE_DAY_TYPE_INH, monthlyVisitQuery.getBaseCohort(),
-		    monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(TPT_DOSE_DAY_TYPE_INH,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> nextVisitDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
 		    NEXT_VISIT_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> tbScreening = monthlyVisitQuery.getByResult(TB_SCREENED, monthlyVisitQuery.getBaseCohort(),
@@ -68,7 +69,8 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge());
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weight.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Mobile", "Mobile", String.class), person.getActiveAttributes());
+			row.addColumnValue(new DataSetColumn("Mobile", "Mobile", String.class),
+			    getMobileNumber(person.getActiveAttributes()));
 			row.addColumnValue(new DataSetColumn("ARTStartDate", "ARTStartDate", String.class),
 			    artStartDictionary.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("followUpDate", "followUpDate", String.class),
@@ -90,5 +92,14 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		}
 		
 		return dataSet;
+	}
+	
+	private String getMobileNumber(List<PersonAttribute> activeAttributes) {
+		for (PersonAttribute personAttribute : activeAttributes) {
+			if (personAttribute.getUuid().equals(MOBILE_NUMBER_ATTERIBUTE)) {
+				return personAttribute.getValue();
+			}
+		}
+		return "";
 	}
 }
