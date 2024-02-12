@@ -1,29 +1,17 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.transferredInOut;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REGIMEN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_OUT_UUID;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TRANSFERRED_IN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.SERVICE_DELIVERY_POINT_NUMBER_MRN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNIQUE_ANTIRETROVAIRAL_THERAPY_UAN;
-
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.EncounterType;
-import org.openmrs.Obs;
-import org.openmrs.Patient;
-import org.openmrs.Person;
+import org.openmrs.*;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.query.TransferInOutQuery;
+import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
+import org.openmrs.module.ohrireports.reports.linelist.TXTBReport;
+import org.openmrs.module.ohrireports.reports.linelist.TransferInOutReport;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -36,241 +24,229 @@ import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.SCHEDULE_TYPE;
+
 /*
- * 
+ *
  * =================================================== Report Name ====================================================================
- * Transferred IN/OUT  
+ * Transferred IN/OUT
  * ================================================== Report objective ===================================================================
- * To list all clients who are transferred to another health facility during the reporting period (TO) 
- * To list all clients who are transferred to the facility from another health facility for ARV treatment during the reporting period (TI) 
+ * To list all clients who are transferred to another health facility during the reporting period (TO)
+ * To list all clients who are transferred to the facility from another health facility for ARV treatment during the reporting period (TI)
  * =======================================================================================================================================
  * =============================================== Columns ===============================================================================
- * Description 
- * Concept ID 
- * Patient Name 
- * MRN 
- * UAN 
- * Age 
- * Sex 
- * ART Start Date 
- * Last Follow-up Date 
+ * Description
+ * Concept ID
+ * Patient Name
+ * MRN
+ * UAN
+ * Age
+ * Sex
+ * ART Start Date
+ * Last Follow-up Date
  * Follow-up Status
- * Adherence 
- * Regimen 
- * Next Visit Date 
- * Referral Status 
- * Total Patients 
- * ================================================================ Key Assumptions ============================================================== 
- * The report will include all patients who have TO as the value for their follow-up status in the maximum available follow-up record which is greater than or equal to the Reporting Start Date and less than or equal to the Reporting End date. 
- * 
- * The report will also include patients whose Reason for Eligibility is TI in the maximum available follow-up record which is greater than or equal to the Reporting Start Date and less than or equal to the Reporting End date. 
- * The current date (today) will be the Reporting End date if no date filtration criteria is selected. 
- * 
- * The default value for all the filtration criteria will be ‘All’ 
- * The report query range will include data on the start and end date of the reporting period  
- * When counting the number of days between two dates, the count will always include both weekends and public holidays. 
- * The user will have the option to filter the report using the criteria listed on the Filtration Criteria section of this document. 
- * Pseudo Algorithm 
- * Before a patient record may be included into the report dataset, the following pseudo algorithm must pass: 
- * 
- * If ART Started = Yes 
- * 
- *      AND 
- * If there is an ART Start Date and the ART Start Date is <= the reporting end date 
- *      AND 
- * If patient has Follow-up record >=Report Start Date and <=Report End Date 
- *      AND 
- * If follow-up status = TO in the maximum available follow-up record 
- *      OR 
- * If Reason for Eligibility = TI in the maximum available follow-up record 
- *      ONLY THEN 
- * count the record 
- * Filtration Criteria 
- * Regimen - (List of Regimens) 
- * Age – (From…..To…..) 
- * Sex – (All, Male, Female) 
- * Adherence – (All, Good, Fair, Poor) 
- * Referral Status – (All, TI, TO) 
- * TI/TO Date – Date range (From(Date) – To(Date)) 
- * Disaggregation 
- * 
+ * Adherence
+ * Regimen
+ * Next Visit Date
+ * Referral Status
+ * Total Patients
+ * ================================================================ Key Assumptions ==============================================================
+ * The report will include all patients who have TO as the value for their follow-up status in the maximum available follow-up record which is greater than or equal to the Reporting Start Date and less than or equal to the Reporting End date.
+ *
+ * The report will also include patients whose Reason for Eligibility is TI in the maximum available follow-up record which is greater than or equal to the Reporting Start Date and less than or equal to the Reporting End date.
+ * The current date (today) will be the Reporting End date if no date filtration criteria is selected.
+ *
+ * The default value for all the filtration criteria will be ‘All’
+ * The report query range will include data on the start and end date of the reporting period 
+ * When counting the number of days between two dates, the count will always include both weekends and public holidays.
+ * The user will have the option to filter the report using the criteria listed on the Filtration Criteria section of this document.
+ * Pseudo Algorithm
+ * Before a patient record may be included into the report dataset, the following pseudo algorithm must pass:
+ *
+ * If ART Started = Yes
+ *
+ *      AND
+ * If there is an ART Start Date and the ART Start Date is <= the reporting end date
+ *      AND
+ * If patient has Follow-up record >=Report Start Date and <=Report End Date
+ *      AND
+ * If follow-up status = TO in the maximum available follow-up record
+ *      OR
+ * If Reason for Eligibility = TI in the maximum available follow-up record
+ *      ONLY THEN
+ * count the record
+ * Filtration Criteria
+ * Regimen - (List of Regimens)
+ * Age – (From…..To…..)
+ * Sex – (All, Male, Female)
+ * Adherence – (All, Good, Fair, Poor)
+ * Referral Status – (All, TI, TO)
+ * TI/TO Date – Date range (From(Date) – To(Date))
+ * Disaggregation
+ *
  */
-//@Handler(supports = { TransferredInOutDataSetDefinition.class })
+@Handler(supports = { TransferredInOutDataSetDefinition.class })
 public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private TransferredInOutDataSetDefinition tDataSetDefinition;
 	
+	private PatientQueryService patientQuery;
+	
 	private EvaluationContext evalContext;
 	
-	private Concept transferredConcept;
+	@Autowired
+	private TransferInOutQuery transferInOutQuery;
 	
 	@Autowired
-	private EvaluationService evaluationService;
+	private TransferredInOutLineListQuery transferredInOutLineListQuery;
 	
-	@Autowired
-	private ConceptService conceptService;
-	
-	@Autowired
-	private EncounterService encounterService;
+	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, regimenHashMap, followUpStatus,
+	        artStartDictionary, followUpDate, adherenceHashMap, appointmentDateDictionary, tiStatus;
 	
 	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		tDataSetDefinition = (TransferredInOutDataSetDefinition) dataSetDefinition;
-		this.evalContext = evalContext;
+	public DataSet evaluate(DataSetDefinition _dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+		tDataSetDefinition = (TransferredInOutDataSetDefinition) _dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(tDataSetDefinition, this.evalContext);
 		
-		if (tDataSetDefinition.getEndDate().equals(null))
+		if (Objects.isNull(tDataSetDefinition.getEndDate()))
 			tDataSetDefinition.setEndDate(Calendar.getInstance().getTime());
 		
-		List<Patient> patients = getPatientsWithArt();
-		transferredConcept = conceptService.getConceptByUuid(TRANSFERRED_OUT_UUID);
-		for (Patient patient : patients) {
-			Obs artStartDate = getArtStartDate(patient);
+		transferInOutQuery.setStartDate(tDataSetDefinition.getStartDate());
+		transferInOutQuery.setEndDate(tDataSetDefinition.getEndDate());
+		transferInOutQuery.setStatus(tDataSetDefinition.getStatus());
+		
+		transferInOutQuery.setToCohort(transferInOutQuery.getTOCohort());
+		
+		patientQuery = Context.getService(PatientQueryService.class);
+		String status = transferInOutQuery.getStatus();
+		
+		if (transferInOutQuery.getStatus().equals(TransferInOutReport.to)) {
+			List<Person> persons = transferInOutQuery.getPersons(transferInOutQuery.getTOCohort());
 			
-			//exclude if patient is not doesn't have art start date
-			if (artStartDate.equals(null))
-				continue;
+			loadColumnDictionary(transferInOutQuery.getTOCohort(), transferInOutQuery.getBaseEncounter());
+			DataSetRow row;
 			
-			Obs obs = getPatientFollowUpStatus(patient);
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("personID", "#", Integer.class), patient.getPersonId());
-			row.addColumnValue(new DataSetColumn("name", "Patient Name", String.class), patient.getPerson().getNames());
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), getPatientMRN(patient.getPerson()));
-			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), getPatientUAN(patient.getPerson()));
-			row.addColumnValue(new DataSetColumn("age", "Age", Integer.class), patient.getPerson().getAge());
-			row.addColumnValue(new DataSetColumn("gender", "sex", Integer.class), patient.getPerson().getGender());
-			row.addColumnValue(new DataSetColumn("art-start-date", "Art Start Date", Date.class),
-			    artStartDate.getValueDate());
-			row.addColumnValue(new DataSetColumn("last-follow-up", "Last Follow-up Date", Date.class),
-			    getLastFollowUp(patient.getPerson()));
-			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class), getAdherence(patient.getPerson()));
-			row.addColumnValue(new DataSetColumn("regimen", "Regimen", String.class),
-			    getLastArtRegiment(patient.getPerson()));
+			if (persons.size() > 0) {
+				
+				row = new DataSetRow();
+				
+				row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
+				row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+				
+				dataSet.addRow(row);
+				
+				for (Person person : persons) {
+					
+					Date artStartDate = transferredInOutLineListQuery.getDate(artStartDictionary.get(person.getPersonId()));
+					Date appointmentDate = transferredInOutLineListQuery.getDate(appointmentDateDictionary.get(person
+					        .getPersonId()));
+					Date _followUpDate = transferredInOutLineListQuery.getDate(followUpDate.get(person.getPersonId()));
+					String followUpEthiopianDate = transferredInOutLineListQuery.getEthiopianDate(_followUpDate);
+					row = new DataSetRow();
+					
+					addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
+					addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
+					row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
+					row.addColumnValue(new DataSetColumn("Age", "Age", String.class),
+					    person.getAge(tDataSetDefinition.getEndDate()));
+					row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
+					row.addColumnValue(new DataSetColumn("followUpDate", "FollowUp Date", Date.class), _followUpDate);
+					row.addColumnValue(new DataSetColumn("followUpDateEth", "FollowUp Date ETH", String.class),
+					    followUpEthiopianDate);
+					row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date ETH", Date.class),
+					    transferredInOutLineListQuery.getEthiopianDate(artStartDate));
+					addColumnValue("adherence", "Adherence", adherenceHashMap, row, person);
+					addColumnValue("followUpStatus", "FollowUp Status", followUpStatus, row, person);
+					addColumnValue("regimen", "Regimen", regimenHashMap, row, person);
+					row.addColumnValue(new DataSetColumn("appointmentDate", "Appointment Date ETH", Date.class),
+					    transferredInOutLineListQuery.getEthiopianDate(appointmentDate));
+					
+					dataSet.addRow(row);
+				}
+				
+				return dataSet;
+			}
+			return null;
 			
-			if (obs.getValueCoded().equals(transferredConcept)) {
-				row.addColumnValue(new DataSetColumn("referral-status", "Referral Status", String.class), transferredConcept
-				        .getName().getName());
-			} else {
-				row.addColumnValue(new DataSetColumn("follow-up-status", "Follow Up Status", String.class), obs
-				        .getValueCodedName().getName());
+		} else {
+			List<Person> persons = transferInOutQuery.getPersons(transferInOutQuery.getTICohort());
+			
+			Cohort cohort = transferInOutQuery.getTOCohort();
+			loadColumnDictionary(cohort, transferInOutQuery.getFirstEncounter());
+			DataSetRow row;
+			
+			if (persons.size() > 0) {
+				
+				row = new DataSetRow();
+				
+				row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
+				row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+				
+				dataSet.addRow(row);
+				
+				for (Person person : persons) {
+					
+					Date artStartDate = transferredInOutLineListQuery.getDate(artStartDictionary.get(person.getPersonId()));
+					Date appointmentDate = transferredInOutLineListQuery.getDate(appointmentDateDictionary.get(person
+					        .getPersonId()));
+					Date _followUpDate = transferredInOutLineListQuery.getDate(followUpDate.get(person.getPersonId()));
+					String followUpEthiopianDate = transferredInOutLineListQuery.getEthiopianDate(_followUpDate);
+					
+					HashMap<Integer, Object> latestFollowUpStatus = transferredInOutLineListQuery.getFollowUpStatus(
+					    transferInOutQuery.getBaseEncounter(), cohort);
+					HashMap<Integer, Object> latestFollowUp = transferredInOutLineListQuery.getObsValueDate(
+					    transferInOutQuery.getBaseEncounter(), FOLLOW_UP_DATE, cohort);
+					Date _latestFollowUpDate = transferredInOutLineListQuery
+					        .getDate(latestFollowUp.get(person.getPersonId()));
+					String latestFollowUpEthiopianDate = transferredInOutLineListQuery.getEthiopianDate(_latestFollowUpDate);
+					
+					row = new DataSetRow();
+					
+					addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
+					addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
+					row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
+					row.addColumnValue(new DataSetColumn("Age", "Age", String.class),
+					    person.getAge(tDataSetDefinition.getEndDate()));
+					addColumnValue("TIStatus", "TI Status", tiStatus, row, person);
+					row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
+					row.addColumnValue(new DataSetColumn("followUpDate", "TI Date", Date.class), followUpEthiopianDate);
+					row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date ETH", Date.class),
+					    transferredInOutLineListQuery.getEthiopianDate(artStartDate));
+					addColumnValue("adherence", "Adherence", adherenceHashMap, row, person);
+					addColumnValue("latestFollowUpStatus", "Latest FollowUp Status", latestFollowUpStatus, row, person);
+					addColumnValue("regimen", "Regimen", regimenHashMap, row, person);
+					row.addColumnValue(new DataSetColumn("appointmentDate", "Appointment Date ETH", Date.class),
+					    transferredInOutLineListQuery.getEthiopianDate(appointmentDate));
+					row.addColumnValue(new DataSetColumn("latestFollowUpDateEth", "Latest FollowUp Date ETH", String.class),
+					    latestFollowUpEthiopianDate);
+					dataSet.addRow(row);
+				}
+				
+				return dataSet;
 			}
 			
-			dataSet.addRow(row);
+			return null;
+			
 		}
-		return dataSet;
 	}
 	
-	/*
-	 * Get patients on Art
-	 */
-	private List<Patient> getPatientsWithArt() {
-		
-		return evaluationService.evaluateToList(
-		    new HqlQueryBuilder()
-		            .select("obs.encounter.patient")
-		            .from(Obs.class, "obs")
-		            .whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE))
-		            .whereBetweenInclusive("obs.valueDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()), Patient.class, evalContext);
-		
+	private void loadColumnDictionary(Cohort baseCohort, List<Integer> followUpEncounters) {
+		mrnIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, MRN_PATIENT_IDENTIFIERS);
+		uanIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, UAN_PATIENT_IDENTIFIERS);
+		regimenHashMap = transferredInOutLineListQuery.getRegiment(followUpEncounters, baseCohort);
+		followUpStatus = transferredInOutLineListQuery.getFollowUpStatus(followUpEncounters, baseCohort);
+		adherenceHashMap = transferredInOutLineListQuery.getConceptName(followUpEncounters, baseCohort, ARV_ADHERENCE);
+		artStartDictionary = transferredInOutLineListQuery
+		        .getArtStartDate(baseCohort, null, transferInOutQuery.getEndDate());
+		appointmentDateDictionary = transferredInOutLineListQuery.getObsValueDate(transferInOutQuery.getBaseEncounter(),
+		    ART_START_DATE, baseCohort);
+		followUpDate = transferredInOutLineListQuery.getObsValueDate(followUpEncounters, FOLLOW_UP_DATE, baseCohort);
+		tiStatus = transferredInOutLineListQuery.getConceptName(followUpEncounters, baseCohort, REASON_FOR_ART_ELIGIBILITY);
 	}
 	
-	private String getPatientMRN(Person person) {
-		return evaluationService.evaluateToObject(
-		    new HqlQueryBuilder()
-		            .select("obs.valueText")
-		            .from(Obs.class, "obs")
-		            .whereEqual("obs.concept", conceptService.getConceptByUuid(SERVICE_DELIVERY_POINT_NUMBER_MRN))
-		            .and()
-		            .whereEqual("obs.person", person)
-		            .whereBetweenInclusive("obs.obsDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()).limit(1).orderDesc("obs.obsDatetime"), String.class, evalContext);
-	}
-	
-	private String getLastFollowUp(Person person) {
-		EncounterType encounterType = new EncounterType();
-		encounterType = evaluationService.evaluateToObject(
-		    new HqlQueryBuilder()
-		            .select("encounter.encounterType")
-		            .from(Encounter.class, "encounter")
-		            .whereEqual("encounter.patient", person)
-		            .whereBetweenInclusive("encounter.encounterDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()).limit(1), EncounterType.class, evalContext);
-		
-		return encounterType.equals(null) ? "" : encounterType.getName();
-	}
-	
-	private String getPatientUAN(Person patient) {
-		
-		return evaluationService.evaluateToObject(
-		    new HqlQueryBuilder()
-		            .select("obs.valueText")
-		            .from(Obs.class, "obs")
-		            .whereEqual("obs.concept", conceptService.getConceptByUuid(UNIQUE_ANTIRETROVAIRAL_THERAPY_UAN))
-		            .and()
-		            .whereEqual("obs.person", patient)
-		            .whereBetweenInclusive("obs.obsDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()).limit(1).orderDesc("obs.obsDatetime"), String.class, evalContext);
-		
-	}
-	
-	private String getAdherence(Person patient) {
-		Concept adConcept = evaluationService.evaluateToObject(
-		    new HqlQueryBuilder()
-		            .select("obs.valueCoded")
-		            .from(Obs.class, "obs")
-		            .whereEqual("obs.concept", conceptService.getConceptByUuid(REGIMEN))
-		            .whereBetweenInclusive("obs.obsDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()).limit(1), Concept.class, evalContext);
-		return adConcept.equals(null) ? "" : adConcept.getName().getName();
-	}
-	
-	private String getLastArtRegiment(Person person) {
-		
-		return evaluationService.evaluateToObject(
-		    new HqlQueryBuilder()
-		            .select("obs.")
-		            .from(Obs.class, "obs")
-		            .whereEqual("obs.person", person)
-		            .whereBetweenInclusive("obs.obsDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()).limit(1).orderDesc("obs.obsDatetime"), String.class, evalContext);
-	}
-	
-	private Obs getArtStartDate(Patient patient) {
-		if (tDataSetDefinition.getStartDate().equals(null))
-			return evaluationService.evaluateToObject(
-			    new HqlQueryBuilder().select("obs").from(Obs.class, "obs.valueDatetime")
-			            .whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE))
-			            .whereLessOrEqualTo("obs.obsDatetime", tDataSetDefinition.getEndDate()).orderDesc("obs.obsDatetime")
-			            .limit(1), Obs.class, evalContext);
-		
-		return evaluationService.evaluateToObject(
-		    new HqlQueryBuilder()
-		            .select("obs")
-		            .from(Obs.class, "obs.valueDatetime")
-		            .whereEqual("obs.concept", conceptService.getConceptByUuid(ART_START_DATE))
-		            .whereBetweenInclusive("obs.obsDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()).orderDesc("obs.obsDatetime").limit(1), Obs.class, evalContext);
-	}
-	
-	private Obs getPatientFollowUpStatus(Patient patient) {
-		
-		return evaluationService.evaluateToObject(
-		    new HqlQueryBuilder()
-		            .select("obs")
-		            .from(Obs.class, "obs")
-		            .whereEqual("obs.encounter.encounterType",
-		                encounterService.getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE))
-		            .whereIn(
-		                "obs.valueCoded",
-		                Arrays.asList(conceptService.getConceptByUuid(ALIVE), conceptService.getConceptByUuid(RESTART),
-		                    conceptService.getConceptByUuid(ALIVE), transferredConcept,
-		                    conceptService.getConceptByUuid(TRANSFERRED_IN)))
-		            .and()
-		            .whereEqual("obs.person", patient.getPerson())
-		            .whereBetweenInclusive("obs.obsDatetime", tDataSetDefinition.getStartDate(),
-		                tDataSetDefinition.getEndDate()).orderAsc("obs.obsDatetime").limit(1), Obs.class, evalContext);
-		
+	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
+		row.addColumnValue(new DataSetColumn(name, label, String.class), object.get(person.getPersonId()));
 	}
 	
 }

@@ -63,6 +63,27 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		}
 	}
 	
+	public List<Integer> getFirstEncounterByFollowUpDate() {
+		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
+		builder.append("(select MIN(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+		
+		builder.append(" where obs_enc.concept_id =").append(conceptQuery(FOLLOW_UP_DATE));
+		
+		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
+		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
+		builder.append(" and ob.concept_id =").append(conceptQuery(FOLLOW_UP_DATE));
+		
+		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
+	
 	public List<Integer> getAliveFollowUpEncounters(Date start, Date end) {
 		List<Integer> allEncounters = getLatestDateByFollowUpDate(start, end);
 		

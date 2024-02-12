@@ -17,6 +17,17 @@ public class TransferredInOutDataSetDefinition extends BaseDataSetDefinition {
 	private Date endDate;
 	
 	@ConfigurationProperty
+	private String status;
+	
+	public String getStatus() {
+		return status;
+	}
+	
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	@ConfigurationProperty
 	private EncounterType encounterType;
 	
 	public Date getStartDate() {
