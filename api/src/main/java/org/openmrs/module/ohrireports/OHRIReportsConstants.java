@@ -60,8 +60,6 @@ public class OHRIReportsConstants {
 	
 	public final static String OPENMRS_PATIENT_IDENTIFIERS = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
 	
-	public final static String DISPENSED_DOSE = "ddf10471-2e25-4010-b539-fff2c2900780";
-	
 	public final static String CURRENTLY_BREAST_FEEDING_CHILD = "5632AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String WEIGHT = "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
