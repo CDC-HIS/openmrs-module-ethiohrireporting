@@ -77,7 +77,7 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weight.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Mobile", "Mobile", String.class),
-					getMobileNumber(person.getActiveAttributes()));
+					getPhone(person.getActiveAttributes()));
 			row.addColumnValue(new DataSetColumn("ARTStartDate", "ARTStartDate", String.class),
 					artStartDictionary.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("followUpDate", "followUpDate", String.class),
@@ -102,9 +102,9 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		return dataSet;
 	}
 
-	private String getMobileNumber(List<PersonAttribute> activeAttributes) {
+	private String getPhone(List<PersonAttribute> activeAttributes) {
 		for (PersonAttribute personAttribute : activeAttributes) {
-			if (personAttribute.getUuid().equals(MOBILE_NUMBER_ATTERIBUTE)) {
+			if (personAttribute.getValue().startsWith("09") || personAttribute.getValue().startsWith("+251")) {
 				return personAttribute.getValue();
 			}
 		}
