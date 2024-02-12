@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.linelist.monthlyVisit;
+package org.openmrs.module.ohrireports.datasetevaluator.linelist.scheduleVisit;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
@@ -15,7 +15,7 @@ import java.util.*;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
-public class MonthlyVisitQuery extends BaseLineListQuery {
+public class ScheduleVisitQuery extends BaseLineListQuery {
 	
 	private final DbSessionFactory sessionFactory;
 	
@@ -38,15 +38,15 @@ public class MonthlyVisitQuery extends BaseLineListQuery {
 	private Cohort baseCohort;
 	
 	@Autowired
-	public MonthlyVisitQuery(DbSessionFactory _SessionFactory) {
+	public ScheduleVisitQuery(DbSessionFactory _SessionFactory) {
 		super(_SessionFactory);
 		sessionFactory = _SessionFactory;
 	}
 	
 	public void generateReport(Date start, Date end) {
-		encounter = getMonthlyVisitEncounter(start, end);
+		encounter = encounterQuery.getEncounters(Collections.singletonList(NEXT_VISIT_DATE), null, end,
+		    HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		baseCohort = getCohort(encounter);
-		
 	}
 	
 	public Cohort getCohort(List<Integer> encounterIds) {
@@ -60,27 +60,12 @@ public class MonthlyVisitQuery extends BaseLineListQuery {
 		
 	}
 	
+	public HashMap<Integer, Object> getObNumericValue(String conceptUUId) {
+		return getDictionary(getObsNumber(encounter, conceptUUId, baseCohort));
+	}
+	
 	public List<Person> getPersons(Cohort baseCohort) {
 		return patientQueryImpDao.getPersons(baseCohort);
 	}
 	
-	public List<Integer> getMonthlyVisitEncounter(Date start, Date end) {
-		List<Integer> allEncounters = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), start, end);
-		
-		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS)
-		        + " and ob.value_coded in " + conceptQuery(Arrays.asList(RESTART, ALIVE, STOP))
-		        + " and ob.encounter_id in (:encounters)";
-		
-		Query q = sessionFactory.getCurrentSession().createSQLQuery(builder);
-		q.setParameterList("encounters", allEncounters);
-		
-		List list = q.list();
-		
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
-		
-	}
 }
