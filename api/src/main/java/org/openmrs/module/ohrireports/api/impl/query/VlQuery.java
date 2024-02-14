@@ -1,20 +1,5 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_HIGH_VIRAL_LOAD;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_ROUTINE_VIRAL_LOAD_COUNT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_TARGET_VIRAL_LOAD_COUNT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_COUNT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_SUPPRESSED;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_UNSUPPRESSED;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CURRENTLY_BREAST_FEEDING_CHILD;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PREGNANT_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DISPENSED_DOSE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIRAL_LOAD_TEST_INDICATION;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,10 +14,12 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+
 @Component
 public class VlQuery extends BaseLineListQuery {
 	
-	private DbSessionFactory sessionFactory;
+	private final DbSessionFactory sessionFactory;
 	
 	public Cohort cohort;
 	
@@ -237,7 +224,7 @@ public class VlQuery extends BaseLineListQuery {
 	}
 	
 	public HashMap<Integer, Object> getArtDose() {
-		Query query = getObs(VlTakenEncounters, DISPENSED_DOSE, cohort);
+		Query query = getObs(VlTakenEncounters, ARV_DISPENSED_IN_DAYS, cohort);
 		return getDictionary(query);
 	}
 	
