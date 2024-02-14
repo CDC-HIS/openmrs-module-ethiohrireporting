@@ -69,8 +69,8 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(null, endDate);
-		firstEncounter = encounterQuery.getFirstEncounterByFollowUpDate();
+		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
+		firstEncounter = encounterQuery.getFirstEncounterByFollowUpDate(startDate, endDate);
 	}
 	
 	public List<Integer> getBaseEncounter() {
@@ -112,7 +112,7 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
-		query.setParameterList("encounters", baseEncounter);
+		query.setParameterList("encounters", firstEncounter);
 		
 		return new Cohort(query.list());
 	}
