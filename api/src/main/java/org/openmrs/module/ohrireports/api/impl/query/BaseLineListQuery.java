@@ -200,8 +200,27 @@ public class BaseLineListQuery extends BaseEthiOhriQuery {
 		return getDictionary(getObsValueDateQuery(baseEncounters, concept, cohort));
 	}
 	
+	public HashMap<Integer, Object> getObsValueDate(List<Integer> baseEncounters, String concept, Cohort cohort,
+	        String encounterType) {
+		return getDictionary(getObsValueDateQuery(baseEncounters, concept, cohort, encounterType));
+	}
+	
 	protected Query getObsValueDateQuery(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseValueDateQuery(concept);
+		
+		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
+		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "person_id in (:cohorts) ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return query;
+	}
+	
+	protected Query getObsValueDateQuery(List<Integer> baseEncounters, String concept, Cohort cohort, String encounterType) {
+		StringBuilder sql = baseValueDateQuery(concept, encounterType);
 		
 		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
 		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "person_id in (:cohorts) ");

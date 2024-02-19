@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.ARTPatientListQuery;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ARTPatientListDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -32,8 +34,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	
 	private ARTPatientListDatasetDefinition _dataSetDefinition;
 	
-	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, regimenHashMap, followUpStatus,
-	        artStartDictionary, adherenceHashMap, scheduleTypeHashMap, appointmentDateDictionary;
+	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, registrationDateDictionary;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -43,7 +44,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		artPatientListQuery.setStartDate(_dataSetDefinition.getStartDate());
 		artPatientListQuery.setEndDate(_dataSetDefinition.getEndDate());
 		
-		Cohort baseCohort = artPatientListQuery.getArtStartedCohort(null, artPatientListQuery.getEndDate());
+		Cohort baseCohort = artPatientListQuery.getEverEnrolledCohort(artPatientListQuery.getEndDate());
 		List<Person> persons = artPatientListQuery.getPersons(baseCohort);
 		
 		loadColumnDictionary(baseCohort);
@@ -54,32 +55,28 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), persons.size());
 			
 			dataSet.addRow(row);
 		}
 		
 		for (Person person : persons) {
 			
-			Date artStartDate = artPatientListLineListQuery.getDate(artStartDictionary.get(person.getPersonId()));
-			Date appointmentDate = artPatientListLineListQuery.getDate(appointmentDateDictionary.get(person.getPersonId()));
+			Date registrationDate = artPatientListLineListQuery
+			        .getDate(registrationDateDictionary.get(person.getPersonId()));
 			
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 			addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
-			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge(_dataSetDefinition.getEndDate()));
+			row.addColumnValue(new DataSetColumn("AgeAtEnrollment", "Age at Enrollment", String.class),
+			    getAgeByEnrollmentDate(person.getBirthDateTime(), registrationDate));
+			row.addColumnValue(new DataSetColumn("Age", "Current Age", String.class),
+			    person.getAge(_dataSetDefinition.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
-			addColumnValue("regimen", "Regimen", regimenHashMap, row, person);
-			addColumnValue("followUpStatus", "FollowUp Status", followUpStatus, row, person);
-			row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date ETH", Date.class),
-			    artPatientListLineListQuery.getEthiopianDate(artStartDate));
-			addColumnValue("adherence", "Adherence", adherenceHashMap, row, person);
-			addColumnValue("scheduleType", "Schedule Type", scheduleTypeHashMap, row, person);
-			row.addColumnValue(new DataSetColumn("appointmentDate", "Appointment Date ETH", Date.class),
-			    artPatientListLineListQuery.getEthiopianDate(appointmentDate));
+			row.addColumnValue(new DataSetColumn("enrollmentDate", "Enrollment Date", Integer.class), registrationDate);
 			
 			dataSet.addRow(row);
 		}
@@ -90,18 +87,25 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	private void loadColumnDictionary(Cohort baseCohort) {
 		mrnIdentifierHashMap = artPatientListLineListQuery.getIdentifier(baseCohort, MRN_PATIENT_IDENTIFIERS);
 		uanIdentifierHashMap = artPatientListLineListQuery.getIdentifier(baseCohort, UAN_PATIENT_IDENTIFIERS);
-		regimenHashMap = artPatientListLineListQuery.getRegiment(artPatientListQuery.getBaseEncounter(), baseCohort);
-		followUpStatus = artPatientListLineListQuery.getFollowUpStatus(artPatientListQuery.getBaseEncounter(), baseCohort);
-		adherenceHashMap = artPatientListLineListQuery.getConceptName(artPatientListQuery.getBaseEncounter(), baseCohort,
-		    ARV_ADHERENCE);
-		scheduleTypeHashMap = artPatientListLineListQuery.getConceptName(artPatientListQuery.getBaseEncounter(), baseCohort,
-		    SCHEDULE_TYPE);
-		artStartDictionary = artPatientListLineListQuery.getArtStartDate(baseCohort, null, artPatientListQuery.getEndDate());
-		appointmentDateDictionary = artPatientListLineListQuery.getObsValueDate(artPatientListQuery.getBaseEncounter(),
-		    ART_START_DATE, baseCohort);
+		registrationDateDictionary = artPatientListLineListQuery.getObsValueDate(artPatientListQuery.getBaseEncounter(),
+		    ART_REGISTRATION_DATE, baseCohort, INTAKE_A_ENCOUNTER_TYPE);
+		
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
 		row.addColumnValue(new DataSetColumn(name, label, String.class), object.get(person.getPersonId()));
+	}
+	
+	private String getAgeByEnrollmentDate(Object dateOfBirth, Object enrollmentDate) {
+		if (Objects.isNull(dateOfBirth)) {
+			return "";
+		}
+		Date birthDate = (Date) dateOfBirth;
+		if (Objects.isNull(enrollmentDate)) {
+			return birthDate.toString();
+		}
+		Date enrDate = (Date) enrollmentDate;
+		return String.valueOf(EthiOhriUtil.getAgeInMonth(birthDate, enrDate));
+		
 	}
 }

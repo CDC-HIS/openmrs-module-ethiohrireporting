@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
+import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_COUNSELING_GIVEN;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class ARTPatientListQuery extends PatientQueryImpDao {
@@ -62,4 +63,17 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 	public List<Integer> getBaseEncounter() {
 		return baseEncounter;
 	}
+	
+	public Cohort getEverEnrolledCohort(Date endOrBefore) {
+		StringBuilder sql = baseQuery(ART_REGISTRATION_DATE, INTAKE_A_ENCOUNTER_TYPE);
+		if (endOrBefore != null)
+			sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		if (endOrBefore != null)
+			query.setTimestamp("end", endOrBefore);
+		
+		baseCohort = new Cohort(query.list());
+		return baseCohort;
+	}
+	
 }

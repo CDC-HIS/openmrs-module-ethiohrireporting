@@ -101,8 +101,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 	@Autowired
 	private TransferredInOutLineListQuery transferredInOutLineListQuery;
 	
-	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, regimenHashMap, followUpStatus,
-	        artStartDictionary, followUpDate, adherenceHashMap, appointmentDateDictionary, tiStatus;
+	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, artStartDictionary, followUpDate;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition _dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -122,46 +121,39 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 		String status = transferInOutQuery.getStatus();
 		
 		if (transferInOutQuery.getStatus().equals(TransferInOutReport.to)) {
-			List<Person> persons = transferInOutQuery.getPersons(transferInOutQuery.getTOCohort());
 			
-			loadColumnDictionary(transferInOutQuery.getTOCohort(), transferInOutQuery.getBaseEncounter());
+			Cohort cohort = transferInOutQuery.getTOCohort();
+			List<Person> persons = transferInOutQuery.getPersons(cohort);
+			
+			loadColumnDictionary(cohort, transferInOutQuery.getBaseEncounter());
 			DataSetRow row;
 			
 			if (persons.size() > 0) {
 				
 				row = new DataSetRow();
 				
-				row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-				row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+				row.addColumnValue(new DataSetColumn("Name", "Name", String.class), "TOTAL");
+				row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class), persons.size());
 				
 				dataSet.addRow(row);
 				
 				for (Person person : persons) {
 					
 					Date artStartDate = transferredInOutLineListQuery.getDate(artStartDictionary.get(person.getPersonId()));
-					Date appointmentDate = transferredInOutLineListQuery.getDate(appointmentDateDictionary.get(person
-					        .getPersonId()));
 					Date _followUpDate = transferredInOutLineListQuery.getDate(followUpDate.get(person.getPersonId()));
 					String followUpEthiopianDate = transferredInOutLineListQuery.getEthiopianDate(_followUpDate);
 					row = new DataSetRow();
 					
+					row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
 					addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 					addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
-					row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
 					row.addColumnValue(new DataSetColumn("Age", "Age", String.class),
 					    person.getAge(tDataSetDefinition.getEndDate()));
 					row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
-					row.addColumnValue(new DataSetColumn("followUpDate", "FollowUp Date", Date.class), _followUpDate);
-					row.addColumnValue(new DataSetColumn("followUpDateEth", "FollowUp Date ETH", String.class),
-					    followUpEthiopianDate);
 					row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date ETH", Date.class),
 					    transferredInOutLineListQuery.getEthiopianDate(artStartDate));
-					addColumnValue("adherence", "Adherence", adherenceHashMap, row, person);
-					addColumnValue("followUpStatus", "FollowUp Status", followUpStatus, row, person);
-					addColumnValue("regimen", "Regimen", regimenHashMap, row, person);
-					row.addColumnValue(new DataSetColumn("appointmentDate", "Appointment Date ETH", Date.class),
-					    transferredInOutLineListQuery.getEthiopianDate(appointmentDate));
-					
+					row.addColumnValue(new DataSetColumn("followUpDateEth", "FollowUp Date ETH", String.class),
+					    followUpEthiopianDate);
 					dataSet.addRow(row);
 				}
 				
@@ -170,9 +162,9 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 			return null;
 			
 		} else {
-			List<Person> persons = transferInOutQuery.getPersons(transferInOutQuery.getTICohort());
+			Cohort cohort = transferInOutQuery.getTICohort();
+			List<Person> persons = transferInOutQuery.getPersons(cohort);
 			
-			Cohort cohort = transferInOutQuery.getTOCohort();
 			loadColumnDictionary(cohort, transferInOutQuery.getFirstEncounter());
 			DataSetRow row;
 			
@@ -180,46 +172,29 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				
 				row = new DataSetRow();
 				
-				row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-				row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+				row.addColumnValue(new DataSetColumn("Name", "Name", String.class), "TOTAL");
+				row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class), persons.size());
 				
 				dataSet.addRow(row);
 				
 				for (Person person : persons) {
 					
 					Date artStartDate = transferredInOutLineListQuery.getDate(artStartDictionary.get(person.getPersonId()));
-					Date appointmentDate = transferredInOutLineListQuery.getDate(appointmentDateDictionary.get(person
-					        .getPersonId()));
+					
 					Date _followUpDate = transferredInOutLineListQuery.getDate(followUpDate.get(person.getPersonId()));
 					String followUpEthiopianDate = transferredInOutLineListQuery.getEthiopianDate(_followUpDate);
 					
-					HashMap<Integer, Object> latestFollowUpStatus = transferredInOutLineListQuery.getFollowUpStatus(
-					    transferInOutQuery.getBaseEncounter(), cohort);
-					HashMap<Integer, Object> latestFollowUp = transferredInOutLineListQuery.getObsValueDate(
-					    transferInOutQuery.getBaseEncounter(), FOLLOW_UP_DATE, cohort);
-					Date _latestFollowUpDate = transferredInOutLineListQuery
-					        .getDate(latestFollowUp.get(person.getPersonId()));
-					String latestFollowUpEthiopianDate = transferredInOutLineListQuery.getEthiopianDate(_latestFollowUpDate);
-					
 					row = new DataSetRow();
 					
+					row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
 					addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 					addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
-					row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
 					row.addColumnValue(new DataSetColumn("Age", "Age", String.class),
 					    person.getAge(tDataSetDefinition.getEndDate()));
-					addColumnValue("TIStatus", "TI Status", tiStatus, row, person);
 					row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
 					row.addColumnValue(new DataSetColumn("followUpDate", "TI Date", Date.class), followUpEthiopianDate);
 					row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date ETH", Date.class),
 					    transferredInOutLineListQuery.getEthiopianDate(artStartDate));
-					addColumnValue("adherence", "Adherence", adherenceHashMap, row, person);
-					addColumnValue("latestFollowUpStatus", "Latest FollowUp Status", latestFollowUpStatus, row, person);
-					addColumnValue("regimen", "Regimen", regimenHashMap, row, person);
-					row.addColumnValue(new DataSetColumn("appointmentDate", "Appointment Date ETH", Date.class),
-					    transferredInOutLineListQuery.getEthiopianDate(appointmentDate));
-					row.addColumnValue(new DataSetColumn("latestFollowUpDateEth", "Latest FollowUp Date ETH", String.class),
-					    latestFollowUpEthiopianDate);
 					dataSet.addRow(row);
 				}
 				
@@ -234,15 +209,9 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 	private void loadColumnDictionary(Cohort baseCohort, List<Integer> followUpEncounters) {
 		mrnIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, MRN_PATIENT_IDENTIFIERS);
 		uanIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, UAN_PATIENT_IDENTIFIERS);
-		regimenHashMap = transferredInOutLineListQuery.getRegiment(followUpEncounters, baseCohort);
-		followUpStatus = transferredInOutLineListQuery.getFollowUpStatus(followUpEncounters, baseCohort);
-		adherenceHashMap = transferredInOutLineListQuery.getConceptName(followUpEncounters, baseCohort, ARV_ADHERENCE);
 		artStartDictionary = transferredInOutLineListQuery
 		        .getArtStartDate(baseCohort, null, transferInOutQuery.getEndDate());
-		appointmentDateDictionary = transferredInOutLineListQuery.getObsValueDate(transferInOutQuery.getBaseEncounter(),
-		    ART_START_DATE, baseCohort);
 		followUpDate = transferredInOutLineListQuery.getObsValueDate(followUpEncounters, FOLLOW_UP_DATE, baseCohort);
-		tiStatus = transferredInOutLineListQuery.getConceptName(followUpEncounters, baseCohort, REASON_FOR_ART_ELIGIBILITY);
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
