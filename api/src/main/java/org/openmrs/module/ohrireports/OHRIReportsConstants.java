@@ -26,6 +26,10 @@ public class OHRIReportsConstants {
 	
 	public final static String PREP_FOLLOW_UP_ENCOUNTER_TYPE = "bc423d48-af6f-4354-af22-fec8ff1c0308";
 	
+	public final static String INTAKE_A_ENCOUNTER_TYPE = "05add044-67f8-48c9-928d-79002ab19efe";
+	
+	public final static String ART_REGISTRATION_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
+	
 	public final static String PREP_SCREENING_ENCOUNTER_TYPE = "8c2b6a9b-4795-417d-affe-2530a753b715";
 	
 	public final static String COVID_VACCINATION_ENCOUNTER_TYPE = "5b37ce7a-c55e-4226-bdc8-5af04025a6de";

@@ -161,6 +161,23 @@ public abstract class BaseEthiOhriQuery {
 		return sql;
 	}
 	
+	protected StringBuilder baseValueDateQuery(String conceptQuestionUUid, String encounterType) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select " + VALUE_DATE_BASE_ALIAS_OBS + "person_id," + VALUE_DATE_BASE_ALIAS_OBS
+		        + "value_datetime from obs as  obvd ");
+		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_DATE_BASE_ALIAS_OBS + "person_id ");
+		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
+		sql.append(" inner join concept as c on c.concept_id = " + VALUE_DATE_BASE_ALIAS_OBS
+		        + " concept_id and c.retired = false ");
+		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
+		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id ");
+		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append(" and et.uuid= '" + encounterType + "' ");
+		sql.append(" where pa.voided = false and " + VALUE_DATE_BASE_ALIAS_OBS + "voided = false ");
+		return sql;
+	}
+	
 	protected StringBuilder baseValueNumberQuery(String conceptQuestionUUid) {
 		
 		StringBuilder sql = new StringBuilder();
