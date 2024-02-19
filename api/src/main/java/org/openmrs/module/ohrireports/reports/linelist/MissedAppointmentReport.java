@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.reports.linelist;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MissedAppointmentDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MonthlyVisitDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -11,8 +12,7 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
@@ -27,7 +27,7 @@ public class MissedAppointmentReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- Missed Appointment";
+		return LINE_LIST_REPORT + "- Missed Appointment Tracing";
 	}
 	
 	@Override
@@ -37,7 +37,16 @@ public class MissedAppointmentReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		return EthiOhriUtil.getDateRangeParameters();
+		Calendar calendar = Calendar.getInstance();
+		Date nowDate = calendar.getTime();
+		Parameter endDate = new Parameter("endDate", "Reporting Date", Date.class);
+		endDate.setRequired(false);
+		endDate.setDefaultValue(nowDate);
+		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
+		endDateGC.setRequired(false);
+		endDate.setDefaultValue(EthiOhriUtil.getEthiopianDate(nowDate));
+		
+		return Arrays.asList(endDate, endDateGC);
 	}
 	
 	@Override
@@ -51,7 +60,7 @@ public class MissedAppointmentReport implements ReportManager {
 		MissedAppointmentDatasetDefinition datasetDefinition = new MissedAppointmentDatasetDefinition();
 		datasetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("Missed Appointment ", EthiOhriUtil.map(datasetDefinition));
+		reportDefinition.addDataSetDefinition("Missed Appointment Tracing ", EthiOhriUtil.mapEndDate(datasetDefinition));
 		return reportDefinition;
 	}
 	

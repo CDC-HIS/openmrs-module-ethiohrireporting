@@ -45,14 +45,33 @@ public class MissedAppointmentQuery extends BaseLineListQuery {
 		sessionFactory = _SessionFactory;
 	}
 	
-	public void generateReport(Date start, Date end) {
-		encounter = encounterQuery.getEncounters(Collections.singletonList(NEXT_VISIT_DATE), start, end,
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE);
-		List<Integer> visitEncounter = getEncounter(start, end);
-		Cohort visitedCohort = getCohort(visitEncounter);
-		baseCohort = getCohort(encounter);
-		baseCohort = HMISUtilies.getOuterUnion(baseCohort, visitedCohort);
+	public void generateReport(Date reportEnd) {
+		Cohort hasFollowupAfterEndCohort = getCohortHasFollowUpAfterDate(reportEnd);
+		encounter = encounterQuery.getAliveFollowUpEncounters(null, reportEnd);
+		Cohort visitedCohort = getCohort(encounter);
+		baseCohort = HMISUtilies.getLeftOuterUnion(visitedCohort, hasFollowupAfterEndCohort);
+		baseCohort = getMissideCohort(reportEnd);
+	}
+	
+	private Cohort getMissideCohort(Date reportEnd) {
+		StringBuilder sqlBuilder = new StringBuilder("select ob.person_id from obs as ob ");
+		sqlBuilder.append(" where ob.encounter_id in (:encounter) ");
+		sqlBuilder.append(" and ob.concept_id= ").append(conceptQuery(NEXT_VISIT_DATE));
+		sqlBuilder.append(" and ob.person_id in (:personId) ");
+		sqlBuilder.append(" and DATEDIFF(:endDate, ob.value_datetime)>0");
 		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		query.setParameterList("personId", baseCohort.getMemberIds());
+		query.setParameterList("encounter", encounter);
+		query.setDate("endDate", reportEnd);
+		
+		return new Cohort(query.list());
+	}
+	
+	private Cohort getCohortHasFollowUpAfterDate(Date reportEnd) {
+		List<Integer> afterDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE),
+		    reportEnd, null, HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		return getCohort(afterDateEncounter);
 	}
 	
 	public Cohort getCohort(List<Integer> encounterIds) {
@@ -69,23 +88,4 @@ public class MissedAppointmentQuery extends BaseLineListQuery {
 		return patientQueryImpDao.getPersons(baseCohort);
 	}
 	
-	public List<Integer> getEncounter(Date start, Date end) {
-		List<Integer> allEncounters = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), start, end);
-		
-		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS)
-		        + " and ob.value_coded in " + conceptQuery(Arrays.asList(RESTART, ALIVE, STOP))
-		        + " and ob.encounter_id in (:encounters)";
-		
-		Query q = sessionFactory.getCurrentSession().createSQLQuery(builder);
-		q.setParameterList("encounters", allEncounters);
-		
-		List list = q.list();
-		
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
-		
-	}
 }

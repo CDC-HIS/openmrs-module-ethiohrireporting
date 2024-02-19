@@ -1,7 +1,11 @@
 package org.openmrs.module.ohrireports.cohorts.util;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
+import org.openmrs.module.ohrireports.helper.EthiopianDate;
+import org.openmrs.module.ohrireports.helper.EthiopianDateConverter;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -65,4 +69,22 @@ public class EthiOhriUtil {
 		return (asOfCalendar.get(Calendar.MONTH) - birthCalendar.get(Calendar.MONTH)) + ageInMonthOfYear;
 		
 	}
+	
+	public static String getEthiopianDate(Date date) {
+		if (date == null) {
+			return "--";
+		}
+		LocalDate lDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		EthiopianDate ethiopianDate = null;
+		try {
+			ethiopianDate = EthiopianDateConverter.ToEthiopianDate(lDate);
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ethiopianDate == null ? "" : ethiopianDate.getDay() + "/" + ethiopianDate.getMonth() + "/"
+		        + ethiopianDate.getYear();
+	}
+	
 }

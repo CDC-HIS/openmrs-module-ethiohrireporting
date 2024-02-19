@@ -26,7 +26,7 @@ public class MLReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- TX_ML Line list";
+		return LINE_LIST_REPORT + "- TX_ML";
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class MLReport implements ReportManager {
 		MLDataSetDefinition mlDataSetDefinition = new MLDataSetDefinition();
 		mlDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("TX_ML Line List", EthiOhriUtil.map(mlDataSetDefinition));
+		reportDefinition.addDataSetDefinition("TX-ML Line list Report ", EthiOhriUtil.map(mlDataSetDefinition));
 		return reportDefinition;
 	}
 	

@@ -27,7 +27,7 @@ public class ARTPatientListReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- ART Patient";
+		return LINE_LIST_REPORT + "- ART Patient List";
 	}
 	
 	@Override

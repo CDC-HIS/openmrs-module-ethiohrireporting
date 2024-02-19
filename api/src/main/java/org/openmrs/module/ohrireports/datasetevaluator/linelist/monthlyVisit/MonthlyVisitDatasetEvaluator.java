@@ -3,11 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.monthlyVisit;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MonthlyVisitDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
-import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -50,12 +46,20 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> weight = monthlyVisitQuery.getByResult(WEIGHT, monthlyVisitQuery.getBaseCohort(),
 		    monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> viralLoadStatus = monthlyVisitQuery.getByResult(HIV_VIRAL_LOAD_STATUS,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> pregnantHashMap = monthlyVisitQuery.getByResult(PREGNANT_STATUS,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(ARV_DISPENSED_IN_DAYS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> adherence = monthlyVisitQuery.getByResult(ON_ADHERENCE, monthlyVisitQuery.getBaseCohort(),
+		    monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> nextVisitDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
 		    NEXT_VISIT_DATE, monthlyVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> tbScreening = monthlyVisitQuery.getByResult(TB_SCREENED, monthlyVisitQuery.getBaseCohort(),
-		    monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> vlRequestDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
+		    VL_RECEIVED_DATE, monthlyVisitQuery.getBaseCohort());
+		HashMap<Integer, Object> dsdCatagories = monthlyVisitQuery.getByResult(DSD_CATGORIES,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> tbScreeningResult = monthlyVisitQuery.getByResult(TB_SCREENED_RESULT,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		
@@ -69,24 +73,36 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge());
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weight.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Mobile", "Mobile", String.class), getPhone(person.getActiveAttributes()));
-			row.addColumnValue(new DataSetColumn("ARTStartDate", "ARTStartDate", String.class),
-			    artStartDictionary.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("followUpDate", "followUpDate", String.class),
-			    followUpDate.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("ARVRegiment", "ARVRegiment", String.class),
-			    regimentDictionary.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("ARVDoseDays", "ARVDoseDays", String.class), dose.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("followUpStatus", "followUpStatus", String.class),
-			    followUpStatus.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("nextVisitDate", "nextVisitDate", String.class),
-			    nextVisitDate.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("artStartDateGC", "artStartDateGC", String.class),
+			row.addColumnValue(new DataSetColumn("Pregnant ?", "Pregnant ?", String.class),
+			    pregnantHashMap.get(person.getPersonId()));
+			
+			row.addColumnValue(new DataSetColumn("ARTStartDateEth", "ART StartDate E.C", String.class),
 			    monthlyVisitQuery.getEthiopianDate((Date) artStartDictionary.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("TBScreening", "TBScreening", String.class),
-			    tbScreening.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("ARTStartDate", "ART StartDate G.C", String.class),
+			    artStartDictionary.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Follow-up Date E.C", "Follow-up Date E.C", String.class),
+			    monthlyVisitQuery.getEthiopianDate((Date) followUpDate.get(person.getPersonId())));
+			row.addColumnValue(new DataSetColumn("Follow-up Date G.C", "Follow-up Date G.C", String.class),
+			    followUpDate.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("followUpStatus", "Follow-up Status", String.class),
+			    followUpStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("ARVRegiment", "Regiment", String.class),
+			    regimentDictionary.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("ARVDoseDays", "ARV Dose", String.class), dose.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class),
+			    adherence.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("vl-request-date", "VL Request Date", String.class),
+			    monthlyVisitQuery.getEthiopianDate((Date) vlRequestDate.get(person.getPersonId())));
+			row.addColumnValue(new DataSetColumn("vl-status", "VL Status", String.class),
+			    viralLoadStatus.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("TBScreeningResult", "TB Screening Result", String.class),
 			    tbScreeningResult.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("DSD", "DSD", String.class), dsdCatagories.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("nextVisitDate", "Next Visit Date", String.class),
+			    monthlyVisitQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
+			row.addColumnValue(new DataSetColumn("Mobile", "Mobile No.", String.class),
+			    getPhone(person.getActiveAttributes()));
 			dataSet.addRow(row);
 		}
 		

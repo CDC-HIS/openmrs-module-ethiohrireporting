@@ -241,6 +241,39 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         }
     }
 	
+	public List<Integer> getAllEncounters(List<String> questionConcept, Date start, Date end,String encounterTypeUUId) {
+		
+		if (questionConcept == null || questionConcept.isEmpty())
+			return new ArrayList<>();
+		
+		StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join  ");
+		builder.append(" encounter as e on e.encounter_id = ob.encounter_id inner join ");
+		builder.append(" encounter_type as et on et.encounter_type_id = e.encounter_type and et.uuid ='").append(encounterTypeUUId).append("' ");
+		builder.append(" where ob.concept_id in " + conceptQuery(questionConcept));
+		
+		if (start != null)
+			builder.append(" and ob.value_datetime >= :start ");
+		
+		if (end != null)
+			builder.append(" and ob.value_datetime <= :end ");
+		
+		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		
+		if (start != null)
+			q.setDate("start", start);
+		
+		if (end != null)
+			q.setDate("end", end);
+		
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
+	
 	public List<Integer> getEncounters(List<String> questionConcept, Date start, Date end, String encounterType) {
 
 		if (questionConcept == null || questionConcept.isEmpty())

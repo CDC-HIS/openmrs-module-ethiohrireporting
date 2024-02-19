@@ -44,9 +44,10 @@ public class ScheduleVisitQuery extends BaseLineListQuery {
 	}
 	
 	public void generateReport(Date start, Date end) {
-		encounter = encounterQuery.getEncounters(Collections.singletonList(NEXT_VISIT_DATE), null, end,
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE);
-		baseCohort = getCohort(encounter);
+		encounter = encounterQuery.getAliveFollowUpEncounters(null, end);
+		List<Integer> visitEncounter = encounterQuery.getEncounters(Collections.singletonList(NEXT_VISIT_DATE), start, end,
+		    encounter);
+		baseCohort = getCohort(visitEncounter);
 	}
 	
 	public Cohort getCohort(List<Integer> encounterIds) {

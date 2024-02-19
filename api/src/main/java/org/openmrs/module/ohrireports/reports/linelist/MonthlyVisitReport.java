@@ -27,7 +27,7 @@ public class MonthlyVisitReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- Monthly Visit";
+		return LINE_LIST_REPORT + "- Monthly Visit List";
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class MonthlyVisitReport implements ReportManager {
 		MonthlyVisitDatasetDefinition datasetDefinition = new MonthlyVisitDatasetDefinition();
 		datasetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("Monthly Visit ", EthiOhriUtil.map(datasetDefinition));
+		reportDefinition.addDataSetDefinition("ART Patients Monthly Visit List ", EthiOhriUtil.map(datasetDefinition));
 		return reportDefinition;
 	}
 	

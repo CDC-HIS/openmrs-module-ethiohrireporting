@@ -51,7 +51,7 @@ public class ScheduleVisitReport implements ReportManager {
 		ScheduleVisitDatasetDefinition datasetDefinition = new ScheduleVisitDatasetDefinition();
 		datasetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("Missed Appointment ", EthiOhriUtil.map(datasetDefinition));
+		reportDefinition.addDataSetDefinition("ART Patients Appointment List", EthiOhriUtil.map(datasetDefinition));
 		return reportDefinition;
 	}
 	

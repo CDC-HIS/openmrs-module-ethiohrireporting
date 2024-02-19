@@ -454,6 +454,8 @@ public class OHRIReportsConstants {
 	
 	public final static String TPT_DOSE_DAY_TYPE_INH = "ad542a8d-cd7c-4d70-8ef3-829b89c05009";
 	
+	public final static String VL_RECEIVED_DATE = "163281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String DATIM_REPORT = "DATIM";
 	
 	public final static String HMIS_REPORT = "HMIS";
@@ -497,6 +499,8 @@ public class OHRIReportsConstants {
 	public final static String FAMILY_PLANNING_METHODS = "374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DSD_ASSESSMENT_DATE = "78c8abfb-1989-444a-8750-947227f4bde8";
+	
+	public final static String DSD_CATGORIES = "defeb4ff-d07b-4e4a-bbd6-d4281c1384a2";
 	
 	public final static String ORAL_CONTRACEPTIVE_PILL = "780AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

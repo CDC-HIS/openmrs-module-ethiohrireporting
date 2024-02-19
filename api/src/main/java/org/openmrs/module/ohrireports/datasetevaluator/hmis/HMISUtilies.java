@@ -42,6 +42,25 @@ public class HMISUtilies {
 
 	}
 	
+	public static Cohort getLeftOuterUnion(Cohort a, Cohort b) {
+		if (a == null && b == null)
+			return new Cohort();
+		if (a == null || a.isEmpty()) {
+			return new Cohort();
+		} else if (b == null || b.isEmpty()) {
+			return a;
+		}
+		
+		List<Integer> list = new ArrayList<>();
+		for (Integer integer : a.getMemberIds()) {
+			if (!b.getMemberIds().contains(integer)) {
+				list.add(integer);
+			}
+		}
+		return new Cohort(list);
+		
+	}
+	
 	public static HashMap<Integer, Object> getDictionary(Query query) {
 		List list = query.list();
 		HashMap<Integer, Object> dictionary = new HashMap<>();

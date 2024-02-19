@@ -31,7 +31,7 @@ public class PMTCTEIDReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- PMTCT_EID";
+		return LINE_LIST_REPORT + "- EID";
 	}
 	
 	@Override
@@ -67,7 +67,7 @@ public class PMTCTEIDReport implements ReportManager {
 		EidDatasetDefinition dataSetDefinition = new EidDatasetDefinition();
 		dataSetDefinition.addParameters(getParameters());
 		//
-		reportDefinition.addDataSetDefinition("PMTCT_EID", EthiOhriUtil.map(dataSetDefinition, "reportType=${reportType}"));
+		reportDefinition.addDataSetDefinition("EID", EthiOhriUtil.map(dataSetDefinition, "reportType=${reportType}"));
 		return reportDefinition;
 	}
 	

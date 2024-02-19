@@ -65,7 +65,8 @@ public class MonthlyVisitQuery extends BaseLineListQuery {
 	}
 	
 	public List<Integer> getMonthlyVisitEncounter(Date start, Date end) {
-		List<Integer> allEncounters = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), start, end);
+		List<Integer> allEncounters = encounterQuery.getAllEncounters(Collections.singletonList(FOLLOW_UP_DATE), start, end,
+		    HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS)
 		        + " and ob.value_coded in " + conceptQuery(Arrays.asList(RESTART, ALIVE, STOP))

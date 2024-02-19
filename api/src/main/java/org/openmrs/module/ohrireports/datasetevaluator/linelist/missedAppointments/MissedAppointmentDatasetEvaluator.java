@@ -3,9 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.missedAppointme
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MissedAppointmentDatasetDefinition;
-import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -30,7 +28,7 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		MissedAppointmentDatasetDefinition dsd = (MissedAppointmentDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dsd, evalContext);
-		appointmentQuery.generateReport(dsd.getStartDate(), dsd.getEndDate());
+		appointmentQuery.generateReport(dsd.getEndDate());
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
 		    MRN_PATIENT_IDENTIFIERS);
@@ -40,48 +38,77 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		    null, dsd.getEndDate());
 		HashMap<Integer, Object> adherenceHashmap = appointmentQuery.getByResult(ARV_ADHERENCE,
 		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
+		HashMap<Integer, Object> regimentHashmap = appointmentQuery.getByResult(REGIMEN, appointmentQuery.getBaseCohort(),
+		    appointmentQuery.getEncounter());
+		HashMap<Integer, Object> arvDoseHashmap = appointmentQuery.getByResult(ARV_DISPENSED_IN_DAYS,
+		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
 		HashMap<Integer, Object> followUpDate = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
 		    FOLLOW_UP_DATE, appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = appointmentQuery.getFollowUpStatus(appointmentQuery.getEncounter(),
 		    appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> nextVisitDate = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
 		    NEXT_VISIT_DATE, appointmentQuery.getBaseCohort());
-		
+		HashMap<Integer, Object> lastCurrDate = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
+		    TREATMENT_END_DATE, appointmentQuery.getBaseCohort());
 		DataSetRow row = new DataSetRow();
+		
 		List<Person> personList = appointmentQuery.getPersons(appointmentQuery.getBaseCohort());
+		row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), "TOTal");
+		row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), personList.size());
+		dataSet.addRow(row);
+		int missedDate = 0;
 		for (Person person : personList) {
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("FullName", "FullName", String.class), person.getNames());
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge());
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
-			row.addColumnValue(new DataSetColumn("Mobile", "Mobile", String.class), getPhone(person.getActiveAttributes()));
-			row.addColumnValue(new DataSetColumn("ARTStartDate", "ARTStartDate", String.class),
+			row.addColumnValue(new DataSetColumn("ART Start Date", "ART Start Date", String.class),
 			    artStartDictionary.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("followUpDate", "followUpDate", String.class),
+			row.addColumnValue(new DataSetColumn("Last Follow-up Date", "Last Follow-up Date", String.class),
 			    followUpDate.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("followUpDateEth", "followUp Date Eth", String.class),
+			row.addColumnValue(new DataSetColumn("Last Follow-up DateEth", "Last Follow-up Date Eth", String.class),
 			    appointmentQuery.getEthiopianDate((Date) followUpDate.get(person.getPersonId())));
-			
-			row.addColumnValue(new DataSetColumn("Appointment missed date", "Appointment missed date", String.class),
+			row.addColumnValue(new DataSetColumn("Last Appointment Date", "Last Appointment Date", String.class),
 			    nextVisitDate.get(person.getPersonId()));
-			
-			row.addColumnValue(
-			    new DataSetColumn("Appointment missed date Eth", "Appointment missed date Eth", String.class),
+			missedDate = getDaysDiff((Date) nextVisitDate.get(person.getPersonId()), dsd.getEndDate());
+			row.addColumnValue(new DataSetColumn("Last Appointment Date Eth", "Last Appointment Date Eth", String.class),
 			    appointmentQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("No. of Missed Days", "No. of Missed Days", String.class),
-			    getDaysDiff((Date) nextVisitDate.get(person.getPersonId()), dsd.getEndDate()));
-			row.addColumnValue(new DataSetColumn("followUpStatus", "followUpStatus", String.class),
+			row.addColumnValue(new DataSetColumn("No. of Missed Days", "No. of Missed Days", String.class), missedDate);
+			row.addColumnValue(new DataSetColumn("tracing-status", "Tracing Status", String.class),
+			    getTracingStatus(missedDate));
+			row.addColumnValue(new DataSetColumn("Last Follow-up Status", "Last Follow-up Status", String.class),
 			    followUpStatus.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("Adherance", "Adherance", String.class),
+			row.addColumnValue(new DataSetColumn("Last Regimen", "Last Regimen", String.class),
+			    regimentHashmap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Last ARV Dose", "Last ARV Dose", String.class),
+			    arvDoseHashmap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Adherence", "Adherence", String.class),
 			    adherenceHashmap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Last TX_CURR Date", "Last TX_CURR Date", String.class),
+			    lastCurrDate.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Last TX_CURR Date Eth", "Last TX_CURR Date Eth", String.class),
+			    appointmentQuery.getEthiopianDate((Date) lastCurrDate.get(person.getPersonId())));
+			row.addColumnValue(new DataSetColumn("Mobile#", "Mobile#", String.class), getPhone(person.getActiveAttributes()));
 			
 			dataSet.addRow(row);
 		}
 		
 		return dataSet;
+	}
+	
+	private String getTracingStatus(int missedDays) {
+		String output = "";
+		if (missedDays <= 30) {
+			return "Missed Appointment";
+		} else if (missedDays < 60) {
+			return "1st Lost";
+		} else if (missedDays < 90) {
+			return "2nd Lost ";
+		} else {
+			return "Dropped";
+		}
 	}
 	
 	private String getPhone(List<PersonAttribute> activeAttributes) {
@@ -103,6 +130,7 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		toDCal.setTime(toDate);
 		int yearInDays = (toDCal.get(Calendar.YEAR) - apntCal.get(Calendar.YEAR)) * 365;
 		int monthInDays = (toDCal.get(Calendar.MONTH) - apntCal.get(Calendar.MONTH)) * 30;
+		
 		int days = toDCal.get(Calendar.DATE) - apntCal.get(Calendar.DATE);
 		return yearInDays + monthInDays + days;
 	}

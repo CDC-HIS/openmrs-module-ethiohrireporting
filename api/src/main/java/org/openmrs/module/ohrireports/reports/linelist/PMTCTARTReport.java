@@ -26,7 +26,7 @@ public class PMTCTARTReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- PMTCT ART Line List";
+		return LINE_LIST_REPORT + "- On PMTCT ";
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class PMTCTARTReport implements ReportManager {
 		
 		PMTCTARTClientDataSetDefinition pmtctartClientDataSetDefinition = new PMTCTARTClientDataSetDefinition();
 		pmtctartClientDataSetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("PMTCT ART", EthiOhriUtil.map(pmtctartClientDataSetDefinition));
+		reportDefinition.addDataSetDefinition("On PMTCT ", EthiOhriUtil.map(pmtctartClientDataSetDefinition));
 		return reportDefinition;
 	}
 	

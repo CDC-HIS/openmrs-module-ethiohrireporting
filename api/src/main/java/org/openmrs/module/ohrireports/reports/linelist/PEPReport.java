@@ -27,7 +27,7 @@ public class PEPReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- PEP Line list";
+		return LINE_LIST_REPORT + "- Post Exposure Prophylaxis";
 	}
 	
 	@Override
@@ -51,7 +51,7 @@ public class PEPReport implements ReportManager {
 		PEPDataSetDefinition pepDataSetDefinition = new PEPDataSetDefinition();
 		pepDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("PEP Line List", EthiOhriUtil.map(pepDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Post Exposure Prophylaxis", EthiOhriUtil.map(pepDataSetDefinition));
 		return reportDefinition;
 	}
 	
