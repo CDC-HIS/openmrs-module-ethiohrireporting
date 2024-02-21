@@ -42,6 +42,7 @@ public class AggregateByAgeAndGender extends ColumnBuilder {
 				
 			} else {
 				if (minAge == 15) {
+					baseCohort = hmisCurrQuery.getGreaterOrEqualToAge(15, hmisCurrQuery.getBaseCohort());
 					data.addRow(buildColumn("HIV_TX_CURR_ADULT", "Number of adults who are currently on ART (>=15)",
 					    baseCohort.size()));
 				}
