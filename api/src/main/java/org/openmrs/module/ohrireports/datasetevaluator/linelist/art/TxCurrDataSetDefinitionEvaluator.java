@@ -86,7 +86,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),
 			    regimentHashMap.get(person.getPersonId()));
 			
-			row.addColumnValue(new DataSetColumn("arvDispensDay", "ARV Dispense Day", String.class),
+			row.addColumnValue(new DataSetColumn("arvDispenseDay", "ARV Dispense Day", String.class),
 			    dispensDayHashMap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("Status", "Status", String.class), statusHashMap.get(person.getPersonId()));

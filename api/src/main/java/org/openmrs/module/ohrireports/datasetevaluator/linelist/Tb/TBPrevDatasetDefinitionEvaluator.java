@@ -87,7 +87,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		DataSetRow row;
 		
-		if (persons.size() > 0) {
+		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
 			
