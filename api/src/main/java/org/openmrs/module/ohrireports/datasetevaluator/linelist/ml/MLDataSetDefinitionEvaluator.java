@@ -33,6 +33,33 @@ public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
 		MLDataSetDefinition _datasetDefinition = (MLDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
+		// if startDate is null then return
+		if (Objects.isNull(_datasetDefinition.getStartDate())) {
+			return data;
+		}
+		
+		// if endDate is null then set today as default
+		if (Objects.isNull(_datasetDefinition.getEndDate())) {
+			// today
+			Date today = new Date(System.currentTimeMillis());
+			_datasetDefinition.setEndDate(today);
+		}
+		
+		// if startDate is greater than endDate then return
+		if (_datasetDefinition.getStartDate().after(_datasetDefinition.getEndDate())) {
+			return data;
+		}
+		
+		// if startDate is greater than today then return
+		if (_datasetDefinition.getStartDate().after(new Date())) {
+			return data;
+		}
+		
+		// if endDate is greater than today then return
+		if (_datasetDefinition.getEndDate().after(new Date())) {
+			return data;
+		}
+		
 		Cohort cohort = mlQueryLineList.getMLQuery(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
 		List<Person> persons = mlQueryLineList.getPerson(cohort);
