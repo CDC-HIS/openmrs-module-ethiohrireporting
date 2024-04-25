@@ -20,14 +20,18 @@ import org.springframework.stereotype.Service;
 public class AggregateBuilderImp extends BaseOpenmrsService implements AggregateBuilder {
 
     protected int subTotalCount = 0;
+
+
+
+    protected int total = 0;
     protected Set<Integer> countedPatientId = new HashSet<>();
     protected List<Person> persons = new ArrayList<>();
     protected int lowerBoundAge = 0;
     protected int upperBoundAge = 65;
     protected int ageInterval = 4;
 
-    private String _below = "below";
-    private String _above = "above";
+    private final String _below = "below";
+    private final String _above = "above";
 
     private Date calculateAgeFrom;
 
@@ -64,32 +68,57 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         persons = person;
     }
 
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int subTotalCount) {
+        this.total = this.total + subTotalCount;
+    }
+
+    public void clearTotal(){
+        this.total = 0;
+    }
+
     @Override
     public void buildDataSetColumn(DataSetRow dataSet, String gender) {
-        subTotalCount = 0;
-        int minCount = lowerBoundAge + 1;
-        int maxCount = lowerBoundAge + ageInterval;
+        if(gender == "F" || gender == "M") {
 
-        dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "Gender", String.class),
-                gender.equals("F") ? "Female"
-                        : "Male");
-        dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
-                getEnrolledByUnknownAge(gender));
-        dataSet.addColumnValue(new DataSetColumn("below 1", "Below One (<1) ", Integer.class),
-                getEnrolledByAgeAndGender(0, 1, gender));
-        while (minCount <= upperBoundAge) {
-            if (minCount == upperBoundAge) {
-                dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
-                        getEnrolledByAgeAndGender(upperBoundAge, 200, gender));
-            } else {
-                dataSet.addColumnValue(
-                        new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
-                        getEnrolledByAgeAndGender(minCount, maxCount, gender));
+            subTotalCount = 0;
+            int minCount = lowerBoundAge + 1;
+            int maxCount = lowerBoundAge + ageInterval;
+
+            dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
+                    gender.equals("F") ? "Female"
+                            : "Male");
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
+                    getEnrolledByUnknownAge(gender));
+            dataSet.addColumnValue(new DataSetColumn("below 1", "<1", Integer.class),
+                    getEnrolledByAgeAndGender(0, 1, gender));
+            while (minCount <= upperBoundAge) {
+                if (minCount == upperBoundAge) {
+                    dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
+                            getEnrolledByAgeAndGender(upperBoundAge, 200, gender));
+                } else {
+                    dataSet.addColumnValue(
+                            new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
+                            getEnrolledByAgeAndGender(minCount, maxCount, gender));
+                }
+                minCount = maxCount + 1;
+                maxCount = minCount + ageInterval;
             }
-            minCount = maxCount + 1;
-            maxCount = minCount + ageInterval;
+            setTotal(subTotalCount);
+            dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
+        } else if(Objects.equals(gender, "T")){
+            dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
+                    "Sub-Total");
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age",  Integer.class), getTotal());
         }
-        dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
+    }
+
+    public void addTotalRow(DataSetRow dataSetRow){
+        dataSetRow.addColumnValue(new DataSetColumn("Total", "Total", Integer.class), getTotal());
+
     }
 
     public void buildDataSetColumnForScreening(DataSetRow dataSet, String screeningResult) {
@@ -143,6 +172,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
             minCount = maxCount + 1;
             maxCount = minCount + ageInterval;
         }
+
         dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
     }
     @Override

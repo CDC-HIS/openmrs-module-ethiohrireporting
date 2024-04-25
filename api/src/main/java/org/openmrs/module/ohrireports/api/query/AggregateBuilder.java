@@ -20,9 +20,13 @@ public interface AggregateBuilder extends OpenmrsService {
 	
 	void setPersonList(List<Person> person);
 	
+	void clearTotal();
+	
 	// Build data set using lower age to upper age by incrementing age interval to
 	// it reach's upper bound age disaggregation by gender
 	void buildDataSetColumn(DataSetRow dataSet, String gender);
+	
+	void addTotalRow(DataSetRow dataSetRow);
 	
 	void buildDataSetColumnForScreening(DataSetRow dataSet, String screeningResult);
 	

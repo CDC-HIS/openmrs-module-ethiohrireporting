@@ -34,7 +34,7 @@ public class TxMlRefusedByAgeAndSexDataSetDefinitionEvaluator implements DataSet
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		
+		aggregateBuilder.clearTotal();
 		TxMlRefusedByAgeAndSexDataSetDefinition _datasetDefinition = (TxMlRefusedByAgeAndSexDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
@@ -51,6 +51,10 @@ public class TxMlRefusedByAgeAndSexDataSetDefinitionEvaluator implements DataSet
 		DataSetRow maleDateSet = new DataSetRow();
 		aggregateBuilder.buildDataSetColumn(maleDateSet, "M");
 		set.addRow(maleDateSet);
+		
+		DataSetRow totalSet = new DataSetRow();
+		aggregateBuilder.buildDataSetColumn(totalSet, "T");
+		set.addRow(totalSet);
 		
 		return set;
 	}

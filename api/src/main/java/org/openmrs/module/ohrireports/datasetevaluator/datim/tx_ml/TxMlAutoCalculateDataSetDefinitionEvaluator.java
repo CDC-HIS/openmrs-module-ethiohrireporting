@@ -24,13 +24,17 @@ public class TxMlAutoCalculateDataSetDefinitionEvaluator implements DataSetEvalu
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		TxMlAutoCalculateDataSetDefinition hdsd = (TxMlAutoCalculateDataSetDefinition) dataSetDefinition;
-		
-		Cohort cohort = mlQuery.getCohortML(hdsd.getStartDate(), hdsd.getEndDate());
-		
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), cohort.getSize());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		set.addRow(dataSet);
+		
+		if (!hdsd.getHeader()) {
+			Cohort cohort = mlQuery.getCohortML(hdsd.getStartDate(), hdsd.getEndDate());
+			
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
+			    cohort.getSize());
+			set.addRow(dataSet);
+		}
+		
 		return set;
 	}
 }
