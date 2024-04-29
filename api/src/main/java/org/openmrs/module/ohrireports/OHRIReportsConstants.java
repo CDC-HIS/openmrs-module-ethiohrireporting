@@ -500,6 +500,8 @@ public class OHRIReportsConstants {
 	
 	public final static String DIED = "160034AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String ADULT_CD4_COUNT = "5497AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String FAMILY_PLANNING_METHODS = "374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DSD_ASSESSMENT_DATE = "78c8abfb-1989-444a-8750-947227f4bde8";

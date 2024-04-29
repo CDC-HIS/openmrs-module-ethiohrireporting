@@ -137,6 +137,40 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 
     }
 	
+	public Cohort getCD4ByCohort(Cohort cohort, Boolean isCD4GreaterThan200, List<Integer> encounterIds) {
+		
+		if (cohort == null || cohort.isEmpty())
+			return new Cohort(new ArrayList<Integer>());
+		
+		StringBuilder sql = baseQuery(ADULT_CD4_COUNT);
+		
+		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+		
+		if (Objects.isNull(isCD4GreaterThan200)) {
+			sql.append(" and ").append(OBS_ALIAS).append("value_numeric IS NULL ");
+		} else if (isCD4GreaterThan200) {
+			sql.append(" and ").append(OBS_ALIAS).append("value_numeric >= 200 ");
+		} else {
+			sql.append(" and ").append(OBS_ALIAS).append("value_numeric < 200 ");
+			
+		}
+		
+		sql.append("and p.person_id in (:personIds) ");
+		
+		Query q = getSession().createSQLQuery(sql.toString());
+		
+		q.setParameter("personIds", cohort.getMemberIds());
+		q.setParameterList("encounters", encounterIds);
+		
+		List list = q.list();
+		
+		if (list != null) {
+			return new Cohort(list);
+		} else {
+			return new Cohort(new ArrayList<Integer>());
+		}
+	}
+	
 	public Cohort getArtStartedCohort(Date startOnOrAfter, Date endOrBefore) {
 		StringBuilder sql = baseQuery(ART_START_DATE);
 		

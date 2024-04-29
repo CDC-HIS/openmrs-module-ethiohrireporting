@@ -63,4 +63,9 @@ public class PatientQueryServiceImp extends BaseOpenmrsService implements Patien
 		    toBeExcludedCohort, encounters));
 	}
 	
+	@Override
+	public Cohort getCD4ByCohort(Cohort cohort, Boolean isCD4GreaterThan200, List<Integer> encounters) {
+		return patientQueryDao.getCD4ByCohort(cohort, isCD4GreaterThan200, encounters);
+	}
+	
 }

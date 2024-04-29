@@ -38,15 +38,18 @@ public class AutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (AutoCalculateDataSetDefinition) dataSetDefinition;
-		
-		patientQuery = Context.getService(PatientQueryService.class);
-		List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
-		
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), patientQuery
-		        .getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter).size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		set.addRow(dataSet);
+		
+		if (!hdsd.getHeader()) {
+			patientQuery = Context.getService(PatientQueryService.class);
+			List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
+			
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), patientQuery
+			        .getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter).size());
+			
+			set.addRow(dataSet);
+		}
 		return set;
 	}
 	

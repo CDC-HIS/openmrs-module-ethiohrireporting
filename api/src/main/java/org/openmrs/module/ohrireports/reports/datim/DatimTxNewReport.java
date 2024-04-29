@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.reports.datim;
 
 import java.util.Arrays;
 import java.util.List;
+
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
@@ -10,9 +11,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.BreastFeedingStatusDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.CoarseByAgeAndSexDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexAndCD4DataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.PopulationTypeDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.datim.tx_new.CD4Status;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -55,35 +56,59 @@ public class DatimTxNewReport implements ReportManager {
 		reportDefinition.setParameters(getParameters());
 		followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
+		AutoCalculateDataSetDefinition headerDefinition = new AutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TX_NEW");
+		reportDefinition.addDataSetDefinition("DSD: TX_NEW", EthiOhriUtil.map(headerDefinition));
+		
 		AutoCalculateDataSetDefinition aDefinition = new AutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(followUpEncounter);
 		aDefinition.setDescription("Number of adults and children newly enrolled on antiretroviral therapy (ART)");
-		reportDefinition.addDataSetDefinition("Total-New", EthiOhriUtil.map(aDefinition));
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Auto-Calculate Number of adults and children newly enrolled on antiretroviral therapy (ART). Numerator will auto-calculate from Age/Sex Disaggregates.",
+		            EthiOhriUtil.map(aDefinition));
 		
-		FineByAgeAndSexDataSetDefinition fDefinition = new FineByAgeAndSexDataSetDefinition();
-		fDefinition.addParameters(getParameters());
-		fDefinition.setDescription("Disaggregated by Age/Sex (Fine disaggregate)");
-		fDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Fine-Disagg.", EthiOhriUtil.map(fDefinition));
+		FineByAgeAndSexAndCD4DataSetDefinition fCDHeaderDefinition = new FineByAgeAndSexAndCD4DataSetDefinition();
+		fCDHeaderDefinition.addParameters(getParameters());
+		fCDHeaderDefinition.setHeader(true);
+		fCDHeaderDefinition.setDescription("Disaggregated by Age/Sex And CD4");
+		reportDefinition.addDataSetDefinition("Required Disaggregated by Age/Sex And CD4",
+		    EthiOhriUtil.map(fCDHeaderDefinition));
 		
-		CoarseByAgeAndSexDataSetDefinition cDefinition = new CoarseByAgeAndSexDataSetDefinition();
-		cDefinition.addParameters(getParameters());
-		cDefinition.setEncounterType(followUpEncounter);
-		cDefinition.setDescription("Disaggregated by Age/Sex (Coarse disaggregated)");
-		reportDefinition.addDataSetDefinition("Coarse-Disagg.", EthiOhriUtil.map(cDefinition));
+		FineByAgeAndSexAndCD4DataSetDefinition fCD4L_200Definition = new FineByAgeAndSexAndCD4DataSetDefinition();
+		fCD4L_200Definition.addParameters(getParameters());
+		fCD4L_200Definition.setCountCD4GreaterThan200(CD4Status.CD4LessThan200);
+		fCD4L_200Definition.setDescription("< 200 CD4");
+		fCD4L_200Definition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition("< 200 CD4", EthiOhriUtil.map(fCD4L_200Definition));
+		
+		FineByAgeAndSexAndCD4DataSetDefinition fCD4G_200Definition = new FineByAgeAndSexAndCD4DataSetDefinition();
+		fCD4G_200Definition.addParameters(getParameters());
+		fCD4G_200Definition.setCountCD4GreaterThan200(CD4Status.CD4GreaterThan200);
+		fCD4G_200Definition.setDescription(">= 200 CD4");
+		fCD4G_200Definition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition(">= 200 CD4", EthiOhriUtil.map(fCD4G_200Definition));
+		
+		FineByAgeAndSexAndCD4DataSetDefinition fCDUnknownDefinition = new FineByAgeAndSexAndCD4DataSetDefinition();
+		fCDUnknownDefinition.addParameters(getParameters());
+		fCDUnknownDefinition.setDescription("Unknown CD4");
+		fCDUnknownDefinition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition("Unknown CD4", EthiOhriUtil.map(fCDUnknownDefinition));
 		
 		BreastFeedingStatusDataSetDefinition bDefinition = new BreastFeedingStatusDataSetDefinition();
 		bDefinition.addParameters(getParameters());
 		bDefinition.setEncounterType(followUpEncounter);
 		bDefinition.setDescription("Disaggregated by Breastfeeding Status at ART Initiation");
-		reportDefinition.addDataSetDefinition("Breast-Feeding", EthiOhriUtil.map(bDefinition));
+		reportDefinition.addDataSetDefinition("Disaggregated by Breastfeeding Status at ART Initiation", EthiOhriUtil.map(bDefinition));
 		
 		PopulationTypeDataSetDefinition pDefinition = new PopulationTypeDataSetDefinition();
 		pDefinition.addParameters(getParameters());
 		pDefinition.setEncounterType(followUpEncounter);
 		pDefinition.setDescription("Disaggregated by Key population-type");
-		reportDefinition.addDataSetDefinition("KP-Disagg.", EthiOhriUtil.map(pDefinition));
+		reportDefinition.addDataSetDefinition("Required Disaggregated by Key population type.", EthiOhriUtil.map(pDefinition));
 		
 		return reportDefinition;
 	}

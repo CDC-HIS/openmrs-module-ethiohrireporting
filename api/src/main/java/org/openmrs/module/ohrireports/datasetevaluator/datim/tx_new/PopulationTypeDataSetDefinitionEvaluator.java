@@ -45,6 +45,11 @@ public class PopulationTypeDataSetDefinitionEvaluator implements DataSetEvaluato
 		pPCRow.addColumnValue(new DataSetColumn("total", "Total", Integer.class), 0);
 		dataSet.addRow(pPCRow);
 		
+		/*DataSetRow totalSet = new DataSetRow();
+		totalSet.addColumnValue(new DataSetColumn("PopulationType", "Population Type", String.class), "Total");
+		pPCRow.buildDataSetColumn(totalSet, "T");
+		set.addRow(totalSet);*/
+		
 		return dataSet;
 	}
 	

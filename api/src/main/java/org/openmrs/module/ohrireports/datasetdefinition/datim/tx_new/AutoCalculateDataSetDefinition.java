@@ -19,6 +19,9 @@ public class AutoCalculateDataSetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private EncounterType encounterType;
 	
+	@ConfigurationProperty
+	private Boolean header = false;
+	
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -43,4 +46,11 @@ public class AutoCalculateDataSetDefinition extends BaseDataSetDefinition {
 		this.encounterType = encounterType;
 	}
 	
+	public Boolean getHeader() {
+		return header;
+	}
+	
+	public void setHeader(Boolean header) {
+		this.header = header;
+	}
 }
