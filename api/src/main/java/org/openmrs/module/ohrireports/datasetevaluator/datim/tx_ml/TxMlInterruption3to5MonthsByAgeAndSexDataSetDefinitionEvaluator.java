@@ -44,6 +44,7 @@ public class TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinitionEvaluator imp
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
+		aggregateBuilder.clearTotal();
 		TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition _datasetDefinition = (TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
@@ -61,6 +62,10 @@ public class TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinitionEvaluator imp
 		DataSetRow maleDateSet = new DataSetRow();
 		aggregateBuilder.buildDataSetColumn(maleDateSet, "M");
 		set.addRow(maleDateSet);
+		
+		DataSetRow totalSet = new DataSetRow();
+		aggregateBuilder.buildDataSetColumn(totalSet, "T");
+		set.addRow(totalSet);
 		return set;
 	}
 	

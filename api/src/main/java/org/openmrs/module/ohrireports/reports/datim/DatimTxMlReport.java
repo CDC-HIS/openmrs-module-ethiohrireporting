@@ -31,7 +31,7 @@ public class DatimTxMlReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of DATIM TX_ML";
+		return "";
 	}
 	
 	@Override
@@ -47,14 +47,20 @@ public class DatimTxMlReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
+		TxMlAutoCalculateDataSetDefinition headerDefinition = new TxMlAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TX_ML");
+		reportDefinition.addDataSetDefinition("DSD: TX_ML", EthiOhriUtil.map(headerDefinition));
+		
 		TxMlAutoCalculateDataSetDefinition aDefinition = new TxMlAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition
-		        .setDescription("Number of ART patients (who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period) and then had no clinical contact since their last expected contact");
+		        .setDescription("Number of ART patients who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period and then had no clinical contact since their last expected contact. The numerator auto-calculates from the sum of Age/Sex Outcome");
 		reportDefinition
 		        .addDataSetDefinition(
-		            "Auto-Calculate - Number of ART patients (who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period) and then had no clinical contact since their last expected contact",
+		            "Auto-Calculate - Number of ART patients who were on ART at the beginning of the quarterly reporting period or initiated treatment during the reporting period and then had no clinical contact since their last expected contact. The numerator auto-calculates from the sum of Age/Sex Outcome",
 		            EthiOhriUtil.map(aDefinition));
 		
 		TxMlDiedByAgeAndSexDataSetDefinition dDefinition = new TxMlDiedByAgeAndSexDataSetDefinition();

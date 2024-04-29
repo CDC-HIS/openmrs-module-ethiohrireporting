@@ -11,6 +11,7 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
@@ -36,7 +37,8 @@ public class MLReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		return EthiOhriUtil.getDateRangeParameters();
+		return getDateRangeParameters();
+		
 	}
 	
 	@Override
@@ -68,5 +70,17 @@ public class MLReport implements ReportManager {
 	@Override
 	public String getVersion() {
 		return REPORT_VERSION;
+	}
+	
+	private List<Parameter> getDateRangeParameters() {
+		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
+		startDate.setRequired(true);
+		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
+		startDateGC.setRequired(false);
+		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
+		endDate.setRequired(true);
+		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
+		endDateGC.setRequired(false);
+		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
 	}
 }

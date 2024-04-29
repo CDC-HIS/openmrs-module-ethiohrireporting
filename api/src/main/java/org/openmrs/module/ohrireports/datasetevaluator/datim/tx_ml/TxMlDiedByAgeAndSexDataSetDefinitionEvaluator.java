@@ -39,7 +39,7 @@ public class TxMlDiedByAgeAndSexDataSetDefinitionEvaluator implements DataSetEva
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		
+		aggregateBuilder.clearTotal();
 		TxMlDiedByAgeAndSexDataSetDefinition _datasetDefinition = (TxMlDiedByAgeAndSexDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
@@ -57,6 +57,10 @@ public class TxMlDiedByAgeAndSexDataSetDefinitionEvaluator implements DataSetEva
 		DataSetRow maleDateSet = new DataSetRow();
 		aggregateBuilder.buildDataSetColumn(maleDateSet, "M");
 		set.addRow(maleDateSet);
+		
+		DataSetRow totalSet = new DataSetRow();
+		aggregateBuilder.buildDataSetColumn(totalSet, "T");
+		set.addRow(totalSet);
 		
 		return set;
 	}
