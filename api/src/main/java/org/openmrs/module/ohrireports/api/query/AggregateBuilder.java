@@ -1,16 +1,18 @@
 package org.openmrs.module.ohrireports.api.query;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
 
 import org.openmrs.Person;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.reporting.dataset.DataSetRow;
-import org.openmrs.module.reporting.dataset.SimpleDataSet;
 
 public interface AggregateBuilder extends OpenmrsService {
 	
 	void setLowerBoundAge(int lowerBoundAge);
+	
+	void setFollowUpDate(HashMap<Integer, Object> followUpDate);
 	
 	public void setCalculateAgeFrom(Date calculateAgeFrom);
 	
@@ -31,6 +33,8 @@ public interface AggregateBuilder extends OpenmrsService {
 	void buildDataSetColumnForScreening(DataSetRow dataSet, String screeningResult);
 	
 	void buildDataSetColumnForTreatment(DataSetRow dataSet, String screeningResult);
+	
+	void buildDataSetColumnWithFollowUpDate(DataSetRow dataSet, String gender);
 	
 	// Build data set using middle age and gender, the middle age is use for
 	// dissociation the lower and upper age limit

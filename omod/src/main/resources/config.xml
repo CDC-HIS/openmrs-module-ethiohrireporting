@@ -30,7 +30,10 @@
 	<aware_of_modules>
 		<aware_of_module>org.openmrs.module.legacyui</aware_of_module>
 	</aware_of_modules>
-
+	<advice>
+		<point>org.openmrs.api.EncounterService</point>
+		<class>org.openmrs.module.basicexample.EncounterInterceptor</class>
+	</advice>
 
 	<!-- Required Global Properties 
 	<globalProperty>
@@ -43,7 +46,7 @@
 		</description>
 	</globalProperty>
 	/Required Global Properties -->
-	
+
 	
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
@@ -60,6 +63,6 @@
 		<file>messages_es.properties</file>
 	</messages>
 	<!-- /Internationalization -->
-	
+
 </module>
 

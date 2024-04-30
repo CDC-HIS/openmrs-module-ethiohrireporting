@@ -40,20 +40,20 @@ public class TxMlRefusedByAgeAndSexDataSetDefinitionEvaluator implements DataSet
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		Cohort cohort = mlQuery.getStopOrRefused(mlQuery.cohort);
-		aggregateBuilder.setCalculateAgeFrom(_datasetDefinition.getEndDate());
+		aggregateBuilder.setFollowUpDate(mlQuery.getLastFollowUpDate(cohort));
 		aggregateBuilder.setPersonList(mlQuery.getPersons(cohort));
 		aggregateBuilder.setLowerBoundAge(0);
 		aggregateBuilder.setUpperBoundAge(65);
 		DataSetRow femaleDateSet = new DataSetRow();
-		aggregateBuilder.buildDataSetColumn(femaleDateSet, "F");
+		aggregateBuilder.buildDataSetColumnWithFollowUpDate(femaleDateSet, "F");
 		set.addRow(femaleDateSet);
 		
 		DataSetRow maleDateSet = new DataSetRow();
-		aggregateBuilder.buildDataSetColumn(maleDateSet, "M");
+		aggregateBuilder.buildDataSetColumnWithFollowUpDate(maleDateSet, "M");
 		set.addRow(maleDateSet);
 		
 		DataSetRow totalSet = new DataSetRow();
-		aggregateBuilder.buildDataSetColumn(totalSet, "T");
+		aggregateBuilder.buildDataSetColumnWithFollowUpDate(totalSet, "T");
 		set.addRow(totalSet);
 		
 		return set;

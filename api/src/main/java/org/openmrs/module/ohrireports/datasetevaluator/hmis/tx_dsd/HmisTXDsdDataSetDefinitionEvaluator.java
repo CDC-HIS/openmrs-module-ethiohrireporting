@@ -37,7 +37,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		//clients on 3MMD
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_3MMD);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
-		rowBuilder.buildDataSetRow("HIV_TX_3MMD", 1, 50);
+		rowBuilder.buildDataSetRow("HIV_TX_3MMD", 1, 49, 25);
 		DataSetRow headerRow = rowBuilder.buildDatasetColumn("HIV_TX_DSD",
 		    "Proportion of PLHIV currently on differentiated service Delivery model (DSD)", "");
 		dataSet.addRow(headerRow);
@@ -49,7 +49,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		// clients on ASM(6MMD)
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_6MMD);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
-		rowBuilder.buildDataSetRow("HIV_TX_ASM", 15, 50);
+		rowBuilder.buildDataSetRow("HIV_TX_ASM", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_ASM", "Total number of clients on ASM(6MMD)",
 		    String.valueOf(rowBuilder.getTotalCount())));
 		total += rowBuilder.getTotalCount();
@@ -58,7 +58,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		// clients on FTAR
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_FTAR);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
-		rowBuilder.buildDataSetRow("HIV_TX_FTAR", 15, 50);
+		rowBuilder.buildDataSetRow("HIV_TX_FTAR", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_FTAR", "Total number of clients on FTAR",
 		    String.valueOf(rowBuilder.getTotalCount())));
 		total += rowBuilder.getTotalCount();
@@ -67,7 +67,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		// clients on CAG
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_HEP_CAG);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
-		rowBuilder.buildDataSetRow("HIV_TX_CAG", 15, 50);
+		rowBuilder.buildDataSetRow("HIV_TX_CAG", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_CAG", "Total number of clients on CAG",
 		    String.valueOf(rowBuilder.getTotalCount())));
 		total += rowBuilder.getTotalCount();
@@ -76,7 +76,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		// clients on PCAD
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_PCAD);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
-		rowBuilder.buildDataSetRow("HIV_TX_PCAD", 15, 50);
+		rowBuilder.buildDataSetRow("HIV_TX_PCAD", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_PCAD", "Total number of clients on PCAD",
 		    String.valueOf(rowBuilder.getTotalCount())));
 		total += rowBuilder.getTotalCount();
@@ -85,7 +85,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		// clients on Adolescent DSD
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_ADOLESCENT);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
-		rowBuilder.buildDataSetRow("HIV_TX_Adolescent", 15, 50);
+		rowBuilder.buildDataSetRow("HIV_TX_Adolescent", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_Adolescent", "Total number of clients on Adolescent DSD",
 		    String.valueOf(rowBuilder.getTotalCount())));
 		total += rowBuilder.getTotalCount();
@@ -112,7 +112,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		// clients on  Advanced HIV Disease Care Model
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_AHDCM);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
-		rowBuilder.buildDataSetRow("HIV_TX_AHDCM", 1, 50);
+		rowBuilder.buildDataSetRow("HIV_TX_AHDCM", 1, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_AHDCM",
 		    "Total number of clients on Advanced HIV Disease Care Model", String.valueOf(rowBuilder.getTotalCount())));
 		rowBuilder.updateDataset(dataSet);

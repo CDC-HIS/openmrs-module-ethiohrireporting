@@ -47,6 +47,11 @@ public class MLQuery extends PatientQueryImpDao {
 		setSessionFactory(sessionFactory);
 	}
 	
+	public HashMap<Integer, Object> getLastFollowUpDate(Cohort cohort) {
+		BaseLineListQuery baseQuery = new BaseLineListQuery(sessionFactory);
+		return baseQuery.getObsValueDate(baseEncounter, FOLLOW_UP_DATE, cohort);
+	}
+	
 	public Cohort getCohortML(Date start, Date end) {
 		
 		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(null, end);
