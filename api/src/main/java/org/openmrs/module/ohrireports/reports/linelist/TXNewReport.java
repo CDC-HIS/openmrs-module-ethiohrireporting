@@ -62,7 +62,8 @@ public class TXNewReport implements ReportManager {
 		htsNewDataSetDefinition.addParameters(getParameters());
 		htsNewDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("TX-NEW", EthiOhriUtil.map(htsNewDataSetDefinition));
+		reportDefinition.addDataSetDefinition("List of Patients Newly Started ART",
+		    EthiOhriUtil.map(htsNewDataSetDefinition));
 		
 		return reportDefinition;
 	}

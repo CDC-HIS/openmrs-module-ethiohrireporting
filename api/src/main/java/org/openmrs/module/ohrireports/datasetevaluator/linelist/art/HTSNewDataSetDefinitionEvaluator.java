@@ -7,9 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -18,6 +16,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.op.In;
 import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.art.ArtQuery;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
@@ -88,6 +87,11 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
 			
 			data.addRow(row);
+		} else {
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Patient Name", "MRN", "UAN", "Age", "Sex", "Weight",
+			    "CD4", "WHO Stage", "Nutritional Status", "TB Screening Result", "Enrollment Date in E.C",
+			    "HIV Confirmed Date in E.C", "ART Start Date in E.C", "Days Difference", "Pregnancy/ Breastfeeding Status",
+			    "Regimen", "ARV Dose Days", "TI?", "Next Visit Date in E.C", "Treatment End Date in E.C", "Mobile No.")));
 		}
 		for (Person person : persons) {
 			Date enrollmentDateET = artQuery.getDate(enrollmentDate.get(person.getPersonId()));
