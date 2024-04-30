@@ -102,13 +102,15 @@ public class DatimTxNewReport implements ReportManager {
 		bDefinition.addParameters(getParameters());
 		bDefinition.setEncounterType(followUpEncounter);
 		bDefinition.setDescription("Disaggregated by Breastfeeding Status at ART Initiation");
-		reportDefinition.addDataSetDefinition("Disaggregated by Breastfeeding Status at ART Initiation", EthiOhriUtil.map(bDefinition));
+		reportDefinition.addDataSetDefinition("Disaggregated by Breastfeeding Status at ART Initiation",
+		    EthiOhriUtil.map(bDefinition));
 		
 		PopulationTypeDataSetDefinition pDefinition = new PopulationTypeDataSetDefinition();
 		pDefinition.addParameters(getParameters());
 		pDefinition.setEncounterType(followUpEncounter);
 		pDefinition.setDescription("Disaggregated by Key population-type");
-		reportDefinition.addDataSetDefinition("Required Disaggregated by Key population type.", EthiOhriUtil.map(pDefinition));
+		reportDefinition.addDataSetDefinition("Required Disaggregated by Key population type.",
+		    EthiOhriUtil.map(pDefinition));
 		
 		return reportDefinition;
 	}

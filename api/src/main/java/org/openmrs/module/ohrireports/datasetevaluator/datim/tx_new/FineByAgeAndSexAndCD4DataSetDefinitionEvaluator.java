@@ -146,7 +146,8 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 			dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
 			    getEnrolledByUnknownAge(persons));
 			
-			dataSet.addColumnValue(new DataSetColumn("<1", "<1", Integer.class), getEnrolledBelowOneYear(persons));
+			if (cd4Status == CD4Status.CD4Unknown)
+				dataSet.addColumnValue(new DataSetColumn("<1", "<1", Integer.class), getEnrolledBelowOneYear(persons));
 			
 			while (minCount <= 65) {
 				if (minCount == 65) {
@@ -162,7 +163,7 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 			dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), total);
 			setcD4Total(total);
 		} else if (Objects.equals(gender, "T")) {
-			dataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Total", Integer.class), "Total");
+			dataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Sub-total", Integer.class), "Sub-total");
 			dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getcD4Total());
 		}
 	}

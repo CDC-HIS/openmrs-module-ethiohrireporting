@@ -68,6 +68,10 @@ public class OHRIReportsConstants {
 	
 	public final static String WEIGHT = "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String WHO_STAGE = "5356AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String NUTRITIONAL_STATUS = "ae4d72a4-ccf5-49ff-b395-6687c534b1a2";
+	
 	public final static String PREGNANT_STATUS = "5272AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String YES = "1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -111,6 +115,8 @@ public class OHRIReportsConstants {
 	public final static String LINKED_TO_CARE_AND_TREATMENT_IN_THIS_FACILITY = "e8e8fe71-adbb-48e7-b531-589985094d30";
 	
 	public final static String ART_START_DATE = "ae329187-6232-4142-aa91-22c85bc8e5b5";
+	
+	public final static String ART_DISPENSE_DOSE = "f3911009-1a8f-42ee-bdfc-1e343c2839aa";
 	
 	public final static String TRANSFERRED_IN = "160563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -445,6 +451,8 @@ public class OHRIReportsConstants {
 	public final static String ARV_ADHERENCE = "b1a646d3-78ff-4dd5-823a-5bef7d69ff3d";
 	
 	public final static String POSITIVE_TRACKING_REGISTRATION_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
+	
+	public final static String ENROLLMENT_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
 	
 	public final static String KNOWN_POSITIVE_ON_ART = "95daa4f8-b45d-4dee-b5d0-5f9446d22c19";
 	
