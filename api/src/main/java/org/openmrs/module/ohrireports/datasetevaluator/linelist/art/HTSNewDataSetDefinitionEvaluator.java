@@ -83,16 +83,17 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Patient Name", "MRN", "UAN", "Age", "Sex", "Weight",
-			    "CD4", "WHO Stage", "Nutritional Status", "TB Screening Result", "Enrollment Date in E.C",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Number", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "Weight", "CD4", "WHO Stage", "Nutritional Status", "TB Screening Result", "Enrollment Date in E.C",
 			    "HIV Confirmed Date in E.C", "ART Start Date in E.C", "Days Difference", "Pregnancy/ Breastfeeding Status",
 			    "Regimen", "ARV Dose Days", "TI?", "Next Visit Date in E.C", "Treatment End Date in E.C", "Mobile No.")));
 		}
+		int i = 1;
 		for (Person person : persons) {
 			Date enrollmentDateET = artQuery.getDate(enrollmentDate.get(person.getPersonId()));
 			Date hivConfirmedDateET = artQuery.getDate(hivConfirmedDate.get(person.getPersonId()));
@@ -104,7 +105,8 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			Date date = artQuery.getDate(artStartDate.get(person.getPersonId()));
 			String ethiopianDate = artQuery.getEthiopianDate(date);
-			row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
+			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", Integer.class),
@@ -124,7 +126,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("HIVConfirmedDateETH", "HIV Confirmed Date in E.C", String.class),
 			    artQuery.getEthiopianDate(hivConfirmedDateET));
 			row.addColumnValue(new DataSetColumn("ARTStartDateETH", "ART Start Date in E.C", String.class),
-			    artQuery.getEthiopianDate(hivConfirmedDateET));
+			    artQuery.getEthiopianDate(artStartDateET));
 			row.addColumnValue(new DataSetColumn("daysDifference", "Days Difference", String.class), daysDifference);
 			row.addColumnValue(new DataSetColumn("PregnancyStatus", "Pregnancy/ Breastfeeding Status", String.class),
 			    pregnancyStatus.get(person.getPersonId()));

@@ -36,7 +36,7 @@ public class DatimTxCurrReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of DATIM TX_CURR enrolling  patients";
+		return "";
 	}
 	
 	@Override

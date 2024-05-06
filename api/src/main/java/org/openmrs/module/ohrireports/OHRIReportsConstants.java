@@ -460,13 +460,17 @@ public class OHRIReportsConstants {
 	
 	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String TB_TREATMENT_COMPLETED_DATE = "159431AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String TPT_ALTERNATE_TYPE = "c1af657e-bc31-46a2-9f5e-55a1c9ae7507";
 	
 	public final static String TPT_DOSE_DAY_TYPE_ALTERNATE = "cc80b9ac-2ed1-4fd5-969a-9e324e91e95e";
 	
 	public final static String TPT_DOSE_DAY_TYPE_INH = "ad542a8d-cd7c-4d70-8ef3-829b89c05009";
 	
-	public final static String VL_RECEIVED_DATE = "163281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String VL_SENT_DATE = "163281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String VL_RECEIVED_DATE = "beeede36-cae4-4f6e-b4b9-e39e37353a82";
 	
 	public final static String DATIM_REPORT = "DATIM";
 	
