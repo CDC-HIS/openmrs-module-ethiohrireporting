@@ -64,6 +64,10 @@ public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSe
         aggregateBuilder.buildDataSetColumn(maleDataSet,"M",15);
         set.addRow(maleDataSet);
 
+        DataSetRow totalSet = new DataSetRow();
+        aggregateBuilder.buildDataSetColumn(totalSet, "T", 0);
+        set.addRow(totalSet);
+
         return set;
     }
 

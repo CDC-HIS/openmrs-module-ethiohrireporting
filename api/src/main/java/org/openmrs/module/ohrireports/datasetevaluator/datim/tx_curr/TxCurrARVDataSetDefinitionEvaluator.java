@@ -41,11 +41,12 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 	List<Obs> obses = new ArrayList<>();
 	List<Person> personList = new ArrayList<>();
     HashMap<Integer,Object> patientWithDispenseDay = new HashMap<>();
+	private int total = 0;
 
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
 			throws EvaluationException {
-
+		total = 0;
 		hdsd = (TxCurrARVDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 
@@ -58,7 +59,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 
 		DataSetRow femaleDateSet = new DataSetRow();
-		femaleDateSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Female");
+		femaleDateSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "", Integer.class), "Female");
 
 		femaleDateSet.addColumnValue(
 				new DataSetColumn("3munknownAge", "<3 months of ARVs (not MMD)  Unknown Age", Integer.class),
@@ -86,7 +87,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		set.addRow(femaleDateSet);
 
 		DataSetRow maleDataSet = new DataSetRow();
-		maleDataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "Gender", Integer.class), "Male");
+		maleDataSet.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "", Integer.class), "Male");
 
 		maleDataSet.addColumnValue(
 				new DataSetColumn("3munknownAge", "<3 months of ARVs (not MMD)  Unknown Age", Integer.class),
@@ -112,6 +113,13 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 				getAbove15(Arrays.asList(ARV_180_Day),"M"));
 
 		set.addRow(maleDataSet);
+
+		DataSetRow tSetRow = new DataSetRow();
+		tSetRow.addColumnValue(new DataSetColumn("FineByAgeAndSexData", "", Integer.class), "Sub-Total");
+		tSetRow.addColumnValue(new DataSetColumn("3munknownAge", "", Integer.class), total);
+
+		set.addRow(tSetRow);
+
 		return set;
 	}
 
@@ -136,6 +144,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 			}
 		}
+		incrementTotalCount(count);
 		clearCountedPerson(personIds);
 
 		return count;
@@ -159,7 +168,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 			}
 		}
-
+		incrementTotalCount(count);
 		clearCountedPerson(personIntegers);
 		return count;
 	}
@@ -183,7 +192,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 			}
 		}
-
+		incrementTotalCount(count);
 		clearCountedPerson(personIntegers);
 		return count;
 	}
@@ -191,6 +200,11 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		for (int pId : personIds) {
 			obses.removeIf(p -> p.getPersonId().equals(pId));
 		}
+	}
+
+	private void incrementTotalCount(int count) {
+		if (count > 0)
+			total = total + count;
 	}
 
 

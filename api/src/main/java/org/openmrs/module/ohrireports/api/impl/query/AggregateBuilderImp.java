@@ -15,16 +15,16 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
     protected int subTotalCount = 0;
 
 
-
     protected int total = 0;
     protected Set<Integer> countedPatientId = new HashSet<>();
     protected List<Person> persons = new ArrayList<>();
     //this hash map is used to store the person id and last followup date
     protected Map<Integer, Object> followUpDate = new HashMap<>();
-  
+
     public void setFollowUpDate(HashMap<Integer, Object> followUpDate) {
         this.followUpDate = followUpDate;
     }
+
     protected int lowerBoundAge = 0;
     protected int upperBoundAge = 65;
     protected int ageInterval = 4;
@@ -37,7 +37,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
     public Date getCalculateAgeFrom() {
         if (calculateAgeFrom == null)
             return new Date();
-       return calculateAgeFrom;
+        return calculateAgeFrom;
     }
 
     public void setCalculateAgeFrom(Date calculateAgeFrom) {
@@ -73,13 +73,13 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         this.total = this.total + subTotalCount;
     }
 
-    public void clearTotal(){
+    public void clearTotal() {
         this.total = 0;
     }
 
     @Override
     public void buildDataSetColumn(DataSetRow dataSet, String gender) {
-        if(Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
+        if (Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
 
             subTotalCount = 0;
             int minCount = lowerBoundAge + 1;
@@ -106,20 +106,20 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
             }
             setTotal(subTotalCount);
             dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
-        } else if(Objects.equals(gender, "T")){
+        } else if (Objects.equals(gender, "T")) {
             dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
                     "Sub-Total");
-            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age",  Integer.class), getTotal());
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getTotal());
         }
     }
-   
+
     public void buildDataSetColumnWithFollowUpDate(DataSetRow dataSet, String gender) {
-        if(Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
-            
+        if (Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
+
             subTotalCount = 0;
             int minCount = lowerBoundAge + 1;
             int maxCount = lowerBoundAge + ageInterval;
-            
+
             dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
                     gender.equals("F") ? "Female"
                             : "Male");
@@ -141,14 +141,14 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
             }
             setTotal(subTotalCount);
             dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
-        } else if(Objects.equals(gender, "T")){
+        } else if (Objects.equals(gender, "T")) {
             dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
                     "Sub-Total");
-            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age",  Integer.class), getTotal());
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getTotal());
         }
     }
 
-    public void addTotalRow(DataSetRow dataSetRow){
+    public void addTotalRow(DataSetRow dataSetRow) {
         dataSetRow.addColumnValue(new DataSetColumn("Total", "Total", Integer.class), getTotal());
 
     }
@@ -180,7 +180,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
     }
 
-    public void buildDataSetColumnForTreatment(DataSetRow dataSet, String treatmentType){
+    public void buildDataSetColumnForTreatment(DataSetRow dataSet, String treatmentType) {
         subTotalCount = 0;
         lowerBoundAge = 14;
         upperBoundAge = 65;
@@ -207,19 +207,26 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
 
         dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
     }
+
     @Override
     public void buildDataSetColumn(DataSetRow row, String gender, int middleAge) {
-        row.addColumnValue(new DataSetColumn("gender", "Gender", String.class),
-                gender.equals("F") ? "Female"
-                        : "Male");
+        if (Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
+            row.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
+                    gender.equals("F") ? "Female"
+                            : "Male");
 
-        row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
-                getEnrolledByUnknownAge(gender));
-        row.addColumnValue(new DataSetColumn(">" + middleAge, "<" + middleAge, Integer.class),
-                getCountByMiddleAge(gender, middleAge, _below));
+            row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
+                    getEnrolledByUnknownAge(gender));
+            row.addColumnValue(new DataSetColumn(">" + middleAge, "<" + middleAge, Integer.class),
+                    getCountByMiddleAge(gender, middleAge, _below));
 
-        row.addColumnValue(new DataSetColumn(middleAge + "+", middleAge + "+", Integer.class),
-                getCountByMiddleAge(gender, middleAge, _above));
+            row.addColumnValue(new DataSetColumn(middleAge + "+", middleAge + "+", Integer.class),
+                    getCountByMiddleAge(gender, middleAge, _above));
+        } else if (Objects.equals(gender, "T")) {
+            row.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
+                    "Sub-Total");
+            row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getTotal());
+        }
 
     }
 
@@ -234,11 +241,11 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                 continue;
 
             age = person.getAge(calculateAgeFrom);
-            if (person.getGender().equals(gender) && min==0 && age < max) {
+            if (person.getGender().equals(gender) && min == 0 && age < max) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;
-            }else if (person.getGender().equals(gender) && age >= min && age <= max) {
+            } else if (person.getGender().equals(gender) && age >= min && age <= max) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;
@@ -248,23 +255,23 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         clearProcessedPersons(countedPersons);
         return count;
     }
-    
+
     protected int getEnrolledByAgeAndGenderByFollowUpDate(int min, int max, String gender) {
         int count = 0;
         int age = 0;
         List<Person> countedPersons = new ArrayList<>();
-        
+
         for (Person person : persons) {
-            
+
             if (countedPatientId.contains(person.getPersonId()))
                 continue;
-            
+
             age = person.getAge((java.sql.Timestamp) followUpDate.get(person.getPersonId()));
-            if (person.getGender().equals(gender) && min==0 && age < max) {
+            if (person.getGender().equals(gender) && min == 0 && age < max) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;
-            }else if (person.getGender().equals(gender) && age >= min && age <= max) {
+            } else if (person.getGender().equals(gender) && age >= min && age <= max) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;
@@ -274,7 +281,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         clearProcessedPersons(countedPersons);
         return count;
     }
-    
+
     protected int getPersonByAge(int min, int max) {
         int count = 0;
         int age = 0;
