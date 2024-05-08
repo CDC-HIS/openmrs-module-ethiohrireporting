@@ -30,14 +30,9 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 	@Autowired
 	private AggregateBuilder aggregateBuilder;
 	
-	private CD4Status cd4Status;
-	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	private List<Person> personList;
-	
 	private Cohort remainingCohort;
+	
+	private Cohort notEligibleCohort;
 	
 	TxRttByAgeAndSexDataSetDefinition _datasetDefinition;
 	
@@ -45,20 +40,27 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		_datasetDefinition = (TxRttByAgeAndSexDataSetDefinition) dataSetDefinition;
-		cd4Status = _datasetDefinition.getCountCD4GreaterThan200();
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		if (_datasetDefinition.getHeader()) {
-			
+			CD4Status cd4Status = _datasetDefinition.getCountCD4GreaterThan200();
+			rttQuery.getInterruptionMonth(_datasetDefinition.getEndDate());
+			//A cohort of interrupted less than six months
+			notEligibleCohort = rttQuery.getInterrupationByMonth(0, 6);
+			//remove cohort of interrupted less than age 5
+			removeCohortAgeLessThan5(notEligibleCohort);
 			remainingCohort = rttQuery.getBaseCohort();
+			
 		}
 		if (!_datasetDefinition.getHeader()) {
 			aggregateBuilder.clearTotal();
 			if (_datasetDefinition.getCountCD4GreaterThan200().equals(CD4Status.CD4Unknown)) {
-				Cohort cd4CohortWithStatus = rttQuery.getCD4ByCohort(remainingCohort,
-				    _datasetDefinition.getCountCD4GreaterThan200() == CD4Status.CD4GreaterThan200,
-				    rttQuery.getBaseEncounter());
-				buildDataset(set, cd4CohortWithStatus);
+				// remove notEligible cd4 Cohort from remainingCohort
+				removeCohort(remainingCohort, notEligibleCohort);
+				buildDataset(set, remainingCohort);
+				
+			} else if (_datasetDefinition.getCountCD4GreaterThan200().equals(CD4Status.CD4NotEligible)) {
+				buildDataset(set, notEligibleCohort);
 			} else {
 				Cohort cd4CohortWithStatus = rttQuery.getCD4ByCohort(rttQuery.getBaseCohort(),
 				    _datasetDefinition.getCountCD4GreaterThan200() == CD4Status.CD4GreaterThan200,
@@ -66,14 +68,25 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 				
 				buildDataset(set, cd4CohortWithStatus);
 				removeCohort(remainingCohort, cd4CohortWithStatus);
+				removeCohort(notEligibleCohort, cd4CohortWithStatus);
 			}
 		}
 		
 		return set;
 	}
 	
+	private void removeCohortAgeLessThan5(Cohort notEligibleCohort) {
+        List<Person> personList = rttQuery.getPersons(notEligibleCohort);
+
+        for (Person person : personList) {
+            if (person.getAge() < 5) {
+                notEligibleCohort.getMemberships().removeIf(c->c.getPatientId().equals(person.getPersonId()));
+            }
+        }
+    }
+	
 	private void buildDataset(SimpleDataSet set, Cohort cd4CohortWithStatus) {
-		personList = rttQuery.getPersons(cd4CohortWithStatus);
+		List<Person> personList = rttQuery.getPersons(cd4CohortWithStatus);
 		
 		aggregateBuilder.setCalculateAgeFrom(_datasetDefinition.getEndDate());
 		aggregateBuilder.setLowerBoundAge(0);
@@ -98,4 +111,5 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 			cohort.removeMembership(cohortMember);
 		}
 	}
+	
 }

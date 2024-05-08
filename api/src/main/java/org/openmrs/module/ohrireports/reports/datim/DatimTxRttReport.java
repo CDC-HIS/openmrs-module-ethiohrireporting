@@ -90,10 +90,19 @@ public class DatimTxRttReport implements ReportManager {
 		
 		TxRttByAgeAndSexDataSetDefinition txRTTCDUnknownDefinition = new TxRttByAgeAndSexDataSetDefinition();
 		txRTTCDUnknownDefinition.addParameters(getParameters());
+		txRTTCDUnknownDefinition.setCountCD4GreaterThan200(CD4Status.CD4Unknown);
 		txRTTCDUnknownDefinition.setDescription("Unknown CD4");
 		txRTTCDUnknownDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Unknown CD4", EthiOhriUtil.map(txRTTCDUnknownDefinition));
+		
+		TxRttByAgeAndSexDataSetDefinition txRTTCDNotEligibleDefinition = new TxRttByAgeAndSexDataSetDefinition();
+		txRTTCDNotEligibleDefinition.addParameters(getParameters());
+		txRTTCDNotEligibleDefinition.setCountCD4GreaterThan200(CD4Status.CD4NotEligible);
+		txRTTCDNotEligibleDefinition.setDescription("Not Eligible for CD4");
+		txRTTCDNotEligibleDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition("Not Eligible for CD4", EthiOhriUtil.map(txRTTCDNotEligibleDefinition));
 		
 		TxRttIITDataSetDefinition tDefinition = new TxRttIITDataSetDefinition();
 		tDefinition.addParameters(getParameters());
