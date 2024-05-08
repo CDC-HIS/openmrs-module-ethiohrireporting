@@ -46,7 +46,7 @@ public class TxCurrFineByAgeAndSexDataSetDefinitionEvaluator implements DataSetE
 
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-
+        aggregateBuilder.clearTotal();
         TxCurrFineByAgeAndSexDataSetDefinition hdsd = (TxCurrFineByAgeAndSexDataSetDefinition) dataSetDefinition;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 

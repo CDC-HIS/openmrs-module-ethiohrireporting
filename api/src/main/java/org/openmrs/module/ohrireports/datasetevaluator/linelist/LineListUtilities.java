@@ -18,10 +18,12 @@ public class LineListUtilities {
 	
 	public static DataSetRow buildEmptyRow(List<String> columns) {
 		DataSetRow row = new DataSetRow();
-		row.addColumnValue(new DataSetColumn("Number", "Number", String.class), "TOTAL");
+		
 		for (String column : columns) {
 			row.addColumnValue(new DataSetColumn(column, column, String.class), "");
 		}
+		row.addColumnValue(new DataSetColumn("Number", "Number", String.class), "TOTAL");
+		row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), "0");
 		return row;
 	}
 	

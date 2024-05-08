@@ -67,16 +67,16 @@ public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("Number", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Number", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ART Start Date in E.C", "Last Followup Date in E.C", "Next Visit Date in E.C", "Last Follow-up Status",
 			    "Regiment", "ARV Dose Days", "Adherence", "Next Visit Date in E.C", "Last TX_CURR Date in E.C",
 			    "On Treatment For (in months)", "On PMTCT", "MobileNo", "SubCity", "Woreda", "House No.")));
 		}
-		int i = 0;
+		int i = 1;
 		for (Person person : persons) {
 			
 			Date artStartDate = mlQueryLineList.getDate(artStartDateHashMap.get(person.getPersonId()));
@@ -85,11 +85,11 @@ public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
 			Date lastTxCurrDate = mlQueryLineList.getDate(lastTxCurrDateHashMap.get(person.getPersonId()));
 			PersonAddress personAddress = LineListUtilities.getPersonAddress(person.getAddresses());
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Number", "#", Integer.class), i++);
-			row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
+			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("UANO", "UAN", String.class),
+			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class),
 			    getStringIdentifier(uanIdentifierHashMap.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class),
 			    person.getAge(_datasetDefinition.getEndDate()));

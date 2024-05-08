@@ -39,7 +39,7 @@ public class DatimTxNewReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of DATIM TXnew lists a newly enrolled  patients";
+		return "";
 	}
 	
 	@Override

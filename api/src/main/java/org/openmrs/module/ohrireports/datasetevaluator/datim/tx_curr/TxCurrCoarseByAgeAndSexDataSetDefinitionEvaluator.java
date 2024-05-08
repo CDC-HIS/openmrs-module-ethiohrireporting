@@ -42,7 +42,7 @@ public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSe
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
-
+        aggregateBuilder.clearTotal();
         TxCurrCoarseByAgeAndSexDataSetDefinition hdsd = (TxCurrCoarseByAgeAndSexDataSetDefinition) dataSetDefinition;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
         PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);

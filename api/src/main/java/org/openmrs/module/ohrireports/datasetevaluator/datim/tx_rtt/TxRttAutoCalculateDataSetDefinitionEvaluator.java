@@ -29,14 +29,17 @@ public class TxRttAutoCalculateDataSetDefinitionEvaluator implements DataSetEval
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		TxRttAutoCalculateDataSetDefinition _datasetDefinition = (TxRttAutoCalculateDataSetDefinition) dataSetDefinition;
-		rttQuery.getRttCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
-		
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), rttQuery
-		        .getBaseCohort().getSize());
-		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		set.addRow(dataSet);
+		
+		if (!_datasetDefinition.getHeader()) {
+			rttQuery.getRttCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+			
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), rttQuery
+			        .getBaseCohort().getSize());
+			
+			set.addRow(dataSet);
+		}
 		
 		return set;
 	}

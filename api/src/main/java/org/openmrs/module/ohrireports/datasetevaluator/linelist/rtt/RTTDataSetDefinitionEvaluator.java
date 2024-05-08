@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.RTTDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -14,10 +15,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -53,13 +51,16 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    cohort, ARV_DISPENSED_IN_DAYS);
 		
 		DataSetRow row;
-		if (persons.size() > 0) {
+		if (!persons.isEmpty()) {
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			data.addRow(row);
+		} else {
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Number", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "ART star  Date E.C.", "Date Returned Treatment E.C.", "Regimen", "Weight", "ARV Dispense Day", "Status")));
 		}
-		
+		int i = 1;
 		for (Person person : persons) {
 			
 			Date artStartDate = rttLineListQuery.getDate(artStartDateHashMap.get(person.getPersonId()));
@@ -67,20 +68,18 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
+			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("UANO", "UANO", String.class),
+			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class),
 			    getStringIdentifier(uanIdentifierHashMap.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class),
 			    person.getAge(_datasetDefinition.getEndDate()));
-			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
-			row.addColumnValue(new DataSetColumn("ArtStartDate", "ART start  Date", Date.class), artStartDate);
-			row.addColumnValue(new DataSetColumn("ArtStartDateETC", "ART star  Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("Gender", "Sex", String.class), person.getGender());
+			row.addColumnValue(new DataSetColumn("ArtStartDateETC", "ART star  Date E.C.", String.class),
 			    rttLineListQuery.getEthiopianDate(artStartDate));
-			row.addColumnValue(new DataSetColumn("dateReturnedTreatment", "Date Returned Treatment", Date.class),
-			    treatmentEndDate);
-			row.addColumnValue(new DataSetColumn("dateReturnedTreatmentETC", "Date ETH Returned Treatment", String.class),
+			row.addColumnValue(new DataSetColumn("dateReturnedTreatmentETC", "Date Returned Treatment E.C.", String.class),
 			    rttLineListQuery.getEthiopianDate(treatmentEndDate));
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),
 			    regimentHashMap.get(person.getPersonId()));
