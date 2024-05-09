@@ -114,6 +114,26 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		
 	}
 	
+	public List<Integer> getAliveFirstFollowUpEncounters(Date start, Date end) {
+		List<Integer> allEncounters = getFirstEncounterByFollowUpDate(start, end);
+		
+		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS)
+		        + " and ob.value_coded in " + conceptQuery(Arrays.asList(ALIVE, RESTART))
+		        + " and ob.encounter_id in (:encounters)";
+		
+		Query q = getCurrentSession().createSQLQuery(builder);
+		q.setParameterList("encounters", allEncounters);
+		
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+		
+	}
+	
 	public List<Integer> getAliveFollowUpEncounters(Cohort cohort, Date start, Date end) {
 		List<Integer> allEncounters = getLatestDateByFollowUpDate(cohort, start, end);
 		

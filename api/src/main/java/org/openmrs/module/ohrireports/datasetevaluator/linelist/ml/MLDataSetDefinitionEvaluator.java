@@ -91,8 +91,7 @@ public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class),
 			    getStringIdentifier(uanIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class),
-			    person.getAge(_datasetDefinition.getEndDate()));
+			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(lastTxCurrDate));
 			row.addColumnValue(new DataSetColumn("Gender", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("ArtStartDateETC", "ART Start Date in E.C", String.class),
 			    mlQueryLineList.getEthiopianDate(artStartDate));
