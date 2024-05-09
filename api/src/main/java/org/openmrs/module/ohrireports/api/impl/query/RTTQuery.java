@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.api.impl.query;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -169,5 +167,17 @@ public class RTTQuery extends PatientQueryImpDao {
 		query.setParameterList("betweenEncounters", baseEncounter);
 
 		return HMISUtilies.getDictionaryWithBigDecimal (query);
+	}
+
+	public Cohort getInterrupationByMonth(int minMonth, int maxMonth){
+		Cohort cohort = new Cohort();
+		for (Map.Entry<Integer, BigDecimal> entry : restartedMonthList.entrySet()) {
+			Integer k = entry.getKey();
+			BigDecimal o = entry.getValue();
+			if (o.intValue() >= minMonth && o.intValue() < maxMonth) {
+				cohort.addMembership(new CohortMembership(k));
+			}
+		}
+		return cohort;
 	}
 }

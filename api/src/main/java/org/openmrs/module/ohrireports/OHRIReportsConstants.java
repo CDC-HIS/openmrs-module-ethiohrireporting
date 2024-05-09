@@ -68,6 +68,10 @@ public class OHRIReportsConstants {
 	
 	public final static String WEIGHT = "5089AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String WHO_STAGE = "5356AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String NUTRITIONAL_STATUS = "ae4d72a4-ccf5-49ff-b395-6687c534b1a2";
+	
 	public final static String PREGNANT_STATUS = "5272AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String YES = "1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -111,6 +115,8 @@ public class OHRIReportsConstants {
 	public final static String LINKED_TO_CARE_AND_TREATMENT_IN_THIS_FACILITY = "e8e8fe71-adbb-48e7-b531-589985094d30";
 	
 	public final static String ART_START_DATE = "ae329187-6232-4142-aa91-22c85bc8e5b5";
+	
+	public final static String ART_DISPENSE_DOSE = "f3911009-1a8f-42ee-bdfc-1e343c2839aa";
 	
 	public final static String TRANSFERRED_IN = "160563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -446,11 +452,15 @@ public class OHRIReportsConstants {
 	
 	public final static String POSITIVE_TRACKING_REGISTRATION_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
 	
+	public final static String ENROLLMENT_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
+	
 	public final static String KNOWN_POSITIVE_ON_ART = "95daa4f8-b45d-4dee-b5d0-5f9446d22c19";
 	
 	public final static String TPT_DISCONTINUED_DATE = "162281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TB_TREATMENT_COMPLETED_DATE = "159431AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TPT_ALTERNATE_TYPE = "c1af657e-bc31-46a2-9f5e-55a1c9ae7507";
 	
@@ -458,7 +468,9 @@ public class OHRIReportsConstants {
 	
 	public final static String TPT_DOSE_DAY_TYPE_INH = "ad542a8d-cd7c-4d70-8ef3-829b89c05009";
 	
-	public final static String VL_RECEIVED_DATE = "163281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String VL_SENT_DATE = "163281AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String VL_RECEIVED_DATE = "beeede36-cae4-4f6e-b4b9-e39e37353a82";
 	
 	public final static String DATIM_REPORT = "DATIM";
 	
@@ -499,6 +511,8 @@ public class OHRIReportsConstants {
 	public final static String REFERRED_TX_NOT_INITIATED = "97c667c6-567b-4b7b-adc1-12f06c584cd4";
 	
 	public final static String DIED = "160034AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String ADULT_CD4_COUNT = "5497AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String FAMILY_PLANNING_METHODS = "374AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

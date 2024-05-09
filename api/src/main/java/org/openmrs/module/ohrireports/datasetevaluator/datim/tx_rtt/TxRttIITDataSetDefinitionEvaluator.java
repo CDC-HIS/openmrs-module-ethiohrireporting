@@ -27,64 +27,29 @@ public class TxRttIITDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		TxRttIITDataSetDefinition _datasetDefinition = (TxRttIITDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		rttQuery.getInterruptionMonth(_datasetDefinition.getEndDate());
 		
 		DataSetRow belowThreeDateSet = new DataSetRow();
 		belowThreeDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "", String.class),
 		    "Experienced treatment interruption of <3 months before returning to treatment ");
-		belowThreeDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class), getLessThanThreeMonth());
+		belowThreeDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class), rttQuery
+		        .getInterrupationByMonth(0, 3).size());
 		set.addRow(belowThreeDateSet);
 		
 		DataSetRow betweenThreeandFiveDateSet = new DataSetRow();
 		betweenThreeandFiveDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "", String.class),
 		    "Experienced treatment interruption of 3-5 months before returning to treatment");
-		betweenThreeandFiveDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class),
-		    getBewteenThreeAndFive());
+		betweenThreeandFiveDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class), rttQuery
+		        .getInterrupationByMonth(3, 6).size());
 		set.addRow(betweenThreeandFiveDateSet);
 		
 		DataSetRow abovesixDateSet = new DataSetRow();
 		abovesixDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "", String.class),
 		    "Experienced treatment interruption of 6+ months before returning to treatment");
-		abovesixDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class), getAboveSixMonth());
+		abovesixDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class),
+		    rttQuery.getInterrupationByMonth(6, Integer.MAX_VALUE).size());
 		set.addRow(abovesixDateSet);
 		
 		return set;
-	}
-	
-	private int getLessThanThreeMonth() {
-		int count = 0;
-		for (Map.Entry<Integer, BigDecimal> entry : rttQuery.restartedMonthList.entrySet()) {
-			Integer k = entry.getKey();
-			BigDecimal o = entry.getValue();
-			if (o.intValue() < 3) {
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	private int getBewteenThreeAndFive() {
-		int count = 0;
-		for (Map.Entry<Integer, BigDecimal> entry : rttQuery.restartedMonthList.entrySet()) {
-			Integer k = entry.getKey();
-			BigDecimal o = entry.getValue();
-			if (o.intValue() >= 3 && o.intValue() < 6) {
-				count++;
-			}
-		}
-		return count;
-	}
-	
-	private int getAboveSixMonth() {
-		int count = 0;
-		for (Map.Entry<Integer, BigDecimal> entry : rttQuery.restartedMonthList.entrySet()) {
-			Integer k = entry.getKey();
-			BigDecimal o = entry.getValue();
-			if (o.intValue() >= 6) {
-				count++;
-			}
-		}
-		return count;
 	}
 	
 }

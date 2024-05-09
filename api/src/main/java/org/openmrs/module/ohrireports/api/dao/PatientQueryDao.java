@@ -20,6 +20,8 @@ public interface PatientQueryDao {
 	Cohort getActiveOnArtCohort(String gender, Date startOnOrAfter, Date endOnOrBefore, Cohort cohort,
 	        List<Integer> encounters);
 	
+	Cohort getCD4ByCohort(Cohort cohort, Boolean isCD4GreaterThan200, List<Integer> encounters);
+	
 	HashMap<Integer, Object> getObValue(String conceptUUId, Cohort cohort, @NotNull PatientQueryImpDao.ObsValueType type,
 	        List<Integer> encounter);
 	

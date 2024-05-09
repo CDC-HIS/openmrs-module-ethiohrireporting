@@ -20,6 +20,9 @@ public class TxCurrAutoCalculateDataSetDefinition extends BaseDataSetDefinition 
 	@ConfigurationProperty
 	private Cohort baseCohort;
 	
+	@ConfigurationProperty
+	private Boolean header = false;
+	
 	public Cohort getBaseCohort() {
 		return baseCohort;
 	}
@@ -42,6 +45,14 @@ public class TxCurrAutoCalculateDataSetDefinition extends BaseDataSetDefinition 
 	
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
+	}
+	
+	public Boolean getHeader() {
+		return header;
+	}
+	
+	public void setHeader(Boolean header) {
+		this.header = header;
 	}
 	
 }

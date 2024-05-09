@@ -17,11 +17,11 @@ public class EthiOhriUtil {
 	
 	public static List<Parameter> getDateRangeParameters() {
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
+		startDate.setRequired(true);
 		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
 		startDateGC.setRequired(false);
 		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
+		endDate.setRequired(true);
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
 		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);

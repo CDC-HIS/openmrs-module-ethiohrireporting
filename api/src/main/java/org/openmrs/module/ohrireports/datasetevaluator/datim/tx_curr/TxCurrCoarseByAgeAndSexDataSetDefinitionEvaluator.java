@@ -42,7 +42,7 @@ public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSe
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
-
+        aggregateBuilder.clearTotal();
         TxCurrCoarseByAgeAndSexDataSetDefinition hdsd = (TxCurrCoarseByAgeAndSexDataSetDefinition) dataSetDefinition;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
         PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
@@ -63,6 +63,10 @@ public class TxCurrCoarseByAgeAndSexDataSetDefinitionEvaluator implements DataSe
         DataSetRow maleDataSet = new DataSetRow();
         aggregateBuilder.buildDataSetColumn(maleDataSet,"M",15);
         set.addRow(maleDataSet);
+
+        DataSetRow totalSet = new DataSetRow();
+        aggregateBuilder.buildDataSetColumn(totalSet, "T", 0);
+        set.addRow(totalSet);
 
         return set;
     }

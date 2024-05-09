@@ -10,6 +10,7 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
@@ -61,7 +62,8 @@ public class TXNewReport implements ReportManager {
 		htsNewDataSetDefinition.addParameters(getParameters());
 		htsNewDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("TX-NEW", EthiOhriUtil.map(htsNewDataSetDefinition));
+		reportDefinition.addDataSetDefinition("List of Patients Newly Started ART",
+		    EthiOhriUtil.map(htsNewDataSetDefinition));
 		
 		return reportDefinition;
 	}
@@ -82,6 +84,18 @@ public class TXNewReport implements ReportManager {
 	@Override
 	public String getVersion() {
 		return "1.0.0-SNAPSHOT";
+	}
+	
+	private List<Parameter> getDateRangeParameters() {
+		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
+		startDate.setRequired(true);
+		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
+		startDateGC.setRequired(false);
+		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
+		endDate.setRequired(true);
+		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
+		endDateGC.setRequired(false);
+		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
 	}
 	
 }

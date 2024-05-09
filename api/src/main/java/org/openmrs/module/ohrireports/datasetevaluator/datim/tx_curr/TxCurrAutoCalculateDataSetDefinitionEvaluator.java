@@ -31,15 +31,16 @@ public class TxCurrAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (TxCurrAutoCalculateDataSetDefinition) dataSetDefinition;
-		
-		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
-		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
-		DataSetRow dataSet = new DataSetRow();
-		
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
-		    patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters).size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		set.addRow(dataSet);
+		if (!hdsd.getHeader()) {
+			PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
+			List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
+			DataSetRow dataSet = new DataSetRow();
+			
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class),
+			    patientQueryService.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, encounters).size());
+			set.addRow(dataSet);
+		}
 		return set;
 	}
 }

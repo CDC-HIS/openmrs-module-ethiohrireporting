@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.reports.datim;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
@@ -36,13 +37,13 @@ public class DatimTxCurrReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of DATIM TX_CURR enrolling  patients";
+		return "";
 	}
 	
 	@Override
 	public List<Parameter> getParameters() {
 		Parameter endDate = new Parameter("endDate", "Report Date", Date.class);
-		endDate.setRequired(false);
+		endDate.setRequired(true);
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
 		return Arrays.asList(endDate, endDateGC);
@@ -56,11 +57,19 @@ public class DatimTxCurrReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
+		TxCurrAutoCalculateDataSetDefinition headerDefinition = new TxCurrAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TX_CURR");
+		reportDefinition.addDataSetDefinition("DSD: TX_CURR", EthiOhriUtil.mapEndDate(headerDefinition));
+		
 		TxCurrAutoCalculateDataSetDefinition aDefinition = new TxCurrAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition.setDescription("Number of adults and children currently enrolling on antiretroviral therapy (ART)");
-		reportDefinition.addDataSetDefinition("Auto-Calculate", EthiOhriUtil.mapEndDate(aDefinition));
+		reportDefinition.addDataSetDefinition(
+		    "Number of adults and children currently receiving antiretroviral therapy (ART). "
+		            + "Numerator will auto-calculate from Age/Sex Disaggregates", EthiOhriUtil.mapEndDate(aDefinition));
 		
 		TxCurrFineByAgeAndSexDataSetDefinition fDefinition = new TxCurrFineByAgeAndSexDataSetDefinition();
 		fDefinition.addParameters(getParameters());

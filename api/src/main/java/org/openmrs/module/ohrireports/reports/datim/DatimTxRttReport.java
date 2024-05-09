@@ -7,7 +7,9 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexAndCD4DataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_rtt.*;
+import org.openmrs.module.ohrireports.datasetevaluator.datim.tx_new.CD4Status;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -31,7 +33,7 @@ public class DatimTxRttReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of DATIM TX_RTT";
+		return "";
 	}
 	
 	@Override
@@ -47,6 +49,12 @@ public class DatimTxRttReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
+		TxRttAutoCalculateDataSetDefinition headerDefinition = new TxRttAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TX_RTT");
+		reportDefinition.addDataSetDefinition("DSD: TX_RTT", EthiOhriUtil.map(headerDefinition));
+		
 		TxRttAutoCalculateDataSetDefinition aDefinition = new TxRttAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
@@ -57,11 +65,44 @@ public class DatimTxRttReport implements ReportManager {
 		            "Number of ART patients who experienced IIT during any previous reporting period, who successfully restarted ARVs within the reporting period and remained on treatment until the end of the reporting period.",
 		            EthiOhriUtil.map(aDefinition));
 		
-		TxRttByAgeAndSexDataSetDefinition cDefinition = new TxRttByAgeAndSexDataSetDefinition();
-		cDefinition.addParameters(getParameters());
-		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		cDefinition.setDescription("Disaggregated by Age/Sex");
-		reportDefinition.addDataSetDefinition("Required - Disaggregated by Age/Sex", EthiOhriUtil.map(cDefinition));
+		TxRttByAgeAndSexDataSetDefinition txRTTCD4HeaderDefinition = new TxRttByAgeAndSexDataSetDefinition();
+		txRTTCD4HeaderDefinition.addParameters(getParameters());
+		txRTTCD4HeaderDefinition.setHeader(true);
+		txRTTCD4HeaderDefinition.setDescription("Disaggregated by Age/Sex And CD4");
+		reportDefinition.addDataSetDefinition("Required Disaggregated by Age/Sex And CD4",
+		    EthiOhriUtil.map(txRTTCD4HeaderDefinition));
+		
+		TxRttByAgeAndSexDataSetDefinition txRTTCD4L_200Definition = new TxRttByAgeAndSexDataSetDefinition();
+		txRTTCD4L_200Definition.addParameters(getParameters());
+		txRTTCD4L_200Definition.setCountCD4GreaterThan200(CD4Status.CD4LessThan200);
+		txRTTCD4L_200Definition.setDescription("< 200 CD4");
+		txRTTCD4L_200Definition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition("< 200 CD4", EthiOhriUtil.map(txRTTCD4L_200Definition));
+		
+		TxRttByAgeAndSexDataSetDefinition txRTTCD4G_200Definition = new TxRttByAgeAndSexDataSetDefinition();
+		txRTTCD4G_200Definition.addParameters(getParameters());
+		txRTTCD4G_200Definition.setCountCD4GreaterThan200(CD4Status.CD4GreaterThan200);
+		txRTTCD4G_200Definition.setDescription(">= 200 CD4");
+		txRTTCD4G_200Definition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition(">= 200 CD4", EthiOhriUtil.map(txRTTCD4G_200Definition));
+		
+		TxRttByAgeAndSexDataSetDefinition txRTTCDUnknownDefinition = new TxRttByAgeAndSexDataSetDefinition();
+		txRTTCDUnknownDefinition.addParameters(getParameters());
+		txRTTCDUnknownDefinition.setCountCD4GreaterThan200(CD4Status.CD4Unknown);
+		txRTTCDUnknownDefinition.setDescription("Unknown CD4");
+		txRTTCDUnknownDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition("Unknown CD4", EthiOhriUtil.map(txRTTCDUnknownDefinition));
+		
+		TxRttByAgeAndSexDataSetDefinition txRTTCDNotEligibleDefinition = new TxRttByAgeAndSexDataSetDefinition();
+		txRTTCDNotEligibleDefinition.addParameters(getParameters());
+		txRTTCDNotEligibleDefinition.setCountCD4GreaterThan200(CD4Status.CD4NotEligible);
+		txRTTCDNotEligibleDefinition.setDescription("Not Eligible for CD4");
+		txRTTCDNotEligibleDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		reportDefinition.addDataSetDefinition("Not Eligible for CD4", EthiOhriUtil.map(txRTTCDNotEligibleDefinition));
 		
 		TxRttIITDataSetDefinition tDefinition = new TxRttIITDataSetDefinition();
 		tDefinition.addParameters(getParameters());
