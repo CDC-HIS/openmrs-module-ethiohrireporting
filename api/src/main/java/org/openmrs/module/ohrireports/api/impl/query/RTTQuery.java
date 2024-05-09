@@ -52,11 +52,14 @@ public class RTTQuery extends PatientQueryImpDao {
 	 * @return
 	 */
 	public Cohort getRttCohort(Date start, Date end) {
-
+		/* fetching the whole encounter when follow-up date  is before reporting start date */
 		List<Integer> encounter = encounterQuery.getLatestDateByFollowUpDate(null, start);
+		// fetching encounter when follow-up date is  before reporting start and follow-up status is ALIVE AND RESTART
 		List<Integer> encounterAlive = encounterQuery.getAliveFollowUpEncounters(null, start);
-
+		
+		// cohort is with the treatment end date is before reporting start date from encounters alive and restart
 		Cohort doseEndCohort = getCohortByARTDoseEndDate(encounterAlive, start);
+		// cohort is with the
 		Cohort followUpCohort = getCohortByFollowUp(encounter);
 		Cohort interruptedCohort = Cohort.union(doseEndCohort, followUpCohort);
 
