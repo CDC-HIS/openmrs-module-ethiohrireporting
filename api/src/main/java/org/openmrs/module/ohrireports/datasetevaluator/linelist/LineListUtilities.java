@@ -22,7 +22,7 @@ public class LineListUtilities {
 		for (String column : columns) {
 			row.addColumnValue(new DataSetColumn(column, column, String.class), "");
 		}
-		row.addColumnValue(new DataSetColumn("Number", "Number", String.class), "TOTAL");
+		row.addColumnValue(new DataSetColumn("#", "#", String.class), "TOTAL");
 		row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), "0");
 		return row;
 	}

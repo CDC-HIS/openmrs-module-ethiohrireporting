@@ -7,6 +7,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_numerator.TxTbNumeratorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_numerator.TxTbNumeratorAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -48,14 +49,20 @@ public class DatimTxTbNumeratorReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
+		TxTbNumeratorAutoCalculateDataSetDefinition headerDefinition = new TxTbNumeratorAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TX_TB (Numerator)");
+		reportDefinition.addDataSetDefinition("DSD: TX_TB (Numerator)", EthiOhriUtil.map(headerDefinition));
+		
 		TxTbNumeratorAutoCalculateDataSetDefinition aDefinition = new TxTbNumeratorAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition
 		        .setDescription("Number of adults and children currently enrolling ART and has documented Active on TB treatment");
 		reportDefinition.addDataSetDefinition(
-		    "Auto-Calculate : Number of ART patients who were started on TB treatment during the reporting period",
-		    EthiOhriUtil.map(aDefinition));
+		    "Auto-Calculate : Number of ART patients who were started on TB treatment during the reporting period. Numerator"
+		            + " will auto-calculate from Already/New ART by Age/Sex", EthiOhriUtil.map(aDefinition));
 		
 		TxTbNumeratorARTByAgeAndSexDataSetDefinition cDefinition = new TxTbNumeratorARTByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());

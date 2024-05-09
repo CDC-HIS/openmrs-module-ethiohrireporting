@@ -28,14 +28,16 @@ public class TxTbNumeratorAutoCalculateDataSetDefinitionEvaluator implements Dat
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		TxTbNumeratorAutoCalculateDataSetDefinition dsd = (TxTbNumeratorAutoCalculateDataSetDefinition) dataSetDefinition;
-		tbQuery.generateNumeratorReport(dsd.getStartDate(), dsd.getEndDate());
-		
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), tbQuery
-		        .getNumeratorCohort().size());
-		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		set.addRow(dataSet);
+		if (!dsd.getHeader()) {
+			tbQuery.generateNumeratorReport(dsd.getStartDate(), dsd.getEndDate());
+			
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), tbQuery
+			        .getNumeratorCohort().size());
+			
+			set.addRow(dataSet);
+		}
 		return set;
 	}
 	

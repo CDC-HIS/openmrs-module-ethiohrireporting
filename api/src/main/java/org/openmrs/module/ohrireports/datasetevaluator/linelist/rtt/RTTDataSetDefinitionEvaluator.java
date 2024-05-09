@@ -37,38 +37,70 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		HashMap<Integer, Object> artStartDateHashMap = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
 		    ART_START_DATE, cohort);
-		HashMap<Integer, Object> returnedFollowUpDate = rttLineListQuery.getObsValueDate(
-		    rttLineListQuery.getBaseEncounter(), FOLLOW_UP_DATE, cohort);
+		HashMap<Integer, Object> followUpDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
+		    FOLLOW_UP_DATE, cohort);
+		HashMap<Integer, Object> treatmentEndDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
+		    TREATMENT_END_DATE, cohort);
 		
-		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByResult(WEIGHT, cohort,
+		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByValueNumeric(WEIGHT, cohort,
 		    rttLineListQuery.getBaseEncounter());
 		HashMap<Integer, Object> mrnIdentifierHashMap = rttLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = rttLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> statusHashMap = rttLineListQuery.getFollowUpStatus(rttLineListQuery.getBaseEncounter(),
+		HashMap<Integer, Object> followUpStatus = rttLineListQuery.getFollowUpStatus(rttLineListQuery.getBaseEncounter(),
 		    cohort);
 		HashMap<Integer, Object> regimentHashMap = rttLineListQuery.getRegiment(rttLineListQuery.getBaseEncounter(), cohort);
 		HashMap<Integer, Object> dispensDayHashMap = rttLineListQuery.getConceptName(rttLineListQuery.getBaseEncounter(),
 		    cohort, ARV_DISPENSED_IN_DAYS);
+		HashMap<Integer, Object> adherence = rttLineListQuery.getByResult(ON_ADHERENCE, cohort,
+		    rttLineListQuery.getBaseEncounter());
+		HashMap<Integer, Object> nextVisitDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
+		    NEXT_VISIT_DATE, cohort);
+		
+		HashMap<Integer, Object> lastFollowUpDate = rttLineListQuery.getObsValueDate(
+		    rttLineListQuery.getInterruptedEncounter(), FOLLOW_UP_DATE, cohort);
+		
+		HashMap<Integer, Object> lastFollowUpStatus = rttLineListQuery.getFollowUpStatus(
+		    rttLineListQuery.getInterruptedEncounter(), cohort);
+		HashMap<Integer, Object> lastRegimen = rttLineListQuery.getRegiment(rttLineListQuery.getInterruptedEncounter(),
+		    cohort);
+		HashMap<Integer, Object> lastDispenseDay = rttLineListQuery.getConceptName(
+		    rttLineListQuery.getInterruptedEncounter(), cohort, ARV_DISPENSED_IN_DAYS);
+		HashMap<Integer, Object> lastAdherence = rttLineListQuery.getByResult(ON_ADHERENCE, cohort,
+		    rttLineListQuery.getInterruptedEncounter());
+		HashMap<Integer, Object> lastTreatmentEndDate = rttLineListQuery.getObsValueDate(
+		    rttLineListQuery.getInterruptedEncounter(), TREATMENT_END_DATE, cohort);
+		
+		// if last followup status is lost or dead then we can't find the treatment end date
+		// thus we take last followup date as treatment end date
+		if (lastTreatmentEndDate == null)
+			lastTreatmentEndDate = lastFollowUpDate;
 		
 		DataSetRow row;
 		if (!persons.isEmpty()) {
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Number", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "ART star  Date E.C.", "Date Returned Treatment E.C.", "Regimen", "Weight", "ARV Dispense Day", "Status")));
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "Weight", "ART Start Date in E.C", "Date Returned Treatment E.C.", "Follow-up Status", "Regimen",
+			    "ARV Dose Days", "Adherence", "Next Visit Date in E.C", "Treatment End Date in E.C",
+			    "Last Follow-up Date in E.C.", "Last Follow-up Status", "Last Regimen", "Last ARV Dose Days",
+			    "Last Adherence", "Date Excluded from TX_CURR in E.C")));
 		}
 		int i = 1;
 		for (Person person : persons) {
 			
 			Date artStartDate = rttLineListQuery.getDate(artStartDateHashMap.get(person.getPersonId()));
-			Date treatmentEndDate = rttLineListQuery.getDate(returnedFollowUpDate.get(person.getPersonId()));
+			Date treatmentEndDateET = rttLineListQuery.getDate(treatmentEndDate.get(person.getPersonId()));
+			Date nextVisitDateET = rttLineListQuery.getDate(nextVisitDate.get(person.getPersonId()));
+			Date followUpDateET = rttLineListQuery.getDate(followUpDate.get(person.getPersonId()));
+			Date lastFollowUpDateET = rttLineListQuery.getDate(lastFollowUpDate.get(person.getPersonId()));
+			Date lastTreatmentEndDateET = rttLineListQuery.getDate(lastTreatmentEndDate.get(person.getPersonId()));
 			
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
@@ -77,17 +109,37 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class),
 			    person.getAge(_datasetDefinition.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Gender", "Sex", String.class), person.getGender());
-			row.addColumnValue(new DataSetColumn("ArtStartDateETC", "ART star  Date E.C.", String.class),
+			row.addColumnValue(new DataSetColumn("Weight", "Weight", Integer.class),
+			    weightDateHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("ArtStartDateETC", "ART Start Date in E.C", String.class),
 			    rttLineListQuery.getEthiopianDate(artStartDate));
-			row.addColumnValue(new DataSetColumn("dateReturnedTreatmentETC", "Date Returned Treatment E.C.", String.class),
-			    rttLineListQuery.getEthiopianDate(treatmentEndDate));
+			row.addColumnValue(new DataSetColumn("dateReturnedTreatmentETC", "Date returned to Treatment in E.C",
+			        String.class), rttLineListQuery.getEthiopianDate(followUpDateET));
+			row.addColumnValue(new DataSetColumn("Follow-up Status", "Follow-up Status", String.class),
+			    followUpStatus.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),
 			    regimentHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class),
-			    weightDateHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("arvDispensDay", "ARV Dispense Day", String.class),
+			row.addColumnValue(new DataSetColumn("arvDispenseDay", "ARV Dose Days", String.class),
 			    dispensDayHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Status", "Status", String.class), statusHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class),
+			    adherence.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("nextVisitDateEC", "Next Visit Date in E.C", String.class),
+			    rttLineListQuery.getEthiopianDate(nextVisitDateET));
+			row.addColumnValue(new DataSetColumn("TreatmentEndDate", "Treatment End Date in E.C", Date.class),
+			    rttLineListQuery.getEthiopianDate(treatmentEndDateET));
+			row.addColumnValue(new DataSetColumn("LastFollowUpDate", "Last Follow-up Date in E.C", Date.class),
+			    rttLineListQuery.getEthiopianDate(lastFollowUpDateET));
+			row.addColumnValue(new DataSetColumn("LastFollowUpStatus", "Last Follow-up Status", String.class),
+			    lastFollowUpStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("LastRegimen", "Last Regimen", String.class),
+			    lastRegimen.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("LastARVDispenseDay", "Last ARV Dose Days", String.class),
+			    lastDispenseDay.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("LastAdherence", "Last Adherence", String.class),
+			    lastAdherence.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("DateExcluded", "Date Excluded from TX_CURR in E.C", Date.class),
+			    rttLineListQuery.getEthiopianDate(lastTreatmentEndDateET));
+			
 			data.addRow(row);
 			
 		}

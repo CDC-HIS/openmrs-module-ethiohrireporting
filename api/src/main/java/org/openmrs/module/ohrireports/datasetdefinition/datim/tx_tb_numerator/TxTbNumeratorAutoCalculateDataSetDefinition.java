@@ -19,6 +19,9 @@ public class TxTbNumeratorAutoCalculateDataSetDefinition extends BaseDataSetDefi
 	@ConfigurationProperty
 	private EncounterType encounterType;
 	
+	@ConfigurationProperty
+	private Boolean header = false;
+	
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -41,6 +44,14 @@ public class TxTbNumeratorAutoCalculateDataSetDefinition extends BaseDataSetDefi
 	
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
+	}
+	
+	public Boolean getHeader() {
+		return header;
+	}
+	
+	public void setHeader(Boolean header) {
+		this.header = header;
 	}
 	
 }

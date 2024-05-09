@@ -39,4 +39,8 @@ public class RTTLineListQuery extends BaseLineListQuery {
 	public List<Integer> getBaseEncounter() {
 		return rttQuery.getBaseEncounter();
 	}
+	
+	public List<Integer> getInterruptedEncounter() {
+		return rttQuery.getInterruptedEncounter();
+	}
 }

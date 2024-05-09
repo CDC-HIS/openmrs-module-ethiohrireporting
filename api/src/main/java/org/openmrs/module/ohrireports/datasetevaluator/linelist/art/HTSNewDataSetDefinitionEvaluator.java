@@ -55,13 +55,14 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = artQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
 		List<Person> persons = patientQuery.getPersons(cohort);
-		HashMap<Integer, Object> weight = artQuery.getByResult(WEIGHT, cohort, encounters);
-		HashMap<Integer, Object> cd4Count = artQuery.getByResult(ADULT_CD4_COUNT, cohort, encounters);
+		HashMap<Integer, Object> weight = artQuery.getByValueNumeric(WEIGHT, cohort, encounters);
+		HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(ADULT_CD4_COUNT, cohort, encounters);
 		HashMap<Integer, Object> whoStage = artQuery.getByResult(WHO_STAGE, cohort, encounters);
 		HashMap<Integer, Object> nutritionalStatus = artQuery.getByResult(NUTRITIONAL_STATUS, cohort, encounters);
 		HashMap<Integer, Object> tbScreeningResult = artQuery.getByResult(TB_SCREENED_RESULT, cohort, encounters);
 		
-		HashMap<Integer, Object> enrollmentDate = artQuery.getObsValueDate(encounters, ENROLLMENT_DATE, cohort);
+		HashMap<Integer, Object> enrollmentDate = artQuery.getObsValueDate(null, ART_REGISTRATION_DATE, cohort,
+		    INTAKE_A_ENCOUNTER_TYPE);
 		
 		HashMap<Integer, Object> hivConfirmedDate = artQuery.getObsValueDate(encounters, HIV_CONFIRMED_DATE, cohort);
 		
@@ -83,12 +84,12 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Number", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "Weight", "CD4", "WHO Stage", "Nutritional Status", "TB Screening Result", "Enrollment Date in E.C",
 			    "HIV Confirmed Date in E.C", "ART Start Date in E.C", "Days Difference", "Pregnancy/ Breastfeeding Status",
 			    "Regimen", "ARV Dose Days", "TI?", "Next Visit Date in E.C", "Treatment End Date in E.C", "Mobile No.")));
@@ -105,7 +106,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			Date date = artQuery.getDate(artStartDate.get(person.getPersonId()));
 			String ethiopianDate = artQuery.getEthiopianDate(date);
-			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));

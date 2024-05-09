@@ -39,6 +39,10 @@ public class RTTQuery extends PatientQueryImpDao {
 	public List<Integer> getBaseEncounter() {
 		return baseEncounter;
 	}
+
+	public  List<Integer> getInterruptedEncounter() {
+		return interruptedEncounter;
+	}
 	@Autowired
 	public RTTQuery(DbSessionFactory _SessionFactory) {
 		sessionFactory = _SessionFactory;

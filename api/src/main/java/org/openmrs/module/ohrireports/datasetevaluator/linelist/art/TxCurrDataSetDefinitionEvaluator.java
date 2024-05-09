@@ -48,10 +48,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    FAMILY_PLANNING_METHODS);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = artQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> registrationDateDictionary = artQuery.getObsValueDate(latestEncounters,
-		    ART_REGISTRATION_DATE, cohort, INTAKE_A_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> weight = artQuery.getByResult(WEIGHT, cohort, latestEncounters);
-		HashMap<Integer, Object> cd4Count = artQuery.getByResult(ADULT_CD4_COUNT, cohort, latestEncounters);
+		HashMap<Integer, Object> registrationDateDictionary = artQuery.getObsValueDate(null, ART_REGISTRATION_DATE, cohort,
+		    INTAKE_A_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> weight = artQuery.getByValueNumeric(WEIGHT, cohort, latestEncounters);
+		HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(ADULT_CD4_COUNT, cohort, latestEncounters);
 		HashMap<Integer, Object> hivConfirmedDate = artQuery.getObsValueDate(latestEncounters, HIV_CONFIRMED_DATE, cohort);
 		HashMap<Integer, Object> artStartDate = artQuery.getObsValueDate(latestEncounters, ART_START_DATE, cohort);
 		HashMap<Integer, Object> tbScreeningResult = artQuery.getByResult(TB_SCREENED_RESULT, cohort, latestEncounters);
@@ -81,12 +81,12 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("#", "Number", Integer.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Number", "Patient Name", "MRN", "UAN",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN",
 			    "Age at Enrollment", "Current Age", "Sex", "Weight", "CD4", "HIV Confirmed Date in E.C",
 			    "ART Start Date in E.C", "TB Screening Result", "Follow-up Date in E.C", "Follow-up Status", "Regimen",
 			    "ARV Dose Days", "Adherence", "DSD Category", "Nutritional Status", "Familiy Planning Method",
@@ -108,7 +108,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			// row should be filled with only patient data
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Number", "Number", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
@@ -118,7 +118,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Current Age", "Current Age", Integer.class),
 			    person.getAge(hdsd.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Age at Enrollment", "Age at Enrollment", String.class),
-			    getAgeByEnrollmentDate(person.getBirthDateTime(), registrationDate));
+			    person.getAge(registrationDate));
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weight.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("CD4", "CD4", String.class), cd4Count.get(person.getPersonId()));
@@ -142,7 +142,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    dsdCategoryHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Nutritional Status", "Nutritional Status", String.class),
 			    nutritionalStatusHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Familiy Planning Method", "Familiy Planning Method", String.class),
+			row.addColumnValue(new DataSetColumn("Family Planning Method", "Family Planning Method", String.class),
 			    familyPlanningHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("PregnancyStatus", "Pregnancy/ Breastfeeding Status", String.class),
 			    pregnancyStatus.get(person.getPersonId()));
