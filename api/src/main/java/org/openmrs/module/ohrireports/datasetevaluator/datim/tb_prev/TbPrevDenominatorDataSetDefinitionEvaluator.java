@@ -25,100 +25,103 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Handler(supports = { TbPrevDominatorDatasetDefinition.class })
+@Handler(supports = {TbPrevDominatorDatasetDefinition.class})
 public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvaluator {
 
-	private TbPrevDominatorDatasetDefinition hdsd;
+    private TbPrevDominatorDatasetDefinition hdsd;
 
-	@Autowired
-	private TBQuery tbQuery;
+    @Autowired
+    private TBQuery tbQuery;
 
-	List<Integer> baseEncounters = new ArrayList<>();
-	private Date endDate = null;
-	@Autowired
-	private EncounterQuery encounterQuery;
+    List<Integer> baseEncounters = new ArrayList<>();
+    private Date endDate = null;
+    @Autowired
+    private EncounterQuery encounterQuery;
 
-	@Autowired
-	private AggregateBuilder _AggregateBuilder;
+    @Autowired
+    private AggregateBuilder _AggregateBuilder;
 
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-			throws EvaluationException {
+    @Override
+    public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
+            throws EvaluationException {
 
-		hdsd = (TbPrevDominatorDatasetDefinition) dataSetDefinition;
-		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-	
-		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
-		Date prevSixMonth = getPrevSixMonth();
-	
-		if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-			baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
+        hdsd = (TbPrevDominatorDatasetDefinition) dataSetDefinition;
+        SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 
-		endDate = hdsd.getEndDate();
-		Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_START_DATE, prevSixMonth,
-				hdsd.getStartDate());
-		Cohort onArtCorCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getEndDate(), tptCohort));
+        if (!hdsd.getHeader()) {
 
-		if (!hdsd.getAggregateType()) {
+            _AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
+            Date prevSixMonth = getPrevSixMonth();
 
-			buildRowForTotalValue(set, onArtCorCohort.size());
+            if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
+                baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
 
-		} else {
-			Cohort newOnARTCohort = new Cohort(
-					tbQuery.getArtStartedCohort("", prevSixMonth, endDate, onArtCorCohort, null,baseEncounters));
-			Cohort oldOnACohort = new Cohort(tbQuery.getArtStartedCohort("", null, prevSixMonth, onArtCorCohort, null,baseEncounters));
+            endDate = hdsd.getEndDate();
+            Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_START_DATE, prevSixMonth,
+                    hdsd.getStartDate());
+            Cohort onArtCorCohort = new Cohort(
+                    tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getEndDate(), tptCohort));
 
-			buildRowForDisaggregation(set, newOnARTCohort, oldOnACohort);
+            if (!hdsd.getAggregateType()) {
 
-		}
+                buildRowForTotalValue(set, onArtCorCohort.size());
 
-		return set;
-	}
+            } else {
+                Cohort newOnARTCohort = new Cohort(
+                        tbQuery.getArtStartedCohort("", prevSixMonth, endDate, onArtCorCohort, null, baseEncounters));
+                Cohort oldOnACohort = new Cohort(tbQuery.getArtStartedCohort("", null, prevSixMonth, onArtCorCohort, null, baseEncounters));
 
-	private Date getPrevSixMonth() {
-		Calendar subSixMonth = Calendar.getInstance();
-		subSixMonth.setTime(hdsd.getStartDate());
-		subSixMonth.add(Calendar.MONTH, -6);
+                buildRowForDisaggregation(set, newOnARTCohort, oldOnACohort);
+
+            }
+        }
+
+        return set;
+    }
+
+    private Date getPrevSixMonth() {
+        Calendar subSixMonth = Calendar.getInstance();
+        subSixMonth.setTime(hdsd.getStartDate());
+        subSixMonth.add(Calendar.MONTH, -6);
         return subSixMonth.getTime();
-	}
+    }
 
-	private void buildRowForDisaggregation(SimpleDataSet set, Cohort newOnARTCohort, Cohort oldOnACohort) {
-		// Disaggregated By ART Start by Age/Sex
-		DataSetRow dataSetRow = new DataSetRow();
-		dataSetRow.addColumnValue(new DataSetColumn("", "", String.class), "Newly enrolled on ART");
-		_AggregateBuilder.setPersonList(tbQuery.getPersons(newOnARTCohort));
-		DataSetRow femaleDataRowNew = new DataSetRow();
+    private void buildRowForDisaggregation(SimpleDataSet set, Cohort newOnARTCohort, Cohort oldOnACohort) {
+        // Disaggregated By ART Start by Age/Sex
+        DataSetRow dataSetRow = new DataSetRow();
+        dataSetRow.addColumnValue(new DataSetColumn("", "", String.class), "Newly enrolled on ART");
+        _AggregateBuilder.setPersonList(tbQuery.getPersons(newOnARTCohort));
+        DataSetRow femaleDataRowNew = new DataSetRow();
 
-		_AggregateBuilder.buildDataSetColumn(femaleDataRowNew, "F", 15);
-		set.addRow(femaleDataRowNew);
+        _AggregateBuilder.buildDataSetColumn(femaleDataRowNew, "F", 15);
+        set.addRow(femaleDataRowNew);
 
-		DataSetRow maleDataRowNew = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(maleDataRowNew, "M", 15);
-		set.addRow(maleDataRowNew);
+        DataSetRow maleDataRowNew = new DataSetRow();
+        _AggregateBuilder.buildDataSetColumn(maleDataRowNew, "M", 15);
+        set.addRow(maleDataRowNew);
 
 
-		DataSetRow dataSetRowPrev = new DataSetRow();
-		dataSetRowPrev.addColumnValue(new DataSetColumn("", "", String.class), "Previously enrolled on ART");
+        DataSetRow dataSetRowPrev = new DataSetRow();
+        dataSetRowPrev.addColumnValue(new DataSetColumn("", "", String.class), "Previously enrolled on ART");
 
-		_AggregateBuilder.setPersonList(tbQuery.getPersons(oldOnACohort));
+        _AggregateBuilder.setPersonList(tbQuery.getPersons(oldOnACohort));
 
-		DataSetRow femaleRowPrev = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(femaleRowPrev, "F", 15);
-		set.addRow(femaleRowPrev);
+        DataSetRow femaleRowPrev = new DataSetRow();
+        _AggregateBuilder.buildDataSetColumn(femaleRowPrev, "F", 15);
+        set.addRow(femaleRowPrev);
 
-		DataSetRow maleRowPrev = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(maleRowPrev, "M", 15);
-		set.addRow(maleRowPrev);
-	}
+        DataSetRow maleRowPrev = new DataSetRow();
+        _AggregateBuilder.buildDataSetColumn(maleRowPrev, "M", 15);
+        set.addRow(maleRowPrev);
+    }
 
-	private void buildRowForTotalValue(SimpleDataSet set, int total) {
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("AutoCalculate", "Auto-Calculate", String.class), "Denominator");
-		dataSet.addColumnValue(new DataSetColumn("description",
-				"Number of ART patients who were initiated on any course of TPT during the previous reporting period",
-				Integer.class), total);
-		set.addRow(dataSet);
-	}
+    private void buildRowForTotalValue(SimpleDataSet set, int total) {
+        DataSetRow dataSet = new DataSetRow();
+        dataSet.addColumnValue(new DataSetColumn("AutoCalculate", "Auto-Calculate", String.class), "Denominator");
+        dataSet.addColumnValue(new DataSetColumn("description",
+                "Number of ART patients who were initiated on any course of TPT during the previous reporting period",
+                Integer.class), total);
+        set.addRow(dataSet);
+    }
 
 }

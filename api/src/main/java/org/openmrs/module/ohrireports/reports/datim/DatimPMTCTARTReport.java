@@ -34,7 +34,7 @@ public class DatimPMTCTARTReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Number of HIV-positive pregnant women who received ART to reduce the risk of mother-to-child-transmission";
+		return "";
 	}
 	
 	@Override
@@ -50,6 +50,12 @@ public class DatimPMTCTARTReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		PMTCTARTAutoCalculateDataSetDefinition headerDefinition = new PMTCTARTAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: PMTCT_ART");
+		reportDefinition.addDataSetDefinition("DSD: PMTCT_ART", EthiOhriUtil.map(headerDefinition));
 		
 		PMTCTARTAutoCalculateDataSetDefinition pmtctDataSet = new PMTCTARTAutoCalculateDataSetDefinition();
 		pmtctDataSet.addParameters(getParameters());

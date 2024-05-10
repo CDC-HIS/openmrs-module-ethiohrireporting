@@ -58,7 +58,8 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> followUpDate = artQuery.getObsValueDate(latestEncounters, FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> adherenceHashMap = artQuery.getByResult(ARV_ADHERENCE, cohort, latestEncounters);
 		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(latestEncounters, cohort);
-		HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getNutritionalStatus(latestEncounters, cohort);
+		HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getByResult(NUTRITIONAL_STATUS, cohort,
+		    latestEncounters);
 		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(latestEncounters, cohort);
 		HashMap<Integer, Object> dispensDayHashMap = artQuery
 		        .getConceptName(latestEncounters, cohort, ARV_DISPENSED_IN_DAYS);
@@ -81,7 +82,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("#", "Number", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
 			data.addRow(row);
@@ -114,11 +115,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", Integer.class),
 			    uanIdentifierHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("Current Age", "Current Age", Integer.class),
-			    person.getAge(hdsd.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Age at Enrollment", "Age at Enrollment", String.class),
 			    person.getAge(registrationDate));
+			row.addColumnValue(new DataSetColumn("Current Age", "Current Age", Integer.class),
+			    person.getAge(hdsd.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weight.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("CD4", "CD4", String.class), cd4Count.get(person.getPersonId()));
@@ -126,8 +126,6 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    artQuery.getEthiopianDate(hivConfirmedDateET));
 			row.addColumnValue(new DataSetColumn("ARTStartDateETH", "ART Start Date in E.C", String.class),
 			    artQuery.getEthiopianDate(artStartDateET));
-			row.addColumnValue(new DataSetColumn("TBScreeningResult", "TB Screening Result", String.class),
-			    tbScreeningResult.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Follow-up Date in E.C", "Follow-up Date in E.C", String.class),
 			    artQuery.getEthiopianDate(followupDateET));
 			row.addColumnValue(new DataSetColumn("Follow-up Status", "Follow-up Status", String.class),
@@ -147,6 +145,8 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("PregnancyStatus", "Pregnancy/ Breastfeeding Status", String.class),
 			    pregnancyStatus.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("On PMTCT?", "On PMTCT?", String.class), "");
+			row.addColumnValue(new DataSetColumn("TBScreeningResult", "TB Screening Result", String.class),
+			    tbScreeningResult.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("TPT Start Date", "TPT Start Date E.T.", String.class),
 			    artQuery.getEthiopianDate(tptStartDateET));
 			row.addColumnValue(new DataSetColumn("TPT Completed Date", "TPT Completed Date E.T.", String.class),

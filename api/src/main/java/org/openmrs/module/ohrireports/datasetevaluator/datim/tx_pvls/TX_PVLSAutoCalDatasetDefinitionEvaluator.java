@@ -41,24 +41,27 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		TX_PVLSAutoCalcDatasetDefinition txDatasetDefinition = (TX_PVLSAutoCalcDatasetDefinition) dataSetDefinition;
-		
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(txDatasetDefinition.getEndDate());
-		calendar.add(Calendar.MONTH, -_VALID_MONTHS_OF_VIRAL_LOAD_TEST);
-		start = calendar.getTime();
-		end = txDatasetDefinition.getEndDate();
-		
-		if (vlQuery.start != start || vlQuery.end != end || vlQuery.getVlTakenEncounters().isEmpty()) {
-			List<Integer> laIntegers = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED), start,
-			    end);
-			vlQuery.loadInitialCohort(start, end, laIntegers);
-		}
-		Cohort cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery.getViralLoadSuppressed();
-		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		DataSetRow setRow = new DataSetRow();
-		setRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", String.class), cohort.getMemberIds().size());
-		dataSet.addRow(setRow);
+		
+		if (!txDatasetDefinition.getHeader()) {
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(txDatasetDefinition.getEndDate());
+			calendar.add(Calendar.MONTH, -_VALID_MONTHS_OF_VIRAL_LOAD_TEST);
+			start = calendar.getTime();
+			end = txDatasetDefinition.getEndDate();
+			
+			if (vlQuery.start != start || vlQuery.end != end || vlQuery.getVlTakenEncounters().isEmpty()) {
+				List<Integer> laIntegers = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED),
+				    start, end);
+				vlQuery.loadInitialCohort(start, end, laIntegers);
+			}
+			Cohort cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery.getViralLoadSuppressed();
+			
+			DataSetRow setRow = new DataSetRow();
+			setRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", String.class), cohort.getMemberIds().size());
+			dataSet.addRow(setRow);
+		}
 		return dataSet;
 	}
 	

@@ -29,7 +29,7 @@ public class DatimTbPrevDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "DSD: TB_PREV (Denominator)";
+		return "";
 	}
 	
 	@Override
@@ -44,6 +44,12 @@ public class DatimTbPrevDenominatorReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		TbPrevDominatorDatasetDefinition headerDefinition = new TbPrevDominatorDatasetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TB_PREV");
+		reportDefinition.addDataSetDefinition("DSD: TB_PREV", EthiOhriUtil.map(headerDefinition));
 		
 		TbPrevDominatorDatasetDefinition aDefinition = new TbPrevDominatorDatasetDefinition();
 		aDefinition.addParameters(getParameters());

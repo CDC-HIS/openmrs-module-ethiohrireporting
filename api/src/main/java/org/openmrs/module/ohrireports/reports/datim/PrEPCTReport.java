@@ -37,7 +37,7 @@ public class PrEPCTReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Number of individuals, excluding those newly enrolled, that return for a follow-up visit or reinitiation vist to receive pre-exposure prophylaxis (PrEP) to prevent HIV during the reporting period. Numerator will auto-Calculate from sum of Age/Sex Disaggregate";
+		return "";
 	}
 	
 	@Override
@@ -55,6 +55,12 @@ public class PrEPCTReport implements ReportManager {
 		reportDefinition.addParameters(getParameters());
 		
 		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		
+		AutoCalculatePrEPCTDatasetDefinition headerDefinition = new AutoCalculatePrEPCTDatasetDefinition();
+		headerDefinition.setParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("PREP_CT");
+		reportDefinition.addDataSetDefinition("PREP_CT", EthiOhriUtil.map(headerDefinition));
 		
 		AutoCalculatePrEPCTDatasetDefinition aDataSetDefinition = new AutoCalculatePrEPCTDatasetDefinition();
 		aDataSetDefinition.setParameters(getParameters());

@@ -29,20 +29,23 @@ public class PMTCTFOAutoCalculateDataSetDefinisionEvaluator implements DataSetEv
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		_dataSetDefinition = (PMTCTFOAutoCalculateDataSetDefinition) dataSetDefinition;
-		context = evalContext;
-		
-		foQuery.setStartDate(_dataSetDefinition.getStartDate());
-		foQuery.setEndDate(_dataSetDefinition.getEndDate());
-		
-		pmtctfo = new PMTCTFO(foQuery.getPmtctByHivInfectedStatus(), foQuery.getPmtctByHivUninfectedStatus(),
-		        foQuery.getPmtctByHivStatusUnknown(), foQuery.getPmtctDiedWithoutStatusKnown());
-		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("Denominator", "Denominator", Integer.class), foQuery.getBaseCohort()
-		        .size());
-		dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), pmtctfo.getTotal());
-		set.addRow(dataSet);
+		
+		if (!_dataSetDefinition.getHeader()) {
+			context = evalContext;
+			
+			foQuery.setStartDate(_dataSetDefinition.getStartDate());
+			foQuery.setEndDate(_dataSetDefinition.getEndDate());
+			
+			pmtctfo = new PMTCTFO(foQuery.getPmtctByHivInfectedStatus(), foQuery.getPmtctByHivUninfectedStatus(),
+			        foQuery.getPmtctByHivStatusUnknown(), foQuery.getPmtctDiedWithoutStatusKnown());
+			
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("Denominator", "Denominator", Integer.class), foQuery.getBaseCohort()
+			        .size());
+			dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), pmtctfo.getTotal());
+			set.addRow(dataSet);
+		}
 		return set;
 	}
 	

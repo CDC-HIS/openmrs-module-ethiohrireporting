@@ -25,23 +25,26 @@ public class HeiTotalDatasetDefinitionEvaluator implements DataSetEvaluator {
 	private EIDQuery eidQuery;
 	
 	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		HeiTotalDatasetDefinition dsd = (HeiTotalDatasetDefinition) dataSetDefinition;
-		AtomicInteger count = new AtomicInteger(0);
-		eidQuery.generateReport(dsd.getStartDate(), dsd.getEndDate(), PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB);
-		eidQuery.getPatientEncounterHashMap().forEach((k, p) -> {
-			p.getEncounterList().forEach(e -> {
-				if (Objects.nonNull(e.getDnaPcrResult())) {
-					count.getAndIncrement();
-				}
-			});
-		});
-		SimpleDataSet data   = new SimpleDataSet(dataSetDefinition,evalContext);
-		DataSetRow headerRow = new DataSetRow();
-		headerRow.addColumnValue(new DataSetColumn("sum"," ",String.class),"Sum result ");
-		headerRow.addColumnValue(new DataSetColumn("count"," ",Integer.class),count.intValue());
-		
-		data.addRow(headerRow);
-		return data;
-	}
+    public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+        HeiTotalDatasetDefinition dsd = (HeiTotalDatasetDefinition) dataSetDefinition;
+        SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
+
+        if (!dsd.getHeader()) {
+            AtomicInteger count = new AtomicInteger(0);
+            eidQuery.generateReport(dsd.getStartDate(), dsd.getEndDate(), PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB);
+            eidQuery.getPatientEncounterHashMap().forEach((k, p) -> {
+                p.getEncounterList().forEach(e -> {
+                    if (Objects.nonNull(e.getDnaPcrResult())) {
+                        count.getAndIncrement();
+                    }
+                });
+            });
+            DataSetRow headerRow = new DataSetRow();
+            headerRow.addColumnValue(new DataSetColumn("sum", " ", String.class), "Sum result ");
+            headerRow.addColumnValue(new DataSetColumn("count", " ", Integer.class), count.intValue());
+
+            data.addRow(headerRow);
+        }
+        return data;
+    }
 }

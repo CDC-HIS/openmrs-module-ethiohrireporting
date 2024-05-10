@@ -33,7 +33,7 @@ public class TBARTNumeratorReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Proportion of HIV-positive new and relapsed TB cases on ART during TB treatment";
+		return "";
 	}
 	
 	@Override
@@ -49,6 +49,12 @@ public class TBARTNumeratorReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		TBARTAutoCalculateDataSetDefinition headerDefinition = new TBARTAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TB_ART (Numerator)");
+		reportDefinition.addDataSetDefinition("DSD: TB_ART (Numerator)", EthiOhriUtil.mapEndDate(headerDefinition));
 		
 		TBARTAutoCalculateDataSetDefinition tbADataSet = new TBARTAutoCalculateDataSetDefinition();
 		tbADataSet.addParameters(getParameters());

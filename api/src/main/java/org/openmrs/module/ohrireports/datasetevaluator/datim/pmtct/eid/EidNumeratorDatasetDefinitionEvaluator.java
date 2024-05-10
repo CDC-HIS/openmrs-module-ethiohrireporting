@@ -26,14 +26,15 @@ public class EidNumeratorDatasetDefinitionEvaluator implements DataSetEvaluator 
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		EidNumeratorDatasetDefinition _datasetDefinition = (EidNumeratorDatasetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
-		
-		eidQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate(),
-		    PMTCT_SAMPLE_COLLECTION_DATE);
-		
-		DataSetRow row = new DataSetRow();
-		row.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), eidQuery.getBaseCohort().size());
-		
-		data.addRow(row);
+		if (!_datasetDefinition.getHeader()) {
+			eidQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate(),
+			    PMTCT_SAMPLE_COLLECTION_DATE);
+			
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), eidQuery.getBaseCohort().size());
+			
+			data.addRow(row);
+		}
 		
 		return data;
 	}

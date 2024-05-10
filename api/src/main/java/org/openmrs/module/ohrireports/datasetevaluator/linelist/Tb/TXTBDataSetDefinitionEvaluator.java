@@ -1,18 +1,9 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.Tb;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DIAGNOSTIC_TEST;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.GENE_XPERT_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.LF_LAM_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.MRN_PATIENT_IDENTIFIERS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.SPECIMEN_SENT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_ACTIVE_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_DIAGNOSTIC_TEST_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_STATUS;
-
+import java.sql.Array;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -23,6 +14,7 @@ import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBARTQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TXTBDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.ohrireports.reports.linelist.TXTBReport;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -33,6 +25,8 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = {TXTBDataSetDefinition.class})
 public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -50,6 +44,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
     private Cohort cohort;
     private TXTBDataSetDefinition hdsd;
     HashMap<Integer, Object> mrnIdentifierHashMap;
+    HashMap<Integer, Object> uanIdentifierHashMap;
     HashMap<Integer, Object> tbTxStartDictionary = new HashMap<>();
     private HashMap<Integer, Object> screenedResultHashMap;
     private HashMap<Integer, Object> regimentDictionary;
@@ -96,6 +91,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
         }
 
         mrnIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
+        uanIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
         artStartDictionary = tbQueryLineList.getArtStartDate(cohort, null, hdsd.getEndDate());
         regimentDictionary = tbQueryLineList.getRegiment(followUpEncounters, cohort);
         followUpDate = tbQueryLineList.getObsValueDate(followUpEncounters, FOLLOW_UP_DATE, cohort);
@@ -104,19 +100,15 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 
         DataSetRow row;
 
-        if (persons.size() > 0) {
-
+        if (!persons.isEmpty()) {
             row = new DataSetRow();
-
-            row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-            row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
-
+            row.addColumnValue(new DataSetColumn("#", "#", String.class), "TOTAL");
+            row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
             data.addRow(row);
         }
         if (hdsd.getType().equals(TXTBReport.numerator)) {
             getRowForNumerator(data, persons);
         } else if (hdsd.getType().equals(TXTBReport.denominator)) {
-
             getRowForDenominator(data, persons);
         } else {
             getRowForActiveTB(data, persons);
@@ -134,7 +126,11 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
     }
 
     private void getRowForActiveTB(SimpleDataSet data, List<Person> persons) {
-        DataSetRow row = new DataSetRow();
+        DataSetRow row;
+        if (persons.isEmpty()) {
+            constructEmptyDataTable(data, Arrays.asList("Active TB diagnosed Date E.C", "TB Treatment Start Date E.C", "TB Treatment Status"));
+        }
+        int i = 1;
         for (Person person : persons) {
 
             row = new DataSetRow();
@@ -144,14 +140,9 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
             Date _activeTbDate = tbQueryLineList.getDate(tpActiveDate.get(person.getPersonId()));
             String activeTbEthiopianDate = tbQueryLineList.getEthiopianDate(_activeTbDate);
 
-            addBaseColumns(row, person);
-            row.addColumnValue(new DataSetColumn("activeTbDiagnosedDate", "Active TB diagnosed Date", Date.class), _activeTbDate);
-
-            row.addColumnValue(new DataSetColumn("activeTbDiagnosedDateEth", "Active TB diagnosed DateETH", String.class), activeTbEthiopianDate);
-
-            row.addColumnValue(new DataSetColumn("TBTreatmentStartDate", "TB Treatment Start Date", Date.class), treatmentStartDate);
-
-            row.addColumnValue(new DataSetColumn("TBTXTreatmentDateEth", "TB Treatment Start Date ETH", String.class), txEthiopianDate);
+            addBaseColumns(row, person, i);
+            row.addColumnValue(new DataSetColumn("activeTbDiagnosedDateEth", "Active TB diagnosed Date E.C", String.class), activeTbEthiopianDate);
+            row.addColumnValue(new DataSetColumn("TBTXTreatmentDateEth", "TB Treatment Start Date E.C", String.class), txEthiopianDate);
             row.addColumnValue(new DataSetColumn("tp-status", "TB Treatment Status", String.class), tpTreatmentStatus.get(person.getPersonId()));
 
             data.addRow(row);
@@ -159,62 +150,61 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
     }
 
     private void getRowForNumerator(SimpleDataSet data, List<Person> persons) {
-        DataSetRow row = new DataSetRow();
+        DataSetRow row;
+        if (persons.isEmpty()) {
+            constructEmptyDataTable(data, Collections.singletonList("TB Treatment Start Date E.C"));
+        }
+        int i = 1;
         for (Person person : persons) {
 
             row = new DataSetRow();
             Date treatmentStartDate = tbQueryLineList.getDate(tbTxStartDictionary.get(person.getPersonId()));
             String txEthiopianDate = tbQueryLineList.getEthiopianDate(treatmentStartDate);
 
-            addBaseColumns(row, person);
+            addBaseColumns(row, person, i);
             getTxTb(row, person);
-            row.addColumnValue(new DataSetColumn("TBTreatmentStartDate", "TB Treatment Start Date", Date.class), treatmentStartDate);
-
-            row.addColumnValue(new DataSetColumn("TBTXTreatmentDateEth", "TB Treatment Start Date ETH", String.class), txEthiopianDate);
+            row.addColumnValue(new DataSetColumn("TBTXTreatmentDateEth", "TB Treatment Start Date E.C", String.class), txEthiopianDate);
 
             data.addRow(row);
         }
     }
 
     private void getRowForDenominator(SimpleDataSet data, List<Person> persons) {
-        DataSetRow row = new DataSetRow();
+        DataSetRow row;
+        if (persons.isEmpty()) {
+            constructEmptyDataTable(data, Arrays.asList("Screen Result", "TB Screened Start Date E.C"));
+        }
+        int i = 1;
         for (Person person : persons) {
 
             row = new DataSetRow();
             Date treatmentStartDate = tbQueryLineList.getDate(tbTxStartDictionary.get(person.getPersonId()));
             String txEthiopianDate = tbQueryLineList.getEthiopianDate(treatmentStartDate);
 
-            addBaseColumns(row, person);
+            addBaseColumns(row, person, i);
             getTxTb(row, person);
             row.addColumnValue(new DataSetColumn("ScreenedResult", "Screen Result", String.class), screenedResultHashMap.get(person.getPersonId()));
-
-            row.addColumnValue(new DataSetColumn("TBScreenedDate", "TB Screened Date", Date.class), treatmentStartDate);
-
-            row.addColumnValue(new DataSetColumn("TBTXScreenedDateEth", "TB Screened Start Date ETH", String.class), txEthiopianDate);
+            row.addColumnValue(new DataSetColumn("TBTXScreenedDateEth", "TB Screened Start Date E.C", String.class), txEthiopianDate);
 
             data.addRow(row);
         }
     }
 
-    private void addBaseColumns(DataSetRow row, Person person) {
+    private void addBaseColumns(DataSetRow row, Person person, int i) {
         Date artStartDate = tbQueryLineList.getDate(artStartDictionary.get(person.getPersonId()));
         String artEthiopianDate = tbQueryLineList.getEthiopianDate(artStartDate);
 
         Date _followUpDate = tbQueryLineList.getDate(followUpDate.get(person.getPersonId()));
         String followUpEthiopianDate = tbQueryLineList.getEthiopianDate(_followUpDate);
 
+        row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+        row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
         row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class), mrnIdentifierHashMap.get(person.getPersonId()));
-
-        row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
+        row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uanIdentifierHashMap.get(person.getPersonId()));
         row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(hdsd.getEndDate()));
-        row.addColumnValue(new DataSetColumn("Gender", "Gender", Integer.class), person.getGender());
-
-        row.addColumnValue(new DataSetColumn("ArtStartDate", "Art Start Date", Date.class), artStartDate);
-        row.addColumnValue(new DataSetColumn("ArtStartDateEth", "Art Start Date ETH", String.class), artEthiopianDate);
-
-        row.addColumnValue(new DataSetColumn("followUpDate", "FollowUp Date", Date.class), _followUpDate);
-
-        row.addColumnValue(new DataSetColumn("followUpDateEth", "FollowUp Date ETH", String.class), followUpEthiopianDate);
+        row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
+        row.addColumnValue(new DataSetColumn("ArtStartDateEth", "Art Start Date E.C", String.class), artEthiopianDate);
+        row.addColumnValue(new DataSetColumn("followUpDateEth", "FollowUp Date E.C", String.class), followUpEthiopianDate);
         row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class), regimentDictionary.get(person.getPersonId()));
         row.addColumnValue(new DataSetColumn("followUpStatus", "FollowUp Status", String.class), followUpStatus.get(person.getPersonId()));
 
@@ -226,6 +216,18 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
         row.addColumnValue(new DataSetColumn("Gene_Xpert-Result", "Gene_Xpert Result", String.class), geneXpertResult.get(person.getPersonId()));
         row.addColumnValue(new DataSetColumn("OtherTBDiagnosticTest", "Other TB Diagnostic Test", String.class), OtherDiagnosticTest.get(person.getPersonId()));
         row.addColumnValue(new DataSetColumn("OtherTBDiagnosticResult", "Other TB Diagnostic Test Result", String.class), OtherDiagResult.get(person.getPersonId()));
+    }
+
+    private void constructEmptyDataTable(SimpleDataSet data, List<String> programColumns) {
+        List<String> baseColumns = arrayListOfBaseEmptyColumn();
+
+        data.addRow(LineListUtilities.buildEmptyRow(Stream.concat(baseColumns.stream(), programColumns.stream())
+                .collect(Collectors.toList())));
+    }
+
+    private List<String> arrayListOfBaseEmptyColumn() {
+        return Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+                "ART Start Date in E.C", "FollowUp Date E.C", "Regimen", "FollowUp Status");
     }
 
 }

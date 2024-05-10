@@ -50,6 +50,12 @@ public class PMTCTFOReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
+		PMTCTFOAutoCalculateDataSetDefinition headerDefinition = new PMTCTFOAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: PMTCT_FO");
+		reportDefinition.addDataSetDefinition("DSD: PMTCT_FO", EthiOhriUtil.map(headerDefinition));
+		
 		PMTCTFOAutoCalculateDataSetDefinition pmtctfoAutoCalculateDataSetDefinition = new PMTCTFOAutoCalculateDataSetDefinition();
 		pmtctfoAutoCalculateDataSetDefinition
 		        .setDescription("Number of HIV-exposed infants who were born 24 months prior to the reporting period and registered in the birth cohort.");

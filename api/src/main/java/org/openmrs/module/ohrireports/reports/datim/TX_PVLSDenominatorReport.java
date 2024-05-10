@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.reports.datim;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 import org.openmrs.EncounterType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDisaggregationByPopulationDatasetDefinition;
@@ -45,15 +47,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		stringBuilder
-		        .append("Number of adults and pediatric ART patients with a viral load result documented in the medical records ");
-		stringBuilder.append("and/or supporting laboratory results within the past 12 months. ");
-		stringBuilder.append("Denominator will auto-calculate from the sum of the Age/Sex/Indication disaggregated");
-		
-		return stringBuilder.toString();
+        return "";
 	}
 	
 	@Override
@@ -75,6 +69,12 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		reportDefinition.addParameters(getParameters());
 		
 		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		
+		TX_PVLSAutoCalcDatasetDefinition headerDefinition = new TX_PVLSAutoCalcDatasetDefinition();
+		headerDefinition.setParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("TX_PVLS");
+		reportDefinition.addDataSetDefinition("TX_PVLS", EthiOhriUtil.mapEndDate(headerDefinition));
 		
 		TX_PVLSAutoCalcDatasetDefinition autoCalDataSetDefinition = new TX_PVLSAutoCalcDatasetDefinition();
 		autoCalDataSetDefinition.setParameters(getParameters());

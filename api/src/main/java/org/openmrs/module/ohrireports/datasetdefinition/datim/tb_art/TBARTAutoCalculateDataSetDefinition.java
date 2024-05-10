@@ -19,6 +19,9 @@ public class TBARTAutoCalculateDataSetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private EncounterType encounterType;
 	
+	@ConfigurationProperty
+	private Boolean header = false;
+	
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -41,5 +44,13 @@ public class TBARTAutoCalculateDataSetDefinition extends BaseDataSetDefinition {
 	
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
+	}
+	
+	public Boolean getHeader() {
+		return header;
+	}
+	
+	public void setHeader(Boolean header) {
+		this.header = header;
 	}
 }

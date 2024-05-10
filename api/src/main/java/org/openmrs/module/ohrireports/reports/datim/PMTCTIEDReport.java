@@ -36,7 +36,7 @@ public class PMTCTIEDReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Percentage of infants born to women living with HIV who received a sample collected for  Virologic HIV test by 12 months of age.";
+		return "";
 	}
 	
 	@Override
@@ -52,6 +52,12 @@ public class PMTCTIEDReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		EidNumeratorDatasetDefinition headerDefinition = new EidNumeratorDatasetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: EID_NUM");
+		reportDefinition.addDataSetDefinition("DSD: EID_NUM", EthiOhriUtil.map(headerDefinition));
 		
 		EidNumeratorDatasetDefinition numeratorDatasetDefinition = new EidNumeratorDatasetDefinition();
 		numeratorDatasetDefinition

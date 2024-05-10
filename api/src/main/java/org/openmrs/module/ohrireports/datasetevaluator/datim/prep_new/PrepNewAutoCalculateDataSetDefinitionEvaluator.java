@@ -49,42 +49,20 @@ public class PrepNewAutoCalculateDataSetDefinitionEvaluator implements DataSetEv
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		auCDataSetDefinition = (AutoCalculatePrepNewDataSetDefinition) dataSetDefinition;
-		
-		preExposureProphylaxisQuery.setStartDate(auCDataSetDefinition.getStartDate());
-		preExposureProphylaxisQuery.setEndDate(auCDataSetDefinition.getEndDate());
-		
-		context = evalContext;
-		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		DataSetRow dRow = new DataSetRow();
-		Cohort cohort = preExposureProphylaxisQuery.getAllNewPrEP();
-		
-		dRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), cohort.size());
-		dataSet.addRow(dRow);
+		if (!auCDataSetDefinition.getHeader()) {
+			preExposureProphylaxisQuery.setStartDate(auCDataSetDefinition.getStartDate());
+			preExposureProphylaxisQuery.setEndDate(auCDataSetDefinition.getEndDate());
+			
+			context = evalContext;
+			
+			DataSetRow dRow = new DataSetRow();
+			Cohort cohort = preExposureProphylaxisQuery.getAllNewPrEP();
+			
+			dRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), cohort.size());
+			dataSet.addRow(dRow);
+		}
 		return dataSet;
 	}
-	
-	/*private List<Integer> getPreviouslyOnPrEpPatients() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder.select("obs").from(Obs.class, "obs")
-		
-		.whereEqual("obs.concept", prEpStatedConcept).and()
-		        .whereLess("obs.valueDatetime", auCDataSetDefinition.getStartDate());
-		return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-	}*/
-	
-	/*private List<Integer> getOnPrEpPatients() {
-		HqlQueryBuilder queryBuilder = new HqlQueryBuilder();
-		queryBuilder
-		        .select("obs")
-		        .from(Obs.class, "obs")
-		        .whereEqual("obs.encounter.encounterType", auCDataSetDefinition.getEncounterType())
-		        .and()
-		        .whereEqual("obs.concept", prEpStatedConcept)
-		        .and()
-		        .whereBetweenInclusive("obs.valueDatetime", auCDataSetDefinition.getStartDate(),
-		            auCDataSetDefinition.getEndDate()).and().whereNotInAny("obs.personId", getPreviouslyOnPrEpPatients());
-		return evaluationService.evaluateToList(queryBuilder, Integer.class, context);
-	}*/
 }

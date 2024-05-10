@@ -27,15 +27,14 @@ public class TBARTAutoCalculateDataSetDefinitionEvaluator implements DataSetEval
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		TBARTAutoCalculateDataSetDefinition _datasetDefinition = (TBARTAutoCalculateDataSetDefinition) dataSetDefinition;
-		Cohort activeTbCohort = tbQuery.getCohortByTBTreatmentStartDate(_datasetDefinition.getStartDate(),
-		    _datasetDefinition.getEndDate());
-		
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("auto-calculate", "Numerator", Integer.class), activeTbCohort.size());
-		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		
-		set.addRow(dataSet);
+		if (!_datasetDefinition.getHeader()) {
+			Cohort activeTbCohort = tbQuery.getCohortByTBTreatmentStartDate(_datasetDefinition.getStartDate(),
+			    _datasetDefinition.getEndDate());
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("auto-calculate", "Numerator", Integer.class), activeTbCohort.size());
+			set.addRow(dataSet);
+		}
 		return set;
 	}
 	

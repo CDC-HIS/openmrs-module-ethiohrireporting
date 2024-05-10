@@ -31,7 +31,7 @@ public class CXCASCRNReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Number of HIV-positive women on ART screened for cervical cancer";
+		return "";
 	}
 	
 	@Override
@@ -47,6 +47,12 @@ public class CXCASCRNReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		CXCAAutoCalculateDatasetDefinition headerDefinition = new CXCAAutoCalculateDatasetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: CXCA_SCRN");
+		reportDefinition.addDataSetDefinition("DSD: CXCA_SCRN", EthiOhriUtil.map(headerDefinition));
 		
 		CXCAAutoCalculateDatasetDefinition tbADataSet = new CXCAAutoCalculateDatasetDefinition();
 		tbADataSet.addParameters(getParameters());

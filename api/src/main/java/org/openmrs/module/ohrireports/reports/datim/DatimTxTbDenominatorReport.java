@@ -35,7 +35,7 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of DATIM TX_TB_Denominator patients";
+		return "";
 	}
 	
 	@Override
@@ -50,6 +50,12 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		TxTbDenominatorAutoCalculateDataSetDefinition headerDefinition = new TxTbDenominatorAutoCalculateDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TX_TB_Denominator");
+		reportDefinition.addDataSetDefinition("DSD: TX_TB_Denominator", EthiOhriUtil.map(headerDefinition));
 		
 		TxTbDenominatorAutoCalculateDataSetDefinition aDefinition = new TxTbDenominatorAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());

@@ -33,7 +33,7 @@ public class CXCATreatmentReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Number of HIV-positive women on ART Treatment for cervical cancer";
+		return "";
 	}
 	
 	@Override
@@ -49,6 +49,12 @@ public class CXCATreatmentReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		CxCaTreatmentAutoCalculateDatasetDefinition headerDefinition = new CxCaTreatmentAutoCalculateDatasetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: CXCA_TX");
+		reportDefinition.addDataSetDefinition("DSD: CXCA_TX", EthiOhriUtil.map(headerDefinition));
 		
 		CxCaTreatmentAutoCalculateDatasetDefinition cxcaTreatmentDataSet = new CxCaTreatmentAutoCalculateDatasetDefinition();
 		cxcaTreatmentDataSet.addParameters(getParameters());

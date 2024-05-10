@@ -24,16 +24,14 @@ public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements D
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		TxTbDenominatorAutoCalculateDataSetDefinition dsd = (TxTbDenominatorAutoCalculateDataSetDefinition) dataSetDefinition;
-		tbQuery.generateDenominatorReport(dsd.getStartDate(), dsd.getEndDate());
-		
-		DataSetRow dataSet = new DataSetRow();
-		
-		dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), tbQuery
-		        .getDenomiatorCohort().size());
-		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		
-		set.addRow(dataSet);
+		if (!dsd.getHeader()) {
+			tbQuery.generateDenominatorReport(dsd.getStartDate(), dsd.getEndDate());
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), tbQuery
+			        .getDenomiatorCohort().size());
+			set.addRow(dataSet);
+		}
 		return set;
 	}
 	

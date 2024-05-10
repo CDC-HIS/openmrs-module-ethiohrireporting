@@ -19,6 +19,9 @@ public class TX_PVLSAutoCalcDatasetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private Boolean includeUnSuppressed;
 	
+	@ConfigurationProperty
+	private Boolean header = false;
+	
 	public Boolean getIncludeUnSuppressed() {
 		return includeUnSuppressed;
 	}
@@ -41,5 +44,13 @@ public class TX_PVLSAutoCalcDatasetDefinition extends BaseDataSetDefinition {
 	
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
+	}
+	
+	public Boolean getHeader() {
+		return header;
+	}
+	
+	public void setHeader(Boolean header) {
+		this.header = header;
 	}
 }

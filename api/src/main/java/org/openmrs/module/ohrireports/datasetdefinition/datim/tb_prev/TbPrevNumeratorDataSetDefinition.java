@@ -18,6 +18,9 @@ public class TbPrevNumeratorDataSetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private boolean aggregateType;
 	
+	@ConfigurationProperty
+	private Boolean header = false;
+	
 	public boolean getAggregateType() {
 		return aggregateType;
 	}
@@ -40,6 +43,14 @@ public class TbPrevNumeratorDataSetDefinition extends BaseDataSetDefinition {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+	
+	public Boolean getHeader() {
+		return header;
+	}
+	
+	public void setHeader(Boolean header) {
+		this.header = header;
 	}
 	
 }

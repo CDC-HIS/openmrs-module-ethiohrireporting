@@ -68,7 +68,8 @@ public class TXCURReport implements ReportManager {
 		txCurrDataSetDefinition.addParameters(getParameters());
 		txCurrDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Tx-Curr", map(txCurrDataSetDefinition, "endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("List of Patients Currently on ART",
+		    map(txCurrDataSetDefinition, "endDate=${endDateGC}"));
 		return reportDefinition;
 	}
 	

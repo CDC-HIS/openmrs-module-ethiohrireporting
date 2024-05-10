@@ -46,6 +46,12 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
+		TbPrevNumeratorDataSetDefinition headerDefinition = new TbPrevNumeratorDataSetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: TB_PREV_NUMERATOR");
+		reportDefinition.addDataSetDefinition("DSD: TB_PREV_NUMERATOR", EthiOhriUtil.map(headerDefinition));
+		
 		TbPrevNumeratorDataSetDefinition aDefinition = new TbPrevNumeratorDataSetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setAggregateType(false);

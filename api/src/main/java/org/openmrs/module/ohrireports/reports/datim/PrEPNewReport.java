@@ -35,7 +35,7 @@ public class PrEPNewReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Number of individuals who where newly enrolled on pre-exposure prophylaxis (PrEP) to prevent HIV infection in the reporting period";
+		return "";
 	}
 	
 	@Override
@@ -53,6 +53,12 @@ public class PrEPNewReport implements ReportManager {
 		reportDefinition.addParameters(getParameters());
 		
 		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		
+		AutoCalculatePrepNewDataSetDefinition headerDefinition = new AutoCalculatePrepNewDataSetDefinition();
+		headerDefinition.setParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: PrEP_NEW");
+		reportDefinition.addDataSetDefinition("DSD: PrEP_NEW", EthiOhriUtil.map(headerDefinition));
 		
 		AutoCalculatePrepNewDataSetDefinition aDataSetDefinition = new AutoCalculatePrepNewDataSetDefinition();
 		aDataSetDefinition.setParameters(getParameters());

@@ -37,17 +37,19 @@ public class AutoCalculatePrEPCTDatasetDefinitionEvaluator implements DataSetEva
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		AutoCalculatePrEPCTDatasetDefinition aucDataset = (AutoCalculatePrEPCTDatasetDefinition) dataSetDefinition;
-		
-		preExposureProphylaxisQuery.setStartDate(aucDataset.getStartDate());
-		preExposureProphylaxisQuery.setEndDate(aucDataset.getEndDate());
-		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		DataSetRow dRow = new DataSetRow();
-		Cohort cohort = preExposureProphylaxisQuery.getAllPrEPCT();
-		
-		dRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), cohort.size());
-		dataSet.addRow(dRow);
+		if (!aucDataset.getHeader()) {
+			
+			preExposureProphylaxisQuery.setStartDate(aucDataset.getStartDate());
+			preExposureProphylaxisQuery.setEndDate(aucDataset.getEndDate());
+			
+			DataSetRow dRow = new DataSetRow();
+			Cohort cohort = preExposureProphylaxisQuery.getAllPrEPCT();
+			
+			dRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), cohort.size());
+			dataSet.addRow(dRow);
+		}
 		return dataSet;
 	}
 	

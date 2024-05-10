@@ -10,6 +10,7 @@ import java.util.List;
 import org.openmrs.EncounterType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDisaggregationByPopulationDatasetDefinition;
@@ -73,6 +74,12 @@ public class TX_PVLSReport implements ReportManager {
 		reportDefinition.addParameters(getParameters());
 		
 		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		
+		TX_PVLSAutoCalcDatasetDefinition headerDefinition = new TX_PVLSAutoCalcDatasetDefinition();
+		headerDefinition.setParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("TX_PVLS");
+		reportDefinition.addDataSetDefinition("Header", EthiOhriUtil.map(headerDefinition));
 		
 		TX_PVLSAutoCalcDatasetDefinition autoCalDataSetDefinition = new TX_PVLSAutoCalcDatasetDefinition();
 		autoCalDataSetDefinition.setParameters(getParameters());

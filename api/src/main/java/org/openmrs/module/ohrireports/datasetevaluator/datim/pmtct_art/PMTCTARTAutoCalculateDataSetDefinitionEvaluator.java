@@ -41,16 +41,18 @@ public class PMTCTARTAutoCalculateDataSetDefinitionEvaluator implements DataSetE
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		hdsd = (PMTCTARTAutoCalculateDataSetDefinition) dataSetDefinition;
-		context = evalContext;
-		
-		artQuery.setStartDate(hdsd.getStartDate());
-		artQuery.setEndDate(hdsd.getEndDate());
-		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		DataSetRow dataSet = new DataSetRow();
-		dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), artQuery.getPmtctARTCohort()
-		        .size());
-		set.addRow(dataSet);
+		if (!hdsd.getHeader()) {
+			context = evalContext;
+			
+			artQuery.setStartDate(hdsd.getStartDate());
+			artQuery.setEndDate(hdsd.getEndDate());
+			
+			DataSetRow dataSet = new DataSetRow();
+			dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), artQuery.getPmtctARTCohort()
+			        .size());
+			set.addRow(dataSet);
+		}
 		return set;
 	}
 }

@@ -54,19 +54,22 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		CXCAAutoCalculateDatasetDefinition cxcaDatasetDefinition = (CXCAAutoCalculateDatasetDefinition) dataSetDefinition;
-		
-		cervicalCancerQuery.setStartDate(cxcaDatasetDefinition.getStartDate());
-		cervicalCancerQuery.setEndDate(cxcaDatasetDefinition.getEndDate());
-		
-		loadGetScreening(CXCA_FIRST_TIME_SCREENING_TYPE);
-		loadGetScreening(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
-		loadGetScreening(CXCA_TYPE_OF_SCREENING_RESCREEN);
-		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		DataSetRow dataSetRow = new DataSetRow();
-		dataSetRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class),
-		    cervicalCancerQuery.getTotalCohortCount());
-		dataSet.addRow(dataSetRow);
+		
+		if (!cxcaDatasetDefinition.getHeader()) {
+			
+			cervicalCancerQuery.setStartDate(cxcaDatasetDefinition.getStartDate());
+			cervicalCancerQuery.setEndDate(cxcaDatasetDefinition.getEndDate());
+			
+			loadGetScreening(CXCA_FIRST_TIME_SCREENING_TYPE);
+			loadGetScreening(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
+			loadGetScreening(CXCA_TYPE_OF_SCREENING_RESCREEN);
+			
+			DataSetRow dataSetRow = new DataSetRow();
+			dataSetRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class),
+			    cervicalCancerQuery.getTotalCohortCount());
+			dataSet.addRow(dataSetRow);
+		}
 		return dataSet;
 	}
 	

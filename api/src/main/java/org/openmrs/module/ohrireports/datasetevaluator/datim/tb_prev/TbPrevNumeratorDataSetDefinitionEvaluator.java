@@ -50,33 +50,37 @@ public class TbPrevNumeratorDataSetDefinitionEvaluator implements DataSetEvaluat
 		femaleTotal = 0;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		hdsd = (TbPrevNumeratorDataSetDefinition) dataSetDefinition;
-		if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-			baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE), hdsd.getStartDate(),
-			    hdsd.getEndDate());
-		
-		endDate = hdsd.getEndDate();
-		
-		Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_COMPLETED_DATE, hdsd.getStartDate(), endDate);
-		Cohort onArtCorCohort = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, endDate, tptCohort));
-		if (!hdsd.getAggregateType()) {
-			// #region newly enrolled on Art with TPT completed
-			Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, hdsd.getStartDate(), endDate,
-			    onArtCorCohort));
-			buildDataRow(set, tbQuery.getPersons(cohortByArt), "Newly enrolled on ART");
-			// #endregion
+		if (!hdsd.getHeader()) {
+			if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
+				baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE), hdsd.getStartDate(),
+				    hdsd.getEndDate());
 			
-			// #region already enrolled on ART with TPT completed
-			cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(), onArtCorCohort));
-			buildDataRow(set, tbQuery.getPersons(cohortByArt), "Previously enrolled on ART");
-			// #endregion
+			endDate = hdsd.getEndDate();
 			
-			// #region total counted row by gender
-			buildTotalRow(set);
-			// #endregion
-		} else {
-			DataSetRow dataSet = new DataSetRow();
-			dataSet.addColumnValue(new DataSetColumn("TPTPREVEnrolled", "Numerator", Integer.class), onArtCorCohort.size());
-			set.addRow(dataSet);
+			Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_COMPLETED_DATE, hdsd.getStartDate(), endDate);
+			Cohort onArtCorCohort = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, endDate, tptCohort));
+			if (!hdsd.getAggregateType()) {
+				// #region newly enrolled on Art with TPT completed
+				Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, hdsd.getStartDate(), endDate,
+				    onArtCorCohort));
+				buildDataRow(set, tbQuery.getPersons(cohortByArt), "Newly enrolled on ART");
+				// #endregion
+				
+				// #region already enrolled on ART with TPT completed
+				cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(),
+				    onArtCorCohort));
+				buildDataRow(set, tbQuery.getPersons(cohortByArt), "Previously enrolled on ART");
+				// #endregion
+				
+				// #region total counted row by gender
+				buildTotalRow(set);
+				// #endregion
+			} else {
+				DataSetRow dataSet = new DataSetRow();
+				dataSet.addColumnValue(new DataSetColumn("TPTPREVEnrolled", "Numerator", Integer.class),
+				    onArtCorCohort.size());
+				set.addRow(dataSet);
+			}
 		}
 		
 		return set;

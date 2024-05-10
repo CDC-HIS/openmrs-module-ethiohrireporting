@@ -30,7 +30,7 @@ public class PMTCTHEIDATIMReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Percentage of infants born to women living with HIV who has a valid test result for  Virologic HIV test by 12 months of age.";
+		return "";
 	}
 	
 	@Override
@@ -46,6 +46,12 @@ public class PMTCTHEIDATIMReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
+		
+		HeiTotalDatasetDefinition headerDefinition = new HeiTotalDatasetDefinition();
+		headerDefinition.addParameters(getParameters());
+		headerDefinition.setHeader(true);
+		headerDefinition.setDescription("DSD: HEI_TOTAL");
+		reportDefinition.addDataSetDefinition("DSD: HEI_TOTAL", EthiOhriUtil.map(headerDefinition));
 		
 		HeiTotalDatasetDefinition heiTotalDatasetDefinition = new HeiTotalDatasetDefinition();
 		heiTotalDatasetDefinition.setDescription("Sum Result");

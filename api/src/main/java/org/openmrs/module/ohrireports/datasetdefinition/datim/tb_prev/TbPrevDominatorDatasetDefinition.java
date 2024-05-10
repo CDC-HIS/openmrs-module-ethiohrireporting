@@ -22,6 +22,9 @@ public class TbPrevDominatorDatasetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private boolean aggregateType;
 	
+	@ConfigurationProperty
+	private Boolean header = false;
+	
 	public boolean getAggregateType() {
 		return aggregateType;
 	}
@@ -52,6 +55,14 @@ public class TbPrevDominatorDatasetDefinition extends BaseDataSetDefinition {
 	
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
+	}
+	
+	public Boolean getHeader() {
+		return header;
+	}
+	
+	public void setHeader(Boolean header) {
+		this.header = header;
 	}
 	
 }

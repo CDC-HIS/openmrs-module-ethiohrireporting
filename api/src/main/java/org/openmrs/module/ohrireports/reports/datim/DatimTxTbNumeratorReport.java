@@ -33,7 +33,7 @@ public class DatimTxTbNumeratorReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Aggregate report of DATIM TX_TB_Numerator patients";
+		return "";
 	}
 	
 	@Override
