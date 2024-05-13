@@ -24,9 +24,18 @@ public class TBARTQuery extends PatientQueryImpDao {
     }
 
     private List<Integer> tbTreatmentStartDateEncounter = new ArrayList<>();
+    private List<Integer> tbTreatmentCompletedDateEncounter = new ArrayList<>();
+    private List<Integer> tbTreatmentDiscontinuedDateEncounter = new ArrayList<>();
+
     private List<Integer> activeDiagnosticStartDateEncounter = new ArrayList<>();
     @Autowired
     private EncounterQuery encounterQuery;
+
+    public List<Integer> getTbArtEncounter() {
+        return tbArtEncounter;
+    }
+
+    List<Integer> tbArtEncounter = new ArrayList<>();
 
     public List<Integer> getBaseEncounter() {
         return baseEncounter;
@@ -90,10 +99,22 @@ public class TBARTQuery extends PatientQueryImpDao {
     }
 
     private Cohort getCurrentOnActiveTB(Cohort cohort, Date start, Date end) {
-        
-        
-        tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_START_DATE), start, end, cohort);
-       activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_ACTIVE_DATE), start, end, cohort);
+
+
+        tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_START_DATE), null, end);
+        activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_ACTIVE_DATE), null, end);
+
+        // to be excluded encounters from counting to TX_TB
+        tbTreatmentCompletedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_COMPLETED_DATE), null, end);
+        tbTreatmentDiscontinuedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_DISCONTINUED_DATE), null,end);
+        List<Integer> toBeExcludedEncounters = unionTwoMembership(tbTreatmentCompletedDateEncounter, tbTreatmentCompletedDateEncounter);
+
+
+        List<Integer> tbTreatmentAndDiagnosticStartDateEncounter = unionTwoMembership(tbTreatmentStartDateEncounter, activeDiagnosticStartDateEncounter);
+
+
+        tbArtEncounter = excludeEncounter(toBeExcludedEncounters, tbTreatmentAndDiagnosticStartDateEncounter);
+
 
         Cohort treatmentStartedCohort = getCohort(tbTreatmentStartDateEncounter);
         Cohort activeDiagonosticCohort = getCohort(activeDiagnosticStartDateEncounter);
@@ -105,8 +126,37 @@ public class TBARTQuery extends PatientQueryImpDao {
         }
         return activeDiagonosticCohort;
     }
-    
+
+    private List<Integer> excludeEncounter(List<Integer> toBeExcludedEncounters, List<Integer> fromEncounters) {
+        List<Integer> result = new ArrayList<>();
+        for (Integer encounterId : fromEncounters) {
+            if (!toBeExcludedEncounters.contains(encounterId)) {
+                result.add(encounterId);
+            }
+        }
+        return result;
+    }
+
     public List<Integer> getActiveDiagnosticStartDateEncounter() {
         return activeDiagnosticStartDateEncounter;
+    }
+
+    private List<Integer> unionTwoMembership(List<Integer> firstMembership, List<Integer> secondMembership) {
+
+        // Convert lists to sets
+        Set<Integer> firstSet = new HashSet<>(firstMembership);
+        Set<Integer> secondSet = new HashSet<>(secondMembership);
+
+        // Find intersection
+        Set<Integer> intersection = new HashSet<>(firstSet);
+        intersection.retainAll(secondSet);
+
+        // Merge unique elements from both lists and the intersection
+        Set<Integer> mergedSet = new HashSet<>(firstSet);
+        mergedSet.addAll(secondSet);
+
+
+        return new ArrayList<>(mergedSet);
+
     }
 }

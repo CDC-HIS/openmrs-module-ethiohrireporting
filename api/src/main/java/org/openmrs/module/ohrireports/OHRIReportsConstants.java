@@ -146,7 +146,7 @@ public class OHRIReportsConstants {
 	
 	public final static String TB_SCREENING_DATE = "179497a0-6f07-469f-bb2e-9b85644a82af";
 	
-	public final static String TB_TREATMENT_STATUS = "d4bc3007-3ba8-40ae-8d64-830bcbde56e2";
+	public final static String TB_TREATMENT_STATUS = "cc9215e5-454f-4cdf-a773-62b2f2f17fdb";
 	
 	public final static String TB_DIAGNOSTIC_TEST_RESULT = "c20140f7-d45d-4b44-a1b9-0534861a615d";
 	
@@ -461,6 +461,8 @@ public class OHRIReportsConstants {
 	public final static String TPT_COMPLETED_DATE = "162279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String TB_TREATMENT_COMPLETED_DATE = "159431AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String TB_TREATMENT_DISCONTINUED_DATE = "93c114b1-ddcb-41eb-bca5-0c08a2a8c349";
 	
 	public final static String TPT_ALTERNATE_TYPE = "c1af657e-bc31-46a2-9f5e-55a1c9ae7507";
 	

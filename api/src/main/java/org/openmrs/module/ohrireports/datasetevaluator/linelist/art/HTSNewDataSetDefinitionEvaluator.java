@@ -135,7 +135,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    regimentDictionary.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("ARTDispenseDose", "ARV Dose Days", String.class),
 			    artDispenseDose.get(person.getPersonId()));
-			//row.addColumnValue(new DataSetColumn("TI", "TI?", String.class), transferedHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("TI", "TI?", String.class), "");
 			row.addColumnValue(new DataSetColumn("NextVisitDate", "Next Visit Date in E.C", Date.class),
 			    artQuery.getEthiopianDate(nextVisitDateET));
 			row.addColumnValue(new DataSetColumn("TreatmentEndDate", "Treatment End Date in E.C", Date.class),
