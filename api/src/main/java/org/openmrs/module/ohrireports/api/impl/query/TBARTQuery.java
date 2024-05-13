@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
+import org.openmrs.logic.op.In;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,7 +57,7 @@ public class TBARTQuery extends PatientQueryImpDao {
         // Check and fetch patient that they are on ART from the latest follow up
         Cohort cohort = getActiveOnArtCohort("", null, end, null, latestFollowUp);
         // Retrieve all patient from active on art of started TB treatment
-        cohort = getCurrentOnActiveTB(cohort, start, end);
+        cohort = getCurrentOnActiveTB(start, end, latestFollowUp);
         return cohort;
     }
 
@@ -98,15 +99,15 @@ public class TBARTQuery extends PatientQueryImpDao {
         return sqlBuilder;
     }
 
-    private Cohort getCurrentOnActiveTB(Cohort cohort, Date start, Date end) {
+    private Cohort getCurrentOnActiveTB(Date start, Date end, List<Integer> encounters) {
 
+        Date startDate = getOneYearBackFromEndDate(end);
+        tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_START_DATE), startDate, end,encounters);
+        activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_ACTIVE_DATE), startDate, end, encounters);
 
-        tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_START_DATE), null, end);
-        activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_ACTIVE_DATE), null, end);
-
-        // to be excluded encounters from counting to TX_TB
-        tbTreatmentCompletedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_COMPLETED_DATE), null, end);
-        tbTreatmentDiscontinuedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_DISCONTINUED_DATE), null,end);
+        // to be excluded encounters from TX_TB counting
+        tbTreatmentCompletedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_COMPLETED_DATE), null, end, encounters);
+        tbTreatmentDiscontinuedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_DISCONTINUED_DATE), null,end, encounters);
         List<Integer> toBeExcludedEncounters = unionTwoMembership(tbTreatmentCompletedDateEncounter, tbTreatmentCompletedDateEncounter);
 
 
@@ -125,6 +126,19 @@ public class TBARTQuery extends PatientQueryImpDao {
             }
         }
         return activeDiagonosticCohort;
+    }
+
+    private Date getOneYearBackFromEndDate(Date endDate) {
+
+        // Create a Calendar instance
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+
+        // Subtract 1 year from the end date
+        calendar.add(Calendar.YEAR, -1);
+
+        return calendar.getTime();
+
     }
 
     private List<Integer> excludeEncounter(List<Integer> toBeExcludedEncounters, List<Integer> fromEncounters) {

@@ -78,7 +78,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			followUpEncounters = encounterQuery.getLatestDateByFollowUpDate(null, hdsd.getEndDate());
 			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
-			    Collections.singletonList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate());
+			    Collections.singletonList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate(),
+			    followUpEncounters);
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
 			
 			getTXTbTreatmentAndTBArtDictionary(baseEncountersOfTreatmentStartDate, cohort);

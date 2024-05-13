@@ -49,6 +49,16 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class), "Start date cannot be after end date");
+			data.addRow(row);
+			return data;
+		}
+		
 		patientQuery = Context.getService(PatientQueryService.class);
 		List<Integer> encounters = encounterQuery.getAliveFirstFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
 		Cohort cohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
