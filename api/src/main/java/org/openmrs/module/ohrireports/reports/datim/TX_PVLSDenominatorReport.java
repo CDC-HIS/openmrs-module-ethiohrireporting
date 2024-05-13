@@ -47,7 +47,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-        return "";
+		return "";
 	}
 	
 	@Override

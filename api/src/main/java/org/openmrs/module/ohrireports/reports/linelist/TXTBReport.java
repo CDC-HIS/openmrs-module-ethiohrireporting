@@ -6,6 +6,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TXTBDataSetDefinition;
@@ -44,16 +45,16 @@ public class TXTBReport implements ReportManager {
 	@Override
 	public List<Parameter> getParameters() {
 		
-		Parameter types = new Parameter("type", "TB Treatment Status", String.class);
+		Parameter types = new Parameter("type", "Report type", String.class);
 		types.addToWidgetConfiguration("codedOptions", numerator + "," + denominator + "," + tb_art);
 		
 		types.setRequired(false);
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(true);
+		startDate.setRequired(false);
 		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
 		startDateGC.setRequired(false);
 		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(true);
+		endDate.setRequired(false);
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
 		return Arrays.asList(startDate, startDateGC, endDate, endDateGC, types);
@@ -70,7 +71,14 @@ public class TXTBReport implements ReportManager {
 		TXTBDataSetDefinition txTBdataSetDefinition = new TXTBDataSetDefinition();
 		txTBdataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("TB", EthiOhriUtil.map(txTBdataSetDefinition, "type=${type}"));
+		/*String title = null;
+		if (Objects.equals(txTBdataSetDefinition.getType(), "TB Screening")) {
+			title = "List of Patients Screened for TB";
+		} else {
+			title = "";
+		}*/
+		
+		reportDefinition.addDataSetDefinition("TB Linelist", EthiOhriUtil.map(txTBdataSetDefinition, "type=${type}"));
 		
 		return reportDefinition;
 	}

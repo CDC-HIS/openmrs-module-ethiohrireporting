@@ -17,6 +17,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TbQueryLineList extends BaseLineListQuery {
 	private DbSessionFactory sessionFactory;
+
+	public List<Integer> getScreenedOnDateEncounters() {
+		return screenedOnDateEncounters;
+	}
+
 	List<Integer> screenedOnDateEncounters = new ArrayList<>();
 
 	public TbQueryLineList(DbSessionFactory _SessionFactory) {
