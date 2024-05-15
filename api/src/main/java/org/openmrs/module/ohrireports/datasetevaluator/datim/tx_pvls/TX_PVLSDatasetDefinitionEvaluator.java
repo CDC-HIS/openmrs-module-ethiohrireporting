@@ -48,7 +48,7 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		
+		_AggregateBuilder.clearTotal();
 		txDatasetDefinition = (TX_PVLSDatasetDefinition) dataSetDefinition;
 		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 		
@@ -84,26 +84,10 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow maleRow = new DataSetRow();
 		_AggregateBuilder.buildDataSetColumn(maleRow, "M");
 		dataSet.addRow(maleRow);
-		// #endregion
 		
-		// // #region Target test indication
-		// DataSetRow targetDataSetRow = new DataSetRow();
-		// targetDataSetRow.addColumnValue(new DataSetColumn("label", "", String.class),
-		// targetDesc);
-		// dataSet.addRow(targetDataSetRow);
-		
-		// persons =
-		// patientQueryService.getPersons(vlQuery.getTargetViralLoad(_cohort));
-		// _AggregateBuilder.setPersonList(persons);
-		
-		// DataSetRow femaleTargetRow = new DataSetRow();
-		// _AggregateBuilder.buildDataSetColumn(femaleTargetRow, "F");
-		// dataSet.addRow(femaleTargetRow);
-		
-		// DataSetRow maleTargetRow = new DataSetRow();
-		// _AggregateBuilder.buildDataSetColumn(maleTargetRow, "M");
-		// dataSet.addRow(maleTargetRow);
-		// // #endregion
+		DataSetRow total = new DataSetRow();
+		_AggregateBuilder.buildDataSetColumn(total, "T");
+		dataSet.addRow(total);
 		
 		return dataSet;
 	}

@@ -52,7 +52,7 @@ public class VlQuery extends BaseLineListQuery {
 		 if(vList==null || vList.isEmpty())
 		 return encounterIdList;
 
-		StringBuilder sql = new StringBuilder(" select encounter_id from obs where concept_id ="+conceptQuery(HIV_VIRAL_LOAD_STATUS)+" ");
+		StringBuilder sql = new StringBuilder(" select encounter_id from obs where concept_id ="+conceptQuery(VIRAL_LOAD_STATUS)+" ");
 		sql.append(" and value_coded is not null and encounter_id in (:latestEncounterIds)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
@@ -110,7 +110,7 @@ public class VlQuery extends BaseLineListQuery {
 	}
 	
 	private Query getByViralLoadStatus(List<String> statusConceptUUID) {
-		StringBuilder sql = baseQuery(HIV_VIRAL_LOAD_STATUS);
+		StringBuilder sql = baseQuery(VIRAL_LOAD_STATUS);
 		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters) ");
 		sql.append(" and " + OBS_ALIAS + "value_coded in " + conceptQuery(statusConceptUUID));
 		sql.append(" and " + OBS_ALIAS + "person_id in (:cohorts)");
@@ -122,11 +122,11 @@ public class VlQuery extends BaseLineListQuery {
 	}
 	
 	public Cohort getRoutingViralLoad(Cohort _cohort) {
-		return getByVLTestIndication(_cohort, HIV_ROUTINE_VIRAL_LOAD_COUNT);
+		return getByVLTestIndication(_cohort, ROUTINE_VIRAL_LOAD);
 	}
 	
 	public Cohort getTargetViralLoad(Cohort _cohort) {
-		return getByVLTestIndication(_cohort, HIV_TARGET_VIRAL_LOAD_COUNT);
+		return getByVLTestIndication(_cohort, TARGET_VIRAL_LOAD);
 	}
 	
 	private List<Integer> getSuppressedByVLCount() {
@@ -196,7 +196,7 @@ public class VlQuery extends BaseLineListQuery {
 	}
 	
 	public HashMap<Integer, Object> getRoutineViralLoad() {
-		Query query = getObs(VlTakenEncounters, HIV_ROUTINE_VIRAL_LOAD_COUNT, cohort);
+		Query query = getObs(VlTakenEncounters, ROUTINE_VIRAL_LOAD, cohort);
 		
 		return getDictionary(query);
 	}
@@ -214,12 +214,12 @@ public class VlQuery extends BaseLineListQuery {
 	}
 	
 	public HashMap<Integer, Object> getTargetViralLoad() {
-		Query query = getObs(VlTakenEncounters, HIV_TARGET_VIRAL_LOAD_COUNT, cohort);
+		Query query = getObs(VlTakenEncounters, TARGET_VIRAL_LOAD, cohort);
 		return getDictionary(query);
 	}
 	
 	public HashMap<Integer, Object> getStatusViralLoad() {
-		Query query = getObs(VlTakenEncounters, HIV_VIRAL_LOAD_STATUS, cohort);
+		Query query = getObs(VlTakenEncounters, VIRAL_LOAD_STATUS, cohort);
 		return getDictionary(query);
 	}
 	

@@ -74,20 +74,24 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		headerDefinition.setParameters(getParameters());
 		headerDefinition.setHeader(true);
 		headerDefinition.setDescription("TX_PVLS");
-		reportDefinition.addDataSetDefinition("TX_PVLS", EthiOhriUtil.mapEndDate(headerDefinition));
+		reportDefinition.addDataSetDefinition("DSD: TX_PVLS Denominator", EthiOhriUtil.mapEndDate(headerDefinition));
 		
 		TX_PVLSAutoCalcDatasetDefinition autoCalDataSetDefinition = new TX_PVLSAutoCalcDatasetDefinition();
 		autoCalDataSetDefinition.setParameters(getParameters());
 		autoCalDataSetDefinition.setIncludeUnSuppressed(true);
 		autoCalDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Auto-Calculate", map(autoCalDataSetDefinition, "endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("Auto-Calculate Adult and Pediatric ART patients with viral load "
+		        + " result documented in the medical records and/or supporting"
+		        + " laboratory results within the past 12 months. Denominator will auto-calculate from the sum of the "
+		        + " Age/Sex disaggregates.", map(autoCalDataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSDatasetDefinition dataSetDefinition = new TX_PVLSDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
 		dataSetDefinition.setIncludeUnSuppressed(true);
 		dataSetDefinition.setEncounterType(Context.getEncounterService()
 		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition(" Disaggregated by Age / Sex / (Fine Disaggregated).",
+		reportDefinition.addDataSetDefinition("Required Disaggregated by Age / Sex / (Fine Disaggregated)."
+		        + " Must complete finer disaggregates unless permitted by program.",
 		    map(dataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSPregnantBreastfeedingDatasetDefinition pregnantAndBFDataSetDefinition = new TX_PVLSPregnantBreastfeedingDatasetDefinition();
@@ -95,7 +99,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		pregnantAndBFDataSetDefinition.setIncludeUnSuppressed(true);
 		pregnantAndBFDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Disaggregated by Preg/BF indication.",
+		reportDefinition.addDataSetDefinition("Disaggregated by Pregnant/Breastfeeding.",
 		    map(pregnantAndBFDataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSDisaggregationByPopulationDatasetDefinition disaggregationByPopDataSetDefinition = new TX_PVLSDisaggregationByPopulationDatasetDefinition();
@@ -103,7 +107,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		disaggregationByPopDataSetDefinition.setIncludeUnSuppressed(true);
 		disaggregationByPopDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Disaggregated by key population type",
+		reportDefinition.addDataSetDefinition("Disaggregated by key population.",
 		    map(disaggregationByPopDataSetDefinition, "endDate=${endDateGC}"));
 		
 		return reportDefinition;

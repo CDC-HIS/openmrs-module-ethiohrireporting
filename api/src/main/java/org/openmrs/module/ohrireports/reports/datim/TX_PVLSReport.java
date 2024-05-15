@@ -43,16 +43,7 @@ public class TX_PVLSReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		
-		StringBuilder stringBuilder = new StringBuilder();
-		
-		stringBuilder
-		        .append("Number of adults and pediatric patients on ART with suppressed viral load results (<1,000 copies/ml) ");
-		stringBuilder
-		        .append("documented in the medical records and/or supporting laboratory results within the past 12 months. ");
-		stringBuilder.append("Numerator will auto-calculate form the sum of the Age / Sex / Indication desegregates. ");
-		
-		return stringBuilder.toString();
+		return "";
 	}
 	
 	@Override
@@ -79,28 +70,34 @@ public class TX_PVLSReport implements ReportManager {
 		headerDefinition.setParameters(getParameters());
 		headerDefinition.setHeader(true);
 		headerDefinition.setDescription("TX_PVLS");
-		reportDefinition.addDataSetDefinition("Header", EthiOhriUtil.map(headerDefinition));
+		reportDefinition.addDataSetDefinition("DSD: TX_PVLS (Numerator)", EthiOhriUtil.mapEndDate(headerDefinition));
 		
 		TX_PVLSAutoCalcDatasetDefinition autoCalDataSetDefinition = new TX_PVLSAutoCalcDatasetDefinition();
 		autoCalDataSetDefinition.setParameters(getParameters());
 		autoCalDataSetDefinition.setIncludeUnSuppressed(false);
 		autoCalDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Auto-Calculate", map(autoCalDataSetDefinition, "endDate=${endDateGC}"));
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Auto-Calculate Adult and Pediatric on ART with suppressed viral load"
+		                    + " results (<1,000 copies/ml) documented in the medical records and/or supporting laboratory results within the "
+		                    + "past 12 months. Numerator will auto-calculate from the sum of the Age/Sex disaggregates",
+		            map(autoCalDataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSDatasetDefinition DataSetDefinition = new TX_PVLSDatasetDefinition();
 		DataSetDefinition.setParameters(getParameters());
 		DataSetDefinition.setIncludeUnSuppressed(false);
 		DataSetDefinition.setEncounterType(Context.getEncounterService()
 		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Disaggregated by Age / Sex / (Fine Disaggregated).",
-		    map(DataSetDefinition, "endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition(
+		    "Required: Disaggregated by Age / Sex / (Fine Disaggregated). Must complete finer"
+		            + " disaggregates unless permitted by program.", map(DataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSPregnantBreastfeedingDatasetDefinition pregnantAndBFDataSetDefinition = new TX_PVLSPregnantBreastfeedingDatasetDefinition();
 		pregnantAndBFDataSetDefinition.setParameters(getParameters());
 		pregnantAndBFDataSetDefinition.setIncludeUnSuppressed(false);
 		pregnantAndBFDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Disaggregated by Preg/BF indication.",
+		reportDefinition.addDataSetDefinition("Required: Disaggregated by Pregnant/Breastfeeding.",
 		    map(pregnantAndBFDataSetDefinition, "endDate=${endDateGC}"));
 		
 		TX_PVLSDisaggregationByPopulationDatasetDefinition disaggregationByPopDataSetDefinition = new TX_PVLSDisaggregationByPopulationDatasetDefinition();

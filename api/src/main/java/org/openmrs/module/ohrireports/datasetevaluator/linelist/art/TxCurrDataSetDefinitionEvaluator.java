@@ -33,6 +33,8 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
 	private EncounterQuery encounterQuery;
+
+	List<Person> unsortedPersons = new ArrayList<>();
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -40,11 +42,17 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		TxCurrDataSetDefinition hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
+		if (hdsd.getEndDate() == null) {
+			hdsd.setEndDate(new Date());
+		}
+		
 		PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
 		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
 		
-		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
+		unsortedPersons = patientQuery.getPersons(cohort);
+		
+		List<Person> persons = LineListUtilities.sortPatientByName(unsortedPersons);
 		HashMap<Integer, Object> familyPlanningHashMap = artQuery.getConceptName(latestEncounters, cohort,
 		    FAMILY_PLANNING_METHODS);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
@@ -55,27 +63,27 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(ADULT_CD4_COUNT, cohort, latestEncounters);
 		HashMap<Integer, Object> hivConfirmedDate = artQuery.getObsValueDate(latestEncounters, HIV_CONFIRMED_DATE, cohort);
 		HashMap<Integer, Object> artStartDate = artQuery.getObsValueDate(latestEncounters, ART_START_DATE, cohort);
-		HashMap<Integer, Object> tbScreeningResult = artQuery.getByResult(TB_SCREENED_RESULT, cohort, latestEncounters);
 		HashMap<Integer, Object> followUpDate = artQuery.getObsValueDate(latestEncounters, FOLLOW_UP_DATE, cohort);
-		HashMap<Integer, Object> adherenceHashMap = artQuery.getByResult(ARV_ADHERENCE, cohort, latestEncounters);
 		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(latestEncounters, cohort);
-		HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getByResult(NUTRITIONAL_STATUS, cohort,
-		    latestEncounters);
 		HashMap<Integer, Object> regimentHashMap = artQuery.getRegiment(latestEncounters, cohort);
-		HashMap<Integer, Object> dispensDayHashMap = artQuery
-		        .getConceptName(latestEncounters, cohort, ARV_DISPENSED_IN_DAYS);
-		
-		HashMap<Integer, Object> dsdCategoryHashMap = artQuery.getConceptName(latestEncounters, cohort, DSD_CATEGORY);
+		HashMap<Integer, Object> tbScreeningResult = artQuery.getByResult(TB_SCREENED_RESULT, cohort, latestEncounters);
+		HashMap<Integer, Object> adherenceHashMap = artQuery.getByResult(ARV_ADHERENCE, cohort, latestEncounters);
 		HashMap<Integer, Object> pregnancyStatus = artQuery.getByResult(PREGNANCY_STATUS, cohort, latestEncounters);
 		HashMap<Integer, Object> breastfeedingStatus = artQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort,
 		    latestEncounters);
+		HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getByResult(NUTRITIONAL_STATUS, cohort,
+		    latestEncounters);
+		HashMap<Integer, Object> dispensDayHashMap = artQuery
+		        .getConceptName(latestEncounters, cohort, ARV_DISPENSED_IN_DAYS);
+
+		HashMap<Integer, Object> dsdCategoryHashMap = artQuery.getConceptName(latestEncounters, cohort, DSD_CATEGORY);
 		HashMap<Integer, Object> tptStartDateHashMap = artQuery.getObsValueDate(latestEncounters, TPT_START_DATE, cohort);
 		HashMap<Integer, Object> tptCompletedDateHashMap = artQuery.getObsValueDate(latestEncounters, TPT_COMPLETED_DATE,
 		    cohort);
 		HashMap<Integer, Object> tbTreatmentCompletedDateHashMap = artQuery.getObsValueDate(latestEncounters,
 		    TB_TREATMENT_COMPLETED_DATE, cohort);
 		HashMap<Integer, Object> vlSentDateHashMap = artQuery.getObsValueDate(latestEncounters, VL_SENT_DATE, cohort);
-		HashMap<Integer, Object> vlStatusHashMap = artQuery.getByResult(HIV_VIRAL_LOAD_STATUS, cohort, latestEncounters);
+		HashMap<Integer, Object> vlStatusHashMap = artQuery.getByResult(VIRAL_LOAD_STATUS, cohort, latestEncounters);
 		HashMap<Integer, Object> nextVisitDateHashMap = artQuery.getObsValueDate(latestEncounters, NEXT_VISIT_DATE, cohort);
 		HashMap<Integer, Object> treatmentEndDateHashMap = artQuery.getObsValueDate(latestEncounters, TREATMENT_END_DATE,
 		    cohort);

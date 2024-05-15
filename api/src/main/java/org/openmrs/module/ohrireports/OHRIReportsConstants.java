@@ -311,13 +311,13 @@ public class OHRIReportsConstants {
 	
 	public final static String DATE_VIRAL_TEST_RESULT_RECEIVED = "beeede36-cae4-4f6e-b4b9-e39e37353a82";
 	
-	public final static String HIV_ROUTINE_VIRAL_LOAD_COUNT = "9b8cef86-9093-4737-a641-3b8399618c85";
+	public final static String ROUTINE_VIRAL_LOAD = "9b8cef86-9093-4737-a641-3b8399618c85";
 	
-	public final static String HIV_TARGET_VIRAL_LOAD_COUNT = "8f75ce27-29fa-4a67-bc8a-295c94323220";
+	public final static String TARGET_VIRAL_LOAD = "8f75ce27-29fa-4a67-bc8a-295c94323220";
 	
 	public final static String HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA = "167378AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String HIV_VIRAL_LOAD_STATUS = "2dc9ee04-4d12-4606-ae0f-86895bf14a44";
+	public final static String VIRAL_LOAD_STATUS = "2dc9ee04-4d12-4606-ae0f-86895bf14a44";
 	
 	public final static String HIV_VIRAL_LOAD_SUPPRESSED = "167484AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

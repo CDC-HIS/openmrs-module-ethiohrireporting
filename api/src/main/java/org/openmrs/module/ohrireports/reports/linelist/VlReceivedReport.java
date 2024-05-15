@@ -50,7 +50,7 @@ public class VlReceivedReport implements ReportManager {
 		VLReceivedDataSetDefinition vlDatasetDefinition = new VLReceivedDataSetDefinition();
 		vlDatasetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition(" Viral Load ", EthiOhriUtil.map(vlDatasetDefinition));
+		reportDefinition.addDataSetDefinition("Viral Load Received Report", EthiOhriUtil.map(vlDatasetDefinition));
 		
 		return reportDefinition;
 	}

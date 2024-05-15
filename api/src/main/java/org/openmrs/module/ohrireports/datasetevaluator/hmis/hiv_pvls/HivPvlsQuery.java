@@ -1,19 +1,15 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_pvls;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_SUPPRESSED;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIRAL_LOAD_STATUS;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_COUNT;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
-import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
@@ -93,7 +89,7 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	
 	public Cohort getPatientWithViralLoadCountLowLevelViremia(String gender, Date endOnOrBefore) {
 		
-		StringBuilder sql = super.baseQuery(HIV_VIRAL_LOAD_STATUS);
+		StringBuilder sql = super.baseQuery(VIRAL_LOAD_STATUS);
 		sql.append("and " + OBS_ALIAS + "value_coded = " + conceptQuery(HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA));
 		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters) ");
 		

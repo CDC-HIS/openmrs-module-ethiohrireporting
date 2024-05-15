@@ -49,9 +49,9 @@ public class TXCURReport implements ReportManager {
 	public List<Parameter> getParameters() {
 		
 		Parameter endDate = new Parameter("endDate", "On Month", Date.class);
-		endDate.setRequired(true);
+		endDate.setRequired(false);
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(true);
+		endDateGC.setRequired(false);
 		return Arrays.asList(endDate, endDateGC);
 		
 	}
