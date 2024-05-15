@@ -15,6 +15,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -50,7 +51,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    _DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate());
 		vlQuery.loadInitialCohort(_DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate(), baseEncounters);
 		
-		List<Person> persons = patientQueryService.getPersons(vlQuery.cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(patientQueryService.getPersons(vlQuery.cohort));
 		
 		HashMap<Integer, Object> regimentDictionary = vlQuery.getRegiment(vlQuery.getVlTakenEncounters(), vlQuery.cohort);
 		HashMap<Integer, Object> mrnIdentifierHashMap = vlQuery.getIdentifier(vlQuery.cohort, MRN_PATIENT_IDENTIFIERS);

@@ -58,8 +58,9 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private HashMap<Integer, Object> artStartDictionary, specimen, geneXpertResult, _LAMResults, OtherDiagnosticTest,
 	        OtherDiagResult, followUpStatus, followUpDate, tbTreatmentStatus, tbActiveDate, dispensDayHashMap,
-	        adherenceHashMap, pregnancyStatusHashMap, tbScreeningDateHashMap, tbScreeningResultsHashMap,
-	        tbTxStartDateDictionary, tbTreatmentCompletedDateDictionary, tbTreatmentDiscontinuedDateDictionary;
+	        adherenceHashMap, pregnancyStatusHashMap, breastfeedingStatusHashMap, tbScreeningDateHashMap,
+	        tbScreeningResultsHashMap, tbTxStartDateDictionary, tbTreatmentCompletedDateDictionary,
+	        tbTreatmentDiscontinuedDateDictionary;
 	
 	private List<Integer> followUpEncounters;
 	
@@ -69,17 +70,26 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		hdsd = (TXTBDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			data.addRow(row);
+			return data;
+		}
+		
 		patientQuery = Context.getService(PatientQueryService.class);
 		
 		if (hdsd.getType().equals(TXTBReport.numerator)) {
 			if (hdsd.getEndDate() == null) {
 				hdsd.setEndDate(new Date());
 			}
-			followUpEncounters = encounterQuery.getLatestDateByFollowUpDate(null, hdsd.getEndDate());
-			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
-			    Collections.singletonList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate(),
-			    followUpEncounters);
+			    Collections.singletonList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate());
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
 			
 			getTXTbTreatmentAndTBArtDictionary(baseEncountersOfTreatmentStartDate, cohort);
@@ -87,7 +97,6 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			if (hdsd.getEndDate() == null) {
 				hdsd.setEndDate(new Date());
 			}
-			followUpEncounters = encounterQuery.getLatestDateByFollowUpDate(null, hdsd.getEndDate());
 			tbQueryLineList.setEncountersByScreenDate(tbQuery.getFollowUpEncounter());
 			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
@@ -100,17 +109,12 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 				hdsd.setEndDate(new Date());
 			}
 			cohort = tbartQuery.getCohortByTBTreatmentStartDate(hdsd.getStartDate(), hdsd.getEndDate());
-			followUpEncounters = tbartQuery.getBaseEncounter();
 			getTXTbTreatmentAndTBArtDictionary(tbartQuery.getTbArtEncounter(), cohort);
 		}
 		
 		mrnIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		uanIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
-		artStartDictionary = tbQueryLineList.getObsValueDate(followUpEncounters, ART_START_DATE, cohort);
-		regimentDictionary = tbQueryLineList.getRegiment(followUpEncounters, cohort);
-		followUpDate = tbQueryLineList.getObsValueDate(followUpEncounters, FOLLOW_UP_DATE, cohort);
-		followUpStatus = tbQueryLineList.getFollowUpStatus(followUpEncounters, cohort);
-		List<Person> persons = patientQuery.getPersons(cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
 		
 		DataSetRow row;
 		
@@ -132,9 +136,14 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private void getTXTbTreatmentAndTBArtDictionary(List<Integer> encounters, Cohort cohort) {
+		artStartDictionary = tbQueryLineList.getObsValueDate(encounters, ART_START_DATE, cohort);
+		regimentDictionary = tbQueryLineList.getRegiment(encounters, cohort);
+		followUpDate = tbQueryLineList.getObsValueDate(encounters, FOLLOW_UP_DATE, cohort);
+		followUpStatus = tbQueryLineList.getFollowUpStatus(encounters, cohort);
 		dispensDayHashMap = tbQueryLineList.getByResult(ART_DISPENSE_DOSE, cohort, encounters);
 		adherenceHashMap = tbQueryLineList.getByResult(ARV_ADHERENCE, cohort, encounters);
 		pregnancyStatusHashMap = tbQueryLineList.getByResult(PREGNANCY_STATUS, cohort, encounters);
+		breastfeedingStatusHashMap = tbQueryLineList.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort, encounters);
 		tbActiveDate = tbQueryLineList.getObsValueDate(encounters, TB_ACTIVE_DATE, cohort);
 		tbTxStartDateDictionary = tbQueryLineList.getObsValueDate(encounters, TB_TREATMENT_START_DATE, cohort);
 		tbTreatmentStatus = tbQueryLineList.getByResult(TB_TREATMENT_STATUS, cohort, encounters);
@@ -152,9 +161,14 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private void getTXTbScreeningDictionary(List<Integer> encounters, Cohort cohort) {
+		artStartDictionary = tbQueryLineList.getObsValueDate(encounters, ART_START_DATE, cohort);
+		regimentDictionary = tbQueryLineList.getRegiment(encounters, cohort);
+		followUpDate = tbQueryLineList.getObsValueDate(encounters, FOLLOW_UP_DATE, cohort);
+		followUpStatus = tbQueryLineList.getFollowUpStatus(encounters, cohort);
 		dispensDayHashMap = tbQueryLineList.getByResult(ART_DISPENSE_DOSE, cohort, encounters);
 		adherenceHashMap = tbQueryLineList.getByResult(ARV_ADHERENCE, cohort, encounters);
 		pregnancyStatusHashMap = tbQueryLineList.getByResult(PREGNANCY_STATUS, cohort, encounters);
+		breastfeedingStatusHashMap = tbQueryLineList.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort, encounters);
 		tbScreeningDateHashMap = tbQueryLineList.getObsValueDate(encounters, TB_SCREENING_DATE, cohort);
 		tbScreeningResultsHashMap = tbQueryLineList.getByResult(TB_SCREENING_RESULT, cohort, encounters);
 		specimen = tbQueryLineList.getByResult(SPECIMEN_SENT, cohort, encounters);
@@ -177,7 +191,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (persons.isEmpty()) {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
-			    "Pregnancy/ Breastfeeding Status", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
+			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
 			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
 			    "TB Treatment Discontinued Date")));
@@ -197,7 +211,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (persons.isEmpty()) {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
-			    "Pregnancy/ Breastfeeding Status", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
+			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
 			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
 			    "TB Treatment Discontinued Date")));
@@ -217,7 +231,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (persons.isEmpty()) {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
-			    "Pregnancy/ Breastfeeding Status", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
+			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
 			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
 			    "TB Treatment Discontinued Date")));
@@ -266,8 +280,11 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    dispensDayHashMap.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("Adherence", "Adherence", String.class),
 		    adherenceHashMap.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("Pregnancy/ Breastfeeding Status", "Pregnancy/ Breastfeeding Status",
-		        String.class), pregnancyStatusHashMap.get(person.getPersonId()));
+		row.addColumnValue(new DataSetColumn("Pregnant?", "Pregnant?", String.class),
+		    pregnancyStatusHashMap.get(person.getPersonId()));
+		row.addColumnValue(new DataSetColumn("Breastfeeding?", "Breastfeeding?", String.class),
+		    breastfeedingStatusHashMap.get(person.getPersonId()));
+		
 		row.addColumnValue(new DataSetColumn("On PMTCT?", "On PMTCT?", String.class), "");
 		row.addColumnValue(new DataSetColumn("TB Screening Date", "TB Screening Date", String.class),
 		    tbScreeningEthiopianDate);
@@ -306,8 +323,10 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    dispensDayHashMap.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("Adherence", "Adherence", String.class),
 		    adherenceHashMap.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("Pregnancy/ Breastfeeding Status", "Pregnancy/ Breastfeeding Status",
-		        String.class), pregnancyStatusHashMap.get(person.getPersonId()));
+		row.addColumnValue(new DataSetColumn("Pregnant?", "Pregnant?", String.class),
+		    pregnancyStatusHashMap.get(person.getPersonId()));
+		row.addColumnValue(new DataSetColumn("Breastfeeding?", "Breastfeeding?", String.class),
+		    breastfeedingStatusHashMap.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("On PMTCT?", "On PMTCT?", String.class), "");
 		row.addColumnValue(new DataSetColumn("Active TB Diagnosed Date", "Active TB Diagnosed Date", String.class),
 		    tbQueryLineList.getEthiopianDate(tbActiveTreatmentStartDate));

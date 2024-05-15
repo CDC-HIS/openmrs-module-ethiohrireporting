@@ -154,58 +154,73 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
     }
 
     public void buildDataSetColumnForScreening(DataSetRow dataSet, String screeningResult) {
-        subTotalCount = 0;
-        lowerBoundAge = 14;
-        upperBoundAge = 50;
-        int minCount = lowerBoundAge + 1;
-        int maxCount = minCount + ageInterval;
+        if (Objects.equals(screeningResult, "Negative") || Objects.equals(screeningResult, "Positive")
+                || Objects.equals(screeningResult, "Suspicious")) {
+            subTotalCount = 0;
+            lowerBoundAge = 14;
+            upperBoundAge = 50;
+            int minCount = lowerBoundAge + 1;
+            int maxCount = minCount + ageInterval;
 
-        dataSet.addColumnValue(new DataSetColumn("CxCaScreeningResult", "CxCa Screening Result", String.class),
-                screeningResult);
-        dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
-                getPersonCountByUnknownAge());
+            dataSet.addColumnValue(new DataSetColumn("CxCaScreeningResult", "", String.class),
+                    screeningResult);
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
+                    getPersonCountByUnknownAge());
 
-        while (minCount <= upperBoundAge) {
-            if (minCount == upperBoundAge) {
-                dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
-                        getPersonByAge(upperBoundAge, 200));
-            } else {
-                dataSet.addColumnValue(
-                        new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
-                        getPersonByAge(minCount, maxCount));
+            while (minCount <= upperBoundAge) {
+                if (minCount == upperBoundAge) {
+                    dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
+                            getPersonByAge(upperBoundAge, 200));
+                } else {
+                    dataSet.addColumnValue(
+                            new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
+                            getPersonByAge(minCount, maxCount));
+                }
+                minCount = maxCount + 1;
+                maxCount = minCount + ageInterval;
             }
-            minCount = maxCount + 1;
-            maxCount = minCount + ageInterval;
+            setTotal(subTotalCount);
+            dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
+        } else if (Objects.equals(screeningResult, "T")) {
+            dataSet.addColumnValue(new DataSetColumn("CxCaScreeningResult", "", String.class),
+                    "Sub-Total");
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getTotal());
         }
-        dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
     }
 
     public void buildDataSetColumnForTreatment(DataSetRow dataSet, String treatmentType) {
-        subTotalCount = 0;
-        lowerBoundAge = 14;
-        upperBoundAge = 65;
+        if (Objects.equals(treatmentType, "Cryotherapy") || Objects.equals(treatmentType, "LEEP")
+                || Objects.equals(treatmentType, "Thermocoagulation")) {
+            subTotalCount = 0;
+            lowerBoundAge = 14;
+            upperBoundAge = 65;
 
-        int minCount = lowerBoundAge + 1;
-        int maxCount = minCount + ageInterval;
+            int minCount = lowerBoundAge + 1;
+            int maxCount = minCount + ageInterval;
 
-        dataSet.addColumnValue(new DataSetColumn("CxCaTreatmentType", "CxCa Treatment Type", String.class),
-                treatmentType);
-        dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
-                getPersonCountByUnknownAge());
-        while (minCount <= upperBoundAge) {
-            if (minCount == upperBoundAge) {
-                dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
-                        getPersonByAge(upperBoundAge, 200));
-            } else {
-                dataSet.addColumnValue(
-                        new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
-                        getPersonByAge(minCount, maxCount));
+            dataSet.addColumnValue(new DataSetColumn("CxCaTreatmentType", "", String.class),
+                    treatmentType);
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
+                    getPersonCountByUnknownAge());
+            while (minCount <= upperBoundAge) {
+                if (minCount == upperBoundAge) {
+                    dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
+                            getPersonByAge(upperBoundAge, 200));
+                } else {
+                    dataSet.addColumnValue(
+                            new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount, Integer.class),
+                            getPersonByAge(minCount, maxCount));
+                }
+                minCount = maxCount + 1;
+                maxCount = minCount + ageInterval;
             }
-            minCount = maxCount + 1;
-            maxCount = minCount + ageInterval;
+            setTotal(subTotalCount);
+            dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
+        } else if (Objects.equals(treatmentType, "T")) {
+            dataSet.addColumnValue(new DataSetColumn("CxCaTreatmentType", "", String.class),
+                    "Sub-Total");
+            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getTotal());
         }
-
-        dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
     }
 
     @Override

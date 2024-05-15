@@ -5,6 +5,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PreExposureProphylaxisDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -41,7 +42,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		preExposureProphylaxisQuery.setEndDate(_dataSetDefinition.getEndDate());
 		
 		Cohort baseCohort = preExposureProphylaxisQuery.loadPrepCohort();
-		List<Person> persons = preExposureProphylaxisQuery.getPersons(baseCohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(preExposureProphylaxisQuery.getPersons(baseCohort));
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = preExposureProphylaxisLineListQuery.getIdentifier(baseCohort,
 		    MRN_PATIENT_IDENTIFIERS);

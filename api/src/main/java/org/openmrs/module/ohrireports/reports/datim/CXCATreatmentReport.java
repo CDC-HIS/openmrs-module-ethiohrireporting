@@ -1,10 +1,8 @@
 package org.openmrs.module.ohrireports.reports.datim;
 
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCADatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentAutoCalculateDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_cx_ca.CxCaTxAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -58,9 +56,11 @@ public class CXCATreatmentReport implements ReportManager {
 		
 		CxCaTreatmentAutoCalculateDatasetDefinition cxcaTreatmentDataSet = new CxCaTreatmentAutoCalculateDatasetDefinition();
 		cxcaTreatmentDataSet.addParameters(getParameters());
-		reportDefinition.addDataSetDefinition(
-		    "Number of Screened positive women who are HIV-positive and on ART eligible for CxCa treatment.",
-		    EthiOhriUtil.map(cxcaTreatmentDataSet));
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Number of women with a positive VIA screening test who are HIV-positive and on ART eligible for cryotherapy, "
+		                    + "thermocoagulation or LEEP. Numerator will auto-calculate from the Age/Treatment Type/Screening Visit Type.",
+		            EthiOhriUtil.map(cxcaTreatmentDataSet));
 		
 		CxCaTreatmentDatasetDefinition firstTimeScreeningCxCaTreatmentDatasetDefinition = new CxCaTreatmentDatasetDefinition();
 		firstTimeScreeningCxCaTreatmentDatasetDefinition.setScreeningType(CXCA_FIRST_TIME_SCREENING_TYPE);

@@ -4,6 +4,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MonthlyVisitDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -64,7 +65,8 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		
 		DataSetRow row = new DataSetRow();
-		List<Person> personList = monthlyVisitQuery.getPersons(monthlyVisitQuery.getBaseCohort());
+		List<Person> personList = LineListUtilities.sortPatientByName(monthlyVisitQuery.getPersons(monthlyVisitQuery
+		        .getBaseCohort()));
 		for (Person person : personList) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("FullName", "FullName", String.class), person.getNames());

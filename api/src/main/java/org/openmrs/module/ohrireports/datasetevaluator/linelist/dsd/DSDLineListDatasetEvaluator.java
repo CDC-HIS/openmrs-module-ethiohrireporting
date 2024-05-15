@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.DSDDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -41,7 +42,7 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 		
 		dsdLineListQuery.generateReport(linkageDataset.getStartDate(), linkageDataset.getEndDate());
 		Cohort cohort = dsdLineListQuery.getBaseCohort();
-		List<Person> persons = dsdLineListQuery.getPersons(cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(dsdLineListQuery.getPersons(cohort));
 		
 		HashMap<Integer, Object> followUpDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
 		    FOLLOW_UP_DATE, cohort);

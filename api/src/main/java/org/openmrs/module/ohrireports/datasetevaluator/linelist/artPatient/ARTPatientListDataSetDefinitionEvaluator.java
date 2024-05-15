@@ -6,6 +6,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.ARTPatientListQuery;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ARTPatientListDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -45,7 +46,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		artPatientListQuery.setEndDate(_dataSetDefinition.getEndDate());
 		
 		Cohort baseCohort = artPatientListQuery.getEverEnrolledCohort(artPatientListQuery.getEndDate());
-		List<Person> persons = artPatientListQuery.getPersons(baseCohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(artPatientListQuery.getPersons(baseCohort));
 		
 		loadColumnDictionary(baseCohort);
 		

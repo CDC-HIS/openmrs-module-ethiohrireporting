@@ -54,7 +54,8 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
 			//throw new EvaluationException("Start date cannot be greater than end date");
 			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class), "Start date cannot be after end date");
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
 			data.addRow(row);
 			return data;
 		}
@@ -64,7 +65,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		Cohort cohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = artQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
-		List<Person> persons = patientQuery.getPersons(cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
 		HashMap<Integer, Object> weight = artQuery.getByValueNumeric(WEIGHT, cohort, encounters);
 		HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(ADULT_CD4_COUNT, cohort, encounters);
 		HashMap<Integer, Object> whoStage = artQuery.getByResult(WHO_STAGE, cohort, encounters);
@@ -79,6 +80,10 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> artStartDate = artQuery.getObsValueDate(encounters, ART_START_DATE, cohort);
 		
 		HashMap<Integer, Object> pregnancyStatus = artQuery.getByResult(PREGNANCY_STATUS, cohort, encounters);
+		HashMap<Integer, Object> breastfeedingStatus = artQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort,
+		    encounters);
+		HashMap<Integer, Object> followUpDate = artQuery.getObsValueDate(encounters, FOLLOW_UP_DATE, cohort);
+		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(encounters, cohort);
 		
 		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(encounters, cohort);
 		
@@ -101,7 +106,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		} else {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "Weight", "CD4", "WHO Stage", "Nutritional Status", "TB Screening Result", "Enrollment Date in E.C",
-			    "HIV Confirmed Date in E.C", "ART Start Date in E.C", "Days Difference", "Pregnancy/ Breastfeeding Status",
+			    "HIV Confirmed Date in E.C", "ART Start Date in E.C", "Days Difference", "Pregnant?", "Breastfeeding?",
 			    "Regimen", "ARV Dose Days", "Next Visit Date in E.C", "Treatment End Date in E.C", "Mobile No.")));
 		}
 		int i = 1;
@@ -111,6 +116,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			Date artStartDateET = artQuery.getDate(artStartDate.get(person.getPersonId()));
 			Date nextVisitDateET = artQuery.getDate(nextVisitDate.get(person.getPersonId()));
 			Date treatmentEndDateET = artQuery.getDate(treatmentEndDate.get(person.getPersonId()));
+			Date followupDateET = artQuery.getDate(followUpDate.get(person.getPersonId()));
 			long daysDifference = getDayDifference(hivConfirmedDateET, artStartDateET);
 			
 			row = new DataSetRow();
@@ -139,8 +145,14 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("ARTStartDateETH", "ART Start Date in E.C", String.class),
 			    artQuery.getEthiopianDate(artStartDateET));
 			row.addColumnValue(new DataSetColumn("daysDifference", "Days Difference", String.class), daysDifference);
-			row.addColumnValue(new DataSetColumn("PregnancyStatus", "Pregnancy/ Breastfeeding Status", String.class),
+			row.addColumnValue(new DataSetColumn("PregnancyStatus", "Pregnant?", String.class),
 			    pregnancyStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("BreastfeedingStatus", "Breastfeeding?", String.class),
+			    breastfeedingStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Follow-up Date in E.C", "Follow-up Date in E.C", String.class),
+			    artQuery.getEthiopianDate(followupDateET));
+			row.addColumnValue(new DataSetColumn("Follow-up Status", "Follow-up Status", String.class),
+			    statusHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),
 			    regimentDictionary.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("ARTDispenseDose", "ARV Dose Days", String.class),

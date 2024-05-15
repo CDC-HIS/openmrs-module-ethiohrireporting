@@ -11,6 +11,7 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
@@ -36,7 +37,7 @@ public class CervicalCancerReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		return EthiOhriUtil.getDateRangeParameters();
+		return getDateRangeParameters();
 	}
 	
 	@Override
@@ -49,7 +50,8 @@ public class CervicalCancerReport implements ReportManager {
 		
 		CervicalCancerDataSetDefinition cancerDataSetDefinition = new CervicalCancerDataSetDefinition();
 		cancerDataSetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("Cervical Cancer", EthiOhriUtil.map(cancerDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Cervical Cancer Service Cascade Line List",
+		    EthiOhriUtil.map(cancerDataSetDefinition));
 		return reportDefinition;
 	}
 	
@@ -68,5 +70,17 @@ public class CervicalCancerReport implements ReportManager {
 	@Override
 	public String getVersion() {
 		return REPORT_VERSION;
+	}
+	
+	private List<Parameter> getDateRangeParameters() {
+		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
+		startDate.setRequired(false);
+		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
+		startDateGC.setRequired(false);
+		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
+		endDate.setRequired(false);
+		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
+		endDateGC.setRequired(false);
+		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
 	}
 }

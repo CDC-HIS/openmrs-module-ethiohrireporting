@@ -5,6 +5,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.LinkageNewLineListDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct.Linkage;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -38,7 +39,7 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
 
         linkageNewLineListQuery.initializeLinkage(linkageDataset.getStartDate(), linkageDataset.getEndDate());
         Cohort cohort = linkageNewLineListQuery.getBaseCohort();
-        List<Person> persons = linkageNewLineListQuery.getPersons();
+        List<Person> persons = LineListUtilities.sortPatientByName(linkageNewLineListQuery.getPersons());
 
         HashMap<Integer, Object> registrationDateHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
                 POSITIVE_TRACKING_REGISTRATION_DATE, cohort);

@@ -39,9 +39,20 @@ public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
 		MLDataSetDefinition _datasetDefinition = (MLDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
+		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			data.addRow(row);
+			return data;
+		}
+		
 		Cohort cohort = mlQueryLineList.getMLQuery(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
-		List<Person> persons = mlQueryLineList.getPerson(cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(mlQueryLineList.getPerson(cohort));
 		
 		HashMap<Integer, Object> artStartDateHashMap = mlQueryLineList.getObsValueDate(mlQueryLineList.getBaseEncounter(),
 		    ART_START_DATE, cohort);

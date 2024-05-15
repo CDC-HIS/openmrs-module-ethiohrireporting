@@ -9,9 +9,6 @@
  */
 package org.openmrs.module.ohrireports;
 
-import org.apache.poi.openxml4j.opc.internal.unmarshallers.PackagePropertiesUnmarshaller;
-import org.omg.CORBA.PUBLIC_MEMBER;
-
 public class OHRIReportsConstants {
 	
 	public final static String MOBILE_NUMBER_ATTERIBUTE = "1794bcad-b2d2-47ae-8e26-1d4ec31ade13";
@@ -180,7 +177,11 @@ public class OHRIReportsConstants {
 	
 	public final static String CXCA_FIRST_TIME_SCREENING = "3a8bb4b4-7496-415d-a327-57ae3711d4eb";
 	
-	public final static String CXCA_TREATMENT_TYPE = "6b78badd-0b92-47f8-b16c-46559d5179b2";
+	public final static String CXCA_CONFIRMED_BY_BIOPSY_RESULT = "6b78badd-0b92-47f8-b16c-46559d5179b2";
+	
+	public final static String CXCA_NEXT_FOLLOWUP_SCREENING_DATE = "4ce065b6-aecb-46a3-b60b-41bc5dc8022f";
+	
+	public final static String CXCA_REFERRAL_STATUS = "12ea1ff4-4d3e-46e1-8310-5b853baf48f2";
 	
 	public final static String CXCA_TREATMENT_PRECANCEROUS_LESIONS = "6b97156c-3795-48d0-a15c-4f2590ffef54";
 	
@@ -188,7 +189,9 @@ public class OHRIReportsConstants {
 	
 	public final static String FEEDBACK = "98105b54-7453-4717-8bd2-249b7dcbdb98";
 	
-	public final static String REFERRAL_CONFIRMED_DATE = "88571a39-5caf-4260-b8d6-d0e28ca37410";
+	public final static String DATE_CLIENT_ARRIVED_IN_REFERRED_HF = "88571a39-5caf-4260-b8d6-d0e28ca37410";
+	
+	public final static String DATE_CLIENT_SERVED_IN_REFERRED_HF = "080e8ad4-809e-4d51-a2a9-6eaac774ad38";
 	
 	public final static String CX_CA_SCREENING_OFFERED = "fc5ec0e6-8e56-4a23-8bf9-fbe464da12c7";
 	

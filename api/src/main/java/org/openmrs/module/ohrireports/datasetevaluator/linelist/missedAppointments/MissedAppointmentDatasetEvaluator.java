@@ -4,6 +4,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MissedAppointmentDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -52,7 +53,8 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		    TREATMENT_END_DATE, appointmentQuery.getBaseCohort());
 		DataSetRow row = new DataSetRow();
 		
-		List<Person> personList = appointmentQuery.getPersons(appointmentQuery.getBaseCohort());
+		List<Person> personList = LineListUtilities.sortPatientByName(appointmentQuery.getPersons(appointmentQuery
+		        .getBaseCohort()));
 		row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), "TOTal");
 		row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), personList.size());
 		dataSet.addRow(row);

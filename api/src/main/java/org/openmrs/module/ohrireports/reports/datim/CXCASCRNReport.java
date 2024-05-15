@@ -56,8 +56,8 @@ public class CXCASCRNReport implements ReportManager {
 		
 		CXCAAutoCalculateDatasetDefinition tbADataSet = new CXCAAutoCalculateDatasetDefinition();
 		tbADataSet.addParameters(getParameters());
-		reportDefinition.addDataSetDefinition("Number of HIV-positive women on ART screened for cervical cancer.",
-		    EthiOhriUtil.map(tbADataSet));
+		reportDefinition.addDataSetDefinition("Number of HIV-positive women on ART screened for cervical cancer. Numerator "
+		        + "will auto-calculate from the Age/Result/Screening Visit Type", EthiOhriUtil.map(tbADataSet));
 		
 		CXCADatasetDefinition firstTimeScreeningCxcaDatasetDefinition = new CXCADatasetDefinition();
 		firstTimeScreeningCxcaDatasetDefinition.setScreeningType(CXCA_FIRST_TIME_SCREENING_TYPE);

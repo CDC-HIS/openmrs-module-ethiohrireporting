@@ -27,6 +27,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -83,7 +84,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		Cohort cohort = tbQuery.getTPTStartedCohort(null, baseTPTStartDateEncounters, "");
 		loadColumnDictionary(cohort);
-		List<Person> persons = patientQuery.getPersons(cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
 		
 		DataSetRow row;
 		

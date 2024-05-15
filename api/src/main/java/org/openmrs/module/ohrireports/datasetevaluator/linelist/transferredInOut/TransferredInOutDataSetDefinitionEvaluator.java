@@ -10,6 +10,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.TransferInOutQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.ohrireports.reports.linelist.TXTBReport;
 import org.openmrs.module.ohrireports.reports.linelist.TransferInOutReport;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -123,7 +124,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 		if (transferInOutQuery.getStatus().equals(TransferInOutReport.to)) {
 			
 			Cohort cohort = transferInOutQuery.getTOCohort();
-			List<Person> persons = transferInOutQuery.getPersons(cohort);
+			List<Person> persons = LineListUtilities.sortPatientByName(transferInOutQuery.getPersons(cohort));
 			
 			loadColumnDictionary(cohort, transferInOutQuery.getBaseEncounter());
 			DataSetRow row;

@@ -1,6 +1,8 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist;
 
+import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonName;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 
@@ -9,10 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class LineListUtilities {
 	
@@ -28,10 +27,11 @@ public class LineListUtilities {
 	}
 	
 	public static PersonAddress getPersonAddress(Set<PersonAddress> personAddresses) {
-		Optional<PersonAddress> personAddress = Optional.ofNullable(personAddresses.stream().filter(PersonAddress::getPreferred).findFirst().orElse(null));;
+        Optional<PersonAddress> personAddress = Optional.ofNullable(personAddresses.stream().filter(PersonAddress::getPreferred).findFirst().orElse(null));
+        ;
 
-		return personAddress.orElse(null);
-	}
+        return personAddress.orElse(null);
+    }
 	
 	public static long getMonthDifference(Date from, Date to) {
 		
@@ -53,4 +53,18 @@ public class LineListUtilities {
 		// Calculate the difference in days
 		return ChronoUnit.MONTHS.between(start, end);
 	}
+	
+	public static List<Person> sortPatientByName(List<Person> persons) {
+
+        // Custom comparator to compare Person objects based on givenName
+        Comparator<Person> comparator = Comparator.comparing(person -> person.getNames().stream()
+                .min(Comparator.comparing(PersonName::getGivenName))
+                .map(PersonName::getGivenName)
+                .orElse(""));
+
+        // Sort the list using the custom comparator
+        persons.sort(comparator);
+
+        return persons;
+    }
 }

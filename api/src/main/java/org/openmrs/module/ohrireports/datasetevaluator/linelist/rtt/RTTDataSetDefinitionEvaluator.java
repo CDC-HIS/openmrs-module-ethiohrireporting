@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.RTTDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.datim.tx_new.CD4Status;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -31,18 +32,31 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		RTTDataSetDefinition _datasetDefinition = (RTTDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
+		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			data.addRow(row);
+			return data;
+		}
+		
 		Cohort cohort = rttLineListQuery.getRTTCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
 		List<Person> persons = rttLineListQuery.getPerson(cohort);
 		
 		HashMap<Integer, Object> artStartDateHashMap = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
 		    ART_START_DATE, cohort);
-		HashMap<Integer, Object> followUpDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
+		HashMap<Integer, Object> followupDateHashMap = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
 		    FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> treatmentEndDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
 		    TREATMENT_END_DATE, cohort);
 		
 		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByValueNumeric(WEIGHT, cohort,
+		    rttLineListQuery.getBaseEncounter());
+		HashMap<Integer, Object> cd4HashMap = rttLineListQuery.getByValueNumeric(ADULT_CD4_COUNT, cohort,
 		    rttLineListQuery.getBaseEncounter());
 		HashMap<Integer, Object> mrnIdentifierHashMap = rttLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = rttLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
@@ -94,7 +108,7 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 			Date artStartDate = rttLineListQuery.getDate(artStartDateHashMap.get(person.getPersonId()));
 			Date treatmentEndDateET = rttLineListQuery.getDate(treatmentEndDate.get(person.getPersonId()));
 			Date nextVisitDateET = rttLineListQuery.getDate(nextVisitDate.get(person.getPersonId()));
-			Date followUpDateET = rttLineListQuery.getDate(followUpDate.get(person.getPersonId()));
+			Date followUpDateET = rttLineListQuery.getDate(followupDateHashMap.get(person.getPersonId()));
 			Date lastFollowUpDateET = rttLineListQuery.getDate(lastFollowUpDate.get(person.getPersonId()));
 			Date lastTreatmentEndDateET = rttLineListQuery.getDate(lastTreatmentEndDate.get(person.getPersonId()));
 			
@@ -111,10 +125,12 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Gender", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Weight", "Weight", Integer.class),
 			    weightDateHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("CD4", "CD4", Integer.class), cd4HashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("ArtStartDateETC", "ART Start Date in E.C", String.class),
 			    rttLineListQuery.getEthiopianDate(artStartDate));
-			row.addColumnValue(new DataSetColumn("dateReturnedTreatmentETC", "Date returned to Treatment in E.C",
-			        String.class), rttLineListQuery.getEthiopianDate(followUpDateET));
+			row.addColumnValue(new DataSetColumn("dateReturnedTreatmentETC",
+			        "Follow-up Date in E.C (Date returned to Treatment in E.C)", String.class), rttLineListQuery
+			        .getEthiopianDate(followUpDateET));
 			row.addColumnValue(new DataSetColumn("Follow-up Status", "Follow-up Status", String.class),
 			    followUpStatus.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Regimen", "Regimen", String.class),

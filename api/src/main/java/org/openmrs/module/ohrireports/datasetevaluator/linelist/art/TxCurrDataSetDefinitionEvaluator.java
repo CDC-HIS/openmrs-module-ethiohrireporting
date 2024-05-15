@@ -39,11 +39,12 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		TxCurrDataSetDefinition hdsd = (TxCurrDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
+		
 		PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
 		List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
 		Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
 		
-		List<Person> persons = patientQuery.getPersons(cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
 		HashMap<Integer, Object> familyPlanningHashMap = artQuery.getConceptName(latestEncounters, cohort,
 		    FAMILY_PLANNING_METHODS);
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
@@ -66,6 +67,8 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		HashMap<Integer, Object> dsdCategoryHashMap = artQuery.getConceptName(latestEncounters, cohort, DSD_CATEGORY);
 		HashMap<Integer, Object> pregnancyStatus = artQuery.getByResult(PREGNANCY_STATUS, cohort, latestEncounters);
+		HashMap<Integer, Object> breastfeedingStatus = artQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort,
+		    latestEncounters);
 		HashMap<Integer, Object> tptStartDateHashMap = artQuery.getObsValueDate(latestEncounters, TPT_START_DATE, cohort);
 		HashMap<Integer, Object> tptCompletedDateHashMap = artQuery.getObsValueDate(latestEncounters, TPT_COMPLETED_DATE,
 		    cohort);
@@ -90,10 +93,9 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN",
 			    "Age at Enrollment", "Current Age", "Sex", "Weight", "CD4", "HIV Confirmed Date in E.C",
 			    "ART Start Date in E.C", "TB Screening Result", "Follow-up Date in E.C", "Follow-up Status", "Regimen",
-			    "ARV Dose Days", "Adherence", "DSD Category", "Nutritional Status", "Familiy Planning Method",
-			    "Pregnancy/ Breastfeeding Status", "On PMTCT?", "TPT Start Date", "TPT Completed Date",
-			    "TB Treatment Completed Date", "VL Sent Date", "VL Status", "Next Visit Date in E.C",
-			    "Treatment End Date in E.C.", "Mobile No.")));
+			    "ARV Dose Days", "Adherence", "DSD Category", "Nutritional Status", "Familiy Planning Method", "Pregnant?",
+			    "Breastfeeding?", "On PMTCT?", "TPT Start Date", "TPT Completed Date", "TB Treatment Completed Date",
+			    "VL Sent Date", "VL Status", "Next Visit Date in E.C", "Treatment End Date in E.C.", "Mobile No.")));
 		}
 		int i = 1;
 		for (Person person : persons) {
@@ -142,8 +144,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 			    nutritionalStatusHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Family Planning Method", "Family Planning Method", String.class),
 			    familyPlanningHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("PregnancyStatus", "Pregnancy/ Breastfeeding Status", String.class),
+			row.addColumnValue(new DataSetColumn("PregnancyStatus", "Pregnant?", String.class),
 			    pregnancyStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("BreastfeedingStatus", "Breastfeeding?", String.class),
+			    breastfeedingStatus.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("On PMTCT?", "On PMTCT?", String.class), "");
 			row.addColumnValue(new DataSetColumn("TBScreeningResult", "TB Screening Result", String.class),
 			    tbScreeningResult.get(person.getPersonId()));

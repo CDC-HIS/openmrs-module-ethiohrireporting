@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.RetentionLineListDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -40,7 +41,7 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		
 		retentionLineListQuery.generateRetentionReport(linkageDataset.getStartDate(), linkageDataset.getEndDate());
 		Cohort cohort = retentionLineListQuery.getBaseCohort();
-		List<Person> persons = retentionLineListQuery.getPerson(cohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(retentionLineListQuery.getPerson(cohort));
 		
 		HashMap<Integer, Object> followUpDateHashMap = retentionLineListQuery.getObsValueDate(
 		    retentionLineListQuery.getBaseEncounter(), FOLLOW_UP_DATE, cohort);

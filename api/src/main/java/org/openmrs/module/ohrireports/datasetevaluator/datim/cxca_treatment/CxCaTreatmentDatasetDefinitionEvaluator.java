@@ -7,6 +7,7 @@ import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_scrn.CxcaScreening;
 import org.openmrs.module.reporting.dataset.DataSet;
+import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
@@ -30,9 +31,11 @@ public class CxCaTreatmentDatasetDefinitionEvaluator implements DataSetEvaluator
     @Autowired
     private AggregateBuilder aggregateBuilder;
 
+
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
+        aggregateBuilder.clearTotal();
 
         cxCaTreatmentDatasetDefinition = (CxCaTreatmentDatasetDefinition) dataSetDefinition;
 
@@ -61,6 +64,10 @@ public class CxCaTreatmentDatasetDefinitionEvaluator implements DataSetEvaluator
         DataSetRow thermocoagulationCxCaTreatmentRow = new DataSetRow();
         aggregateBuilder.buildDataSetColumnForTreatment(thermocoagulationCxCaTreatmentRow, "Thermocoagulation");
         dataSet.addRow(thermocoagulationCxCaTreatmentRow);
+
+        DataSetRow totalSet = new DataSetRow();
+        aggregateBuilder.buildDataSetColumnForTreatment(totalSet, "T");
+        dataSet.addRow(totalSet);
 
         return dataSet;
 

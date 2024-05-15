@@ -43,6 +43,7 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
     @Override
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
             throws EvaluationException {
+        aggregateBuilder.clearTotal();
         cxcaDatasetDefinition = (CXCADatasetDefinition) dataSetDefinition;
         context = evalContext;
         SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
@@ -70,6 +71,10 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         DataSetRow suspiciousCxCaRow = new DataSetRow();
         aggregateBuilder.buildDataSetColumnForScreening(suspiciousCxCaRow, "Suspicious");
         dataSet.addRow(suspiciousCxCaRow);
+
+        DataSetRow totalSet = new DataSetRow();
+        aggregateBuilder.buildDataSetColumnForScreening(totalSet, "T");
+        dataSet.addRow(totalSet);
 
         return dataSet;
     }
