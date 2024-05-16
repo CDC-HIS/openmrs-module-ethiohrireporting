@@ -6,19 +6,25 @@ import java.util.*;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
+import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
 import org.openmrs.module.ohrireports.api.impl.query.MLQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
 
 @Component
 public class MLHmisQuery {
     private HashMap<Integer, BigDecimal> interruptedArvWithMonth = new HashMap<>();
     @Autowired
     private MLQuery mlQuery;
+    private HashMap<Integer,Object> lastFollowupDate = new HashMap<>();
     private Date endDate = Calendar.getInstance().getTime();
     public void loadInterruptedCohort(Date startDate, Date endDate) {
         mlQuery.getCohortML(startDate, endDate);
+        lastFollowupDate = mlQuery.getLastFollowUpDate(getBaseCohort());
     }
+   
     public Cohort getBaseCohort() {
         return mlQuery.cohort;
     }
@@ -62,7 +68,7 @@ public class MLHmisQuery {
         List<Integer> countedId = new ArrayList<>();
         int age = 0;
         for (Person person : persons) {
-            age = person.getAge(endDate);
+            age = person.getAge((java.sql.Timestamp) lastFollowupDate.get(person.getPersonId()));
             if (ageRange == Range.LESS_THAN_FIFTY && age < 15 && person.getGender().equals(gender)) {
                 countedId.add(person.getPersonId());
             } else if (ageRange == Range.ABOVE_OR_EQUAL_TO_FIFTY && age >= 15 && person.getGender().equals(gender)) {

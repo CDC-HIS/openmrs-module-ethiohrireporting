@@ -102,7 +102,7 @@ public class HMISQuery extends ColumnBuilder {
 		
 	    hmistxCurrEvaluator.buildDataSet(dataSet, end, encounter);
 		//TODO: encounter should be updated
-	    hmistxNewEvaluator.buildDataSet(dataSet, start, end,encounter);
+	    hmistxNewEvaluator.buildDataSet(dataSet, start, end,encounterAlive);
 	
 	    hivartretEvaluator.buildDataSet(dataSet, false ,start, end);
 	    hivartretEvaluator.buildDataSet(dataSet, true ,start, end);
@@ -154,7 +154,7 @@ public class HMISQuery extends ColumnBuilder {
 	
 	private void initialize(Date start, Date end) {
 		encounter = encounterQuery.getAliveFollowUpEncounters(start, end);
-		encounterAlive = encounterQuery. getAliveFollowUpEncounters(null, end);
+		encounterAlive = encounterQuery. getAliveFirstFollowUpEncounters(null, end);
 	}
 	
 }

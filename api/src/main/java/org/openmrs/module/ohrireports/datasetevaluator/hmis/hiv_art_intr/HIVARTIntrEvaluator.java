@@ -37,7 +37,7 @@ public class HIVARTIntrEvaluator {
 	
 	public void buildDataSet(SimpleDataSet dataSet) {
 		
-		// lost to follow-up Lost after treatemnt < 3month
+		// lost to follow-up Lost after treatment < 3month
 		Cohort cohort = hivArtIntrQuery.getBelowThreeMonthInterruption(hivArtIntrQuery.getLostToFollowUp(end));
 		List<Person> personList = hivArtIntrQuery.getPerson(cohort);
 		

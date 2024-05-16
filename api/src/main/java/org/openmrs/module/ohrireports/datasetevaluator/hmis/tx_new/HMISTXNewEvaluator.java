@@ -38,17 +38,7 @@ public class HMISTXNewEvaluator {
 	List<Person> persons = new ArrayList<>();
 
 
-//	@Override
-//	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-//			throws EvaluationException {
-//		_datasetDefinition = (HIVTXNewDatasetDefinition) dataSetDefinition;
-//		patientQuery = Context.getService(PatientQueryService.class);
-//		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-//		
-//		buildDataSet(dataSet);
-//
-//		return dataSet;
-//	}
+
 
 	public void buildDataSet(SimpleDataSet dataSet,Date startDate, Date endDate, List<Integer> encounter) {
 		this.startDate = startDate;
