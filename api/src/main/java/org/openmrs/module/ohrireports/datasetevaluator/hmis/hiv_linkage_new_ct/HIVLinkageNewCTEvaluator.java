@@ -4,49 +4,38 @@ import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Person;
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.HivLinkageNewCtQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Handler(supports = { HIVLinkageNewCtDatasetDefinition.class })
-public class HIVLinkageNewCtDatasetDefinitionEvaluator implements DataSetEvaluator {
-
-    private String baseName = "HIV_LINKAGE_NEW_CT ";
-	private String column_3_name = "Number";
-
+@Component
+@Scope("prototype")
+public class HIVLinkageNewCTEvaluator {
+	
 	@Autowired
 	private HivLinkageNewCtQuery hivLinkageNewCtQuery;
 
 	List<Person> persons = new ArrayList<>();
 
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-			throws EvaluationException {
+	
+	public void buildDataset(Date start, Date end,SimpleDataSet dataSet) {
 
-        HIVLinkageNewCtDatasetDefinition _datasetDefinition = (HIVLinkageNewCtDatasetDefinition) dataSetDefinition;
 		
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		
-		hivLinkageNewCtQuery.initialize(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+		hivLinkageNewCtQuery.initialize(start, end);
 		
 		buildDataSet(dataSet);
 
-		return dataSet;
 	}
 
-	public void buildDataSet(SimpleDataSet dataSet) {
+	private void buildDataSet(SimpleDataSet dataSet) {
 
 		dataSet.addRow(buildColumn(" ",
 				"Linkage outcome of newly identified Hiv positive individuals in the reporting period",
@@ -68,11 +57,13 @@ public class HIVLinkageNewCtDatasetDefinitionEvaluator implements DataSetEvaluat
 
 	private DataSetRow buildColumn(String col_1_value, String col_2_value, AggregationType aggregationType) {
 		DataSetRow hivTxNewDataSetRow = new DataSetRow();
+		String baseName = "HIV_LINKAGE_NEW_CT ";
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
 				baseName + "" + col_1_value);
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+		String column_3_name = "Number";
 		hivTxNewDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class),
 				getHTXNew(aggregationType));
 		return hivTxNewDataSetRow;

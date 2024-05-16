@@ -2,64 +2,51 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_ret;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.HivArtRetQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
-@Handler(supports = { HIVARTRETDatasetDefinition.class })
-public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
-
-	private HIVARTRETDatasetDefinition _datasetDefinition;
-	private String baseName = "HIV_ART_RET.1 ";
-	private String baseNameForNet = "HIV_ART_RET_NET";
-	private String column_3_name = "Number";
-	private String description = "Number of adults and children who are still on treatment at 12 months after initiating ART";
-	private String descriptionNet = "Number of persons on ART in the original cohort including those transferred in, minus those transferred out (net current cohort)";
-
+@Component
+@Scope("prototype")
+public class HIVARTRETEvaluator {
+	
+	private final String column_3_name = "Number";
+	
 	@Autowired
 	private HivArtRetQuery hivArtRetQuery;
 	List<Person> persons = new ArrayList<>();
 	private boolean isNetRetention = false;
+	private Date endDate;
 	Cohort currentCohort ;
 	Cohort pregnantCohort;
 	List<Integer> currentEncounter ;
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-			throws EvaluationException {
-		_datasetDefinition = (HIVARTRETDatasetDefinition) dataSetDefinition;
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+	
+	public void buildDataSet(SimpleDataSet dataSetDefinition, Boolean isNetRetention, Date startDate, Date endDate){
+		
 		//this forbid the initializeRetentionCohort method to not be called twice for per single report execution
-		isNetRetention = _datasetDefinition.getNetRetention();
+		this.isNetRetention = isNetRetention;
+		this.endDate = endDate;
 		if (!isNetRetention) {
-			hivArtRetQuery.initializeRetentionCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+			hivArtRetQuery.initializeRetentionCohort(startDate,endDate);
 		}
 		currentCohort = isNetRetention ? hivArtRetQuery.getNetRetCohort() : hivArtRetQuery.getRetCohort();
 		currentEncounter = isNetRetention ? hivArtRetQuery.getNetRetEncounter() : hivArtRetQuery.getRetEncounter();
 		 pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(currentCohort, YES, currentEncounter);
-		buildDataSet(dataSet);
+		buildData(dataSetDefinition);
 
-		return dataSet;
 	}
 
-	public void buildDataSet(SimpleDataSet dataSet) {
+	private void buildData(SimpleDataSet dataSet) {
 		if (!isNetRetention) {
 			DataSetRow headerDataSetRow = new DataSetRow();
 			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
@@ -69,8 +56,10 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Double.class), hivArtRetQuery.getPercentage() + "%");
 			dataSet.addRow(headerDataSetRow);
 		}
+		String description = "Number of adults and children who are still on treatment at 12 months after initiating ART";
+		String descriptionNet = "Number of persons on ART in the original cohort including those transferred in, minus those transferred out (net current cohort)";
 		dataSet.addRow(buildColumn(" ",
-				_datasetDefinition.getNetRetention() ? descriptionNet : description, getTotalCount()));
+				isNetRetention ? descriptionNet : description, getTotalCount()));
 
 		dataSet.addRow(buildColumn(".1", "< 1 year, Male", getCount(new QueryParameter(0D, 0.9, "M", UNKNOWN))));
 
@@ -182,9 +171,11 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private DataSetRow buildColumn(String col_1_value, String col_2_value, int value) {
 		DataSetRow hivTxNewDataSetRow = new DataSetRow();
+		String baseName = "HIV_ART_RET.1 ";
+		String baseNameForNet = "HIV_ART_RET_NET";
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-				(_datasetDefinition.getNetRetention() ? baseNameForNet : baseName) + "" + col_1_value);
+				(isNetRetention? baseNameForNet : baseName) + "" + col_1_value);
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
 		hivTxNewDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), value);
@@ -198,7 +189,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 		if (parameter.maxAge < 1) {
 			for (Person person : persons) {
-				age = person.getAge(_datasetDefinition.getEndDate());
+				age = person.getAge(endDate);
 				if (person.getGender().equals(parameter.gender) && age <= parameter.maxAge) {
 					countPersons.add(person.getPersonId());
 				}
@@ -207,7 +198,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 		}// For older than 50 or 65 generalization
 		else if (parameter.maxAge >= 200) {
 			for (Person person : persons) {
-				age = person.getAge(_datasetDefinition.getEndDate());
+				age = person.getAge(endDate);
 				if (person.getGender().equals(parameter.gender) && age >= parameter.minAge) {
 					countPersons.add(person.getPersonId());
 					count++;
@@ -224,7 +215,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 					if (!personOption.isPresent())
 						continue;
 					person = (Person) personOption.get();
-					age = person.getAge(_datasetDefinition.getEndDate());
+					age = person.getAge(endDate);
 					if (person.getGender().equals(parameter.gender) &&
 							age >= parameter.minAge &&
 							age <= parameter.maxAge) {
@@ -236,7 +227,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 			} else {
 				for (Person person : persons) {
-					age = person.getAge(_datasetDefinition.getEndDate());
+					age = person.getAge(endDate);
 					if (person.getGender().equals(parameter.gender) &&
 							age >= parameter.minAge &&
 							age <= parameter.maxAge) {
@@ -248,7 +239,7 @@ public class HIVARTRETDatasetDefinitionEvaluator implements DataSetEvaluator {
 			}
 		}else{
 			for (Person person : persons) {
-				age = person.getAge(_datasetDefinition.getEndDate());
+				age = person.getAge(endDate);
 				if (person.getGender().equals(parameter.gender) && age >= parameter.minAge && age <= parameter.maxAge) {
 					countPersons.add(person.getPersonId());
 					count++;

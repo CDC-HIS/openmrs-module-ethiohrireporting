@@ -9,32 +9,21 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.INTRAUTERINE_D
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.omg.DynamicAny._DynAnyFactoryStub;
-import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_fb.HivArtFbMetDatasetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Handler(supports = { HivArtFbMetDatasetDefinition.class })
-public class HivArtFbMetDatasetDefinitionEvaluator implements DataSetEvaluator {
+@Component
+@Scope("prototype")
+public class HIVArtFbMetEvaluator {
 	
 	@Autowired
 	private HivArtFbQuery fbQuery;
 	
-	private String column_3_name = "Number";
-	
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		HivArtFbMetDatasetDefinition _DatasetDefinition = (HivArtFbMetDatasetDefinition) dataSetDefinition;
-		SimpleDataSet dataSet = new SimpleDataSet(_DatasetDefinition, evalContext);
+	public void buildDataset(SimpleDataSet dataSet) {
 		
 		int oralContraceptive = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(ORAL_CONTRACEPTIVE_PILL));
 		int injectable = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(INJECTABLE));
@@ -48,6 +37,7 @@ public class HivArtFbMetDatasetDefinitionEvaluator implements DataSetEvaluator {
 		row.addColumnValue(
 		    new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
 		    "Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by method");
+		String column_3_name = "Number";
 		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), oralContraceptive + injectable
 		        + implants + iucd + others);
 		dataSet.addRow(row);
@@ -82,6 +72,5 @@ public class HivArtFbMetDatasetDefinitionEvaluator implements DataSetEvaluator {
 		othersRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), others);
 		dataSet.addRow(othersRow);
 		
-		return dataSet;
 	}
 }

@@ -4,77 +4,65 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
-import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_rep.HivPrepDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.Gender;
-import org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep.HivPrEpQuery;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Handler(supports = { HivPrepDatasetDefinition.class })
-public class HivPrepDatasetDefinitionEvaluator implements DataSetEvaluator {
+@Component
+@Scope("prototype")
+public class HIVPREPEvaluator {
 	@Autowired
 	private HivPrEpQuery hivPrEPQuery;
-	private Set<Integer> patientIds = new HashSet<>();
+	private final Set<Integer> patientIds = new HashSet<>();
 	private String baseName = "HIV_PrEP. ";
 	private String COLUMN_3_NAME = "Number";
 	private EvaluationContext context;
 	List<Person> personList = new ArrayList<>();
+	private Date start,end;
 
-	private HivPrepDatasetDefinition hivPrepDatasetDefinition;
-
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-			throws EvaluationException {
-
-		hivPrepDatasetDefinition = (HivPrepDatasetDefinition) dataSetDefinition;
-		context = evalContext;
-
-		hivPrEPQuery.setStartDate(hivPrepDatasetDefinition.getStartDate());
-		hivPrEPQuery.setEndDate(hivPrepDatasetDefinition.getEndDate(),PREP_SCREENED_DATE, PREP_SCREENING_ENCOUNTER_TYPE);
+	public void buildDataset(Date start,Date end,SimpleDataSet dataset) {
+		this.start= start;
+		this.end = end; 
+	
+		hivPrEPQuery.setStartDate(start);
+		hivPrEPQuery.setEndDate(end,PREP_SCREENED_DATE, PREP_SCREENING_ENCOUNTER_TYPE);
 
 
 		Cohort prepScreeningCohort = hivPrEPQuery
 				.getCohortByConceptAndBaseEncounter(PREP_SCREENED_DATE);
-
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
 		//patientIds = hivPrEPQuery.getPatientStartedPrep();
 
-		dataSet.addRow(buildColumn("", "Number of individuals receiving Pre-Exposure Prophylaxis",0));
-		dataSet.addRow(buildColumn("1", "PrEP (New Number of individuals who were newly enrolled on PrEP", 0));
+		dataset.addRow(buildColumn("", "Number of individuals receiving Pre-Exposure Prophylaxis",0));
+		dataset.addRow(buildColumn("1", "PrEP (New Number of individuals who were newly enrolled on PrEP", 0));
 
 		personList = hivPrEPQuery.getPersons(prepScreeningCohort);
-		dataSet.addRow(buildColumn("1.1", "By Age and Sex",prepScreeningCohort.size()));
-		dataSet.addRow(buildColumn("1.1 .1", "15 - 19 years, Male", getCohortSizeByAgeAndGender(15, 19, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .2", "15 - 19 years, Female", getCohortSizeByAgeAndGender(15, 19, Gender.Female)));
-		dataSet.addRow(buildColumn("1.1 .3", "20 - 24 years, Male", getCohortSizeByAgeAndGender(20, 24, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .4", "20 - 24 years, Female", getCohortSizeByAgeAndGender(20, 24, Gender.Female)));
-		dataSet.addRow(buildColumn("1.1 .5", "25 - 29 years, Male", getCohortSizeByAgeAndGender(25, 29, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .6", "25 - 29 years, Female", getCohortSizeByAgeAndGender(25, 29, Gender.Female)));
-		dataSet.addRow(buildColumn("1.1 .7", "30 - 34 years, Male", getCohortSizeByAgeAndGender(30, 34, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .8", "30 - 34 years, Female", getCohortSizeByAgeAndGender(30, 34, Gender.Female)));
-		dataSet.addRow(buildColumn("1.1 .9", "35 - 39 years, Male", getCohortSizeByAgeAndGender(35, 39, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .10", "35 - 39 years, Female", getCohortSizeByAgeAndGender(35, 39, Gender.Female)));
-		dataSet.addRow(buildColumn("1.1 .11", "40 - 44 years, Male", getCohortSizeByAgeAndGender(40, 44, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .12", "40 - 44 years, Female", getCohortSizeByAgeAndGender(40, 44, Gender.Female)));
-		dataSet.addRow(buildColumn("1.1 .13", "45 - 49 years, Male", getCohortSizeByAgeAndGender(45, 49, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .14", "45 - 49 years, Female", getCohortSizeByAgeAndGender(45, 49, Gender.Female)));
-		dataSet.addRow(buildColumn("1.1 .15", ">=50 years, Male", getCohortSizeByAgeAndGender(50, 150, Gender.Male)));
-		dataSet.addRow(buildColumn("1.1 .16", ">=50 years, Female", getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
+		dataset.addRow(buildColumn("1.1", "By Age and Sex",prepScreeningCohort.size()));
+		dataset.addRow(buildColumn("1.1 .1", "15 - 19 years, Male", getCohortSizeByAgeAndGender(15, 19, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .2", "15 - 19 years, Female", getCohortSizeByAgeAndGender(15, 19, Gender.Female)));
+		dataset.addRow(buildColumn("1.1 .3", "20 - 24 years, Male", getCohortSizeByAgeAndGender(20, 24, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .4", "20 - 24 years, Female", getCohortSizeByAgeAndGender(20, 24, Gender.Female)));
+		dataset.addRow(buildColumn("1.1 .5", "25 - 29 years, Male", getCohortSizeByAgeAndGender(25, 29, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .6", "25 - 29 years, Female", getCohortSizeByAgeAndGender(25, 29, Gender.Female)));
+		dataset.addRow(buildColumn("1.1 .7", "30 - 34 years, Male", getCohortSizeByAgeAndGender(30, 34, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .8", "30 - 34 years, Female", getCohortSizeByAgeAndGender(30, 34, Gender.Female)));
+		dataset.addRow(buildColumn("1.1 .9", "35 - 39 years, Male", getCohortSizeByAgeAndGender(35, 39, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .10", "35 - 39 years, Female", getCohortSizeByAgeAndGender(35, 39, Gender.Female)));
+		dataset.addRow(buildColumn("1.1 .11", "40 - 44 years, Male", getCohortSizeByAgeAndGender(40, 44, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .12", "40 - 44 years, Female", getCohortSizeByAgeAndGender(40, 44, Gender.Female)));
+		dataset.addRow(buildColumn("1.1 .13", "45 - 49 years, Male", getCohortSizeByAgeAndGender(45, 49, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .14", "45 - 49 years, Female", getCohortSizeByAgeAndGender(45, 49, Gender.Female)));
+		dataset.addRow(buildColumn("1.1 .15", ">=50 years, Male", getCohortSizeByAgeAndGender(50, 150, Gender.Male)));
+		dataset.addRow(buildColumn("1.1 .16", ">=50 years, Female", getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
 
 		int total = 0;
 		Cohort fsw = hivPrEPQuery.getCategoryOnPrep(FEMALE_SEX_WORKER, prepScreeningCohort);
@@ -87,7 +75,7 @@ public class HivPrepDatasetDefinitionEvaluator implements DataSetEvaluator {
 		clientCategoryRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "By Client Category");
 		clientCategoryRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class), total);
 	
-		dataSet.addRow( clientCategoryRow);
+		dataset.addRow( clientCategoryRow);
 	
 		DataSetRow discordantCoupleCategoryRow = new DataSetRow();
 
@@ -95,7 +83,7 @@ public class HivPrepDatasetDefinitionEvaluator implements DataSetEvaluator {
 		discordantCoupleCategoryRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "Discordant Couple");
 		discordantCoupleCategoryRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class), discordantCouple.size());
 		
-		dataSet.addRow(discordantCoupleCategoryRow);
+		dataset.addRow(discordantCoupleCategoryRow);
 		
 		DataSetRow fwCategoryRow = new DataSetRow();
 
@@ -103,9 +91,8 @@ public class HivPrepDatasetDefinitionEvaluator implements DataSetEvaluator {
 		fwCategoryRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "Female sex worker[FSW]");
 		fwCategoryRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class), fsw.size());
 
-		dataSet.addRow(fwCategoryRow);
+		dataset.addRow(fwCategoryRow);
 
-		return dataSet;
 	}
 
 	private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
@@ -131,7 +118,7 @@ public class HivPrepDatasetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		for (Person person : personList) {
 
-			_age = person.getAge(hivPrepDatasetDefinition.getEndDate());
+			_age = person.getAge(end);
 
 			if (!patients.contains(person.getPersonId())
 					&& (_age >= minAge && _age < maxAge)

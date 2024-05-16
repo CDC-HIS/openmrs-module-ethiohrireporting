@@ -1,42 +1,36 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_dsd;
 
 import org.openmrs.Cohort;
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.DSDQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_dsd.HmisTXDsdDataSetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 
 import static org.openmrs.module.ohrireports.RegimentConstant.*;
 
-@Handler(supports = { HmisTXDsdDataSetDefinition.class })
-public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
+@Component
+@Scope("prototype")
+public class HMISTXDSDEvaluator {
 	
 	@Autowired
 	DSDQuery dsdQuery;
 	
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+	public void buildDataset(Date start, Date end, SimpleDataSet dataSet) {
 		
-		HmisTXDsdDataSetDefinition _datasetDefinition = (HmisTXDsdDataSetDefinition) dataSetDefinition;
-		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
-		dsdQuery.generateBaseReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
+		dsdQuery.generateBaseReport(start, end);
 		Cohort cohort;
 		RowBuilder rowBuilder;
 		int total = 0;
 		
 		//clients on 3MMD
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_3MMD);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
+		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_3MMD", 1, 49, 25);
 		DataSetRow headerRow = rowBuilder.buildDatasetColumn("HIV_TX_DSD",
 		    "Proportion of PLHIV currently on differentiated service Delivery model (DSD)", "");
@@ -48,7 +42,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		// clients on ASM(6MMD)
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_6MMD);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
+		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_ASM", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_ASM", "Total number of clients on ASM(6MMD)",
 		    String.valueOf(rowBuilder.getTotalCount())));
@@ -57,7 +51,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		// clients on FTAR
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_FTAR);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
+		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_FTAR", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_FTAR", "Total number of clients on FTAR",
 		    String.valueOf(rowBuilder.getTotalCount())));
@@ -66,7 +60,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		// clients on CAG
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_HEP_CAG);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
+		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_CAG", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_CAG", "Total number of clients on CAG",
 		    String.valueOf(rowBuilder.getTotalCount())));
@@ -75,7 +69,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		// clients on PCAD
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_PCAD);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
+		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_PCAD", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_PCAD", "Total number of clients on PCAD",
 		    String.valueOf(rowBuilder.getTotalCount())));
@@ -84,7 +78,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		// clients on Adolescent DSD
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_ADOLESCENT);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
+		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_Adolescent", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_Adolescent", "Total number of clients on Adolescent DSD",
 		    String.valueOf(rowBuilder.getTotalCount())));
@@ -111,7 +105,7 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		// clients on  Advanced HIV Disease Care Model
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_AHDCM);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), _datasetDefinition.getEndDate());
+		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_AHDCM", 1, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_AHDCM",
 		    "Total number of clients on Advanced HIV Disease Care Model", String.valueOf(rowBuilder.getTotalCount())));
@@ -120,7 +114,6 @@ public class HmisTXDsdDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		headerRow.addColumnValue(new DataSetColumn("Number", "Number", String.class), getPercentage(total));
 		
-		return dataSet;
 	}
 	
 	private String getPercentage(int total) {

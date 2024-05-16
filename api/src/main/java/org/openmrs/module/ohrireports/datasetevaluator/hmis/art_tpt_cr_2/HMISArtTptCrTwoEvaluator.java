@@ -3,37 +3,28 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_2;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.RegimentConstant.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_2.HmisArtTptCrTwoDataSetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
 
-@Handler(supports = { HmisArtTptCrTwoDataSetDefinition.class })
-public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluator {
-
-	private String baseName = "HIV_ART_TPT_CR.";
-	private String COLUMN_3_NAME = "Number";
-	private HmisArtTptCrTwoDataSetDefinition _dataSetDefinition;
-
+@Component
+@Scope("prototype")
+public class HMISArtTptCrTwoEvaluator {
+	
+	private Date start, end;
 	List<Person> persons = new ArrayList<>();
 	@Autowired
 	private TBQuery tbQuery;
@@ -45,15 +36,14 @@ public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluat
 	private EncounterQuery encounterQuery;
 	private List<Integer> baseEncounter;
 
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-			throws EvaluationException {
+	
+	public void buildDataset(Date start,Date end,SimpleDataSet data) {
+		this.start=start;
+		this.end=end;
 
-		_dataSetDefinition = (HmisArtTptCrTwoDataSetDefinition) dataSetDefinition;
-		startDate = getSubTwelveMonth(_dataSetDefinition.getStartDate());
-		endDate = getSubTwelveMonth(_dataSetDefinition.getEndDate());
+		startDate = getSubTwelveMonth(start);
+		endDate = getSubTwelveMonth(end);
 
-		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		baseEncounter = getBaseEncounter();
 
 		baseCohort = getBaseCohort(baseEncounter);
@@ -87,37 +77,34 @@ public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluat
 		data.addRow(buildColumn("2.3. 3", ">= 15 years, Male", getTPTScreenByAgeAndGender(15, 150, Gender.Male)));
 		data.addRow(buildColumn("2.3. 4", ">= 15 years, female", getTPTScreenByAgeAndGender(15, 150, Gender.Female)));
 
-		return data;
 	}
 
 	private Cohort getBaseCohort(List<Integer> baseEncounter) {
 		Cohort _baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, _dataSetDefinition.getEndDate(), null));
+				tbQuery.getArtStartedCohort(baseEncounter, null, end, null));
 
 		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, TPT_START_DATE, startDate,
 				endDate);
 		baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, _dataSetDefinition.getEndDate(), tptInitiatedCohort));
+				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptInitiatedCohort));
 
 		Cohort tptCompleteCohort = tbQuery.getTPTByCompletedConceptCohort(baseEncounter, baseCohort);
 
 		_baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, _dataSetDefinition.getEndDate(), tptCompleteCohort));
+				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptCompleteCohort));
 		return _baseCohort;
 	}
 
 	private List<Integer> getBaseEncounter() {
-		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE),
-				_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate());
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null,
-				_dataSetDefinition.getEndDate(),
+		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(TPT_START_DATE),
+				start,end);
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), null,
+				end,
 				tptEncounterEncounter);
 		Cohort cohort = tbQuery.getCohort(baseEncounter);
-
-		List<Integer> tptCompletedEncounter = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE),
-				null, _dataSetDefinition.getEndDate(), cohort);
-
-		return tptCompletedEncounter;
+		
+		return encounterQuery.getEncounters(Collections.singletonList(TPT_COMPLETED_DATE),
+				null, end, cohort);
 
 	}
 
@@ -130,12 +117,14 @@ public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluat
 
 	private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
 		DataSetRow dataRow = new DataSetRow();
+		String baseName = "HIV_ART_TPT_CR.";
 		dataRow.addColumnValue(
 				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-				baseName + "" + col_1_value);
+				baseName + col_1_value);
 		dataRow.addColumnValue(
 				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
-
+		
+		String COLUMN_3_NAME = "Number";
 		dataRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
 				col_3_value);
 
@@ -153,7 +142,7 @@ public class HmisArtTptCrTwoDataSetDefinitionEvaluator implements DataSetEvaluat
 		for (Person person : persons) {
 			if (!(patients.contains(person.getPersonId())) && person.getGender().toLowerCase().equals(_gender)) {
 
-				_age = person.getAge(_dataSetDefinition.getEndDate());
+				_age = person.getAge(end);
 				if (_age >= minAge && _age < maxAge) {
 
 					patients.add(person.getPersonId());

@@ -4,6 +4,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPO
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -47,8 +48,8 @@ public class TXTBReport implements ReportManager {
 		
 		Parameter types = new Parameter("type", "Report type", String.class);
 		types.addToWidgetConfiguration("codedOptions", numerator + "," + denominator + "," + tb_art);
-		
 		types.setRequired(false);
+		
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
 		startDate.setRequired(false);
 		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
@@ -88,7 +89,7 @@ public class TXTBReport implements ReportManager {
 		//
 		ReportDesign design = ReportManagerUtil.createExcelDesign("41f952ea-e777-44c4-8f54-303517dd6622", reportDefinition);
 		
-		return Arrays.asList(design);
+		return Collections.singletonList(design);
 	}
 	
 	@Override

@@ -6,35 +6,26 @@ import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.OCCUPATIONAL;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.NON_OCCUPATIONAL;
 
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.PepQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPEPCategoryDatasetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Handler(supports = { HivPEPCategoryDatasetDefinition.class })
-public class HivPEPCategoryDatasetDefinitionEvaluators implements DataSetEvaluator {
+import java.util.Date;
+
+@Component
+@Scope("prototype")
+public class HIVPEPCategoryEvaluators {
 	
 	@Autowired
 	private PepQuery query;
 	
-	private String column_3_name = "Number";
-	
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+	public void buildDataset(Date start, Date end, SimpleDataSet dataset) {
 		
-		HivPEPCategoryDatasetDefinition _DatasetDefinition = (HivPEPCategoryDatasetDefinition) dataSetDefinition;
-		
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		
-		query.generateReport(_DatasetDefinition.getStartDate(), _DatasetDefinition.getEndDate());
+		query.generateReport(start, end);
 		int total = 0;
 		int occupationCount = query.getCountByExposureType(OCCUPATIONAL);
 		int sexualAssaultCount = query.getCountByExposureType(SEXUAL_ASSAULT);
@@ -44,16 +35,17 @@ public class HivPEPCategoryDatasetDefinitionEvaluators implements DataSetEvaluat
 		hivPepRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PEP");
 		hivPepRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
 		    "Number of persons provided with post-exposure prophylaxis (PEP) for risk of HIV infection by exposure type");
+		String column_3_name = "Number";
 		hivPepRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), total);
 		
-		dataSet.addRow(hivPepRow);
+		dataset.addRow(hivPepRow);
 		
 		DataSetRow occupationalPepRow = new DataSetRow();
 		occupationalPepRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PEP.1");
 		occupationalPepRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "Occupation");
 		occupationalPepRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), occupationCount);
 		
-		dataSet.addRow(occupationalPepRow);
+		dataset.addRow(occupationalPepRow);
 		
 		DataSetRow SexualAssaultPepRow = new DataSetRow();
 		SexualAssaultPepRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PEP.2");
@@ -61,7 +53,7 @@ public class HivPEPCategoryDatasetDefinitionEvaluators implements DataSetEvaluat
 		SexualAssaultPepRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class),
 		    sexualAssaultCount);
 		
-		dataSet.addRow(SexualAssaultPepRow);
+		dataset.addRow(SexualAssaultPepRow);
 		
 		DataSetRow otherNonOccupationPepRow = new DataSetRow();
 		otherNonOccupationPepRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PEP.3");
@@ -70,8 +62,8 @@ public class HivPEPCategoryDatasetDefinitionEvaluators implements DataSetEvaluat
 		otherNonOccupationPepRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class),
 		    nonOccupationCount);
 		
-		dataSet.addRow(otherNonOccupationPepRow);
-		return dataSet;
+		dataset.addRow(otherNonOccupationPepRow);
+		
 	}
 	
 }
