@@ -66,6 +66,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 
         if (hdsd.getType().equals(TXTBReport.numerator)) {
+            
             followUpEncounters = encounterQuery.getLatestDateByFollowUpDate(null, hdsd.getEndDate());
             tbQueryLineList.setEncountersByScreenDate(followUpEncounters);
 

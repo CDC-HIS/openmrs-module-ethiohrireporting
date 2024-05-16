@@ -25,7 +25,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 	
 	private Date endDate;
 	
-	private DbSessionFactory sessionFactory;
+	private final DbSessionFactory sessionFactory;
 	
 	private Cohort baseCohort;
 	
@@ -59,14 +59,14 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 		StringBuilder sql = baseQuery(REGIMEN);
 		sql.append(" and " + OBS_ALIAS + "value_coded in " + conceptQuery(regimentConceptUUIDS));
 		sql.append(" and " + OBS_ALIAS + "encounter_id in (:latestEncounter)");
-		if (cohort != null && cohort.size() > 0)
+		if (cohort != null && !cohort.isEmpty())
 			sql.append(" and " + OBS_ALIAS + "person_id in (:cohorts)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
 		query.setParameterList("latestEncounter", encounters);
 		
-		if (cohort != null && cohort.size() > 0)
+		if (cohort != null && !cohort.isEmpty())
 			query.setParameterList("cohorts", cohort.getMemberIds());
 		return new Cohort(query.list());
 		
@@ -79,7 +79,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 		
 		StringBuilder sql = baseConceptCountQuery(REGIMEN);
 		
-		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:latestEncounter)");
+		sql.append(" and ").append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id in (:latestEncounter)");
 		
 		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:cohorts)");
 		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "value_coded in " + conceptQuery(regimentConceptUUIDS));
@@ -93,7 +93,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 		List list = query.list();
 		
 		for (Object object : list) {
-			if (object != null && object instanceof Object[]) {
+			if (object instanceof Object[]) {
 				Object[] objects = (Object[]) object;
 				for (Regiment regiment : regiments) {
 					Integer conceptId = (Integer) objects[1];
@@ -109,7 +109,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getGenderSpecificCohort(String gender, Cohort cohort) {
-		if (cohort == null || cohort.size() == 0)
+		if (cohort == null || cohort.isEmpty())
 			return new Cohort();
 		
 		StringBuilder sql = new StringBuilder(" select person_id from person where gender ='" + gender + "' ");

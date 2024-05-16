@@ -1,29 +1,29 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.pmtct.hei;
 
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.HEIHMISQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEIARVDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_dsd.RowBuilder;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Handler(supports = { HMISHEIARVDatasetDefinition.class })
-public class HMISHEIARVDatasetDefinitionEvaluator implements DataSetEvaluator {
+import java.util.Date;
+
+@Component
+@Scope("prototype")
+public class HMISHEIARVEvaluator {
 	
 	@Autowired
 	HEIHMISQuery heihmisQuery;
 	
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		HMISHEIARVDatasetDefinition dsd = (HMISHEIARVDatasetDefinition) dataSetDefinition;
+	public void buildDataset(Date start, Date end, SimpleDataSet dataSet) {
 		
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		heihmisQuery.generateHMISIARV(dsd.getStartDate(), dsd.getEndDate());
+		heihmisQuery.generateHMISIARV(start, end);
 		RowBuilder builder = new RowBuilder();
 		
 		dataSet.addRow(builder
@@ -34,6 +34,5 @@ public class HMISHEIARVDatasetDefinitionEvaluator implements DataSetEvaluator {
 		dataSet.addRow(builder.buildDatasetColumn("MTCT_HEI_COTR.1.",
 		    "Number of HIV exposed infants who received ARV prophylaxis For 12 weeks", heihmisQuery.getBaseCohort().size()));
 		
-		return dataSet;
 	}
 }

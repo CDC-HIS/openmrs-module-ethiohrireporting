@@ -71,12 +71,10 @@ public class HivArtFbQuery extends PatientQueryImpDao {
 	}
 	
 	public Integer getPatientByMethodOfOtherFP(List<String> conceptTypeUUID) {
-		StringBuilder sqlBuilder = new StringBuilder("select obt.person_id from obs as obt where obt.concept_id = "
-		        + conceptQuery(FAMILY_PLANNING_METHODS));
-		sqlBuilder.append(" and obt.value_coded in ").append(conceptQuery(conceptTypeUUID));
-		sqlBuilder.append(" and obt.encounter_id in (:encounter)");
-		sqlBuilder.append(" and obt.person_id in (:cohort)");
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+		String sqlBuilder = "select obt.person_id from obs as obt where obt.concept_id = "
+		        + conceptQuery(FAMILY_PLANNING_METHODS) + " and obt.value_coded in " + conceptQuery(conceptTypeUUID)
+		        + " and obt.encounter_id in (:encounter)" + " and obt.person_id in (:cohort)";
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder);
 		query.setParameterList("encounter", baseEncounter);
 		query.setParameterList("cohort", cohort.getMemberIds());
 		

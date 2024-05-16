@@ -50,8 +50,8 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 		if (getSessionFactory() == null)
 			this.setSessionFactory(sessionFactory);
 		setCalculatedDate(startOnOrAfter, endOnOrBefore);
-		retEncounter = encounterQuery.getAliveFollowUpEncounters(null, endOnOrBefore);
-		netRetEncounter = encounterQuery.getLatestDateByFollowUpDate(null, endOnOrBefore);
+		this.retEncounter = encounterQuery.getAliveFollowUpEncounters(null,endOnOrBefore);
+		this.netRetEncounter = encounterQuery.getLatestDateByFollowUpDate(null,endOnOrBefore);
 		setPatientRetentionCohortNet();
 		setPatientRetentionCohort(endOnOrBefore);
 	}

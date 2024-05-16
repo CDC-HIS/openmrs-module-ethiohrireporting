@@ -6,55 +6,55 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.NO;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
-import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-@Handler(supports = { HIVTXNewDatasetDefinition.class })
-public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
+@Component
+@Scope("prototype")
+public class HMISTXNewEvaluator {
+	
+	private  Date startDate ;
+	private  Date endDate ;
+	private  List<Integer> encounterIds;
 
-	private HIVTXNewDatasetDefinition _datasetDefinition;
-	private String baseName = "HIV_TX_NEW ";
-	private String column_3_name = "Number";
-	private PatientQueryService patientQuery;
+	private  PatientQueryService patientQuery;
 
-	@Autowired
-	private EncounterQuery encounterQuery;
+	
 	private Cohort pregnantCohort;
 
 	List<Person> persons = new ArrayList<>();
-	List<Integer> encounter = new ArrayList<>();
 
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
-			throws EvaluationException {
-		_datasetDefinition = (HIVTXNewDatasetDefinition) dataSetDefinition;
+
+//	@Override
+//	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext)
+//			throws EvaluationException {
+//		_datasetDefinition = (HIVTXNewDatasetDefinition) dataSetDefinition;
+//		patientQuery = Context.getService(PatientQueryService.class);
+//		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+//		
+//		buildDataSet(dataSet);
+//
+//		return dataSet;
+//	}
+
+	public void buildDataSet(SimpleDataSet dataSet,Date startDate, Date endDate, List<Integer> encounter) {
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.encounterIds = encounter;
 		patientQuery = Context.getService(PatientQueryService.class);
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		encounter = encounterQuery.getAliveFollowUpEncounters(_datasetDefinition.getStartDate(),_datasetDefinition.getEndDate());
-		buildDataSet(dataSet);
-
-		return dataSet;
-	}
-
-	public void buildDataSet(SimpleDataSet dataSet) {
-
 		dataSet.addRow(buildColumn(" ", "Number of adults and children with HIV infection newly started on ART",
 				new QueryParameter(0D, 0D, "", UNKNOWN)));
 
@@ -164,11 +164,13 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 
 	private DataSetRow buildColumn(String col_1_value, String col_2_value, QueryParameter parameter) {
 		DataSetRow hivTxNewDataSetRow = new DataSetRow();
+		String baseName = "HIV_TX_NEW ";
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-				baseName + "" + col_1_value);
+				baseName + col_1_value);
 		hivTxNewDataSetRow.addColumnValue(
 				new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+		String column_3_name = "Number";
 		hivTxNewDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class),
 				getHTXNew(parameter));
 		return hivTxNewDataSetRow;
@@ -178,10 +180,10 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		int _age = 0;
 		Cohort cohort = new Cohort();
 		if (parameter.maxAge == 0 && parameter.minAge == 0) {
-			cohort = patientQuery.getNewOnArtCohort("", _datasetDefinition.getStartDate(),
-					_datasetDefinition.getEndDate(), null,encounter);
+			cohort = patientQuery.getNewOnArtCohort("", startDate,
+					endDate, null, encounterIds);
 			persons = patientQuery.getPersons(cohort);
-			pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES,encounter);
+			pregnantCohort = patientQuery.getPatientByPregnantStatus(cohort, YES, encounterIds);
 
 			return cohort.getMemberIds().size();
 		}
@@ -191,7 +193,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 			List<Person> countPersons = new ArrayList<>();
 
 			for (Person person : persons) {
-				_age = person.getAge(_datasetDefinition.getEndDate());
+				_age = person.getAge(endDate);
 				if (_age < parameter.maxAge && person.getGender().equals(parameter.gender)) {
 					countPersons.add(person);
 					cohort.addMembership(new CohortMembership(person.getPersonId()));
@@ -206,7 +208,7 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		else if (parameter.maxAge >= 200) {
 			List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {
-				_age = person.getAge(_datasetDefinition.getEndDate());
+				_age = person.getAge(endDate);
 
 				if (_age >= parameter.minAge && person.getGender().equals(parameter.gender)) {
 					countPersons.add(person);
@@ -219,20 +221,20 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		// For Age Range
 		else {
-			List<Person> countPersons = new ArrayList<>();
+			//List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {
-				_age = person.getAge(_datasetDefinition.getEndDate());
+				_age = person.getAge(endDate);
 
 				if (_age >= parameter.minAge && _age <= parameter.maxAge
 						&& person.getGender().equals(parameter.gender)) {
-					countPersons.add(person);
+				//	countPersons.add(person);
 					cohort.addMembership(new CohortMembership(person.getPersonId()));
 				}
 
 			}
 
-			if (parameter.isPregnant != UNKNOWN) {
-				if (parameter.isPregnant == YES) {
+			if (!Objects.equals(parameter.isPregnant, UNKNOWN)) {
+				if (Objects.equals(parameter.isPregnant, YES)) {
 
 					for (CohortMembership cohortMembership : pregnantCohort.getMemberships()) {
 						persons.removeIf(p -> p.getPersonId().equals(cohortMembership.getPatientId()));
@@ -255,12 +257,12 @@ public class HIVTXNewDatasetDefinitionEvaluator implements DataSetEvaluator {
 	/**
 	 * QueryParameter
 	 */
-	public class QueryParameter {
+	public static class QueryParameter {
 
-		private Double minAge;
-		private Double maxAge;
-		private String gender;
-		private String isPregnant;
+		private final Double minAge;
+		private final Double maxAge;
+		private final String gender;
+		private final String isPregnant;
 
 		public QueryParameter(Double minAge, Double maxAge, String gender, String isPregnant) {
 			this.minAge = minAge;

@@ -13,40 +13,39 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
-@Handler(supports = { HMISEIDDatasetDefinition.class })
-public class HMISEIDDatasetDefinitionEvaluator implements DataSetEvaluator {
+@Component
+@Scope("prototype")
+public class HMISEIDEvaluator {
 	
 	@Autowired
 	private EIDQuery eidQuery;
 	
-	@Override
-	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		HMISEIDDatasetDefinition hmiseidDatasetDefinition = (HMISEIDDatasetDefinition) dataSetDefinition;
-		eidQuery.generateReport(hmiseidDatasetDefinition.getStartDate(), hmiseidDatasetDefinition.getEndDate(),
-		    PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB);
+	public void buildDataset(Date start, Date end, SimpleDataSet dataset) {
+		eidQuery.generateReport(start, end, PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB);
 		
-		SimpleDataSet data = new SimpleDataSet(hmiseidDatasetDefinition, evalContext);
 		RowBuilder rowBuilder = new RowBuilder();
 		int positiveBelowTwoAge = getPositive(0, 2);
 		int negativeBelowTwoAge = getNegative(0, 2);
 		int positiveAboveTwoAge = getPositive(2, 12);
 		int negativeAboveTwoAge = getNegative(2, 12);
 		
-		data.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1",
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1",
 		    "Number of HIV exposed infants who received an HIV test 0- 2 months of birth", ""));
-		data.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1.1", "Positive", positiveBelowTwoAge));
-		data.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1.2", "Negative", negativeBelowTwoAge));
-		data.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2",
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1.1", "Positive", positiveBelowTwoAge));
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1.2", "Negative", negativeBelowTwoAge));
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2",
 		    "Total Number of infants within 12 month received virological test result", ""));
-		data.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2.1", "Positive", positiveAboveTwoAge));
-		data.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2.2", "Negative", negativeAboveTwoAge));
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2.1", "Positive", positiveAboveTwoAge));
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2.2", "Negative", negativeAboveTwoAge));
 		
-		return data;
 	}
 	
 	private int getNegative(int minAge, int maxAge) {

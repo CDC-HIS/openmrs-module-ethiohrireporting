@@ -1,9 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_plhiv;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -20,36 +17,34 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
-@Handler(supports = {HivPlHivDatasetDefinition.class})
-public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
+@Component
+@Scope("prototype")
+public class HivPlHivEvaluator {
 
     @Autowired
     private HivPlvHivQuery hivPlvHivQuery;
-
-    private String baseName = "HIV_PLHIV_TSP. ";
-    private String COLUMN_3_NAME = "Number";
-
-    List<Person> personList = new ArrayList<>();
+	
+	List<Person> personList = new ArrayList<>();
     List<Person> personPregnantList = new ArrayList<>();
     List<Person> personNonPregnantList = new ArrayList<>();
 
     @Autowired
     private EncounterQuery encounterQuery;
-    private HivPlHivDatasetDefinition hivplhivDatasetDefinition;
-    private int totalMAM, totalSAM;
+	private Date end;
 
-    @Override
-    public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
+    public void buildDataset(Date start, Date end, SimpleDataSet dataSet) {
+	    this.end = end;
+      
 
-        hivplhivDatasetDefinition = (HivPlHivDatasetDefinition) dataSetDefinition;
-
-        hivPlvHivQuery.setStartDate(hivplhivDatasetDefinition.getStartDate());
-        hivPlvHivQuery.setEndDate(hivplhivDatasetDefinition.getEndDate(), FOLLOW_UP_DATE);
+        hivPlvHivQuery.setStartDate(start);
+        hivPlvHivQuery.setEndDate(end, FOLLOW_UP_DATE);
 
         Cohort plhivCohort = hivPlvHivQuery.getAllCohortPLHIVMalnutrition(hivPlvHivQuery.getBaseEncounter());
         Cohort plhivMAMCohort = hivPlvHivQuery.getAllNUTMAMForAdult(hivPlvHivQuery.getBaseEncounter(), plhivCohort,
@@ -59,12 +54,10 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
                 plhivCohort, Collections.singletonList(SEVERE_MAL_NUTRITION));
 
         Cohort plhivMAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivMAMCohort);
-        totalMAM = hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size();
+	    int totalMAM = hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size();
         Cohort plhivSAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivSAMCohort);
-        totalSAM = hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size();
+	    int totalSAM = hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size();
 
-
-        SimpleDataSet dataSet = new SimpleDataSet(hivplhivDatasetDefinition, evalContext);
 
 
         personList = hivPlvHivQuery.getPersons(plhivCohort);
@@ -136,7 +129,6 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.6", ">= 15 years, Female - non-pregnant",
                 getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Female, personNonPregnantList)));
 
-        return dataSet;
     }
 
     private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
@@ -146,8 +138,9 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
                 col_1_value);
         prepDataSetRow.addColumnValue(
                 new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
-
-        prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
+	    
+	    String COLUMN_3_NAME = "Number";
+	    prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
                 col_3_value);
 
         return prepDataSetRow;
@@ -156,13 +149,13 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
     private Integer getCohortSizeByAgeAndGender(int minAge, int maxAge, Gender gender) {
         int _age = 0;
         List<Integer> patients = new ArrayList<>();
-        String _gender = gender.equals(gender.Female) ? "f" : "m";
+        String _gender = gender.equals(Gender.Female) ? "f" : "m";
         if (maxAge > 1) {
             maxAge = maxAge + 1;
         }
         for (Person person : personList) {
 
-            _age = person.getAge(hivplhivDatasetDefinition.getEndDate());
+            _age = person.getAge(end);
 
             if (!patients.contains(person.getPersonId())
                     && (_age >= minAge && _age < maxAge)
@@ -178,13 +171,13 @@ public class HivPlHivDatasetDefinitionEvaluator implements DataSetEvaluator {
     private Integer getCohortSizeByAgeGenderAndPregnancyStatus(int minAge, int maxAge, Gender gender, List<Person> personList1) {
         int _age = 0;
         List<Integer> patients = new ArrayList<>();
-        String _gender = gender.equals(gender.Female) ? "f" : "m";
+        String _gender = gender.equals(Gender.Female) ? "f" : "m";
         if (maxAge > 1) {
             maxAge = maxAge + 1;
         }
         for (Person person : personList1) {
 
-            _age = person.getAge(hivplhivDatasetDefinition.getEndDate());
+            _age = person.getAge(end);
 
             if (!patients.contains(person.getPersonId())
                     && (_age >= minAge && _age < maxAge)
