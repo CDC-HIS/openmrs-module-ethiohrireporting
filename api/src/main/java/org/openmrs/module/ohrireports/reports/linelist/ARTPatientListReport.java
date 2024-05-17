@@ -12,6 +12,8 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
@@ -37,7 +39,15 @@ public class ARTPatientListReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		return EthiOhriUtil.getDateRangeParameters();
+		Calendar calendar = Calendar.getInstance();
+		Date nowDate = calendar.getTime();
+		Parameter endDate = new Parameter("endDate", "Enrolled Before:", Date.class);
+		endDate.setRequired(false);
+		endDate.setDefaultValue(nowDate);
+		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
+		endDateGC.setRequired(false);
+		endDate.setDefaultValue(EthiOhriUtil.getEthiopianDate(nowDate));
+		return Arrays.asList(endDate, endDateGC);
 	}
 	
 	@Override
@@ -50,7 +60,8 @@ public class ARTPatientListReport implements ReportManager {
 		
 		ARTPatientListDatasetDefinition artPatientListDatasetDefinition = new ARTPatientListDatasetDefinition();
 		artPatientListDatasetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("ART Patient", EthiOhriUtil.map(artPatientListDatasetDefinition));
+		reportDefinition.addDataSetDefinition("ART Patient List",
+		    EthiOhriUtil.map(artPatientListDatasetDefinition, "endDate=${endDateGC}"));
 		return reportDefinition;
 	}
 	
