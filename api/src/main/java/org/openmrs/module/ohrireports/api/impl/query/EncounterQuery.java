@@ -1,10 +1,5 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ALIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.RESTART;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -17,6 +12,8 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class EncounterQuery extends BaseEthiOhriQuery {
@@ -47,6 +44,62 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
 		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
 		builder.append(" and ob.concept_id =").append(conceptQuery(FOLLOW_UP_DATE));
+		
+		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		
+		if (start != null)
+			q.setDate("start", start);
+		if (end != null)
+			q.setDate("end", end);
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
+	
+	public List<Integer> getSecondLatestFollowUp(Date end) {
+		StringBuilder builder = new StringBuilder("SELECT ob.encounter_id FROM obs AS ob INNER JOIN ");
+		builder.append("(SELECT MAX(obs_enc.value_datetime) AS value_datetime, obs_enc.person_id ");
+		builder.append("FROM obs AS obs_enc ");
+		builder.append("WHERE obs_enc.concept_id = ").append(conceptQuery(FOLLOW_UP_DATE));
+		
+		if (end != null)
+			builder.append(" AND obs_enc.value_datetime <= :end ");
+		builder.append("GROUP BY obs_enc.person_id) AS sub ");
+		builder.append("ON ob.person_id = sub.person_id ");
+		builder.append("AND ob.value_datetime < sub.value_datetime ");
+		builder.append("AND ob.concept_id = ").append(conceptQuery(FOLLOW_UP_DATE));
+		
+		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		
+		if (end != null)
+			q.setDate("end", end);
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
+	
+	public List<Integer> getLatestDateByEnrollmentDate(Date start, Date end, String encounterTypeUUID) {
+		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
+		builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc ");
+		builder.append("inner join encounter as e on e.encounter_id = obs.encounter_id ");
+		builder.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		builder.append("and et.uuid= '").append(encounterTypeUUID).append("' ");
+		builder.append(" where obs_enc.concept_id =").append(conceptQuery(ENROLLMENT_DATE));
+		if (start != null)
+			builder.append(" and obs_enc.value_datetime >= :start ");
+		if (end != null)
+			builder.append(" and obs_enc.value_datetime <= :end ");
+		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
+		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
+		builder.append(" and ob.concept_id =").append(conceptQuery(ENROLLMENT_DATE));
 		
 		Query q = getCurrentSession().createSQLQuery(builder.toString());
 		

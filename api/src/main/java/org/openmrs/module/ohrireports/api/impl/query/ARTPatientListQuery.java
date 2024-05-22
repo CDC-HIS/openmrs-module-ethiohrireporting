@@ -7,9 +7,7 @@ import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -57,7 +55,7 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(null, endDate);
+		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(null, endDate, INTAKE_A_ENCOUNTER_TYPE);
 	}
 	
 	public List<Integer> getBaseEncounter() {

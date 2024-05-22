@@ -31,6 +31,26 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	
 	private List<Integer> baseEncounter;
 	
+	public List<Integer> getBeforeLastEncounter() {
+		return beforeLastEncounter;
+	}
+	
+	public void setBeforeLastEncounter(List<Integer> beforeLastEncounter) {
+		this.beforeLastEncounter = beforeLastEncounter;
+	}
+	
+	private List<Integer> beforeLastEncounter;
+	
+	public List<Integer> getLastEncounter() {
+		return LastEncounter;
+	}
+	
+	public void setLastEncounter(List<Integer> lastEncounter) {
+		LastEncounter = lastEncounter;
+	}
+	
+	private List<Integer> LastEncounter;
+	
 	private List<Integer> tiEncounter;
 	
 	private List<Integer> firstEncounter;
@@ -70,6 +90,8 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
+		beforeLastEncounter = encounterQuery.getSecondLatestFollowUp(endDate);
+		LastEncounter = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
 		firstEncounter = encounterQuery.getFirstEncounterByFollowUpDate(startDate, endDate);
 	}
 	
