@@ -26,7 +26,7 @@ public class CXCASCRNReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "- CXCA_SCRN";
+		return DATIM_REPORT_TESTING + "- CXCA_SCRN";
 	}
 	
 	@Override

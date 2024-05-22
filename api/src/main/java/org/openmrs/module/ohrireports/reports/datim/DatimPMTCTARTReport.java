@@ -29,7 +29,7 @@ public class DatimPMTCTARTReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-PMTCT_ART";
+		return DATIM_REPORT_TREATMENT + "-PMTCT_ART";
 	}
 	
 	@Override

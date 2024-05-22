@@ -24,7 +24,7 @@ public class DatimTbPrevNumeratorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-TB_PREV (Numerator)";
+		return DATIM_REPORT_PREVENTION + "-TB_PREV (Numerator)";
 	}
 	
 	@Override

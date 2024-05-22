@@ -56,7 +56,7 @@ public class HMISReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return HMIS_REPORT + "-HMIS/DHIS";
+		return HMIS_REPORT + "-/DHIS 2";
 	}
 	
 	@Override

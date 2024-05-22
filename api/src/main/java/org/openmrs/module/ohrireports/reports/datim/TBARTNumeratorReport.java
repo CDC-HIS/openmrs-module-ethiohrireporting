@@ -28,7 +28,7 @@ public class TBARTNumeratorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-TB_ART";
+		return DATIM_REPORT_TREATMENT + "-TB_ART";
 	}
 	
 	@Override

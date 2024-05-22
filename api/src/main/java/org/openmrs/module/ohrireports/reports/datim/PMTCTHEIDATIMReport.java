@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT_TESTING;
 
 @Component
 public class PMTCTHEIDATIMReport implements ReportManager {
@@ -25,7 +26,7 @@ public class PMTCTHEIDATIMReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-PMTCT_HEI";
+		return DATIM_REPORT_TESTING + "-PMTCT_HEI";
 	}
 	
 	@Override

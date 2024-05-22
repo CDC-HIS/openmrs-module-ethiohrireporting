@@ -18,9 +18,8 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class PrEPCTReport implements ReportManager {
@@ -32,7 +31,7 @@ public class PrEPCTReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-PrEP_CT";
+		return DATIM_REPORT_PREVENTION + "-PrEP_CT";
 	}
 	
 	@Override

@@ -1,8 +1,5 @@
 package org.openmrs.module.ohrireports.reports.datim;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +24,8 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+
 @Component
 public class TX_PVLSReport implements ReportManager {
 	
@@ -38,7 +37,7 @@ public class TX_PVLSReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT.concat("-TX_PVLS(Numerator)");
+		return DATIM_REPORT_VIRAL_SUPPRESSION.concat("-TX_PVLS(Numerator)");
 	}
 	
 	@Override

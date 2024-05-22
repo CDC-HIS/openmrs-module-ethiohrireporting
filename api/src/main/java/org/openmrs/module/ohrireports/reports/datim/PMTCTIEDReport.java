@@ -18,8 +18,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class PMTCTIEDReport implements ReportManager {
@@ -31,7 +30,7 @@ public class PMTCTIEDReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-PMTCT_EID";
+		return DATIM_REPORT_TESTING + "-PMTCT_EID";
 	}
 	
 	@Override

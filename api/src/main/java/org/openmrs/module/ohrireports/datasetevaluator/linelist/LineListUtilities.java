@@ -60,7 +60,7 @@ public class LineListUtilities {
         /// Custom comparator to compare Person objects based on givenName
 		Comparator<Person> comparator = Comparator.comparing(person -> person.getNames().stream()
 				.map(PersonName::getGivenName)
-				.min(String::compareToIgnoreCase)
+				.findFirst()
 				.orElse(""));
 
         // Sort the list using the custom comparator

@@ -2,8 +2,6 @@ package org.openmrs.module.ohrireports.reports.datim;
 
 import java.util.Arrays;
 import java.util.List;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
@@ -16,6 +14,8 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+
 @Component
 public class DatimTxMlReport implements ReportManager {
 	
@@ -26,7 +26,7 @@ public class DatimTxMlReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-TX_ML";
+		return DATIM_REPORT_TREATMENT + "-TX_ML";
 	}
 	
 	@Override

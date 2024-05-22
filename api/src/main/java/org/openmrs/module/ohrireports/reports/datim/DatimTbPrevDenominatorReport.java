@@ -24,7 +24,7 @@ public class DatimTbPrevDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT + "-TB_PREV (Denominator)";
+		return DATIM_REPORT_PREVENTION + "-TB_PREV (Denominator)";
 	}
 	
 	@Override
