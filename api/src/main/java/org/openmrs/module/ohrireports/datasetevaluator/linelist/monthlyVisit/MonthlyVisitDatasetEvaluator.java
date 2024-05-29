@@ -15,6 +15,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,18 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		MonthlyVisitDatasetDefinition dsd = (MonthlyVisitDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dsd, evalContext);
+
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (dsd.getStartDate() != null && dsd.getEndDate() != null && dsd.getStartDate().compareTo(dsd.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+					"Report start date cannot be after report end date");
+			dataSet.addRow(row);
+			return dataSet;
+		}
+
 		monthlyVisitQuery.generateReport(dsd.getStartDate(), dsd.getEndDate());
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = monthlyVisitQuery.getIdentifier(monthlyVisitQuery.getBaseCohort(),
@@ -64,33 +77,47 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> tbScreeningResult = monthlyVisitQuery.getByResult(TB_SCREENED_RESULT,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		
-		DataSetRow row = new DataSetRow();
+		DataSetRow row;
 		List<Person> personList = LineListUtilities.sortPatientByName(monthlyVisitQuery.getPersons(monthlyVisitQuery
-		        .getBaseCohort()));
+				.getBaseCohort()));
+		if (!personList.isEmpty()) {
+
+			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
+
+			dataSet.addRow(row);
+		} else {
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+					"Weight", "Pregnant?", "ART Start Date", "Follow-up Date E.C","Follow-up Status","Regimen","ARV Dose",
+					"Adherence","VL Request Date", "VL Status", "TB Screening Result", "DSD Category",
+					"Next Visit Date", "Mobile No.")));
+		}
+
+		int i = 1;
 		for (Person person : personList) {
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("FullName", "FullName", String.class), person.getNames());
+
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge());
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weight.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Pregnant ?", "Pregnant ?", String.class),
+			row.addColumnValue(new DataSetColumn("Pregnant?", "Pregnant?", String.class),
 			    pregnantHashMap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("ARTStartDateEth", "ART StartDate E.C", String.class),
 			    monthlyVisitQuery.getEthiopianDate((Date) artStartDictionary.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("ARTStartDate", "ART StartDate G.C", String.class),
-			    artStartDictionary.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Follow-up Date E.C", "Follow-up Date E.C", String.class),
 			    monthlyVisitQuery.getEthiopianDate((Date) followUpDate.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("Follow-up Date G.C", "Follow-up Date G.C", String.class),
-			    followUpDate.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("followUpStatus", "Follow-up Status", String.class),
 			    followUpStatus.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("ARVRegiment", "Regiment", String.class),
+			row.addColumnValue(new DataSetColumn("ARVRegiment", "Regimen", String.class),
 			    regimentDictionary.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("ARVDoseDays", "ARV Dose", String.class), dose.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("ARVDoseDays", "ARV Dose", String.class),
+					dose.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class),
 			    adherence.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("vl-request-date", "VL Request Date", String.class),
@@ -100,7 +127,8 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			
 			row.addColumnValue(new DataSetColumn("TBScreeningResult", "TB Screening Result", String.class),
 			    tbScreeningResult.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("DSD", "DSD", String.class), dsdCatagories.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("DSD Category", "DSD Category", String.class),
+					dsdCatagories.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("nextVisitDate", "Next Visit Date", String.class),
 			    monthlyVisitQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("Mobile", "Mobile No.", String.class),
