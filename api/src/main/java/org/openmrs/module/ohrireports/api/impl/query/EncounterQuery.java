@@ -89,7 +89,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 	public List<Integer> getLatestDateByEnrollmentDate(Date start, Date end, String encounterTypeUUID) {
 		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
 		builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc ");
-		builder.append("inner join encounter as e on e.encounter_id = obs.encounter_id ");
+		builder.append("inner join encounter as e on e.encounter_id = obs_enc.encounter_id ");
 		builder.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		builder.append("and et.uuid= '").append(encounterTypeUUID).append("' ");
 		builder.append(" where obs_enc.concept_id =").append(conceptQuery(ENROLLMENT_DATE));

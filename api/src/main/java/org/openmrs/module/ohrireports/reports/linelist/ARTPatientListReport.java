@@ -60,8 +60,7 @@ public class ARTPatientListReport implements ReportManager {
 		
 		ARTPatientListDatasetDefinition artPatientListDatasetDefinition = new ARTPatientListDatasetDefinition();
 		artPatientListDatasetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("ART Patient List",
-		    EthiOhriUtil.map(artPatientListDatasetDefinition, "endDate=${endDateGC}"));
+		reportDefinition.addDataSetDefinition("ART Patient List", EthiOhriUtil.mapEndDate(artPatientListDatasetDefinition));
 		return reportDefinition;
 	}
 	

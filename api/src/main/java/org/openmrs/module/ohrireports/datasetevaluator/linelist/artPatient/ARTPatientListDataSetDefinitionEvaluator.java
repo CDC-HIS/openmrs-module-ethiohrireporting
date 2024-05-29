@@ -33,6 +33,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	
 	private ARTPatientListDatasetDefinition _dataSetDefinition;
 	
+	@Autowired
 	private EncounterQuery encounterQuery;
 	
 	private List<Integer> latestFollowup;
@@ -64,6 +65,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		
 		List<Integer> encounterWithAtleastOneFollow = encounterQuery.getEncounters(
 		    Collections.singletonList(FOLLOW_UP_DATE), null, new Date(), baseCohort);
+		
 		Cohort cohortWithAtleastOneFollow = artPatientListQuery.getCohort(encounterWithAtleastOneFollow);
 		latestFollowup = encounterQuery.getLatestDateByFollowUpDate(cohortWithAtleastOneFollow, null, new Date());
 		
@@ -121,13 +123,16 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			row.addColumnValue(new DataSetColumn("Latest Follow-up Date", "Latest Follow-up Date", Integer.class),
 			    artPatientListLineListQuery.getEthiopianDate(latestFollowupDate));
 			row.addColumnValue(new DataSetColumn("Latest Follow-up Status", "Latest Follow-up Status", Integer.class),
-			    latestFollowupStatus);
-			row.addColumnValue(new DataSetColumn("Latest Regimen", "Latest Regimen", Integer.class), regimen);
-			row.addColumnValue(new DataSetColumn("Latest ARV Dose Days", "Latest ARV Dose Days", Integer.class), arvDoseDays);
-			row.addColumnValue(new DataSetColumn("Latest Adherence", "Latest Adherence", Integer.class), adherence);
+			    latestFollowupStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest Regimen", "Latest Regimen", Integer.class),
+			    regimen.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest ARV Dose Days", "Latest ARV Dose Days", Integer.class),
+			    arvDoseDays.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest Adherence", "Latest Adherence", Integer.class),
+			    adherence.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Next Visit Date", "Next Visit Date", Integer.class),
 			    artPatientListLineListQuery.getEthiopianDate(nextVisitDate));
-			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class), tiHashMap);
+			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class), tiHashMap.get(person.getPersonId()));
 			
 			dataSet.addRow(row);
 		}

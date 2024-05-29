@@ -56,16 +56,16 @@ public class LineListUtilities {
 	}
 	
 	public static List<Person> sortPatientByName(List<Person> persons) {
-		persons.sort(Comparator.comparing(p -> p.getNames().iterator().next().getGivenName()));
-		//Collections.sort(persons, Comparator.comparing(p -> p.getNames().iterator().next().getGivenName()));
+        //persons.sort(Comparator.comparing(p -> p.getNames().iterator().next().getGivenName()));
+        //Collections.sort(persons, Comparator.comparing(p -> p.getNames().iterator().next().getGivenName()));
 
         /// Custom comparator to compare Person objects based on givenName
-		///Comparator<Person> comparator = Comparator.comparing(person -> person.getNames().stream()
-			///	.findFirst().orElse(new PersonName()).getGivenName());
+        Comparator<Person> comparator = Comparator.comparing(person -> person.getNames().stream()
+                .findFirst().orElse(new PersonName()).getGivenName());
 
 
         // Sort the list using the custom comparator
-		///Collections.sort(persons,comparator);
+        persons.sort(comparator);
         return persons;
     }
 	

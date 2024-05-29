@@ -240,6 +240,18 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		
 	}
 	
+	public List<Person> getPersonsByNameSort(@NotNull Cohort cohort) {
+		Set<Integer> pIntegers = cohort.getMemberIds();
+		Criteria criteria = getSession().createCriteria(Person.class);
+		
+		criteria.setCacheable(false);
+		criteria.add(Restrictions.eq("voided", false));
+		criteria.add(Restrictions.in("personId", pIntegers));
+		criteria.addOrder(Order.desc("names"));
+		return criteria.list();
+		
+	}
+	
 	public Cohort getAllCohortPLHIVMalnutrition(List<Integer> encounters) {
 		StringBuilder stringBuilder = baseQuery(NUTRITIONAL_SCREENING_RESULT);
 		stringBuilder.append(" and ob.encounter_id in (:encounters)");
