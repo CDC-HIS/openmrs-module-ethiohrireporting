@@ -26,7 +26,7 @@ public class VlReceivedReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- Viral Load";
+		return LINE_LIST_REPORT + "- VL Received";
 	}
 	
 	@Override

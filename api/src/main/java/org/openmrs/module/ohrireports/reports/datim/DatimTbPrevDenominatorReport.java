@@ -49,19 +49,22 @@ public class DatimTbPrevDenominatorReport implements ReportManager {
 		headerDefinition.addParameters(getParameters());
 		headerDefinition.setHeader(true);
 		headerDefinition.setDescription("DSD: TB_PREV");
-		reportDefinition.addDataSetDefinition("DSD: TB_PREV", EthiOhriUtil.map(headerDefinition));
+		reportDefinition.addDataSetDefinition("DSD: TB_PREV (Denominator)", EthiOhriUtil.map(headerDefinition));
 		
 		TbPrevDominatorDatasetDefinition aDefinition = new TbPrevDominatorDatasetDefinition();
 		aDefinition.addParameters(getParameters());
 		aDefinition.setAggregateType(false);
-		aDefinition.setDescription("DSD: TB_PREV (Denominator)");
-		reportDefinition.addDataSetDefinition("DSD: TB_PREV (Denominator)", EthiOhriUtil.map(aDefinition));
+		aDefinition.setDescription("Auto-Calculate");
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Auto-Calculate: Number of ART patients who were initiated on any course of TPT during the previous reporting period",
+		            EthiOhriUtil.map(aDefinition));
 		
 		TbPrevDominatorDatasetDefinition aggDatasetDefinition = new TbPrevDominatorDatasetDefinition();
 		aggDatasetDefinition.setAggregateType(true);
 		aggDatasetDefinition.addParameters(getParameters());
 		aggDatasetDefinition.setDescription("DSD: TB_PREV Aggregation by age and sex");
-		reportDefinition.addDataSetDefinition("Required:Disaggregated by age and sex",
+		reportDefinition.addDataSetDefinition("Required: Disaggregated By ART Start by Age/Sex",
 		    EthiOhriUtil.map(aggDatasetDefinition));
 		
 		return reportDefinition;

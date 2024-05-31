@@ -6,9 +6,7 @@ import java.util.List;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.AutoCalculatePrepNewDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.DisaggregatedByPopulationTypDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.PrEPNewDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.*;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -62,7 +60,9 @@ public class PrEPNewReport implements ReportManager {
 		AutoCalculatePrepNewDataSetDefinition aDataSetDefinition = new AutoCalculatePrepNewDataSetDefinition();
 		aDataSetDefinition.setParameters(getParameters());
 		aDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Auto-Calculate", EthiOhriUtil.map(aDataSetDefinition));
+		reportDefinition.addDataSetDefinition(
+		    "Auto-Calculate: Number of individuals who have been newly enrolled on oral antiretroviral pre-exposure prophylaxis "
+		            + "(PrEP) in the reporting period to prevent HIV infection.", EthiOhriUtil.map(aDataSetDefinition));
 		
 		PrEPNewDatasetDefinition dataSetDefinition = new PrEPNewDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
@@ -74,6 +74,23 @@ public class PrEPNewReport implements ReportManager {
 		dDataSetDefinition.setParameters(getParameters());
 		dDataSetDefinition.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Disaggregated by key population type", EthiOhriUtil.map(dDataSetDefinition));
+		
+		DisaggregatedByPregnantDatasetDefinition pregDatasetDefinition = new DisaggregatedByPregnantDatasetDefinition();
+		pregDatasetDefinition.setParameters(getParameters());
+		pregDatasetDefinition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition("Disaggregated by Pregnant/Breastfeeding.",
+		    EthiOhriUtil.map(pregDatasetDefinition));
+		
+		DisaggregatedByPrepDistributionDatasetDefinition distributionDatasetDefinition = new DisaggregatedByPrepDistributionDatasetDefinition();
+		distributionDatasetDefinition.setParameters(getParameters());
+		distributionDatasetDefinition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition("Disaggregated by PrEP Distribution.",
+		    EthiOhriUtil.map(distributionDatasetDefinition));
+		
+		DisaggregatedByPrepTypeDatasetDefinition prepTypeDatasetDefinition = new DisaggregatedByPrepTypeDatasetDefinition();
+		prepTypeDatasetDefinition.setParameters(getParameters());
+		prepTypeDatasetDefinition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition("Disaggregated by PrEP Type.", EthiOhriUtil.map(prepTypeDatasetDefinition));
 		
 		return reportDefinition;
 	}

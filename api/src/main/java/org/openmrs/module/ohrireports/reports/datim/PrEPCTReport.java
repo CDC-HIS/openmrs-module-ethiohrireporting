@@ -6,11 +6,7 @@ import java.util.List;
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.AutoCalculatePrEPCTDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTByPopulationTypeDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTPregnantBreastfeedingDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTTestResultDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.*;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -58,13 +54,17 @@ public class PrEPCTReport implements ReportManager {
 		AutoCalculatePrEPCTDatasetDefinition headerDefinition = new AutoCalculatePrEPCTDatasetDefinition();
 		headerDefinition.setParameters(getParameters());
 		headerDefinition.setHeader(true);
-		headerDefinition.setDescription("PREP_CT");
-		reportDefinition.addDataSetDefinition("PREP_CT", EthiOhriUtil.map(headerDefinition));
+		headerDefinition.setDescription("DSD: PrEP_CT");
+		reportDefinition.addDataSetDefinition("DSD: PrEP_CT", EthiOhriUtil.map(headerDefinition));
 		
 		AutoCalculatePrEPCTDatasetDefinition aDataSetDefinition = new AutoCalculatePrEPCTDatasetDefinition();
 		aDataSetDefinition.setParameters(getParameters());
 		aDataSetDefinition.setEncounterType(followUpEncounter);
-		reportDefinition.addDataSetDefinition("Auto-Calculate", EthiOhriUtil.map(aDataSetDefinition));
+		reportDefinition.addDataSetDefinition(
+		    "Auto-Calculate: Number of individuals, excluding those newly enrolled, that return for a follow-up visit or\n"
+		            + "reinitiation visit to receive pre-exposure prophylaxis (PrEP) to prevent HIV during the reporting\n"
+		            + "period. Numerator will autocalculate from sum of Age/Sex Disaggreg",
+		    EthiOhriUtil.map(aDataSetDefinition));
 		
 		PrEPCTDatasetDefinition dataSetDefinition = new PrEPCTDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
@@ -85,6 +85,17 @@ public class PrEPCTReport implements ReportManager {
 		prEPCPFDataset.addParameters(getParameters());
 		prEPCPFDataset.setEncounterType(followUpEncounter);
 		reportDefinition.addDataSetDefinition("Disaggregated by Pregnant/Breastfeeding", EthiOhriUtil.map(prEPCPFDataset));
+		
+		PrepCTDisaggregatedByPrepDistributionDatasetDefinition prepDistributionDatasetDefinition = new PrepCTDisaggregatedByPrepDistributionDatasetDefinition();
+		prepDistributionDatasetDefinition.addParameters(getParameters());
+		prepDistributionDatasetDefinition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition("Disaggregated by PrEP Distribution",
+		    EthiOhriUtil.map(prepDistributionDatasetDefinition));
+		
+		PrepCTDisaggregatedByPrepTypeDatasetDefinition prepTypeDatasetDefinition = new PrepCTDisaggregatedByPrepTypeDatasetDefinition();
+		prepTypeDatasetDefinition.addParameters(getParameters());
+		prepTypeDatasetDefinition.setEncounterType(followUpEncounter);
+		reportDefinition.addDataSetDefinition("Disaggregated by PrEP Type", EthiOhriUtil.map(prepTypeDatasetDefinition));
 		
 		return reportDefinition;
 	}

@@ -73,7 +73,7 @@ public class TbPrevNumeratorDataSetDefinitionEvaluator implements DataSetEvaluat
 				// #endregion
 				
 				// #region total counted row by gender
-				buildTotalRow(set);
+				// buildTotalRow(set);
 				// #endregion
 			} else {
 				DataSetRow dataSet = new DataSetRow();

@@ -99,6 +99,24 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		return baseCohort;
 	}
 	
+	public Cohort getAllPregnantPrep() {
+		StringBuilder stringBuilder = baseQuery(PREGNANCY_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(YES));
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
+		query.setParameterList("encounters", baseFollowupEncounter);
+		return new Cohort(query.list());
+	}
+	
+	public Cohort getAllBreastFeedingPrep() {
+		StringBuilder stringBuilder = baseQuery(CURRENTLY_BREAST_FEEDING_CHILD, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(YES));
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
+		query.setParameterList("encounters", baseFollowupEncounter);
+		return new Cohort(query.list());
+	}
+	
 	public Cohort getAllPrEPCT() {
 		Cohort currCohort = getPrepCurr();
 		Cohort previousCohort = getCohortByFollowupDateAndStatus();

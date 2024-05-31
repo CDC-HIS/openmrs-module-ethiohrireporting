@@ -1,15 +1,9 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_new;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_FTC_DRUG;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_TENOFOVIR_DRUG;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_3TC_DRUG;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PR_EP_STARTED;
 
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
@@ -33,6 +27,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { PrEPNewDatasetDefinition.class })
 public class PrEPNewDatasetDefinitionEvaluator implements DataSetEvaluator {
