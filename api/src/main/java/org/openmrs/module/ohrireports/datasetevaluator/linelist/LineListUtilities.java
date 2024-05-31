@@ -56,6 +56,7 @@ public class LineListUtilities {
 	}
 	
 	public static List<Person> sortPatientByName(List<Person> persons) {
+		
 		persons.sort(Comparator.comparing(p -> p.getNames().iterator().next().getGivenName()));
 		//Collections.sort(persons, Comparator.comparing(p -> p.getNames().iterator().next().getGivenName()));
 

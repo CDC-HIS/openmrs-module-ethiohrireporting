@@ -50,31 +50,27 @@ public class VlQuery extends BaseLineListQuery {
 	private List<Integer> getEncountersWithVLStatusOnly(List<Integer> vList) {
 		List<Integer> encounterIdList = new ArrayList<>();
 		 if(vList==null || vList.isEmpty())
-		 return encounterIdList;
-
-		StringBuilder sql = new StringBuilder(" select encounter_id from obs where concept_id ="+conceptQuery(VIRAL_LOAD_STATUS)+" ");
-		sql.append(" and value_coded is not null and encounter_id in (:latestEncounterIds)");
+		  return encounterIdList;
 		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(" select encounter_id from obs where concept_id =" + conceptQuery(VIRAL_LOAD_STATUS) + " " + " and value_coded is not null and encounter_id in (:latestEncounterIds)");
 
 		query.setParameterList("latestEncounterIds", vList);
 	
 			List list =  query.list();
-			if(list == null){
-				return encounterIdList;
-			}else{
-				encounterIdList = query.list();
-				return encounterIdList;
-			}
-
+		if (list != null) {
+			encounterIdList = query.list();
+		}
+		return encounterIdList;
+		
 	}
 	
 	public Cohort getViralLoadReceivedCohort() {
 		
 		StringBuilder sql = baseQuery(DATE_VIRAL_TEST_RESULT_RECEIVED);
 		
-		sql.append(" and " + OBS_ALIAS + "encounter_id in  (:latestEncounterId) ");
-		sql.append(" and " + OBS_ALIAS + "value_datetime >= :start and " + OBS_ALIAS + "value_datetime<= :end ");
+		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in  (:latestEncounterId) ");
+		sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start and ").append(OBS_ALIAS)
+		        .append("value_datetime<= :end ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
@@ -104,19 +100,15 @@ public class VlQuery extends BaseLineListQuery {
 	}
 	
 	public Cohort getHighViralLoad() {
-		
 		Query query = getByViralLoadStatus(Arrays.asList(HIV_HIGH_VIRAL_LOAD, HIV_VIRAL_LOAD_UNSUPPRESSED));
 		return new Cohort(query.list());
 	}
 	
 	private Query getByViralLoadStatus(List<String> statusConceptUUID) {
 		StringBuilder sql = baseQuery(VIRAL_LOAD_STATUS);
-		sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters) ");
-		sql.append(" and " + OBS_ALIAS + "value_coded in " + conceptQuery(statusConceptUUID));
-		sql.append(" and " + OBS_ALIAS + "person_id in (:cohorts)");
-		
+		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
+		sql.append(" and ").append(OBS_ALIAS).append("value_coded in ").append(conceptQuery(statusConceptUUID));
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		query.setParameterList("cohorts", cohort.getMemberIds());
 		query.setParameterList("encounters", VlTakenEncounters);
 		return query;
 	}
@@ -131,8 +123,8 @@ public class VlQuery extends BaseLineListQuery {
 	
 	private List<Integer> getSuppressedByVLCount() {
 		StringBuilder sql = baseQuery(HIV_VIRAL_LOAD_COUNT);
-		sql.append(" and " + OBS_ALIAS + "encounter_id in (:baseEncounterId) ");
-		sql.append(" and " + OBS_ALIAS + "value_numeric <= 1000");
+		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:baseEncounterId) ");
+		sql.append(" and ").append(OBS_ALIAS).append("value_numeric <= 1000");
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
@@ -141,7 +133,6 @@ public class VlQuery extends BaseLineListQuery {
 		List list = query.list();
 		if (list == null)
 			return new ArrayList<>();
-
 		return (ArrayList<Integer>) list;
 	}
 	

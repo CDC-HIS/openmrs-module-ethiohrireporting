@@ -94,13 +94,12 @@ public class HMISQuery extends ColumnBuilder {
     private HMISHEIARVEvaluator hmisheiarvEvaluator;
 	@Autowired
 	private HMISHEICOTREvaluator hmisheicotrevaluator;
-	List<Integer> encounter = new ArrayList<>();
 	List<Integer> encounterAlive = new ArrayList<>();
 	
     public void run(Date start, Date end, SimpleDataSet dataSet) {
 	    initialize(start, end);
 		
-	    hmistxCurrEvaluator.buildDataSet(dataSet, end, encounter);
+	    hmistxCurrEvaluator.buildDataSet(dataSet, end, encounterQuery.getAliveFollowUpEncounters(null, end));
 		//TODO: encounter should be updated
 	    hmistxNewEvaluator.buildDataSet(dataSet, start, end,encounterAlive);
 	
@@ -153,7 +152,6 @@ public class HMISQuery extends ColumnBuilder {
 	}
 	
 	private void initialize(Date start, Date end) {
-		encounter = encounterQuery.getAliveFollowUpEncounters(start, end);
 		encounterAlive = encounterQuery. getAliveFirstFollowUpEncounters(null, end);
 	}
 	

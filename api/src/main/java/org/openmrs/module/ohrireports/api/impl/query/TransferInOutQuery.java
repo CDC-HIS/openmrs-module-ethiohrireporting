@@ -16,14 +16,12 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 @Component
 public class TransferInOutQuery extends PatientQueryImpDao {
 	
-	private DbSessionFactory sessionFactory;
+	private final DbSessionFactory sessionFactory;
 	
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
 	private Cohort baseCohort;
-	
-	private Cohort toCohort;
 	
 	private Date startDate;
 	
@@ -72,7 +70,6 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	}
 	
 	public void setToCohort(Cohort toCohort) {
-		this.toCohort = toCohort;
 	}
 	
 	public Date getStartDate() {
