@@ -68,12 +68,12 @@ public class HivPVLSEvaluator {
 			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
 					"HIV_TX_PVLS");
 			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
-					"Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)");
+					description);
 			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, String.class),
 					calculatePercentage() + "%");
 			dataSet.addRow(row++, headerDataSetRow);
 		}
-		dataSet.addRow(row++, buildColumn(" ",description,
+		dataSet.addRow(row++, buildColumn(" ","Number of adult and pediatric ART patients for whom viral load test result received in the reporting period" ,
 				new QueryParameter(0D, 0D, "", UNKNOWN)));
 
 		dataSet.addRow(row++, buildColumn(".1", "< 1 year, Male",

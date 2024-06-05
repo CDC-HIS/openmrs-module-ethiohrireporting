@@ -38,7 +38,7 @@ public class HivPrEpCurrEvaluator  {
         Cohort prepFollowupCohort = hivPrEPQuery.getAllPrEPCurr();
 
 
-        dataset.addRow(buildColumn("", "PrEP Curr (Number of individuals that received oral PrEP during the reporting period)", 0));
+        dataset.addRow(buildColumn("HIV_PrEP_CURR.1", "PrEP Curr (Number of individuals that received oral PrEP during the reporting period)", 0));
 
         personList = hivPrEPQuery.getPersons(prepFollowupCohort);
         dataset.addRow(buildColumn("1", "By Age and Sex",prepFollowupCohort.size()));
