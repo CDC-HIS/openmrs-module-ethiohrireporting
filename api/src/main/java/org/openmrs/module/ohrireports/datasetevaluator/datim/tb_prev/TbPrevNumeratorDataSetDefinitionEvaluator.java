@@ -62,12 +62,11 @@ public class TbPrevNumeratorDataSetDefinitionEvaluator implements DataSetEvaluat
 			Cohort tptCohort = tbQuery.getCohort(tptCompletedEncounter);
 			
 			// If there is an ART Start Date < the Start Date of the reporting period for the patient
-			Cohort onArtCorCohort = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(),
-			    tptCohort));
+			Cohort onArtCorCohort = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, null, tptCohort));
 			if (!hdsd.getAggregateType()) {
 				// #region newly enrolled on Art with TPT completed
-				Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, prevSixMonth,
-				    hdsd.getStartDate(), onArtCorCohort));
+				Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, prevSixMonth, null,
+				    onArtCorCohort));
 				buildDataRow(set, tbQuery.getPersons(cohortByArt), "Newly enrolled on ART");
 				// #endregion
 				

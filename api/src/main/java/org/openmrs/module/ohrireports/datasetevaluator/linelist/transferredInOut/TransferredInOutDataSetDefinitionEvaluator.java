@@ -164,12 +164,12 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				
 				row = new DataSetRow();
 				row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
-				row.addColumnValue(new DataSetColumn("Name", "Patient Name", String.class), person.getNames());
+				row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 				addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 				addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
 				row.addColumnValue(new DataSetColumn("Age", "Age", String.class),
 				    person.getAge(tDataSetDefinition.getEndDate()));
-				row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
+				row.addColumnValue(new DataSetColumn("Sex", "Sex", Integer.class), person.getGender());
 				row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date ETH", Date.class),
 				    transferredInOutLineListQuery.getEthiopianDate(artStartDate));
 				row.addColumnValue(new DataSetColumn("followUpDateEth", "Follow-up Date (Date of TO)", String.class),
@@ -205,8 +205,8 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				
 				row = new DataSetRow();
 				
-				row.addColumnValue(new DataSetColumn("Name", "Name", String.class), "TOTAL");
-				row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class), persons.size());
+				row.addColumnValue(new DataSetColumn("#", "#", String.class), "TOTAL");
+				row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 				
 				dataSet.addRow(row);
 			} else {
