@@ -33,14 +33,12 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		MonthlyVisitDatasetDefinition dsd = (MonthlyVisitDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dsd, evalContext);
 		
-		
 		// Check start date and end date are valid
 		// If start date is greater than end date
 		if (dsd.getStartDate() != null && dsd.getEndDate() != null && dsd.getStartDate().compareTo(dsd.getEndDate()) > 0) {
 			//throw new EvaluationException("Start date cannot be greater than end date");
 			DataSetRow row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
 			    "Report start date cannot be after report end date");
 			dataSet.addRow(row);
 			return dataSet;
@@ -90,7 +88,6 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
 			
-			
 			dataSet.addRow(row);
 		} else {
 			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
@@ -98,7 +95,6 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			    "Adherence", "VL Request Date", "VL Status", "TB Screening Result", "DSD Category", "Next Visit Date",
 			    "Treatment End Date in E.C.", "Mobile No.")));
 		}
-		
 		
 		int i = 1;
 		for (Person person : personList) {
