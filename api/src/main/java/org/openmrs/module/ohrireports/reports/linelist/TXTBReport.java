@@ -35,7 +35,7 @@ public class TXTBReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-TB";
+		return LINE_LIST_REPORT + "- TB";
 	}
 	
 	@Override

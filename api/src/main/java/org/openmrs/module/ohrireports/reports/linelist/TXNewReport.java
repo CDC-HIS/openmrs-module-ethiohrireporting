@@ -36,7 +36,7 @@ public class TXNewReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-TX_NEW";
+		return LINE_LIST_REPORT + "- TX_NEW";
 	}
 	
 	@Override

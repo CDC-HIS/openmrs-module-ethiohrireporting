@@ -58,8 +58,8 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
             _AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
             Date prevSixMonth = getPrevSixMonth();
 
-            if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-                baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
+            //if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
+            baseEncounters = encounterQuery.getEncountersByMaxObsDate(Arrays.asList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
 
             endDate = hdsd.getEndDate();
             Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_START_DATE, prevSixMonth,
@@ -73,7 +73,7 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
             } else {
                 Cohort newOnARTCohort = new Cohort(
-                        tbQuery.getArtStartedCohort("", prevSixMonth, endDate, onArtCorCohort, null, baseEncounters));
+                        tbQuery.getArtStartedCohort("", prevSixMonth, hdsd.getStartDate(), onArtCorCohort, null, baseEncounters));
                 Cohort oldOnACohort = new Cohort(tbQuery.getArtStartedCohort("", null, prevSixMonth, onArtCorCohort, null, baseEncounters));
 
                 buildRowForDisaggregation(set, newOnARTCohort, oldOnACohort);
@@ -93,15 +93,15 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
     private void buildRowForDisaggregation(SimpleDataSet set, Cohort newOnARTCohort, Cohort oldOnACohort) {
 
-        Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, hdsd.getStartDate(), endDate,
-                newOnARTCohort));
-        buildDataRow(set, tbQuery.getPersons(cohortByArt), "Newly enrolled on ART");
+//        Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, hdsd.getStartDate(), endDate,
+//                newOnARTCohort));
+        buildDataRow(set, tbQuery.getPersons(newOnARTCohort), "Newly enrolled on ART");
         // #endregion
 
         // #region already enrolled on ART with TPT completed
-        cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(),
-                oldOnACohort));
-        buildDataRow(set, tbQuery.getPersons(cohortByArt), "Previously enrolled on ART");
+//        cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(),
+//                oldOnACohort));
+        buildDataRow(set, tbQuery.getPersons(oldOnACohort), "Previously enrolled on ART");
         // #endregion
         // Disaggregated By ART Start by Age/Sex
 //        DataSetRow dataSetRow = new DataSetRow();

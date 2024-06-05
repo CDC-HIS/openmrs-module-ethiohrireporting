@@ -324,38 +324,91 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         }
     }
 	
-	public List<Integer> getAllEncounters(List<String> questionConcept, Date start, Date end,String encounterTypeUUId) {
-		
-		if (questionConcept == null || questionConcept.isEmpty())
-			return new ArrayList<>();
-		
-		StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join  ");
-		builder.append(" encounter as e on e.encounter_id = ob.encounter_id inner join ");
-		builder.append(" encounter_type as et on et.encounter_type_id = e.encounter_type and et.uuid ='").append(encounterTypeUUId).append("' ");
-		builder.append(" where ob.concept_id in " + conceptQuery(questionConcept));
-		
-		if (start != null)
-			builder.append(" and ob.value_datetime >= :start ");
-		
-		if (end != null)
-			builder.append(" and ob.value_datetime <= :end ");
-		
-		Query q = getCurrentSession().createSQLQuery(builder.toString());
-		
-		if (start != null)
-			q.setDate("start", start);
-		
-		if (end != null)
-			q.setDate("end", end);
-		
-		List list = q.list();
-		
-		if (list != null) {
-			return (List<Integer>) list;
-		} else {
-			return new ArrayList<Integer>();
-		}
-	}
+	public List<Integer> getEncountersByMaxObsDate(List<String> questionConcept, Date start, Date end) {
+
+        if (questionConcept == null || questionConcept.isEmpty())
+            return new ArrayList<>();
+
+//        StringBuilder builder = new StringBuilder("SET @concept_id_1 = (SELECT concept_id FROM concept WHERE uuid = '" + FOLLOW_UP_DATE + "');");
+//        builder.append("SET @concept_id_2 = (select concept_id from concept where uuid in ('")
+//                .append(String.join("','", questionConcept)).append("'));");//.append(questionConcept).append(");");
+        StringBuilder builder = new StringBuilder("select u.encounter_id from obs as u inner join ( ");
+        builder.append(
+                "select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id ");
+        builder.append(" from obs as obs_enc where obs_enc.concept_id = (SELECT concept_id FROM concept WHERE uuid = '" + FOLLOW_UP_DATE + "')");//.append(conceptQuery(FOLLOW_UP_DATE));
+        if (start != null)
+            builder.append(" and obs_enc.value_datetime >= :start ");
+
+        if (end != null)
+            builder.append(" and obs_enc.value_datetime <= :end ");
+
+        builder.append("and obs_enc.encounter_id in ( select distinct ob.encounter_id from obs as ob ");
+
+        builder.append("inner join ( select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id ");
+        builder.append("from obs as obs_enc where obs_enc.concept_id = (select concept_id from concept where uuid in ('")
+                .append(String.join("','", questionConcept)).append("'))");//.append(conceptQuery(questionConcept));
+        if (start != null)
+            builder.append(" and obs_enc.value_datetime >= :start ");
+
+        if (end != null)
+            builder.append(" and obs_enc.value_datetime <= :end ");
+        builder.append(" GROUP BY obs_enc.person_id ) as sub1 on ob.value_datetime = sub1.value_datetime ");
+        builder.append(" and ob.person_id = sub1.person_id and ob.concept_id = (select concept_id from concept where uuid in ('")
+                .append(String.join("','", questionConcept)).append("'))");//.append(conceptQuery(questionConcept));
+        builder.append(" ) GROUP BY obs_enc.person_id ORDER BY obs_enc.person_id ");
+        builder.append(" ) as subd on subd.value_datetime = u.value_datetime and u.person_id = subd.person_id ");
+        builder.append(" where u.concept_id = (SELECT concept_id FROM concept WHERE uuid = '" + FOLLOW_UP_DATE + "')");//.append(conceptQuery(FOLLOW_UP_DATE));
+
+
+        Query q = getCurrentSession().createSQLQuery(builder.toString());
+
+        if (start != null)
+            q.setDate("start", start);
+
+        if (end != null)
+            q.setDate("end", end);
+
+        List list = q.list();
+
+        if (list != null) {
+            return (List<Integer>) list;
+        } else {
+            return new ArrayList<Integer>();
+        }
+    }
+	
+	public List<Integer> getAllEncounters(List<String> questionConcept, Date start, Date end, String encounterTypeUUId) {
+
+        if (questionConcept == null || questionConcept.isEmpty())
+            return new ArrayList<>();
+
+        StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join  ");
+        builder.append(" encounter as e on e.encounter_id = ob.encounter_id inner join ");
+        builder.append(" encounter_type as et on et.encounter_type_id = e.encounter_type and et.uuid ='").append(encounterTypeUUId).append("' ");
+        builder.append(" where ob.concept_id in " + conceptQuery(questionConcept));
+
+        if (start != null)
+            builder.append(" and ob.value_datetime >= :start ");
+
+        if (end != null)
+            builder.append(" and ob.value_datetime <= :end ");
+
+        Query q = getCurrentSession().createSQLQuery(builder.toString());
+
+        if (start != null)
+            q.setDate("start", start);
+
+        if (end != null)
+            q.setDate("end", end);
+
+        List list = q.list();
+
+        if (list != null) {
+            return (List<Integer>) list;
+        } else {
+            return new ArrayList<Integer>();
+        }
+    }
 	
 	public List<Integer> getEncounters(List<String> questionConcept, Date start, Date end, String encounterType) {
 

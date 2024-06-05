@@ -19,27 +19,27 @@ public class DisaggregatedByPopulationTypDatasetDefinitionEvaluator implements D
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		DataSetRow dRow = new DataSetRow();
-		dRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "PWID");
+		dRow.addColumnValue(new DataSetColumn("Name", "", String.class), "PWID");
 		dRow.addColumnValue(new DataSetColumn("-", "", Integer.class), 0);
 		set.addRow(dRow);
 		
 		DataSetRow msmDataSetRow = new DataSetRow();
-		msmDataSetRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "MSM");
+		msmDataSetRow.addColumnValue(new DataSetColumn("Name", "", String.class), "MSM");
 		msmDataSetRow.addColumnValue(new DataSetColumn("-", "", Integer.class), 0);
 		set.addRow(msmDataSetRow);
 		
 		DataSetRow tgpe = new DataSetRow();
-		tgpe.addColumnValue(new DataSetColumn("Name", "Name", String.class), "Transgender People");
+		tgpe.addColumnValue(new DataSetColumn("Name", "", String.class), "Transgender People");
 		tgpe.addColumnValue(new DataSetColumn("-", "", Integer.class), 0);
 		set.addRow(tgpe);
 		
 		DataSetRow fSetRow = new DataSetRow();
-		fSetRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "FSW");
+		fSetRow.addColumnValue(new DataSetColumn("Name", "", String.class), "FSW");
 		fSetRow.addColumnValue(new DataSetColumn("-", "-", Integer.class), 0);
 		set.addRow(fSetRow);
 		
 		DataSetRow pipDataSetRow = new DataSetRow();
-		pipDataSetRow.addColumnValue(new DataSetColumn("Name", "Name", String.class),
+		pipDataSetRow.addColumnValue(new DataSetColumn("Name", "", String.class),
 		    "People in prison and other closed settings");
 		pipDataSetRow.addColumnValue(new DataSetColumn("-", "", Integer.class), 0);
 		set.addRow(pipDataSetRow);

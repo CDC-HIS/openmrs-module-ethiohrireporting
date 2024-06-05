@@ -1,22 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.Tb;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.NEXT_VISIT_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_DOSE_DAY_TYPE_ALTERNATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_TYPE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_CONFIRMED_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ARV_DISPENSED_IN_DAYS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_DOSE_DAY_TYPE_INH;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REASON_FOR_ART_ELIGIBILITY;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.MRN_PATIENT_IDENTIFIERS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_DISCONTINUED_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_ALTERNATE_TYPE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_ADHERENCE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_COMPLETED_DATE;
-
 import java.util.*;
 
 import org.openmrs.Cohort;
@@ -38,6 +21,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+
 @Handler(supports = { TBPrevDatasetDefinition.class })
 public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -56,11 +41,14 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	HashMap<Integer, Object> mrnIdentifierHashMap;
 	
+	HashMap<Integer, Object> uanIdentifierHashMap;
+	
 	private List<Integer> lastFollowUp;
 	
 	private HashMap<Integer, Object> artStartDictionary, followUpDate, followUpStatus, arvDoseDay, tptDiscontinuedDate,
 	        tptType, tptEndDate, tptStartDate, tpDosDayType, tptAdherence, hiveConfirmedDate, nextVisitDate, alternateType,
-	        eligibleStatus, tptAlternateDoseDay, finalFollowUPStatus;
+	        eligibleStatus, tptAlternateDoseDay, finalFollowUPStatus, latestFollowUpDate, latestRegimen, latestArvDoseDay,
+	        latestAdherence;
 	
 	private List<Integer> baseTPTStartDateEncounters;
 	
@@ -70,15 +58,32 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		hdsd = (TBPrevDatasetDefinition) dataSetDefinition;
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		if (hdsd.getEndDate() == null) {
+			hdsd.setEndDate(new Date());
+		}
+		
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			data.addRow(row);
+			return data;
+		}
+		
 		patientQuery = Context.getService(PatientQueryService.class);
-		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(hdsd.getStartDate(), hdsd.getEndDate());
+		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
+		
 		if (hdsd.getTptStatus().equals("start")) {
-			baseTPTStartDateEncounters = encounterQuery.getEncounters(Collections.singletonList(TPT_START_DATE),
+			baseTPTStartDateEncounters = encounterQuery.getEncountersByMaxObsDate(Collections.singletonList(TPT_START_DATE),
 			    hdsd.getStartDate(), hdsd.getEndDate());
 			
 		} else {
-			baseTPTStartDateEncounters = encounterQuery.getEncounters(Collections.singletonList(TPT_COMPLETED_DATE),
-			    hdsd.getStartDate(), hdsd.getEndDate());
+			baseTPTStartDateEncounters = encounterQuery.getEncountersByMaxObsDate(
+			    Collections.singletonList(TPT_COMPLETED_DATE), hdsd.getStartDate(), hdsd.getEndDate());
 			
 		}
 		
@@ -92,81 +97,76 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
 			data.addRow(row);
+		} else {
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C", "TPT Start Date in E.C.",
+			    "TPT Completed Date in E.C.", "TPT Discontinued Date in E.C.", "TPT Type", "TPT Follow-up Status",
+			    "TPT Dispensed Dose", "TPT Adherence", "Latest Follow-up Date in E.C", "Latest Follow-up Status",
+			    "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence", "Next Visit Date in E.C.",
+			    "Treatment End Date in E.C.", "TI?")));
 		}
-		
+		int i = 1;
 		for (Person person : persons) {
 			
 			row = new DataSetRow();
 			
 			Date artStartDate = tbQueryLineList.getDate(artStartDictionary.get(person.getPersonId()));
 			Date _followUpDate = tbQueryLineList.getDate(followUpDate.get(person.getPersonId()));
+			Date _latestFollowupDate = tbQueryLineList.getDate(latestFollowUpDate.get(person.getPersonId()));
 			Date hivDate = tbQueryLineList.getDate(hiveConfirmedDate.get(person.getPersonId()));
 			Date tptSDate = tbQueryLineList.getDate(tptStartDate.get(person.getPersonId()));
 			Date tptEnDate = tbQueryLineList.getDate(tptEndDate.get(person.getPersonId()));
 			Date _tptDiscontinuedDate = tbQueryLineList.getDate(tptDiscontinuedDate.get(person.getPersonId()));
 			Date visitDate = tbQueryLineList.getDate(nextVisitDate.get(person.getPersonId()));
 			
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("UAN", "UAN", Integer.class),
+			    uanIdentifierHashMap.get(person.getPersonId()));
 			
-			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(hdsd.getEndDate()));
-			row.addColumnValue(new DataSetColumn("Gender", "Gender", Integer.class), person.getGender());
+			row.addColumnValue(new DataSetColumn("Sex", "Sex", Integer.class), person.getGender());
 			
-			row.addColumnValue(new DataSetColumn("followUpDate", "Follow Up Date", Date.class), _followUpDate);
-			row.addColumnValue(new DataSetColumn("followUpDateEth", "Follow Up Date ETH", String.class),
-			    tbQueryLineList.getEthiopianDate(_followUpDate));
-			
-			row.addColumnValue(new DataSetColumn("hivConfirmed", "Hiv Confirmed Date", Date.class), hivDate);
-			row.addColumnValue(new DataSetColumn("hivConfirmedEth", "Hiv Confirmed Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("HIV Confirmed Date in E.C.", "HIV Confirmed Date in E.C.", String.class),
 			    tbQueryLineList.getEthiopianDate(hivDate));
-			
-			row.addColumnValue(new DataSetColumn("ArtStartDate", "Art Start Date", Date.class), artStartDate);
-			row.addColumnValue(new DataSetColumn("ArtStartDateEth", "Art Start Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("ART Start Date in E.C", "ART Start Date in E.C", String.class),
 			    tbQueryLineList.getEthiopianDate(artStartDate));
-			
-			row.addColumnValue(new DataSetColumn("tptStartDate", "TPT Start  Date", Date.class), tptSDate);
-			row.addColumnValue(new DataSetColumn("tptStartDateEth", "TPT Start  Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("TPT Start Date in E.C.", "TPT Start Date in E.C.", String.class),
 			    tbQueryLineList.getEthiopianDate(tptSDate));
-			
-			row.addColumnValue(new DataSetColumn("tptend", "TPT end  Date", Date.class), tptEnDate);
-			row.addColumnValue(new DataSetColumn("tptendEth", "TPT end  Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("TPT Completed Date in E.C.", "TPT Completed Date in E.C.", String.class),
 			    tbQueryLineList.getEthiopianDate(tptEnDate));
-			
-			row.addColumnValue(new DataSetColumn("tptdiscontinued", "TPT Discontinued Date", Date.class),
-			    _tptDiscontinuedDate);
-			row.addColumnValue(new DataSetColumn("tptdiscontinuedEth", "TPT Discontinued Date ETH", String.class),
-			    tbQueryLineList.getEthiopianDate(_tptDiscontinuedDate));
-			
+			row.addColumnValue(new DataSetColumn("TPT Discontinued Date in E.C.", "TPT Discontinued Date in E.C.",
+			        String.class), tbQueryLineList.getEthiopianDate(_tptDiscontinuedDate));
 			Object alternate = alternateType.get(person.getPersonId());
-			row.addColumnValue(new DataSetColumn("tpttype", "TPT Type", String.class),
+			row.addColumnValue(new DataSetColumn("TPT Type", "TPT Type", String.class),
 			    Objects.isNull(alternate) ? tptType.get(person.getPersonId()) : alternate);
-			
+			row.addColumnValue(new DataSetColumn("TPT Follow-up Status", "TPT Follow-up Status", String.class),
+			    followUpStatus.get(person.getPersonId()));
 			row.addColumnValue(
-			    new DataSetColumn("tptDose", "TPT Dose Days", String.class),
+			    new DataSetColumn("TPT Dispensed Dose", "TPT Dispensed Dose", String.class),
 			    Objects.isNull(alternate) ? tpDosDayType.get(person.getPersonId()) : tptAlternateDoseDay.get(person
 			            .getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("tptAdherence", "TPT Adherence", String.class),
+			row.addColumnValue(new DataSetColumn("TPT Adherence", "TPT Adherence", String.class),
 			    tptAdherence.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("followUpstatus", "Follow Up Status", String.class),
-			    followUpStatus.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("arvDoseDay", "ARV Dose Day", String.class),
-			    arvDoseDay.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("tptEligibility", "TI Status", String.class),
-			    eligibleStatus.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("visitDate", "Next Visit Date", Date.class), visitDate);
-			row.addColumnValue(new DataSetColumn("visitDateEth", "Next Visit Date ETH", String.class),
-			    tbQueryLineList.getEthiopianDate(visitDate));
-			;
-			row.addColumnValue(new DataSetColumn("finalFollowUpStatus", "Final Follow-up Status", String.class),
+			row.addColumnValue(new DataSetColumn("Latest Follow-up Date in E.C", "Latest Follow-up Date in E.C",
+			        String.class), tbQueryLineList.getEthiopianDate(_latestFollowupDate));
+			row.addColumnValue(new DataSetColumn("Latest Follow-up Status", "Latest Follow-up Status", String.class),
 			    finalFollowUPStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest Regimen", "Latest Regimen", String.class),
+			    latestRegimen.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest ARV Dose Days ", "Latest ARV Dose Days ", String.class),
+			    latestArvDoseDay.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest Adherence", "Latest Adherence", String.class),
+			    latestAdherence.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Next Visit Date in E.C.", "Next Visit Date in E.C.", String.class),
+			    tbQueryLineList.getEthiopianDate(visitDate));
+			row.addColumnValue(new DataSetColumn("TI?", "TI?", String.class), eligibleStatus.get(person.getPersonId()));
 			data.addRow(row);
 			
 		}
@@ -178,6 +178,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		artStartDictionary = tbQueryLineList.getObsValueDate(baseTPTStartDateEncounters, ART_START_DATE, cohort);
 		mrnIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
+		uanIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
 		followUpDate = tbQueryLineList.getObsValueDate(baseTPTStartDateEncounters, FOLLOW_UP_DATE, cohort);
 		followUpStatus = tbQueryLineList.getFollowUpStatus(baseTPTStartDateEncounters, cohort);
 		arvDoseDay = tbQueryLineList.getByResult(ARV_DISPENSED_IN_DAYS, cohort, baseTPTStartDateEncounters);
@@ -193,6 +194,10 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		alternateType = tbQueryLineList.getByResult(TPT_ALTERNATE_TYPE, cohort, baseTPTStartDateEncounters);
 		tptAlternateDoseDay = tbQueryLineList.getByResult(TPT_DOSE_DAY_TYPE_ALTERNATE, cohort, baseTPTStartDateEncounters);
 		finalFollowUPStatus = tbQueryLineList.getByResult(FOLLOW_UP_STATUS, cohort, lastFollowUp);
+		latestFollowUpDate = tbQueryLineList.getObsValueDate(lastFollowUp, FOLLOW_UP_DATE, cohort);
+		latestRegimen = tbQueryLineList.getByResult(REGIMEN, cohort, lastFollowUp);
+		latestArvDoseDay = tbQueryLineList.getByResult(ARV_DISPENSED_IN_DAYS, cohort, lastFollowUp);
+		latestAdherence = tbQueryLineList.getByResult(ARV_ADHERENCE, cohort, lastFollowUp);
 		
 	}
 	

@@ -27,7 +27,7 @@ public class TPTPrevReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-TPT";
+		return LINE_LIST_REPORT + "- TPT";
 	}
 	
 	@Override
@@ -62,7 +62,8 @@ public class TPTPrevReport implements ReportManager {
 		TBPrevDatasetDefinition tbPrevDataSetDefinition = new TBPrevDatasetDefinition();
 		tbPrevDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("TPT", EthiOhriUtil.map(tbPrevDataSetDefinition, "tptStatus=${tptStatus}"));
+		reportDefinition.addDataSetDefinition("TPT Line List Report",
+		    EthiOhriUtil.map(tbPrevDataSetDefinition, "tptStatus=${tptStatus}"));
 		return reportDefinition;
 	}
 	

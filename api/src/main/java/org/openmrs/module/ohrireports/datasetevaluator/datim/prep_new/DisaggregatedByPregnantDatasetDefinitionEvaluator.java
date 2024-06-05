@@ -28,13 +28,13 @@ public class DisaggregatedByPregnantDatasetDefinitionEvaluator implements DataSe
 		DataSetRow pRow = new DataSetRow();
 		Cohort pregnantCohort = preExposureProphylaxisQuery.getAllPregnantPrep();
 		
-		pRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "Pregnant");
+		pRow.addColumnValue(new DataSetColumn("Name", "", String.class), "Pregnant");
 		pRow.addColumnValue(new DataSetColumn("-", "", Integer.class), pregnantCohort.size());
 		set.addRow(pRow);
 		
 		DataSetRow bRow = new DataSetRow();
 		Cohort breastFeedingCohort = preExposureProphylaxisQuery.getAllBreastFeedingPrep();
-		bRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "Breastfeeding");
+		bRow.addColumnValue(new DataSetColumn("Name", "", String.class), "Breastfeeding");
 		bRow.addColumnValue(new DataSetColumn("-", "", Integer.class), breastFeedingCohort.size());
 		set.addRow(bRow);
 		

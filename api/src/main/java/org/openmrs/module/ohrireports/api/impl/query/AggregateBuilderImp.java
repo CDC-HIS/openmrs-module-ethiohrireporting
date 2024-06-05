@@ -108,8 +108,8 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
             dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), subTotalCount);
         } else if (Objects.equals(gender, "T")) {
             dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
-                    "Sub-Total");
-            dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getTotal());
+                    "Total");
+            dataSet.addColumnValue(new DataSetColumn("Sub-total", "Subtotal", Integer.class), getTotal());
         }
     }
 

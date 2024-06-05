@@ -25,17 +25,17 @@ public class DisaggregatedByPrepTypeDatasetDefinitionEvaluator implements DataSe
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		Cohort cohort = preExposureProphylaxisQuery.getAllNewPrEP();
 		DataSetRow oralRow = new DataSetRow();
-		oralRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "Oral");
+		oralRow.addColumnValue(new DataSetColumn("Name", "", String.class), "Oral");
 		oralRow.addColumnValue(new DataSetColumn("-", "", Integer.class), cohort.size());
 		set.addRow(oralRow);
 		
 		DataSetRow iRow = new DataSetRow();
-		iRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "Injectable");
+		iRow.addColumnValue(new DataSetColumn("Name", "", String.class), "Injectable");
 		iRow.addColumnValue(new DataSetColumn("-", "", Integer.class), 0);
 		set.addRow(iRow);
 		
 		DataSetRow otherRow = new DataSetRow();
-		otherRow.addColumnValue(new DataSetColumn("Name", "Name", String.class), "Other");
+		otherRow.addColumnValue(new DataSetColumn("Name", "", String.class), "Other");
 		otherRow.addColumnValue(new DataSetColumn("-", "", Integer.class), 0);
 		set.addRow(otherRow);
 		

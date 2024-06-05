@@ -3,11 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tb_prev;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_COMPLETED_DATE;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -50,24 +46,33 @@ public class TbPrevNumeratorDataSetDefinitionEvaluator implements DataSetEvaluat
 		femaleTotal = 0;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		hdsd = (TbPrevNumeratorDataSetDefinition) dataSetDefinition;
+		Date prevSixMonth = getPrevSixMonth();
 		if (!hdsd.getHeader()) {
-			if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-				baseEncounters = encounterQuery.getEncounters(Arrays.asList(TPT_COMPLETED_DATE), hdsd.getStartDate(),
-				    hdsd.getEndDate());
-			
+			//if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate())) {
+			// If there is TPT Start Date BETWEEN the Previous reporting period Start and End Date for the patient
+			baseEncounters = encounterQuery.getEncountersByMaxObsDate(Collections.singletonList(TPT_START_DATE),
+			    prevSixMonth, hdsd.getStartDate());
+			//}
 			endDate = hdsd.getEndDate();
 			
-			Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_COMPLETED_DATE, hdsd.getStartDate(), endDate);
-			Cohort onArtCorCohort = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, endDate, tptCohort));
+			Cohort tptStartCohort = tbQuery.getCohort(baseEncounters);
+			// If there is TPT Completed Date BETWEEN the Previous reporting period Start Date AND the Current reporting period End Date for the patient
+			List<Integer> tptCompletedEncounter = encounterQuery.getEncounters(
+			    Collections.singletonList(TPT_COMPLETED_DATE), prevSixMonth, endDate, tptStartCohort);
+			Cohort tptCohort = tbQuery.getCohort(tptCompletedEncounter);
+			
+			// If there is an ART Start Date < the Start Date of the reporting period for the patient
+			Cohort onArtCorCohort = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(),
+			    tptCohort));
 			if (!hdsd.getAggregateType()) {
 				// #region newly enrolled on Art with TPT completed
-				Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, hdsd.getStartDate(), endDate,
-				    onArtCorCohort));
+				Cohort cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, prevSixMonth,
+				    hdsd.getStartDate(), onArtCorCohort));
 				buildDataRow(set, tbQuery.getPersons(cohortByArt), "Newly enrolled on ART");
 				// #endregion
 				
 				// #region already enrolled on ART with TPT completed
-				cohortByArt = new Cohort(tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getStartDate(),
+				cohortByArt = new Cohort(tbQuery.getArtStartedCohort(tptCompletedEncounter, null, prevSixMonth,
 				    onArtCorCohort));
 				buildDataRow(set, tbQuery.getPersons(cohortByArt), "Previously enrolled on ART");
 				// #endregion

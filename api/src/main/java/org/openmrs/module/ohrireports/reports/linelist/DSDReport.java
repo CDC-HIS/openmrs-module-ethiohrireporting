@@ -26,7 +26,7 @@ public class DSDReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-DSD ";
+		return LINE_LIST_REPORT + "- DSD ";
 	}
 	
 	@Override

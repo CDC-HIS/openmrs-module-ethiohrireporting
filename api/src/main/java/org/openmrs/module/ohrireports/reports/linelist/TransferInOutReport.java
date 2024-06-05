@@ -42,7 +42,7 @@ public class TransferInOutReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "-Transferred In/Out";
+		return LINE_LIST_REPORT + "- Transferred In/Out";
 	}
 	
 	@Override
