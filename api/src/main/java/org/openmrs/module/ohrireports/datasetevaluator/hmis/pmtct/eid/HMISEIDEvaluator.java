@@ -29,20 +29,35 @@ public class HMISEIDEvaluator {
 	private EIDQuery eidQuery;
 	
 	public void buildDataset(Date start, Date end, SimpleDataSet dataset) {
-		eidQuery.generateReport(start, end, PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB);
-		
 		RowBuilder rowBuilder = new RowBuilder();
+		eidQuery.generateReportForHMIS(start, end, PMTCT_SAMPLE_COLLECTION_DATE);
+		
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.",
+		    "Percentage of  HIV exposed infants who received a virologic HIV test (sample collected) within 12 month ",
+		    eidQuery.getPatientEncounterHashMap().size()));
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1",
+		    "Number of HIV exposed infants who received a virologic HIV test (sample collected) 0- 2 months of birth",
+		    getByAge(0, 2)));
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.2",
+		    "Number of HIV exposed infants who received a virologic HIV test (sample collected) 2-12 months of birth",
+		    getByAge(2, 12)));
+		
 		int positiveBelowTwoAge = getPositive(0, 2);
 		int negativeBelowTwoAge = getNegative(0, 2);
 		int positiveAboveTwoAge = getPositive(2, 12);
 		int negativeAboveTwoAge = getNegative(2, 12);
 		
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1",
-		    "Number of HIV exposed infants who received an HIV test 0- 2 months of birth", ""));
+		    "Number of HIV exposed infants who received an HIV test 0-2 months of birth", positiveBelowTwoAge
+		            + negativeBelowTwoAge));
+		
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1.1", "Positive", positiveBelowTwoAge));
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1.2", "Negative", negativeBelowTwoAge));
+		
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2",
-		    "Total Number of infants within 12 month received virological test result", ""));
+		    "Number of HIV exposed infants who received an HIV test 2-12 months of birth", positiveAboveTwoAge
+		            + negativeAboveTwoAge));
+		
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2.1", "Positive", positiveAboveTwoAge));
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.2.2", "Negative", negativeAboveTwoAge));
 		
@@ -55,6 +70,19 @@ public class HMISEIDEvaluator {
 			for (PMTCTEncounter encounter : patient.getEncounterList()) {
 				if (encounter.getTestType().equals(PMTCT_INITIAL_TEST) && encounter.getDnaPcrResult().equals(NEGATIVE)
 				        && (encounter.getAge() >= minAge && encounter.getAge() <= maxAge)) {
+					count++;
+				}
+			}
+		}
+		return count;
+	}
+	
+	private int getByAge(int minAge, int maxAge) {
+		int count = 0;
+		for (Map.Entry<Integer, PMTCTPatient> patientEntry : eidQuery.getPatientEncounterHashMap().entrySet()) {
+			PMTCTPatient patient = patientEntry.getValue();
+			for (PMTCTEncounter encounter : patient.getEncounterList()) {
+				if ((encounter.getAge() >= minAge && encounter.getAge() <= maxAge)) {
 					count++;
 				}
 			}

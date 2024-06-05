@@ -108,9 +108,9 @@ public class HMISQuery extends ColumnBuilder {
 
 	    hivLinkageNewCTEvaluator.buildDataset(start, end,dataSet);
 	    
-	    hivpVLSEvaluator.buildDataset(end,dataSet,".1", HivPvlsType.TESTED,"Number of adult and pediatric ART patients for whom viral  load test result received in the reporting period (with in the past 12 months)");
-	    hivpVLSEvaluator.buildDataset(end,dataSet,"_UN", HivPvlsType.SUPPRESSED,"(UN) Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)");
-	    hivpVLSEvaluator.buildDataset(end,dataSet,"_LV", HivPvlsType.LOW_LEVEL_LIVERMIA,"Total number of adult and paediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period (with in the past 12 months)");
+	    hivpVLSEvaluator.buildDataset(start,end,dataSet,".1", HivPvlsType.TESTED,"Number of adult and pediatric ART patients for whom viral  load test result received in the reporting period");
+	    hivpVLSEvaluator.buildDataset(start,end,dataSet,"_UN", HivPvlsType.SUPPRESSED,"(UN) Viral load Suppression in the reporting period ");
+	    hivpVLSEvaluator.buildDataset(start,end,dataSet,"_LV", HivPvlsType.LOW_LEVEL_LIVERMIA,"Total number of adult and paediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period ");
 		
 	    hmistxdsdEvaluator.buildDataset(start,end,dataSet);
 		
