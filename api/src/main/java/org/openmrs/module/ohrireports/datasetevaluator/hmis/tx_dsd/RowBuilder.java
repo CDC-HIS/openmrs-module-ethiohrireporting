@@ -64,6 +64,7 @@ public class RowBuilder extends ColumnBuilder {
 			
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Male ",
 					countByAgeRange(_minAge, _maxAge, "M")));
+			counter++;
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Female ",
 					countByAgeRange(_minAge, _maxAge, "F")));
 			
@@ -80,6 +81,7 @@ public class RowBuilder extends ColumnBuilder {
 		} while (_maxAge <= maxAge);
 		
 		rowList.add(buildColumn(identifier + "." + counter, ">= "+_maxAge+" years, Male ", countAboveAndFifteenYear("M")));
+		counter++;
 		rowList.add(buildColumn(identifier + "." + counter, ">= "+_maxAge+" years, Female ", countAboveAndFifteenYear("F")));
 		
 	}
@@ -92,6 +94,8 @@ public class RowBuilder extends ColumnBuilder {
 			
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Male ",
 					countByAgeRange(_minAge, _maxAge, "M")));
+			counter++;
+			
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Female ",
 					countByAgeRange(_minAge, _maxAge, "F")));
 			
@@ -107,6 +111,7 @@ public class RowBuilder extends ColumnBuilder {
 		} while (_maxAge <= maxAge);
 		
 		rowList.add(buildColumn(identifier + "." + counter, ">= "+_maxAge+" years, Male ", countAboveAndFifteenYear("M")));
+		counter++;
 		rowList.add(buildColumn(identifier + "." + counter, ">= "+_maxAge+" years, Female ", countAboveAndFifteenYear("F")));
 		
 	}
@@ -128,12 +133,14 @@ public class RowBuilder extends ColumnBuilder {
 		int _maxAge = 4;
 		int counter = 1;
 		rowList.add(buildColumn(identifier + "." + counter, "< 1 year, Male ", countBelowOneYear("M")));
+		counter++;
 		rowList.add(buildColumn(identifier + "." + counter, "< 1 year, Female ", countBelowOneYear("F")));
 		
 		do {
 			
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Male ",
 			    countByAgeRange(_minAge, _maxAge, "M")));
+			counter++;
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Female ",
 			    countByAgeRange(_minAge, _maxAge, "F")));
 			
@@ -144,6 +151,7 @@ public class RowBuilder extends ColumnBuilder {
 		} while (_maxAge < maxAge);
 		
 		rowList.add(buildColumn(identifier + "." + counter, ">= 50 years, Male ", countAboveAndFifteenYear("M")));
+		counter++;
 		rowList.add(buildColumn(identifier + "." + counter, ">= 50 years, Female ", countAboveAndFifteenYear("F")));
 		
 	}
@@ -156,6 +164,7 @@ public class RowBuilder extends ColumnBuilder {
 			
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Male ",
 			    countByAgeRange(_minAge, _maxAge, "M")));
+			counter++;
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Female ",
 			    countByAgeRange(_minAge, _maxAge, "F")));
 			
@@ -166,6 +175,7 @@ public class RowBuilder extends ColumnBuilder {
 		} while (_maxAge < maxAge);
 		
 		rowList.add(buildColumn(identifier + "." + counter, ">= 50 years, Male ", countAboveAndFifteenYear("M")));
+		counter++;
 		rowList.add(buildColumn(identifier + "." + counter, ">= 50 years, Female ", countAboveAndFifteenYear("F")));
 		
 	}

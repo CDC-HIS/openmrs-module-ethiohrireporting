@@ -37,21 +37,20 @@ public class HivPVLSEvaluator {
 	List<Person> persons = new ArrayList<>();
 
 	
-	public void buildDataset(Date end, SimpleDataSet dataSetDefinition,String prefix,HivPvlsType type,String description) {
+	public void buildDataset(Date start,Date end, SimpleDataSet dataSetDefinition,String prefix,HivPvlsType type,String description) {
 		this.type= type;
 		endDate = end;
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(end);
+		Date startDate = start;
+;
 		/*
 		 * -11 is because calendar library start count month from zero,
 		 * the idea is to check all record from past twelve months
 		 */
-		int STARTING_FROM_MONTHS = 12;
-		calendar.add(Calendar.MONTH, -STARTING_FROM_MONTHS);
+	
 
 		List<Integer> encounter = encounterQuery.getEncounters(Collections.singletonList(DATE_VIRAL_TEST_RESULT_RECEIVED),
-				calendar.getTime(),end);
-		hivPvlsQuery.setData(calendar.getTime(), end, encounter);
+				startDate,end);
+		hivPvlsQuery.setData(startDate, end, encounter);
 
 		baseName = "HIV_TX_PVLS";
 		baseName = baseName + prefix;
@@ -63,6 +62,7 @@ public class HivPVLSEvaluator {
 
 	private void buildDataSet(SimpleDataSet dataSet,HivPvlsType type,String description) {
 		int row = dataSet.getRows().size();
+		  row++;
 		if (type == HivPvlsType.TESTED) {
 			DataSetRow headerDataSetRow = new DataSetRow();
 			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),

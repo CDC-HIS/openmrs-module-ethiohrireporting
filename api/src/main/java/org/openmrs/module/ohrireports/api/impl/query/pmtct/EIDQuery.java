@@ -46,7 +46,10 @@ public class EIDQuery extends PatientQueryImpDao {
 	
 	//NOTE: Every encounter with sample collection date in a reporting date should be considered
 	public void generateReport(Date start, Date end, String conceptUUID) {
-		patientEncounterHashMap = getPMTCTPatientEncounter(start, end, conceptUUID);
+		patientEncounterHashMap = getPMTCTPatientEncounter(start, end, conceptUUID,Arrays.asList(PMTCT_INITIAL_TEST, PMTCT_NINE_MONTH_FOR_PREVIOUS_NEGATIVE_TEST, PMTCT_DIAGNOSTIC_REPEAT_TEST));
+	}
+	public void generateReportForHMIS(Date start, Date end, String conceptUUID){
+		patientEncounterHashMap = getPMTCTPatientEncounter(start,end,conceptUUID,Arrays.asList(PMTCT_INITIAL_TEST));
 	}
 	
 	public void generateReportForLineList(Date start, Date end) {
@@ -191,7 +194,7 @@ public class EIDQuery extends PatientQueryImpDao {
 		return list;
 	}
 	
-	private HashMap<Integer, PMTCTPatient> getPMTCTPatientEncounter(Date start, Date end, String conceptUUID) {
+	private HashMap<Integer, PMTCTPatient> getPMTCTPatientEncounter(Date start, Date end, String conceptUUID,List<String> testTypesConcepts) {
 		
 		StringBuilder sqlBuilder = new StringBuilder("select  p.person_id, pn.given_name+' '+pn.middle_name+' '+pn.family_name,p.gender,e.encounter_id,p.birthdate,ob.value_datetime,testInd.uuid,result.uuid as result,finalOutcomeResult.uuid as finalOutCome from obs as ob ");
 		sqlBuilder.append(" inner join person as p on p.person_id = ob.person_id  ");
@@ -201,7 +204,7 @@ public class EIDQuery extends PatientQueryImpDao {
 		sqlBuilder.append(" inner join ");
 		sqlBuilder.append(" (select tob.encounter_id,tob.person_id, c.uuid from obs as tob inner join concept as c on c.concept_id =tob.value_coded  where tob.concept_id = ")
 				.append(conceptQuery(PMTCT_TEST_INDICATION)).append(" and tob.value_coded in ")
-				.append(conceptQuery(Arrays.asList(PMTCT_INITIAL_TEST, PMTCT_NINE_MONTH_FOR_PREVIOUS_NEGATIVE_TEST, PMTCT_DIAGNOSTIC_REPEAT_TEST))).append(") as testInd ");
+				.append(conceptQuery(testTypesConcepts)).append(") as testInd ");
 		sqlBuilder.append("  on testInd.encounter_id = ob.encounter_id and testInd.person_id = ob.person_id");
 		sqlBuilder.append(" and et.uuid= '").append(PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE).append("' ");
 		sqlBuilder.append(getObsAnswerName(PMTCT_DNA_PCR_RESULT, "result"));

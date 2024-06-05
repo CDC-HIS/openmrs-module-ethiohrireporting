@@ -83,20 +83,18 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		
 		patientQuery = Context.getService(PatientQueryService.class);
+		if (Objects.isNull(hdsd.getEndDate()))
+			hdsd.setEndDate(new Date());
 		
 		if (hdsd.getType().equals(TXTBReport.numerator)) {
-			if (hdsd.getEndDate() == null) {
-				hdsd.setEndDate(new Date());
-			}
+			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
 			    Collections.singletonList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate());
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
 			
 			getTXTbTreatmentAndTBArtDictionary(baseEncountersOfTreatmentStartDate, cohort);
 		} else if (hdsd.getType().equals(TXTBReport.denominator)) {
-			if (hdsd.getEndDate() == null) {
-				hdsd.setEndDate(new Date());
-			}
+			
 			tbQueryLineList.setEncountersByScreenDate(tbQuery.getFollowUpEncounter());
 			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
@@ -105,9 +103,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			getTXTbScreeningDictionary(baseEncountersOfTreatmentStartDate, cohort);
 		} else {
-			if (hdsd.getEndDate() == null) {
-				hdsd.setEndDate(new Date());
-			}
+			
 			cohort = tbartQuery.getCohortByTBTreatmentStartDate(hdsd.getStartDate(), hdsd.getEndDate());
 			getTXTbTreatmentAndTBArtDictionary(tbartQuery.getTbArtEncounter(), cohort);
 		}

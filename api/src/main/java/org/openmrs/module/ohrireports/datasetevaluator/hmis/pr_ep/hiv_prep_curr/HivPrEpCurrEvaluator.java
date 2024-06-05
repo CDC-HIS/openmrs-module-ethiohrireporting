@@ -41,23 +41,23 @@ public class HivPrEpCurrEvaluator  {
         dataset.addRow(buildColumn("", "PrEP Curr (Number of individuals that received oral PrEP during the reporting period)", 0));
 
         personList = hivPrEPQuery.getPersons(prepFollowupCohort);
-        dataset.addRow(buildColumn("1.1", "By Age and Sex",prepFollowupCohort.size()));
-        dataset.addRow(buildColumn("1.1 .1", "15 - 19 years, Male", getCohortSizeByAgeAndGender(15, 19, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .2", "15 - 19 years, Female", getCohortSizeByAgeAndGender(15, 19, Gender.Female)));
-        dataset.addRow(buildColumn("1.1 .3", "20 - 24 years, Male", getCohortSizeByAgeAndGender(20, 24, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .4", "20 - 24 years, Female", getCohortSizeByAgeAndGender(20, 24, Gender.Female)));
-        dataset.addRow(buildColumn("1.1 .5", "25 - 29 years, Male", getCohortSizeByAgeAndGender(25, 29, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .6", "25 - 29 years, Female", getCohortSizeByAgeAndGender(25, 29, Gender.Female)));
-        dataset.addRow(buildColumn("1.1 .7", "30 - 34 years, Male", getCohortSizeByAgeAndGender(30, 34, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .8", "30 - 34 years, Female", getCohortSizeByAgeAndGender(30, 34, Gender.Female)));
-        dataset.addRow(buildColumn("1.1 .9", "35 - 39 years, Male", getCohortSizeByAgeAndGender(35, 39, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .10", "35 - 39 years, Female", getCohortSizeByAgeAndGender(35, 39, Gender.Female)));
-        dataset.addRow(buildColumn("1.1 .11", "40 - 44 years, Male", getCohortSizeByAgeAndGender(40, 44, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .12", "40 - 44 years, Female", getCohortSizeByAgeAndGender(40, 44, Gender.Female)));
-        dataset.addRow(buildColumn("1.1 .13", "45 - 49 years, Male", getCohortSizeByAgeAndGender(45, 49, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .14", "45 - 49 years, Female", getCohortSizeByAgeAndGender(45, 49, Gender.Female)));
-        dataset.addRow(buildColumn("1.1 .15", ">=50 years, Male", getCohortSizeByAgeAndGender(50, 150, Gender.Male)));
-        dataset.addRow(buildColumn("1.1 .16", ">=50 years, Female", getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
+        dataset.addRow(buildColumn("1", "By Age and Sex",prepFollowupCohort.size()));
+        dataset.addRow(buildColumn("1 .1", "15 - 19 years, Male", getCohortSizeByAgeAndGender(15, 19, Gender.Male)));
+        dataset.addRow(buildColumn("1 .2", "15 - 19 years, Female", getCohortSizeByAgeAndGender(15, 19, Gender.Female)));
+        dataset.addRow(buildColumn("1 .3", "20 - 24 years, Male", getCohortSizeByAgeAndGender(20, 24, Gender.Male)));
+        dataset.addRow(buildColumn("1 .4", "20 - 24 years, Female", getCohortSizeByAgeAndGender(20, 24, Gender.Female)));
+        dataset.addRow(buildColumn("1 .5", "25 - 29 years, Male", getCohortSizeByAgeAndGender(25, 29, Gender.Male)));
+        dataset.addRow(buildColumn("1 .6", "25 - 29 years, Female", getCohortSizeByAgeAndGender(25, 29, Gender.Female)));
+        dataset.addRow(buildColumn("1 .7", "30 - 34 years, Male", getCohortSizeByAgeAndGender(30, 34, Gender.Male)));
+        dataset.addRow(buildColumn("1 .8", "30 - 34 years, Female", getCohortSizeByAgeAndGender(30, 34, Gender.Female)));
+        dataset.addRow(buildColumn("1 .9", "35 - 39 years, Male", getCohortSizeByAgeAndGender(35, 39, Gender.Male)));
+        dataset.addRow(buildColumn("1 .10", "35 - 39 years, Female", getCohortSizeByAgeAndGender(35, 39, Gender.Female)));
+        dataset.addRow(buildColumn("1 .11", "40 - 44 years, Male", getCohortSizeByAgeAndGender(40, 44, Gender.Male)));
+        dataset.addRow(buildColumn("1 .12", "40 - 44 years, Female", getCohortSizeByAgeAndGender(40, 44, Gender.Female)));
+        dataset.addRow(buildColumn("1 .13", "45 - 49 years, Male", getCohortSizeByAgeAndGender(45, 49, Gender.Male)));
+        dataset.addRow(buildColumn("1 .14", "45 - 49 years, Female", getCohortSizeByAgeAndGender(45, 49, Gender.Female)));
+        dataset.addRow(buildColumn("1 .15", ">=50 years, Male", getCohortSizeByAgeAndGender(50, 150, Gender.Male)));
+        dataset.addRow(buildColumn("1 .16", ">=50 years, Female", getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
 
         int total = 0;
         Cohort fsw = hivPrEPQuery.getCategoryOnPrep(SELF_IDENTIFYING_FSW, prepFollowupCohort);
@@ -76,7 +76,7 @@ public class HivPrEpCurrEvaluator  {
         DataSetRow discordantCoupleCategoryRow = new DataSetRow();
 
         discordantCoupleCategoryRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-                "HIV_PrEP_CURR.2.1");
+                "HIV_PrEP_CURR.2 .1");
         discordantCoupleCategoryRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
                 "Discordant Couple");
         discordantCoupleCategoryRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
@@ -86,7 +86,7 @@ public class HivPrEpCurrEvaluator  {
 
         DataSetRow fwCategoryRow = new DataSetRow();
 
-        fwCategoryRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PrEP_CURR.2.2");
+        fwCategoryRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_PrEP_CURR.2 .2");
         fwCategoryRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
                 "Female sex worker[FSW]");
         fwCategoryRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class), fsw.size());

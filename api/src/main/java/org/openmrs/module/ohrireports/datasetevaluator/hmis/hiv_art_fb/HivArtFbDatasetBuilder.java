@@ -44,8 +44,11 @@ public class HivArtFbDatasetBuilder {
 	private void buildRowByAge() {
 		int initialAgeRange = 10, maxAgeRange = 10;
 		int maxAge = 49;
-		for (int i = 1; initialAgeRange <= maxAge; i++) {
+		int i = 1;
+		while (initialAgeRange < 30) {
+			
 			maxAgeRange += 4;
+			
 			DataSetRow row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), baseName + "." + i);
 			row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), initialAgeRange + " - "
@@ -55,7 +58,15 @@ public class HivArtFbDatasetBuilder {
 			maxAgeRange++;
 			initialAgeRange = maxAgeRange;
 			dataSet.addRow(row);
+			i++;
 		}
+		DataSetRow row = new DataSetRow();
+		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), baseName + "." + ++i);
+		row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), initialAgeRange + " - " + maxAge
+		        + " years");
+		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(initialAgeRange, maxAge));
+		
+		dataSet.addRow(row);
 	}
 	
 	private Integer getCount(int initialAge, int maxAge) {
