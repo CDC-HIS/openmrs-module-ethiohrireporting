@@ -77,13 +77,10 @@ public class HMISTXDSDEvaluator {
 		rowBuilder.updateDataset(dataSet);
 		
 		// clients on Adolescent DSD
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_ADOLESCENT);
-		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
-		rowBuilder.buildDataSetRow("HIV_TX_Adolescent", 15, 49, 25);
-		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_Adolescent", "Total number of clients on Adolescent DSD",
-		    String.valueOf(rowBuilder.getTotalCount())));
-		total += rowBuilder.getTotalCount();
-		rowBuilder.updateDataset(dataSet);
+		int count = dsdQuery.getCohortByDSDCategories(DSD_ADOLESCENT).size();
+		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_Adolescent DSD.", "Total number of clients on Adolescent DSD",
+		    String.valueOf(count)));
+		total += count;
 		
 		// clients on KP DSD
 		cohort = dsdQuery.getCohortByDSDCategories(DSD_KP);

@@ -61,7 +61,7 @@ public class HivPlHivEvaluator {
 
 
         personList = hivPlvHivQuery.getPersons(plhivCohort);
-        dataSet.addRow(buildColumn("", "Proportion of clinically undernourished People Living with HIV (PLHIV)" +
+        dataSet.addRow(buildColumn("HIV_PLHIV_TSP", "Proportion of clinically undernourished People Living with HIV (PLHIV)" +
                 " who received therapeutic or supplementary food", personList.size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1", "Number of PLHIV who were assessed/screened for malnutrition", personList.size()));
 

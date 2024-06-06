@@ -36,8 +36,8 @@ public class TbQueryLineList extends BaseLineListQuery {
 	public HashMap<Integer, Object> getTBScreenedDate(Cohort cohort) {
 
 		StringBuilder sql = baseValueDateQuery(TB_SCREENING_DATE);
-		sql.append(" and " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
-		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "person_id in (:cohorts)");
+		sql.append(" and ").append(VALUE_DATE_BASE_ALIAS_OBS).append("encounter_id in (:encounters)");
+		sql.append(" and  ").append(VALUE_DATE_BASE_ALIAS_OBS).append("person_id in (:cohorts)");
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
@@ -51,8 +51,8 @@ public class TbQueryLineList extends BaseLineListQuery {
 	public HashMap<Integer, Object> getTBTreatmentStartDate(Cohort cohort,
 			List<Integer> treatmentStatedDateEncounters) {
 		StringBuilder sql = baseValueDateQuery(TB_TREATMENT_START_DATE);
-		sql.append(" and " + VALUE_DATE_BASE_ALIAS_OBS + " encounter_id in (:encounters)");
-		sql.append(" and " + VALUE_DATE_BASE_ALIAS_OBS + " person_id in (:cohorts)");
+		sql.append(" and ").append(VALUE_DATE_BASE_ALIAS_OBS).append(" encounter_id in (:encounters)");
+		sql.append(" and ").append(VALUE_DATE_BASE_ALIAS_OBS).append(" person_id in (:cohorts)");
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
