@@ -28,10 +28,10 @@ public class HMISHEIARVEvaluator {
 		
 		dataSet.addRow(builder
 		        .buildDatasetColumn(
-		            "RMH_PMTCT_IARV",
+		            "RMH_PMTCT_IARV.1",
 		            "Percentage of Infants born to HIV-infected women receiving antiretroviral (ARV) prophylaxis for prevention of Women-to-child transmission (PMTCT)",
 		            ""));
-		dataSet.addRow(builder.buildDatasetColumn("MTCT_HEI_COTR.1.",
+		dataSet.addRow(builder.buildDatasetColumn("RMH_PMTCT_IARV.2",
 		    "Number of HIV exposed infants who received ARV prophylaxis For 12 weeks", heihmisQuery.getBaseCohort().size()));
 		
 	}

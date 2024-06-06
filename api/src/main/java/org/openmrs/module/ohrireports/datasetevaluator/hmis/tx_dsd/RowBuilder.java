@@ -60,9 +60,9 @@ public class RowBuilder extends ColumnBuilder {
 		rowList.add(buildColumn(identifier + "." + counter, "< 1 year, Male ", countBelowOneYear("M")));
 		counter++;
 		rowList.add(buildColumn(identifier + "." + counter, "< 1 year, Female ", countBelowOneYear("F")));
+		counter++;
 		
 		do {
-			counter++;
 			
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Male ",
 					countByAgeRange(_minAge, _maxAge, "M")));
@@ -137,9 +137,9 @@ public class RowBuilder extends ColumnBuilder {
 		rowList.add(buildColumn(identifier + "." + counter, "< 1 year, Male ", countBelowOneYear("M")));
 		counter++;
 		rowList.add(buildColumn(identifier + "." + counter, "< 1 year, Female ", countBelowOneYear("F")));
+		counter++;
 		
 		do {
-			counter++;
 			
 			rowList.add(buildColumn(identifier + "." + counter, _minAge + " - " + _maxAge + " year, Male ",
 			    countByAgeRange(_minAge, _maxAge, "M")));
