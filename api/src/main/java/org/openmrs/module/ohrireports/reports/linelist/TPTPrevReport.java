@@ -6,6 +6,7 @@ import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
@@ -39,7 +40,6 @@ public class TPTPrevReport implements ReportManager {
 	public List<Parameter> getParameters() {
 		Parameter tptStatus = new Parameter("tptStatus", "TPT Status", String.class);
 		tptStatus.addToWidgetConfiguration("codedOptions", "start,end");
-		
 		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
 		startDate.setRequired(false);
 		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);

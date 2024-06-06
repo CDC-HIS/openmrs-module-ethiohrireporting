@@ -70,6 +70,7 @@ public class PrEPCTDatasetDefinitionEvaluator implements DataSetEvaluator {
 		List<Person> prepCTFemalePersonList = preExposureProphylaxisQuery.getPersons(preExposureProphylaxisQuery
 		        .getCohortByGender("F", cohort));
 		aggregateBuilder.setPersonList(prepCTFemalePersonList);
+		aggregateBuilder.setLowerBoundAge(14);
 		DataSetRow prEPFemaleDataSetRow = new DataSetRow();
 		aggregateBuilder.buildDataSetColumn(prEPFemaleDataSetRow, "F");
 		dataSet.addRow(prEPFemaleDataSetRow);
@@ -77,6 +78,7 @@ public class PrEPCTDatasetDefinitionEvaluator implements DataSetEvaluator {
 		List<Person> prepCTMalePersonList = preExposureProphylaxisQuery.getPersons(preExposureProphylaxisQuery
 		        .getCohortByGender("M", cohort));
 		aggregateBuilder.setPersonList(prepCTMalePersonList);
+		aggregateBuilder.setLowerBoundAge(14);
 		DataSetRow prEPMaleDataSetRow = new DataSetRow();
 		aggregateBuilder.buildDataSetColumn(prEPMaleDataSetRow, "M");
 		dataSet.addRow(prEPMaleDataSetRow);

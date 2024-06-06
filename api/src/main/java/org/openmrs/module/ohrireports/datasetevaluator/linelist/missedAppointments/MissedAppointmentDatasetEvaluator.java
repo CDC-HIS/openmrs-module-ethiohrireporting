@@ -29,11 +29,11 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		MissedAppointmentDatasetDefinition dsd = (MissedAppointmentDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dsd, evalContext);
-		appointmentQuery.generateReport(dsd.getEndDate());
-		
 		if (dsd.getEndDate() == null) {
 			dsd.setEndDate(new Date());
 		}
+		
+		appointmentQuery.generateReport(dsd.getEndDate());
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
 		    MRN_PATIENT_IDENTIFIERS);
@@ -55,13 +55,25 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		    NEXT_VISIT_DATE, appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> lastCurrDate = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
 		    TREATMENT_END_DATE, appointmentQuery.getBaseCohort());
-		DataSetRow row = new DataSetRow();
+		DataSetRow row;
 		
 		List<Person> personList = LineListUtilities.sortPatientByName(appointmentQuery.getPersons(appointmentQuery
 		        .getBaseCohort()));
-		row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-		row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
-		dataSet.addRow(row);
+		if (!personList.isEmpty()) {
+			
+			row = new DataSetRow();
+			
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
+			
+			dataSet.addRow(row);
+		} else {
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "ART Start Date", "Last Follow-up Date E.C", "Last Appointment Date E.C", "No. of Missed Days",
+			    "Tracing Status", "Last Follow-up Status", "Last Regimen", "Last ARV Dose", "Adherence",
+			    "Last TX_CURR Date E.C", "Mobile#")));
+		}
+		
 		int missedDate = 0;
 		int i = 1;
 		for (Person person : personList) {
@@ -74,9 +86,9 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("ART Start Date", "ART Start Date", String.class),
 			    artStartDictionary.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Last Follow-up DateEth", "Last Follow-up Date Eth", String.class),
+			row.addColumnValue(new DataSetColumn("Last Follow-up DateEth", "Last Follow-up Date E.C", String.class),
 			    appointmentQuery.getEthiopianDate((Date) followUpDate.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("Last Appointment Date Eth", "Last Appointment Date Eth", String.class),
+			row.addColumnValue(new DataSetColumn("Last Appointment Date Eth", "Last Appointment Date E.C", String.class),
 			    appointmentQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
 			missedDate = getDaysDiff((Date) nextVisitDate.get(person.getPersonId()), dsd.getEndDate());
 			row.addColumnValue(new DataSetColumn("No. of Missed Days", "No. of Missed Days", String.class), missedDate);
@@ -90,7 +102,7 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 			    arvDoseHashmap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Adherence", "Adherence", String.class),
 			    adherenceHashmap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Last TX_CURR Date Eth", "Last TX_CURR Date Eth", String.class),
+			row.addColumnValue(new DataSetColumn("Last TX_CURR Date Eth", "Last TX_CURR Date E.C", String.class),
 			    appointmentQuery.getEthiopianDate((Date) lastCurrDate.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("Mobile#", "Mobile#", String.class), getPhone(person.getActiveAttributes()));
 			

@@ -172,8 +172,8 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				row.addColumnValue(new DataSetColumn("Sex", "Sex", Integer.class), person.getGender());
 				row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date ETH", Date.class),
 				    transferredInOutLineListQuery.getEthiopianDate(artStartDate));
-				row.addColumnValue(new DataSetColumn("followUpDateEth", "Follow-up Date (Date of TO)", String.class),
-				    followUpEthiopianDate);
+				row.addColumnValue(new DataSetColumn("Follow-up Date (Date of TO)", "Follow-up Date (Date of TO)",
+				        String.class), followUpEthiopianDate);
 				row.addColumnValue(new DataSetColumn("followUpStatus", "Follow-up Status", Integer.class),
 				    followUpStatus.get(person.getPersonId()));
 				row.addColumnValue(new DataSetColumn("LastRegimen", "Last Regimen", String.class),
@@ -194,7 +194,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 			
 		} else {
 			Cohort cohort = transferInOutQuery.getTICohort();
-			List<Person> persons = transferInOutQuery.getPersons(cohort);
+			List<Person> persons = LineListUtilities.sortPatientByName(transferInOutQuery.getPersons(cohort));
 			
 			loadColumnDictionary(cohort, transferInOutQuery.getFirstEncounter());
 			HashMap<Integer, Object> nextVisitDateHashMap = transferredInOutLineListQuery.getObsValueDate(
@@ -232,7 +232,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
 				row.addColumnValue(new DataSetColumn("ArtStartDateETH", "Art Start Date", Date.class),
 				    transferredInOutLineListQuery.getEthiopianDate(artStartDate));
-				row.addColumnValue(new DataSetColumn("Follow-up Date (Date of TO)", "Follow-up Date (Date of TI)",
+				row.addColumnValue(new DataSetColumn("Follow-up Date (Date of TI)", "Follow-up Date (Date of TI)",
 				        Integer.class), transferredInOutLineListQuery.getEthiopianDate(_followUpDate));
 				row.addColumnValue(
 				    new DataSetColumn("followUpStatus", "Latest Follow-up Status", Integer.class),

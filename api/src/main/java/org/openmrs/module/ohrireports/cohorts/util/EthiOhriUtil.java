@@ -45,6 +45,15 @@ public class EthiOhriUtil {
 		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
 	}
 	
+	public static <T extends Parameterizable> Mapped<T> mapNoDate(T parameterizable) {
+		if (parameterizable == null) {
+			throw new IllegalArgumentException("Parameterizable cannot be null");
+		}
+		
+		String mappings = "endDate=${endDateGC}";
+		return new Mapped<T>(parameterizable, ParameterizableUtil.createParameterMappings(mappings));
+	}
+	
 	public static <T extends Parameterizable> Mapped<T> map(T parameterizable, String _map) {
 		if (parameterizable == null) {
 			throw new IllegalArgumentException("Parameterizable cannot be null");

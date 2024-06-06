@@ -29,6 +29,8 @@ public class OHRIReportsConstants {
 	
 	public final static String PREP_SCREENING_ENCOUNTER_TYPE = "8c2b6a9b-4795-417d-affe-2530a753b715";
 	
+	public final static String REFERRED_FROM = "e2fc6b60-70e8-4a87-a164-fb175c788330";
+	
 	public final static String COVID_VACCINATION_ENCOUNTER_TYPE = "5b37ce7a-c55e-4226-bdc8-5af04025a6de";
 	
 	public final static String HTS_RETROSPECTIVE_ENCOUNTER_TYPE = "79c1f50f-f77d-42e2-ad2a-d29304dde2fe";
@@ -377,6 +379,12 @@ public class OHRIReportsConstants {
 	
 	public final static String PREP_DOSE_END_DATE = "1dcc457b-638c-4103-887b-4e8581e052f8";
 	
+	public final static String CONTRADICTION_TO_PREP_MEDICINE = "d8831943-7b41-405a-ac65-2ae11c8ede42";
+	
+	public final static String PREP_PROVISION_SITE = "01b3efef-b954-4622-a88a-4b680e4d4956";
+	
+	public final static String SIDE_EFFECTS = "67cc07e3-15bc-4175-8e14-f7f74e065b29";
+	
 	public final static String SELF_IDENTIFYING_FSW = "160579AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String HAVE_HIV_POSITIVE_PARTNER = "1436AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -390,6 +398,8 @@ public class OHRIReportsConstants {
 	public final static String EGFR_ESTIMATE = "165570AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String PREP_MISSED_TABLETS = "a10bb1c2-64a5-4f62-9d2f-05ef1b261fb8";
+	
+	public final static String PREP_TYPE_OF_CLIENT = "166597AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String REASON_FOR_STOPPING_PREP = "4bf84596-dd44-4b81-a638-4617e189a89d";
 	

@@ -16,9 +16,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
@@ -38,6 +36,21 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		_dataSetDefinition = (PreExposureProphylaxisDataSetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (_dataSetDefinition.getStartDate() != null && _dataSetDefinition.getEndDate() != null
+		        && _dataSetDefinition.getStartDate().compareTo(_dataSetDefinition.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			dataSet.addRow(row);
+			return dataSet;
+		}
+		
+		if (Objects.isNull(_dataSetDefinition.getEndDate()))
+			_dataSetDefinition.setEndDate(Calendar.getInstance().getTime());
+		
 		preExposureProphylaxisQuery.setStartDate(_dataSetDefinition.getStartDate());
 		preExposureProphylaxisQuery.setEndDate(_dataSetDefinition.getEndDate());
 		
@@ -49,6 +62,9 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		
 		HashMap<Integer, Object> screenedDateHashMap = preExposureProphylaxisLineListQuery.getScreeningObsValueDate(
 		    PREP_SCREENED_DATE, baseCohort);
+		HashMap<Integer, Object> prepStartedHashMap = preExposureProphylaxisLineListQuery
+		        .getConceptName(preExposureProphylaxisQuery.getBaseFollowupEncounter(), PR_EP_STARTED, baseCohort,
+		            PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepStartDateHashMap = preExposureProphylaxisLineListQuery.getScreeningObsValueDate(
 		    PREP_STARTED_DATE, baseCohort);
 		
@@ -68,6 +84,9 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepDose = preExposureProphylaxisLineListQuery.getConceptName(
 		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_DOSE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> typeOfClient = preExposureProphylaxisLineListQuery.getConceptName(
+		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_TYPE_OF_CLIENT, baseCohort,
+		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepDoseEndDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
 		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_DOSE_END_DATE, baseCohort,
 		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
@@ -83,15 +102,44 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		    baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> eGFREstimate = preExposureProphylaxisLineListQuery.getConceptName(EGFR_ESTIMATE,
 		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> adherence = preExposureProphylaxisLineListQuery.getConceptName(PREP_MISSED_TABLETS,
+		HashMap<Integer, Object> missedTablets = preExposureProphylaxisLineListQuery.getConceptName(PREP_MISSED_TABLETS,
 		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> reasonToStopPrep = preExposureProphylaxisLineListQuery.getConceptName(
 		    REASON_FOR_STOPPING_PREP, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> pregnant = preExposureProphylaxisLineListQuery.getConceptName(PREGNANCY_STATUS, baseCohort,
+		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> breastFeeding = preExposureProphylaxisLineListQuery.getConceptName(
+		    CURRENTLY_BREAST_FEEDING_CHILD, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> familyPlanningMethod = preExposureProphylaxisLineListQuery.getConceptName(
+		    FAMILY_PLANNING_METHODS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> sideEffects = preExposureProphylaxisLineListQuery.getConceptName(SIDE_EFFECTS, baseCohort,
+		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> contraindication = preExposureProphylaxisLineListQuery.getConceptName(
+		    CONTRADICTION_TO_PREP_MEDICINE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> prepProvisionSite = preExposureProphylaxisLineListQuery.getConceptName(PREP_PROVISION_SITE,
+		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> referredFrom = preExposureProphylaxisLineListQuery.getConceptName(REFERRED_FROM,
+		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		
-		DataSetRow row = new DataSetRow();
-		row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "Total");
-		row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), baseCohort.getSize());
-		dataSet.addRow(row);
+		DataSetRow row;
+		if (!persons.isEmpty()) {
+			
+			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			dataSet.addRow(row);
+			
+			dataSet.addRow(row);
+		} else {
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "UIC", "PrEP Screening Date in E.C.", "PrEP Started?", "PrEP Start Date in E.C", "Type of Client",
+			    "PrEP Follow-up Date in E.C.", "PrEP Follow-up Status", "PrEP Regimen", "PrEP Dose", "Missed Tablets",
+			    "Next Visit Date in E.C.", "Dose End Date in E.C.", "HIV Test Final Result", "Pregnant?", "Breast Feeding?",
+			    "Family Planning Method", "TB Screening Result", "STI Screening Result", "eGFR Estimate", "Side Effects",
+			    "Reason to stop PrEP", "Contraindication for PrEP Medicine", "Self-Identifying FSW", "Have HIV +ve Partner",
+			    "PrEP Provision Site", "Referred From")));
+		}
+		int i = 1;
 		for (Person person : persons) {
 			Date screenedDate = preExposureProphylaxisLineListQuery.getDate(screenedDateHashMap.get(person.getPersonId()));
 			Date prepStartDate = preExposureProphylaxisLineListQuery.getDate(prepStartDateHashMap.get(person.getPersonId()));
@@ -101,41 +149,47 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 			        .getPersonId()));
 			
 			row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
+			
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
-			//addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
-			//addColumnValue("screenedDate", "Screened Date", screenedDateHashMap, row, person);
-			row.addColumnValue(new DataSetColumn("screenedDate", "Screened Date ETH", String.class),
-			    preExposureProphylaxisLineListQuery.getEthiopianDate(screenedDate));
+			
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge(_dataSetDefinition.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
-			addColumnValue("prepStartDate", "PrEPStart Date", prepStartDateHashMap, row, person);
-			row.addColumnValue(new DataSetColumn("prepStartDateET", "PrEPStart Date ETH", String.class),
+			addColumnValue("UIC", "UIC", uniqueIdentificationCode, row, person);
+			row.addColumnValue(
+			    new DataSetColumn("PrEP Screening Date in E.C.", "PrEP Screening Date in E.C.", String.class),
+			    preExposureProphylaxisLineListQuery.getEthiopianDate(screenedDate));
+			addColumnValue("PrEP Started?", "PrEP Started?", prepStartedHashMap, row, person);
+			row.addColumnValue(new DataSetColumn("PrEP Start Date in E.C", "PrEP Start Date in E.C", String.class),
 			    preExposureProphylaxisLineListQuery.getEthiopianDate(prepStartDate));
-			addColumnValue("prepFollowupStatus", "Status", status, row, person);
-			addColumnValue("uniqueIdentificationCode", "UIC", uniqueIdentificationCode, row, person);
-			addColumnValue("followUpDate", "FollowUp Date", followUpDateHashMap, row, person);
-			row.addColumnValue(new DataSetColumn("followUpDateET", "FollowUp Date ETH", String.class),
+			addColumnValue("Type of Client", "Type of Client", typeOfClient, row, person);
+			row.addColumnValue(
+			    new DataSetColumn("PrEP Follow-up Date in E.C.", "PrEP Follow-up Date in E.C.", String.class),
 			    preExposureProphylaxisLineListQuery.getEthiopianDate(followUpDate));
-			
-			addColumnValue("nextVisitDate", "Next Visit Date", nextVisitDateHashMap, row, person);
-			row.addColumnValue(new DataSetColumn("nextVisitDateET", "Next Visit Date ETH", String.class),
+			addColumnValue("PrEP Follow-up Status", "PrEP Follow-up Status", status, row, person);
+			addColumnValue("PrEP Regimen", "PrEP Regimen", prepRegimen, row, person);
+			addColumnValue("PrEP Dose", "PrEP Dose", prepDose, row, person);
+			addColumnValue("Missed Tablets", "Missed Tablets", missedTablets, row, person);
+			row.addColumnValue(new DataSetColumn("Next Visit Date in E.C.", "Next Visit Date in E.C.", String.class),
 			    preExposureProphylaxisLineListQuery.getEthiopianDate(nextVisitDate));
-			
-			addColumnValue("prepRegimen", "Regimen", prepRegimen, row, person);
-			addColumnValue("prepDose", "Dose", prepDose, row, person);
-			addColumnValue("prepDoseEndDate", "Dose End", prepDoseEndDateHashMap, row, person);
-			row.addColumnValue(new DataSetColumn("prepDoseEndDateET", "Dose End ETH", String.class),
+			row.addColumnValue(new DataSetColumn("Dose End Date in E.C.", "Dose End Date in E.C.", String.class),
 			    preExposureProphylaxisLineListQuery.getEthiopianDate(prepDoseEndDate));
-			
-			addColumnValue("selfIdentifyingFSW", "Self Identifying FSW", selfIdentifyingFSW, row, person);
-			addColumnValue("haveHIVPositivePartner", "Have HIV Positive Partner", haveHIVPositivePartner, row, person);
-			addColumnValue("hivTestFinalResult", "HIV Test Final Result", hivTestFinalResult, row, person);
-			addColumnValue("tbScreenedResult", "TB Screened Result", tbScreenedResult, row, person);
-			addColumnValue("stiScreenResult", "STI Screened Result", stiScreenResult, row, person);
-			addColumnValue("eGFREstimate", "EGFR Estimate", eGFREstimate, row, person);
-			addColumnValue("adherence", "Adherence", adherence, row, person);
-			addColumnValue("reasonToStopPrep", "Reason To Stop PREP", reasonToStopPrep, row, person);
+			addColumnValue("HIV Test Final Result", "HIV Test Final Result", hivTestFinalResult, row, person);
+			addColumnValue("Pregnant?", "Pregnant?", pregnant, row, person);
+			addColumnValue("Breast Feeding?", "Breast Feeding?", breastFeeding, row, person);
+			addColumnValue("Family Planning Method", "Family Planning Method", familyPlanningMethod, row, person);
+			addColumnValue("TB Screening Result", "TB Screening Result", tbScreenedResult, row, person);
+			addColumnValue("STI Screening Result", "STI Screening Result", stiScreenResult, row, person);
+			addColumnValue("eGFR Estimate", "eGFR Estimate", eGFREstimate, row, person);
+			addColumnValue("Side Effects", "Side Effects", sideEffects, row, person);
+			addColumnValue("Reason to stop PrEP", "Reason to stop PrEP", reasonToStopPrep, row, person);
+			addColumnValue("Contraindication for PrEP Medicine", "Contraindication for PrEP Medicine", contraindication,
+			    row, person);
+			addColumnValue("Self-Identifying FSW ", "Self-Identifying FSW ", selfIdentifyingFSW, row, person);
+			addColumnValue("Have HIV +ve Partner", "Have HIV +ve Partner", haveHIVPositivePartner, row, person);
+			addColumnValue("PrEP Provision Site", "PrEP Provision Site", prepProvisionSite, row, person);
+			addColumnValue("Referred From", "Referred From", referredFrom, row, person);
 			dataSet.addRow(row);
 			
 		}
