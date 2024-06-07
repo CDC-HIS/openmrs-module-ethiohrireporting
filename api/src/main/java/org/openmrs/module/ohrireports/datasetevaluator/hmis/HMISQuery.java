@@ -126,7 +126,7 @@ public class HMISQuery extends ColumnBuilder {
 	  
 	    hivplHivEvaluator.buildDataset(start,end,dataSet);
 		
-	    hivArtFBEvaluator.buildDataset(start,end,"FP:Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",dataSet);
+	    hivArtFBEvaluator.buildDataset(start,end,"Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",dataSet);
 	    
 	    hivArtFbMetEvaluator.buildDataset(dataSet);
 	
@@ -152,7 +152,7 @@ public class HMISQuery extends ColumnBuilder {
 	}
 	
 	private void initialize(Date start, Date end) {
-		encounterAlive = encounterQuery. getAliveFirstFollowUpEncounters(null, end);
+		encounterAlive = encounterQuery.getAliveFirstFollowUpEncounters(start, end);
 	}
 	
 }

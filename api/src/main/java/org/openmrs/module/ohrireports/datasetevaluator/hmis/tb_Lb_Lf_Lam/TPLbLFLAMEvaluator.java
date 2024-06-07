@@ -28,6 +28,7 @@ public class TPLbLFLAMEvaluator {
 		DataSetRow headerRow = buildColumn("TB_LB_LF-LAM",
 		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay", positiveCount
 		            + negativeCount);
+		dataset.addRow(headerRow);
 		dataset.addRow(buildColumn("TB_LB_LF-LAM. 1", "Positive", positiveCount));
 		dataset.addRow(buildColumn("TB_LB_LF-LAM. 2", "Negative", negativeCount));
 	}

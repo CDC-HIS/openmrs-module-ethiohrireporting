@@ -33,7 +33,7 @@ public class HIVArtFbMetEvaluator {
 		    IMPLANTABLE_HORMONE, INTRAUTERINE_DEVICE));
 		
 		DataSetRow row = new DataSetRow();
-		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FB_MET");
+		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FP_MET");
 		row.addColumnValue(
 		    new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
 		    "Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by method");
@@ -43,31 +43,31 @@ public class HIVArtFbMetEvaluator {
 		dataSet.addRow(row);
 		
 		DataSetRow oralRow = new DataSetRow();
-		oralRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FB_MET.1");
+		oralRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FP_MET.1");
 		oralRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "Oral contraceptives");
 		oralRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), oralContraceptive);
 		dataSet.addRow(oralRow);
 		
 		DataSetRow injectableRow = new DataSetRow();
-		injectableRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FB_MET.2");
+		injectableRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FP_MET.2");
 		injectableRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "Injectable");
 		injectableRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), injectable);
 		dataSet.addRow(injectableRow);
 		
 		DataSetRow implantRow = new DataSetRow();
-		implantRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FB_MET.3");
+		implantRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FP_MET.3");
 		implantRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "Implants");
 		implantRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), implants);
 		dataSet.addRow(implantRow);
 		
 		DataSetRow iucdRow = new DataSetRow();
-		iucdRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FB_MET.4");
+		iucdRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FP_MET.4");
 		iucdRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "IUCD");
 		iucdRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), iucd);
 		dataSet.addRow(iucdRow);
 		
 		DataSetRow othersRow = new DataSetRow();
-		othersRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FB_MET.5");
+		othersRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FP_MET.5");
 		othersRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "Others");
 		othersRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), others);
 		dataSet.addRow(othersRow);

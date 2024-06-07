@@ -46,7 +46,8 @@ public class HMISEIDEvaluator {
 		int negativeBelowTwoAge = getNegative(0, 2);
 		int positiveAboveTwoAge = getPositive(2, 12);
 		int negativeAboveTwoAge = getNegative(2, 12);
-		
+		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1",
+		    "Total Number of infants within 12 month received virological test result", ""));
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.1.1",
 		    "Number of HIV exposed infants who received an HIV test 0-2 months of birth", positiveBelowTwoAge
 		            + negativeBelowTwoAge));
