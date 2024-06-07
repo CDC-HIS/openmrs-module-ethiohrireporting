@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.PreExposureProp
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.logic.op.In;
 import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PreExposureProphylaxisDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
@@ -31,6 +32,10 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 	
 	PreExposureProphylaxisDataSetDefinition _dataSetDefinition;
 	
+	List<Integer> screeningEncounter;
+	
+	List<Integer> baseFollowUpEncounter;
+	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		_dataSetDefinition = (PreExposureProphylaxisDataSetDefinition) dataSetDefinition;
@@ -53,73 +58,89 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		
 		preExposureProphylaxisQuery.setStartDate(_dataSetDefinition.getStartDate());
 		preExposureProphylaxisQuery.setEndDate(_dataSetDefinition.getEndDate());
+		baseFollowUpEncounter = preExposureProphylaxisQuery.getBaseFollowupEncounter();
+		screeningEncounter = preExposureProphylaxisQuery.getBaseScreeningEncounter();
 		
 		Cohort baseCohort = preExposureProphylaxisQuery.loadPrepCohort();
 		List<Person> persons = LineListUtilities.sortPatientByName(preExposureProphylaxisQuery.getPersons(baseCohort));
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = preExposureProphylaxisLineListQuery.getIdentifier(baseCohort,
 		    MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> uniqueIdentificationCode = preExposureProphylaxisLineListQuery.getConceptValue(
+		    UNIQUE_IDENTIFICATION_CODE, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE, screeningEncounter);
 		
 		HashMap<Integer, Object> screenedDateHashMap = preExposureProphylaxisLineListQuery.getScreeningObsValueDate(
-		    PREP_SCREENED_DATE, baseCohort);
-		HashMap<Integer, Object> prepStartedHashMap = preExposureProphylaxisLineListQuery
-		        .getConceptName(preExposureProphylaxisQuery.getBaseFollowupEncounter(), PR_EP_STARTED, baseCohort,
-		            PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		    PREP_SCREENED_DATE, baseCohort, screeningEncounter);
+		HashMap<Integer, Object> prepStartedHashMap = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
+		    PR_EP_STARTED, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepStartDateHashMap = preExposureProphylaxisLineListQuery.getScreeningObsValueDate(
-		    PREP_STARTED_DATE, baseCohort);
+		    PREP_STARTED_DATE, baseCohort, screeningEncounter);
+		HashMap<Integer, Object> typeOfClient = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
+		    PREP_TYPE_OF_CLIENT, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
 		
-		HashMap<Integer, Object> status = preExposureProphylaxisLineListQuery.getConceptName(
-		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_FOLLOWUP_STATUS, baseCohort,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		
-		HashMap<Integer, Object> uniqueIdentificationCode = preExposureProphylaxisLineListQuery.getConceptValue(
-		    UNIQUE_IDENTIFICATION_CODE, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> followUpDateHashMapFromScreening = preExposureProphylaxisLineListQuery
+		        .getScreeningObsValueDate(PREP_SCREENED_DATE, baseCohort, screeningEncounter);
+		HashMap<Integer, Object> statusFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, PREP_TYPE_OF_CLIENT, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> prepRegimenFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, PREP_REGIMEN, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> prepDoseFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, PREP_DOSE, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> hivTestFinalResultFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, HIV_TEST_FINAL_RESULT, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> pregnantFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, PREGNANCY_STATUS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> familyPlanningMethodFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, FAMILY_PLANNING_METHODS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> tbScreenedResultFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, TB_SCREENED_RESULT, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> stiScreenResultFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, STI_SCREENING_RESULT, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> eGFREstimateFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		    screeningEncounter, EGFR_ESTIMATE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> followUpDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
-		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), FOLLOW_UP_DATE, baseCohort,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> nextVisitDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
-		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_NEXT_VISIT_DATE, baseCohort,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		    baseFollowUpEncounter, FOLLOW_UP_DATE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> status = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    PREP_FOLLOWUP_STATUS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepRegimen = preExposureProphylaxisLineListQuery.getConceptName(PREP_REGIMEN, baseCohort,
 		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> prepDose = preExposureProphylaxisLineListQuery.getConceptName(
-		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_DOSE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> typeOfClient = preExposureProphylaxisLineListQuery.getConceptName(
-		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_TYPE_OF_CLIENT, baseCohort,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> prepDose = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    PREP_DOSE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> hivTestFinalResult = preExposureProphylaxisLineListQuery.getConceptName(
+		    baseFollowUpEncounter, HIV_TEST_FINAL_RESULT, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> pregnant = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    PREGNANCY_STATUS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> familyPlanningMethod = preExposureProphylaxisLineListQuery.getConceptName(
+		    baseFollowUpEncounter, FAMILY_PLANNING_METHODS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> tbScreenedResult = preExposureProphylaxisLineListQuery.getConceptName(
+		    baseFollowUpEncounter, TB_SCREENED_RESULT, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> stiScreenResult = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    STI_SCREENING_RESULT, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> eGFREstimate = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    EGFR_ESTIMATE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		
+		HashMap<Integer, Object> missedTablets = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    PREP_MISSED_TABLETS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> nextVisitDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
+		    baseFollowUpEncounter, PREP_NEXT_VISIT_DATE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepDoseEndDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
-		    preExposureProphylaxisQuery.getBaseFollowupEncounter(), PREP_DOSE_END_DATE, baseCohort,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> selfIdentifyingFSW = preExposureProphylaxisLineListQuery.getConceptName(
+		    baseFollowUpEncounter, PREP_DOSE_END_DATE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> breastFeeding = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    CURRENTLY_BREAST_FEEDING_CHILD, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> sideEffects = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		    SIDE_EFFECTS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> reasonToStopPrep = preExposureProphylaxisLineListQuery.getConceptName(
+		    baseFollowUpEncounter, REASON_FOR_STOPPING_PREP, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> contraindication = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
+		    CONTRADICTION_TO_PREP_MEDICINE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> selfIdentifyingFSW = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
 		    SELF_IDENTIFYING_FSW, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> haveHIVPositivePartner = preExposureProphylaxisLineListQuery.getConceptName(
-		    HAVE_HIV_POSITIVE_PARTNER, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> hivTestFinalResult = preExposureProphylaxisLineListQuery.getConceptName(
-		    HIV_TEST_FINAL_RESULT, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> tbScreenedResult = preExposureProphylaxisLineListQuery.getConceptName(TB_SCREENED_RESULT,
-		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> stiScreenResult = preExposureProphylaxisLineListQuery.getConceptName(STI_SCREENING_RESULT,
-		    baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> eGFREstimate = preExposureProphylaxisLineListQuery.getConceptName(EGFR_ESTIMATE,
-		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> missedTablets = preExposureProphylaxisLineListQuery.getConceptName(PREP_MISSED_TABLETS,
-		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> reasonToStopPrep = preExposureProphylaxisLineListQuery.getConceptName(
-		    REASON_FOR_STOPPING_PREP, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> pregnant = preExposureProphylaxisLineListQuery.getConceptName(PREGNANCY_STATUS, baseCohort,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> breastFeeding = preExposureProphylaxisLineListQuery.getConceptName(
-		    CURRENTLY_BREAST_FEEDING_CHILD, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> familyPlanningMethod = preExposureProphylaxisLineListQuery.getConceptName(
-		    FAMILY_PLANNING_METHODS, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> sideEffects = preExposureProphylaxisLineListQuery.getConceptName(SIDE_EFFECTS, baseCohort,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> contraindication = preExposureProphylaxisLineListQuery.getConceptName(
-		    CONTRADICTION_TO_PREP_MEDICINE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> prepProvisionSite = preExposureProphylaxisLineListQuery.getConceptName(PREP_PROVISION_SITE,
-		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> referredFrom = preExposureProphylaxisLineListQuery.getConceptName(REFERRED_FROM,
-		    baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		    screeningEncounter, HAVE_HIV_POSITIVE_PARTNER, baseCohort, PREP_SCREENING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> prepProvisionSite = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
+		    PREP_PROVISION_SITE, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> referredFrom = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
+		    REFERRED_FROM, baseCohort, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		DataSetRow row;
 		if (!persons.isEmpty()) {
@@ -127,8 +148,6 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
-			dataSet.addRow(row);
-			
 			dataSet.addRow(row);
 		} else {
 			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
@@ -143,7 +162,23 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		for (Person person : persons) {
 			Date screenedDate = preExposureProphylaxisLineListQuery.getDate(screenedDateHashMap.get(person.getPersonId()));
 			Date prepStartDate = preExposureProphylaxisLineListQuery.getDate(prepStartDateHashMap.get(person.getPersonId()));
-			Date followUpDate = preExposureProphylaxisLineListQuery.getDate(followUpDateHashMap.get(person.getPersonId()));
+			Date followUpDate;
+			if (followUpDateHashMap.get(person.getPersonId()) != null) {
+				followUpDate = preExposureProphylaxisLineListQuery.getDate(followUpDateHashMap.get(person.getPersonId()));
+			} else {
+				followUpDate = preExposureProphylaxisLineListQuery.getDate(followUpDateHashMapFromScreening.get(person
+				        .getPersonId()));
+				status = statusFromScreening;
+				prepRegimen = prepRegimenFromScreening;
+				prepDose = prepDoseFromScreening;
+				hivTestFinalResult = hivTestFinalResultFromScreening;
+				pregnant = pregnantFromScreening;
+				familyPlanningMethod = familyPlanningMethodFromScreening;
+				tbScreenedResult = tbScreenedResultFromScreening;
+				stiScreenResult = stiScreenResultFromScreening;
+				eGFREstimate = eGFREstimateFromScreening;
+			}
+			
 			Date nextVisitDate = preExposureProphylaxisLineListQuery.getDate(nextVisitDateHashMap.get(person.getPersonId()));
 			Date prepDoseEndDate = preExposureProphylaxisLineListQuery.getDate(prepDoseEndDateHashMap.get(person
 			        .getPersonId()));

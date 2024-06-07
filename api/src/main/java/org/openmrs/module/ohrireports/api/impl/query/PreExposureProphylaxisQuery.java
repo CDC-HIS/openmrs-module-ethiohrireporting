@@ -33,7 +33,21 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		this.baseScreeningEncounter = baseScreeningEncounter;
 	}
 	
+	public List<Integer> getBaseScreeningEncounter() {
+		return baseScreeningEncounter;
+	}
+	
 	public List<Integer> baseScreeningEncounter;
+	
+	public List<Integer> latestFollowupEncounter;
+	
+	public List<Integer> getLatestFollowupEncounter() {
+		return latestFollowupEncounter;
+	}
+	
+	public void setLatestFollowupEncounter(List<Integer> latestFollowupEncounter) {
+		this.latestFollowupEncounter = latestFollowupEncounter;
+	}
 	
 	private List<Integer> basePrEPCurrEncounter;
 	
@@ -57,10 +71,12 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseFollowupEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), startDate, endDate,
+		baseFollowupEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), startDate, endDate,
 		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		baseScreeningEncounter = encounterQuery.getEncounters(Arrays.asList(PREP_STARTED_DATE), startDate, endDate,
-		    PREP_SCREENING_ENCOUNTER_TYPE);
+		baseScreeningEncounter = encounterQuery.getEncounters(Collections.singletonList(PREP_STARTED_DATE), startDate,
+		    endDate, PREP_SCREENING_ENCOUNTER_TYPE);
+		latestFollowupEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), null, new Date(),
+		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 	}
 	
 	@Autowired
@@ -70,11 +86,11 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort loadPrepCohort() {
-		StringBuilder stringBuilder = baseQuery(FOLLOW_UP_DATE, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		StringBuilder stringBuilder = baseQuery(PREP_STARTED_DATE, PREP_SCREENING_ENCOUNTER_TYPE);
 		
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
-		query.setParameterList("encounters", baseFollowupEncounter);
+		query.setParameterList("encounters", baseScreeningEncounter);
 		
 		baseCohort = new Cohort(query.list());
 		return baseCohort;
@@ -89,40 +105,45 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	//	}
 	
 	public Cohort getAllNewPrEP() {
-		StringBuilder stringBuilder = baseQuery(PREP_FOLLOWUP_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		StringBuilder stringBuilder = baseQuery(PREP_TYPE_OF_CLIENT, PREP_SCREENING_ENCOUNTER_TYPE);
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(NEWLY_STARTED));
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
-		query.setParameterList("encounters", baseFollowupEncounter);
+		query.setParameterList("encounters", baseScreeningEncounter);
 		
 		baseCohort = new Cohort(query.list());
 		return baseCohort;
 	}
 	
-	public Cohort getAllPregnantPrep() {
-		StringBuilder stringBuilder = baseQuery(PREGNANCY_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+	public Cohort getAllPregnantPrep(Cohort cohort) {
+		StringBuilder stringBuilder = baseQuery(PREGNANCY_STATUS, PREP_SCREENING_ENCOUNTER_TYPE);
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("person_id in (:personIds)");
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(YES));
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
-		query.setParameterList("encounters", baseFollowupEncounter);
+		query.setParameterList("encounters", baseScreeningEncounter);
+		query.setParameterList("personIds", cohort.getMemberIds());
 		return new Cohort(query.list());
 	}
 	
-	public Cohort getAllBreastFeedingPrep() {
-		StringBuilder stringBuilder = baseQuery(CURRENTLY_BREAST_FEEDING_CHILD, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+	public Cohort getAllBreastFeedingPrep(Cohort cohort) {
+		StringBuilder stringBuilder = baseQuery(CURRENTLY_BREAST_FEEDING_CHILD, PREP_SCREENING_ENCOUNTER_TYPE);
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("person_id in (:personIds)");
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(YES));
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
-		query.setParameterList("encounters", baseFollowupEncounter);
+		query.setParameterList("encounters", baseScreeningEncounter);
+		query.setParameterList("personIds", cohort.getMemberIds());
 		return new Cohort(query.list());
 	}
 	
 	public Cohort getAllPrEPCT() {
 		Cohort currCohort = getPrepCurr();
-		Cohort previousCohort = getCohortByFollowupDateAndStatus();
+		//Cohort previousCohort = getCohortByFollowupDateAndStatus();
 		Cohort followupCohort = getCohortByStatus();
-		baseCohort = getUnion(currCohort, getUnion(previousCohort, followupCohort));
-		return baseCohort;
+		baseCohort = getUnion(currCohort, followupCohort);
+		
+		return filterOutClientsWithArtStartDate(baseCohort, startDate);
 	}
 	
 	private Cohort getPrepCurr() {
@@ -132,10 +153,10 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		
 		basePrEPCTEncounter = refineEncounter(cohort, basePrEPCTEncounter);
 		
-		// filter out clients whose dose end date greater than reporting end date
+		// count clients whose dose end date greater than reporting end date
 		basePrEPCurrEncounter = filterEncounterByPrePStatusForPrepCT(Arrays.asList(PREP_DOSE_END_DATE), null, endDate,
 		    basePrEPCTEncounter);
-		cohort = getCohortByPrepStatus(basePrEPCurrEncounter);
+		cohort = getCohort(basePrEPCurrEncounter);
 		
 		return cohort;
 	}
@@ -166,6 +187,12 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		return cohort;
 	}
 	
+	private Cohort filterOutClientsWithArtStartDate(Cohort cohort, Date startDate) {
+		Cohort artStartedCohort = getArtStartedCohort(null, startDate);
+		
+		return Cohort.subtract(cohort, artStartedCohort);
+	}
+	
 	private Cohort getCohortByNotInPrepStatus(List<Integer> basePrEPCTEncounter) {
 		Cohort cohort;
 		StringBuilder stringBuilder = baseQuery(PREP_FOLLOWUP_STATUS, PREP_FOLLOW_UP_ENCOUNTER_TYPE);
@@ -179,11 +206,12 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	}
 	
 	private List<Integer> refineEncounter(Cohort cohort, List<Integer> encounter) {
-        StringBuilder sqlBuilder = new StringBuilder("select encounter_id from obs " +
-				"where person_id not in (:personIds) " +
-				"and encounter_id in (:encounter)");
-
-        Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
+        if (cohort.size() == 0) {
+            return encounter;
+        }
+        String sqlBuilder = "select encounter_id from encounter " + "Where  patient_id not in (:personIds) and " +
+                "encounter_id in (:encounter)";
+        Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder);
         query.setParameterList("personIds", cohort.getMemberIds());
         query.setParameterList("encounter", encounter);
         List list = query.list();
@@ -255,21 +283,21 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	}
 	
 	private Cohort getUnion(Cohort a, Cohort b) {
-		if (a == null && b == null)
-			return new Cohort();
-		if (a == null || a.isEmpty()) {
-			return b;
-		} else if (b == null || b.isEmpty()) {
-			return a;
-		}
+        if (a == null && b == null)
+            return new Cohort();
+        if (a == null || a.isEmpty()) {
+            return b;
+        } else if (b == null || b.isEmpty()) {
+            return a;
+        }
 
-		List<Integer> list = new ArrayList<>();
-		for (Integer integer : a.getMemberIds()) {
-			if (!b.getMemberIds().contains(integer)) {
-				list.add(integer);
-			}
-		}
-		return  Cohort.union(new Cohort(list),b);
+        List<Integer> list = new ArrayList<>();
+        for (Integer integer : a.getMemberIds()) {
+            if (!b.getMemberIds().contains(integer)) {
+                list.add(integer);
+            }
+        }
+        return Cohort.union(new Cohort(list), b);
 
-	}
+    }
 }
