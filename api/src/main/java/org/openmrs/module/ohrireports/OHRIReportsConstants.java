@@ -363,7 +363,7 @@ public class OHRIReportsConstants {
 	
 	public final static String PREP_STARTED_DATE = "163526AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String PREP_FOLLOWUP_STATUS = "1f3a74f3-cafd-4bd0-9e3c-5251bd0c05e5";
+	public final static String PREP_FOLLOWUP_STATUS = "222f64a8-a603-4d2e-b70e-2d90b622bb04";
 	
 	public final static String NEWLY_STARTED = "488236af-a2fe-4b04-b62c-eabd27b05ea4";
 	
