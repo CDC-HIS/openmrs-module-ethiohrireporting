@@ -47,9 +47,23 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		
 		_dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (_dataSetDefinition.getStartDate() != null && _dataSetDefinition.getEndDate() != null
+		        && _dataSetDefinition.getStartDate().compareTo(_dataSetDefinition.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			dataSet.addRow(row);
+			return dataSet;
+		}
+		
 		if (_dataSetDefinition.getEndDate() == null) {
 			_dataSetDefinition.setEndDate(new Date());
 		}
+		
 		// Here is the sudo code for getting the encounter for the ART patient list
 		// If Patient Enrollment Date is <= Report Date
 		//        AND

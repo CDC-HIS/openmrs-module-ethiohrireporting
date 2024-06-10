@@ -37,6 +37,18 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
         LinkageNewLineListDataSetDefinition linkageDataset = (LinkageNewLineListDataSetDefinition) dataSetDefinition;
         SimpleDataSet data = new SimpleDataSet(linkageDataset, evalContext);
 
+        // Check start date and end date are valid
+        // If start date is greater than end date
+        if (linkageDataset.getStartDate() != null && linkageDataset.getEndDate() != null
+                && linkageDataset.getStartDate().compareTo(linkageDataset.getEndDate()) > 0) {
+            //throw new EvaluationException("Start date cannot be greater than end date");
+            DataSetRow row = new DataSetRow();
+            row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+                    "Report start date cannot be after report end date");
+            data.addRow(row);
+            return data;
+        }
+
         linkageNewLineListQuery.initializeLinkage(linkageDataset.getStartDate(), linkageDataset.getEndDate());
         Cohort cohort = linkageNewLineListQuery.getBaseCohort();
         List<Person> persons = LineListUtilities.sortPatientByName(linkageNewLineListQuery.getPersons());

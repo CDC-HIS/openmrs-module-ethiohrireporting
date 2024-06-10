@@ -15,10 +15,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -36,10 +33,22 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 	 */
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		RetentionLineListDataSetDefinition linkageDataset = (RetentionLineListDataSetDefinition) dataSetDefinition;
-		SimpleDataSet data = new SimpleDataSet(linkageDataset, evalContext);
+		RetentionLineListDataSetDefinition _datasetDefinition = (RetentionLineListDataSetDefinition) dataSetDefinition;
+		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		
-		retentionLineListQuery.generateRetentionReport(linkageDataset.getStartDate(), linkageDataset.getEndDate());
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
+		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			dataSet.addRow(row);
+			return dataSet;
+		}
+		
+		retentionLineListQuery.generateRetentionReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		Cohort cohort = retentionLineListQuery.getBaseCohort();
 		List<Person> persons = LineListUtilities.sortPatientByName(retentionLineListQuery.getPerson(cohort));
 		
@@ -59,6 +68,8 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		    retentionLineListQuery.getBaseEncounter(), cohort, ARV_DISPENSED_IN_DAYS);
 		HashMap<Integer, Object> regimentHashMap = retentionLineListQuery.getRegiment(
 		    retentionLineListQuery.getBaseEncounter(), cohort);
+		HashMap<Integer, Object> pregnancyStatusHashMap = retentionLineListQuery.getConceptName(
+		    retentionLineListQuery.getBaseEncounter(), cohort, PREGNANCY_STATUS);
 		HashMap<Integer, Object> adherenceHashMap = retentionLineListQuery.getConceptName(
 		    retentionLineListQuery.getBaseEncounter(), cohort, ARV_ADHERENCE);
 		HashMap<Integer, Object> followUpStatusHashMap = retentionLineListQuery.getConceptName(
@@ -72,16 +83,21 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		//				retentionLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);
 		//
 		DataSetRow row;
+		
 		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
-			
-			data.addRow(row);
+			dataSet.addRow(row);
+		} else {
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "TI/TO?", "Latest Follow-up Date in E.C.",
+			    "Latest Follow-up status", "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence", "Pregnant",
+			    "Next Visit date in E.C.", "Treatment End Date in E.C.")));
 		}
-		
+		int i = 1;
 		for (Person person : persons) {
 			
 			Date followUpDateDate = retentionLineListQuery.getDate(followUpDateHashMap.get(person.getPersonId()));
@@ -92,52 +108,42 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
-			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("UANO", "UANO", String.class),
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class),
 			    getStringIdentifier(uanIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(linkageDataset.getEndDate()));
-			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
-			
-			row.addColumnValue(new DataSetColumn("HIVConfirmedDate", "HIV Confirmed Date", Date.class), confirmedDate);
-			row.addColumnValue(new DataSetColumn("HIVConfirmedDateETC", "HIV Confirmed  Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class),
+			    person.getAge(_datasetDefinition.getEndDate()));
+			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
+			row.addColumnValue(new DataSetColumn("HIV Confirmed Date in E.C.", "HIV Confirmed Date in E.C.", String.class),
 			    retentionLineListQuery.getEthiopianDate(confirmedDate));
-			
-			row.addColumnValue(new DataSetColumn("artStartDate", " ART Start Date ", Date.class), artStartDate);
-			row.addColumnValue(new DataSetColumn("artStartDateETC", "ART Start  Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("ART Start Date in E.C.", "ART Start Date in E.C.", String.class),
 			    retentionLineListQuery.getEthiopianDate(artStartDate));
-			
-			row.addColumnValue(new DataSetColumn("transferIn", "TI?", String.class),
+			row.addColumnValue(new DataSetColumn("TI/TO?", "TI/TO?", String.class),
 			    transferedHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("followUpDateDate", "Follow-up Date", Date.class), followUpDateDate);
-			row.addColumnValue(new DataSetColumn("follow-upDateETC", "Follow-up  Date ETH", String.class),
-			    retentionLineListQuery.getEthiopianDate(followUpDateDate));
-			
-			row.addColumnValue(new DataSetColumn("follow-up-status", "Follow-up status", String.class),
+			row.addColumnValue(new DataSetColumn("Latest Follow-up Date in E.C.", "Latest Follow-up Date in E.C.",
+			        String.class), retentionLineListQuery.getEthiopianDate(followUpDateDate));
+			row.addColumnValue(new DataSetColumn("Latest Follow-up status", "Latest Follow-up status", String.class),
 			    followUpStatusHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("regimen", "Regimen", String.class),
+			row.addColumnValue(new DataSetColumn("Latest Regimen", "Latest Regimen", String.class),
 			    regimentHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("dose", "Dose", String.class),
+			row.addColumnValue(new DataSetColumn("Latest ARV Dose Days", "Latest ARV Dose Days", String.class),
 			    doseDisPenseHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class),
+			row.addColumnValue(new DataSetColumn("Latest Adherence", "Latest Adherence", String.class),
 			    adherenceHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("nextVisitDate", "Next Visit date", Date.class), nextVisitDate);
-			row.addColumnValue(new DataSetColumn("nextVisitDateETH", "Next Visit date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("Pregnant?", "Pregnant?", String.class),
+			    pregnancyStatusHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Next Visit date in E.C.", "Next Visit date in E.C.", String.class),
 			    retentionLineListQuery.getEthiopianDate(nextVisitDate));
-			
-			row.addColumnValue(new DataSetColumn("treatmentDate", "Treatment End date", Date.class), treatmentDate);
-			row.addColumnValue(new DataSetColumn("treatmentDateETH", "Treatment End DateETH", String.class),
+			row.addColumnValue(new DataSetColumn("Treatment End Date in E.C.", "Treatment End Date in E.C.", String.class),
 			    retentionLineListQuery.getEthiopianDate(treatmentDate));
 			
-			data.addRow(row);
+			dataSet.addRow(row);
 			
 		}
 		
-		return data;
+		return dataSet;
 	}
 	
 	private int getDateDifference(Date confirmedDate, Date startArtDate) {

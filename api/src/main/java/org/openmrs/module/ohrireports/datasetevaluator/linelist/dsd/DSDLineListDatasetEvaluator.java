@@ -37,10 +37,21 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 	 */
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		DSDDataSetDefinition linkageDataset = (DSDDataSetDefinition) dataSetDefinition;
-		SimpleDataSet data = new SimpleDataSet(linkageDataset, evalContext);
+		DSDDataSetDefinition dsdDataset = (DSDDataSetDefinition) dataSetDefinition;
+		SimpleDataSet data = new SimpleDataSet(dsdDataset, evalContext);
 		
-		dsdLineListQuery.generateReport(linkageDataset.getStartDate(), linkageDataset.getEndDate());
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (dsdDataset.getStartDate() != null && dsdDataset.getEndDate() != null
+		        && dsdDataset.getStartDate().compareTo(dsdDataset.getEndDate()) > 0) {
+			//throw new EvaluationException("Start date cannot be greater than end date");
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
+			    "Report start date cannot be after report end date");
+			data.addRow(row);
+			return data;
+		}
+		dsdLineListQuery.generateReport(dsdDataset.getStartDate(), dsdDataset.getEndDate());
 		Cohort cohort = dsdLineListQuery.getBaseCohort();
 		List<Person> persons = LineListUtilities.sortPatientByName(dsdLineListQuery.getPersons(cohort));
 		
@@ -96,7 +107,7 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("UANO", "UANO", String.class),
 			    getStringIdentifier(uanIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(linkageDataset.getEndDate()));
+			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(dsdDataset.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
 			
 			row.addColumnValue(new DataSetColumn("HIVConfirmedDate", "HIV Confirmed Date", Date.class), confirmedDate);

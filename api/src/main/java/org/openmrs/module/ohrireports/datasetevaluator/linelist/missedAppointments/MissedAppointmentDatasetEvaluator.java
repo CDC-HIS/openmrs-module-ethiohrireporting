@@ -27,20 +27,21 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		MissedAppointmentDatasetDefinition dsd = (MissedAppointmentDatasetDefinition) dataSetDefinition;
-		SimpleDataSet dataSet = new SimpleDataSet(dsd, evalContext);
-		if (dsd.getEndDate() == null) {
-			dsd.setEndDate(new Date());
+		MissedAppointmentDatasetDefinition _datasetDefinition = (MissedAppointmentDatasetDefinition) dataSetDefinition;
+		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
+		
+		if (_datasetDefinition.getEndDate() == null) {
+			_datasetDefinition.setEndDate(new Date());
 		}
 		
-		appointmentQuery.generateReport(dsd.getEndDate());
+		appointmentQuery.generateReport(_datasetDefinition.getEndDate());
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
 		    MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uaIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
 		    UAN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> artStartDictionary = appointmentQuery.getArtStartDate(appointmentQuery.getBaseCohort(),
-		    null, dsd.getEndDate());
+		    null, _datasetDefinition.getEndDate());
 		HashMap<Integer, Object> adherenceHashmap = appointmentQuery.getByResult(ARV_ADHERENCE,
 		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
 		HashMap<Integer, Object> regimentHashmap = appointmentQuery.getByResult(REGIMEN, appointmentQuery.getBaseCohort(),
@@ -90,7 +91,7 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 			    appointmentQuery.getEthiopianDate((Date) followUpDate.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("Last Appointment Date Eth", "Last Appointment Date E.C", String.class),
 			    appointmentQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
-			missedDate = getDaysDiff((Date) nextVisitDate.get(person.getPersonId()), dsd.getEndDate());
+			missedDate = getDaysDiff((Date) nextVisitDate.get(person.getPersonId()), _datasetDefinition.getEndDate());
 			row.addColumnValue(new DataSetColumn("No. of Missed Days", "No. of Missed Days", String.class), missedDate);
 			row.addColumnValue(new DataSetColumn("tracing-status", "Tracing Status", String.class),
 			    getTracingStatus(missedDate));
