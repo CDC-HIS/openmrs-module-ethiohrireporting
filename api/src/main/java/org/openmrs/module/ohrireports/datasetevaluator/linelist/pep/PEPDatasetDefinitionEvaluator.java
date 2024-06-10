@@ -51,6 +51,10 @@ public class PEPDatasetDefinitionEvaluator implements DataSetEvaluator {
 			return dataset;
 		}
 		
+		if (_dataSetDefinition.getEndDate() == null) {
+			_dataSetDefinition.setEndDate(new Date());
+		}
+		
 		pepQueryLineList.generateReport(_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate());
 		twoWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PEP_TWO_WEEK_FOLLOW_UP);
 		fourWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PEP_FOUR_WEEK_FOLLOW_UP);
