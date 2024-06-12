@@ -30,7 +30,7 @@ public class PMTCTHEIReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- HEI";
+		return LINE_LIST_REPORT + "- PMTCT-HEI";
 	}
 	
 	@Override
@@ -63,7 +63,7 @@ public class PMTCTHEIReport implements ReportManager {
 		HeiDatasetDefinition dataSetDefinition = new HeiDatasetDefinition();
 		dataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("HEI", EthiOhriUtil.map(dataSetDefinition));
+		reportDefinition.addDataSetDefinition("PMTCT-HEI", EthiOhriUtil.map(dataSetDefinition));
 		return reportDefinition;
 	}
 	

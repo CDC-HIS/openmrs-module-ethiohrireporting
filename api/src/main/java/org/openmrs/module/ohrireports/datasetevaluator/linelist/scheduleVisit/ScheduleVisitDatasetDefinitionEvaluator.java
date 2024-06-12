@@ -45,8 +45,9 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 			dataSet.addRow(row);
 			return dataSet;
 		}
+
+
 		
-		DataSetRow dataSetRow = new DataSetRow();
 		scheduleVisitQuery.generateReport(dsd.getStartDate(), dsd.getEndDate());
 		HashMap<Integer, Object> mrnIdentifierHashMap = scheduleVisitQuery.getIdentifier(scheduleVisitQuery.getBaseCohort(),
 		    MRN_PATIENT_IDENTIFIERS);
