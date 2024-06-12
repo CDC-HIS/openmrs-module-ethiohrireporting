@@ -21,6 +21,8 @@ public class OHRIReportsConstants {
 	
 	public final static String HTS_FOLLOW_UP_ENCOUNTER_TYPE = "136b2ded-22a3-4831-a39a-088d35a50ef5";
 	
+	public final static String HIV_POSITIVE_TRACKING_ENCOUNTER_TYPE = "f28bb488-0f83-417c-98ba-06ea5f1765e3";
+	
 	public final static String PREP_FOLLOW_UP_ENCOUNTER_TYPE = "bc423d48-af6f-4354-af22-fec8ff1c0308";
 	
 	public final static String INTAKE_A_ENCOUNTER_TYPE = "05add044-67f8-48c9-928d-79002ab19efe";
