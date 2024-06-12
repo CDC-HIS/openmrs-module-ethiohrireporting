@@ -19,47 +19,65 @@ import java.util.List;
 @Component
 public class DSDQuery extends PatientQueryImpDao {
 
-	private DbSessionFactory sessionFactory;
-	@Autowired
-	EncounterQuery encounterQuery;
-	@Autowired
-	public DSDQuery(DbSessionFactory _sessionFactory) {
-		setSessionFactory(_sessionFactory);
-		sessionFactory = _sessionFactory;
-	}
-	
-	public List<Integer> getBaseEncounter() {
-		return baseEncounter;
-	}
-	
-	public Cohort getBaseCohort() {
-		return baseCohort;
-	}
-	
-	private List<Integer> baseEncounter = new ArrayList<>();
-	private Cohort baseCohort = new Cohort();
-	public  void generateBaseReport(Date start, Date end){
-		baseEncounter = encounterQuery.getAliveFollowUpEncounters(null,end);
-		List<Integer> latestDSDAssessmentEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE),null,end,baseEncounter);
-		baseCohort =  getActiveOnArtCohort("",null,end,null,latestDSDAssessmentEncounter);
-	}
-	
-	public Cohort getCohortByDSDCategories(String dsdCategoriesUUI){
-		StringBuilder sqlBuilder = new StringBuilder("SELECT ob.person_id FROM obs as ob WHERE ");
-		sqlBuilder.append(" ob.concept_id =").append(conceptQuery(DSD_CATEGORY));
-		sqlBuilder.append(" and ob.value_coded=").append(conceptQuery(dsdCategoriesUUI));
-		sqlBuilder.append(" and ob.person_id in (:cohorts) ");
-		sqlBuilder.append(" and ob.encounter_id in (:encounters) ");
-		
-		Query query    =sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
-		
-		query.setParameterList("cohorts",baseCohort.getMemberIds());
-		query.setParameterList("encounters",baseEncounter);
-		return new Cohort(query.list());
-		
-	}
-	
-	public List<Person> getPersonList(Cohort cohort){
-		return getPersons(cohort);
-	}
+    private DbSessionFactory sessionFactory;
+    @Autowired
+    EncounterQuery encounterQuery;
+
+    @Autowired
+    public DSDQuery(DbSessionFactory _sessionFactory) {
+        setSessionFactory(_sessionFactory);
+        sessionFactory = _sessionFactory;
+    }
+
+    public List<Integer> getBaseEncounter() {
+        return baseEncounter;
+    }
+
+    public Cohort getBaseCohort() {
+        return baseCohort;
+    }
+
+    private List<Integer> baseEncounter = new ArrayList<>();
+    private List<Integer> latestDSDAssessmentEncounter = new ArrayList<>();
+    private List<Integer> initialDSDAssessmentEncounter = new ArrayList<>();
+
+    public List<Integer> getLatestEncounter() {
+        return latestEncounter;
+    }
+
+    public List<Integer> getLatestDSDAssessmentEncounter() {
+        return latestDSDAssessmentEncounter;
+    }
+
+    public List<Integer> getInitialDSDAssessmentEncounter() {
+        return initialDSDAssessmentEncounter;
+    }
+
+    private List<Integer> latestEncounter = new ArrayList<>();
+    private Cohort baseCohort = new Cohort();
+
+    public void generateBaseReport(Date start, Date end) {
+        baseEncounter = encounterQuery.getAliveFollowUpEncounters(null, end);
+        latestDSDAssessmentEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE), null, end, baseEncounter);
+        initialDSDAssessmentEncounter = encounterQuery.getFirstEncounterByObsDate(null, null, DSD_ASSESSMENT_DATE);
+        baseCohort = getActiveOnArtCohort("", null, end, null, initialDSDAssessmentEncounter);
+        latestEncounter = encounterQuery.getLatestDateByFollowUpDate(null, null);
+    }
+
+    public Cohort getCohortByDSDCategories(String dsdCategoriesUUI) {
+        String sqlBuilder = "SELECT ob.person_id FROM obs as ob WHERE " + " ob.concept_id =" + conceptQuery(DSD_CATEGORY) +
+                " and ob.value_coded=" + conceptQuery(dsdCategoriesUUI) +
+                " and ob.person_id in (:cohorts) " +
+                " and ob.encounter_id in (:encounters) ";
+
+        Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder);
+
+        query.setParameterList("cohorts", baseCohort.getMemberIds());
+        query.setParameterList("encounters", baseEncounter);
+        return new Cohort(query.list());
+    }
+
+    public List<Person> getPersonList(Cohort cohort) {
+        return getPersons(cohort);
+    }
 }

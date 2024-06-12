@@ -14,12 +14,10 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import static org.openmrs.module.ohrireports.RegimentConstant.DSD_CATEGORY;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
@@ -38,7 +36,7 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		DSDDataSetDefinition dsdDataset = (DSDDataSetDefinition) dataSetDefinition;
-		SimpleDataSet data = new SimpleDataSet(dsdDataset, evalContext);
+		SimpleDataSet dataSet = new SimpleDataSet(dsdDataset, evalContext);
 		
 		// Check start date and end date are valid
 		// If start date is greater than end date
@@ -48,110 +46,132 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 			DataSetRow row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
 			    "Report start date cannot be after report end date");
-			data.addRow(row);
-			return data;
+			dataSet.addRow(row);
+			return dataSet;
+		}
+		
+		if (dsdDataset.getEndDate() == null) {
+			dsdDataset.setEndDate(new Date());
 		}
 		dsdLineListQuery.generateReport(dsdDataset.getStartDate(), dsdDataset.getEndDate());
 		Cohort cohort = dsdLineListQuery.getBaseCohort();
-		List<Person> persons = LineListUtilities.sortPatientByName(dsdLineListQuery.getPersons(cohort));
 		
 		HashMap<Integer, Object> followUpDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
 		    FOLLOW_UP_DATE, cohort);
+		HashMap<Integer, Object> latestFollowUpDateHashMap = dsdLineListQuery.getObsValueDate(
+		    dsdLineListQuery.getLatestEncounter(), FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> confirmedDateHashMap = dsdLineListQuery.getObsValueDate(
 		    dsdLineListQuery.getBaseEncounter(), HIV_CONFIRMED_DATE, cohort);
 		HashMap<Integer, Object> artStartDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
 		    ART_START_DATE, cohort);
-		HashMap<Integer, Object> nextVistDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
-		    NEXT_VISIT_DATE, cohort);
+		HashMap<Integer, Object> nextVistDateHashMap = dsdLineListQuery.getObsValueDate(
+		    dsdLineListQuery.getLatestEncounter(), NEXT_VISIT_DATE, cohort);
 		HashMap<Integer, Object> treatmentDateHashMap = dsdLineListQuery.getObsValueDate(
-		    dsdLineListQuery.getBaseEncounter(), TREATMENT_END_DATE, cohort);
-		HashMap<Integer, Object> categoryAssesumentDateHashMap = dsdLineListQuery.getObsValueDate(
+		    dsdLineListQuery.getLatestEncounter(), TREATMENT_END_DATE, cohort);
+		HashMap<Integer, Object> categoryInitialAssesumentDateHashMap = dsdLineListQuery.getObsValueDate(
 		    dsdLineListQuery.getBaseEncounter(), DSD_ASSESSMENT_DATE, cohort);
+		HashMap<Integer, Object> latestCategoryAssesumentDateHashMap = dsdLineListQuery.getObsValueDate(
+		    dsdLineListQuery.getLatestDSDAssessmentEncounter(), DSD_ASSESSMENT_DATE, cohort);
 		HashMap<Integer, Object> transferedHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
 		    cohort, REASON_FOR_ART_ELIGIBILITY);
+		HashMap<Integer, Object> initialDSDCategoryHashMap = dsdLineListQuery.getConceptName(
+		    dsdLineListQuery.getInitialDSDAssessmentEncounter(), cohort, DSD_CATEGORY);
 		HashMap<Integer, Object> currentDSDCategoryHashMap = dsdLineListQuery.getConceptName(
-		    dsdLineListQuery.getBaseEncounter(), cohort, DSD_CATEGORY);
+		    dsdLineListQuery.getLatestDSDAssessmentEncounter(), cohort, DSD_CATEGORY);
 		HashMap<Integer, Object> doseDisPenseHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
 		    cohort, ARV_DISPENSED_IN_DAYS);
+		HashMap<Integer, Object> latestDoseDisPenseHashMap = dsdLineListQuery.getConceptName(
+		    dsdLineListQuery.getLatestEncounter(), cohort, ARV_DISPENSED_IN_DAYS);
 		HashMap<Integer, Object> regimentHashMap = dsdLineListQuery.getRegiment(dsdLineListQuery.getBaseEncounter(), cohort);
+		HashMap<Integer, Object> latestRegimentHashMap = dsdLineListQuery.getRegiment(dsdLineListQuery.getLatestEncounter(),
+		    cohort);
 		HashMap<Integer, Object> adherenceHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
 		    cohort, ARV_ADHERENCE);
+		HashMap<Integer, Object> latestAdherenceHashMap = dsdLineListQuery.getConceptName(
+		    dsdLineListQuery.getLatestEncounter(), cohort, ARV_ADHERENCE);
 		HashMap<Integer, Object> followUpStatusHashMap = dsdLineListQuery.getConceptName(
 		    dsdLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);
+		HashMap<Integer, Object> latestFollowUpStatusHashMap = dsdLineListQuery.getConceptName(
+		    dsdLineListQuery.getLatestEncounter(), cohort, FOLLOW_UP_STATUS);
 		HashMap<Integer, Object> mrnIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
 		
 		DataSetRow row;
+		List<Person> persons = LineListUtilities.sortPatientByName(dsdLineListQuery.getPersons(cohort));
 		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
-			
-			data.addRow(row);
+			dataSet.addRow(row);
+		} else {
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "Mobile No.", "Latest Follow-up Date in E.C.",
+			    "Latest Follow-up Status", "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence",
+			    "Next Visit Date in E.C.", "Treatment End Date in E.C.", "Initial DSD Enrollment Date in E.C.",
+			    "DSD Category at Enrollment", "Current DSD Category Entry Date in E.C.", "Current DSD Category",
+			    "Reason for Category change")));
 		}
 		
+		int i = 1;
 		for (Person person : persons) {
 			
 			Date followUpDateDate = dsdLineListQuery.getDate(followUpDateHashMap.get(person.getPersonId()));
+			Date latestFollowUpDate = dsdLineListQuery.getDate(latestFollowUpDateHashMap.get(person.getPersonId()));
 			Date confirmedDate = dsdLineListQuery.getDate(confirmedDateHashMap.get(person.getPersonId()));
 			Date artStartDate = dsdLineListQuery.getDate(artStartDateHashMap.get(person.getPersonId()));
 			Date nextVisitDate = dsdLineListQuery.getDate(nextVistDateHashMap.get(person.getPersonId()));
-			Date assesementDate = dsdLineListQuery.getDate(categoryAssesumentDateHashMap.get(person.getPersonId()));
+			Date initialAssesementDate = dsdLineListQuery.getDate(categoryInitialAssesumentDateHashMap.get(person
+			        .getPersonId()));
+			Date latestAssesementDate = dsdLineListQuery.getDate(latestCategoryAssesumentDateHashMap.get(person
+			        .getPersonId()));
+			Date treatmentEndDate = dsdLineListQuery.getDate(treatmentDateHashMap.get(person.getPersonId()));
 			
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("Name", "Name", String.class), person.getNames());
-			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
-			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("UANO", "UANO", String.class),
-			    getStringIdentifier(uanIdentifierHashMap.get(person.getPersonId())));
-			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(dsdDataset.getEndDate()));
-			row.addColumnValue(new DataSetColumn("Gender", "Gender", String.class), person.getGender());
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uanIdentifierHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge());
+			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			
-			row.addColumnValue(new DataSetColumn("HIVConfirmedDate", "HIV Confirmed Date", Date.class), confirmedDate);
-			row.addColumnValue(new DataSetColumn("HIVConfirmedDateETC", "HIV Confirmed  Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("HIV Confirmed Date in E.C.", "HIV Confirmed Date in E.C.", String.class),
 			    dsdLineListQuery.getEthiopianDate(confirmedDate));
-			
-			row.addColumnValue(new DataSetColumn("artStartDate", " ART Start Date ", Date.class), artStartDate);
-			row.addColumnValue(new DataSetColumn("artStartDateETC", "ART Start  Date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("ART Start Date in E.C.", "ART Start Date in E.C.", String.class),
 			    dsdLineListQuery.getEthiopianDate(artStartDate));
-			
-			row.addColumnValue(new DataSetColumn("transferIn", "TI?", String.class),
-			    transferedHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("followUpDateDate", "Follow-up Date", Date.class), followUpDateDate);
-			row.addColumnValue(new DataSetColumn("follow-upDateETC", "Follow-up  Date ETH", String.class),
-			    dsdLineListQuery.getEthiopianDate(followUpDateDate));
-			
-			row.addColumnValue(new DataSetColumn("follow-up-status", "Follow-up status", String.class),
-			    followUpStatusHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("regimen", "Regimen", String.class),
-			    regimentHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("dose", "Dose", String.class),
-			    doseDisPenseHashMap.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class),
-			    adherenceHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("enrollmentDate", "Current DSD Category Enrollment Date", Date.class),
-			    assesementDate);
-			row.addColumnValue(new DataSetColumn("enrollmentDateETH", "Current DSD Category Enrollment DateETH",
-			        String.class), dsdLineListQuery.getEthiopianDate(assesementDate));
-			
-			row.addColumnValue(new DataSetColumn("dsdCategory", "Current DSD Category", String.class),
-			    currentDSDCategoryHashMap.get(person.getPersonId()));
-			
-			row.addColumnValue(new DataSetColumn("nextVisitDate", "Next Visit date", Date.class), nextVisitDate);
-			row.addColumnValue(new DataSetColumn("nextVisitDateETH", "Next Visit date ETH", String.class),
+			row.addColumnValue(new DataSetColumn("Mobile No.", "Mobile No.", String.class),
+			    LineListUtilities.getPhone(person.getActiveAttributes()));
+			row.addColumnValue(new DataSetColumn("Latest Follow-up Date in E.C.", "Latest Follow-up Date in E.C.",
+			        String.class), dsdLineListQuery.getEthiopianDate(latestFollowUpDate));
+			row.addColumnValue(new DataSetColumn("Latest Follow-up Status", "Latest Follow-up Status", String.class),
+			    latestFollowUpStatusHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest Regimen", "Latest Regimen", String.class),
+			    latestRegimentHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest ARV Dose Days", "Latest ARV Dose Days", Integer.class),
+			    latestDoseDisPenseHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Latest Adherence", "Latest Adherence", String.class),
+			    latestAdherenceHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Next Visit Date in E.C.", "Next Visit Date in E.C.", String.class),
 			    dsdLineListQuery.getEthiopianDate(nextVisitDate));
-			
-			data.addRow(row);
+			row.addColumnValue(new DataSetColumn("Treatment End Date in E.C.", "Treatment End Date in E.C.", String.class),
+			    dsdLineListQuery.getEthiopianDate(treatmentEndDate));
+			row.addColumnValue(new DataSetColumn("Initial DSD Enrollment Date in E.C.",
+			        "Initial DSD Enrollment Date in E.C.", String.class), dsdLineListQuery
+			        .getEthiopianDate(initialAssesementDate));
+			row.addColumnValue(new DataSetColumn("DSD Category at Enrollment", "DSD Category at Enrollment", String.class),
+			    initialDSDCategoryHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Current DSD Category Entry Date in E.C.",
+			        "Current DSD Category Entry Date in E.C.", String.class), dsdLineListQuery
+			        .getEthiopianDate(latestAssesementDate));
+			row.addColumnValue(new DataSetColumn("Current DSD Category", "Current DSD Category", String.class),
+			    currentDSDCategoryHashMap.get(person.getPersonId()));
+			dataSet.addRow(row);
 			
 		}
 		
-		return data;
+		return dataSet;
 	}
 	
 	private int getDateDifference(Date confirmedDate, Date startArtDate) {

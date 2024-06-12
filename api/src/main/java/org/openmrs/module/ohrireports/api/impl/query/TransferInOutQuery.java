@@ -4,7 +4,6 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -89,7 +88,7 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
 		beforeLastEncounter = encounterQuery.getSecondLatestFollowUp(endDate);
 		LastEncounter = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
-		firstEncounter = encounterQuery.getFirstEncounterByFollowUpDate(startDate, endDate);
+		firstEncounter = encounterQuery.getFirstEncounterByObsDate(startDate, endDate, FOLLOW_UP_DATE);
 	}
 	
 	public List<Integer> getBaseEncounter() {

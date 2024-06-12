@@ -11,6 +11,7 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
@@ -36,7 +37,16 @@ public class DSDReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		return EthiOhriUtil.getDateRangeParameters();
+		
+		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
+		startDate.setRequired(false);
+		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
+		startDateGC.setRequired(false);
+		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
+		endDate.setRequired(false);
+		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
+		endDateGC.setRequired(false);
+		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
 	}
 	
 	@Override
@@ -50,7 +60,7 @@ public class DSDReport implements ReportManager {
 		DSDDataSetDefinition dsdDataSetDefinition = new DSDDataSetDefinition();
 		dsdDataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("DSD ", EthiOhriUtil.map(dsdDataSetDefinition));
+		reportDefinition.addDataSetDefinition("DSD Report ", EthiOhriUtil.map(dsdDataSetDefinition));
 		return reportDefinition;
 	}
 	
