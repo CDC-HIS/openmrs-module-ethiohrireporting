@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fb;
+package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp;
 
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.ORAL_CONTRACEPTIVE_PILL;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
@@ -18,19 +18,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
-public class HIVArtFbMetEvaluator {
+public class HIVArtFpMetEvaluator {
 	
 	@Autowired
-	private HivArtFbQuery fbQuery;
+	private HivArtFpQuery fbQuery;
 	
 	public void buildDataset(SimpleDataSet dataSet) {
 		
-		int oralContraceptive = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(ORAL_CONTRACEPTIVE_PILL));
-		int injectable = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(INJECTABLE));
-		int implants = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(IMPLANTABLE_HORMONE));
-		int iucd = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(INTRAUTERINE_DEVICE));
-		int others = fbQuery.getPatientByMethodOfOtherFP(Arrays.asList(ORAL_CONTRACEPTIVE_PILL, INJECTABLE,
-		    IMPLANTABLE_HORMONE, INTRAUTERINE_DEVICE));
+		int oralContraceptive = fbQuery
+		        .getPatientByMethodOfOtherFP(Collections.singletonList(ORAL_CONTRACEPTIVE_PILL), true);
+		int injectable = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(INJECTABLE), true);
+		int implants = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(IMPLANTABLE_HORMONE), true);
+		int iucd = fbQuery.getPatientByMethodOfOtherFP(Collections.singletonList(INTRAUTERINE_DEVICE), true);
+		int others = fbQuery.getPatientByMethodOfOtherFP(
+		    Arrays.asList(ORAL_CONTRACEPTIVE_PILL, INJECTABLE, IMPLANTABLE_HORMONE, INTRAUTERINE_DEVICE), false);
 		
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), "HIV_ART_FP_MET");

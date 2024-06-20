@@ -66,8 +66,8 @@ public class DSDLineListQuery extends BaseLineListQuery {
 	public void generateReport(Date start, Date end) {
 		//dsdQuery.generateBaseReport(start, end);
 		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE), start, end);
-		latestDSDAssessmentEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE), null, end);
-		initialDSDAssessmentEncounter = encounterQuery.getFirstEncounterByObsDate(null, null, DSD_ASSESSMENT_DATE);
+		latestDSDAssessmentEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE), null, end, getCohort(baseEncounter));
+		initialDSDAssessmentEncounter = encounterQuery.getFirstEncounterByObsDate(null, null, DSD_ASSESSMENT_DATE, getCohort(baseEncounter));
 		baseCohort = getCohort(initialDSDAssessmentEncounter);
 		latestEncounter = encounterQuery.getLatestDateByFollowUpDate(null, null);
 	}

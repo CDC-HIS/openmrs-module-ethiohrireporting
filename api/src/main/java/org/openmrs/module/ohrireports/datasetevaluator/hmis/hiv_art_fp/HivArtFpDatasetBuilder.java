@@ -1,4 +1,4 @@
-package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fb;
+package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp;
 
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
 
@@ -11,7 +11,7 @@ import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 
-public class HivArtFbDatasetBuilder {
+public class HivArtFpDatasetBuilder {
 	
 	private PatientQueryService patientQuery;
 	
@@ -23,7 +23,7 @@ public class HivArtFbDatasetBuilder {
 	
 	private String baseName;
 	
-	public HivArtFbDatasetBuilder(List<Person> personList, SimpleDataSet dataSet, String description, String baseName) {
+	public HivArtFpDatasetBuilder(List<Person> personList, SimpleDataSet dataSet, String description, String baseName) {
 		this.personList = personList;
 		this.dataSet = dataSet;
 		this.description = description;
@@ -36,7 +36,7 @@ public class HivArtFbDatasetBuilder {
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), baseName);
 		row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), description);
-		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), personList.size());
+		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(10, 49));
 		dataSet.addRow(row);
 		buildRowByAge();
 	}
@@ -77,7 +77,7 @@ public class HivArtFbDatasetBuilder {
 			}
 		}
 
-		personList.removeAll(_personList);
+		//personList.removeAll(_personList);
 
 		return _personList.size();
 	}

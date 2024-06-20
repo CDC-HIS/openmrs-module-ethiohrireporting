@@ -54,9 +54,9 @@ public class HivPlHivEvaluator {
                 plhivCohort, Collections.singletonList(SEVERE_MAL_NUTRITION));
 
         Cohort plhivMAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivMAMCohort);
-	    int totalMAM = hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size();
+	    int totalMAM = hivPlvHivQuery.getPersons(plhivMAMCohort).size();
         Cohort plhivSAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivSAMCohort);
-	    int totalSAM = hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size();
+	    int totalSAM = hivPlvHivQuery.getPersons(plhivSAMCohort).size();
 
 
 
@@ -73,7 +73,8 @@ public class HivPlHivEvaluator {
         personList = hivPlvHivQuery.getPersons(plhivMAMCohort);
         //totalMAM = personList.size();
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT", "Number of PLHIV who were nutritionally assessed" +
-                "and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)", totalMAM + totalSAM));
+                "and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)",
+                hivPlvHivQuery.getPersons(plhivMAMCohort).size() + hivPlvHivQuery.getPersons(plhivSAMCohort).size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM", "Total MAM", personList.size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.2", "< 15 years, Female", getCohortSizeByAgeAndGender(0, 15, Gender.Female)));
@@ -94,7 +95,8 @@ public class HivPlHivEvaluator {
                 hivPlvHivQuery.getBaseEncounter()));
         personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, NO,
                 hivPlvHivQuery.getBaseEncounter()));
-        dataSet.addRow(buildColumn("HIV_PLHIV_SUP", "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)", totalSAM + totalSAM));
+        dataSet.addRow(buildColumn("HIV_PLHIV_SUP", "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)",
+                hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size() + hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1", "Total MAM who received therapeutic or supplementary food", personList.size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.1", "< 15 years, Male",
                 getCohortSizeByAgeGenderAndPregnancyStatus(0, 15, Gender.Male, personList)));

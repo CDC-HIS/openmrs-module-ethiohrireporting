@@ -268,8 +268,7 @@ public class HivPVLSEvaluator {
 	private int calculatePercentage() {
 		if (cohortAll == 0)
 			return 0;
-		cohortUN = hivPvlsQuery.getPatientsWithViralLoadSuppressed("",
-				endDate).size();
+		cohortUN = hivPvlsQuery.getPatientsWithViralLoadSuppressed("").size();
 		cohortLV = hivPvlsQuery.getPatientWithViralLoadCountLowLevelViremia("",
 				endDate).size();
 		int total = (cohortLV + cohortUN) / cohortAll;
@@ -281,7 +280,7 @@ public class HivPVLSEvaluator {
 		Cohort cohort;
 		switch (type) {
 			case SUPPRESSED:
-				cohort = hivPvlsQuery.getPatientsWithViralLoadSuppressed(parameter.gender,endDate);
+				cohort = hivPvlsQuery.getPatientsWithViralLoadSuppressed(parameter.gender);
 				break;
 			case LOW_LEVEL_LIVERMIA:
 				cohort = hivPvlsQuery.getPatientWithViralLoadCountLowLevelViremia(parameter.gender, endDate);

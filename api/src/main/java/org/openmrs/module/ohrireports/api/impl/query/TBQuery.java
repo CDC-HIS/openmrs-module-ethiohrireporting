@@ -144,13 +144,14 @@ public class TBQuery extends PatientQueryImpDao {
 
     public Cohort getTBScreenedCohort(Cohort cohort,List<Integer> encounter) {
         StringBuilder sql = baseQuery(TB_SCREENING_DATE);
-        sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
-        sql.append(" and  " + OBS_ALIAS + "person_id in (:cohorts)");
+        sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
+        sql.append(" and  ").append(OBS_ALIAS).append("person_id in (:cohorts)");
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
         query.setParameterList("encounters", encounter);
         query.setParameterList("cohorts", cohort.getMemberIds());
+
 
         return new Cohort(query.list());
     }

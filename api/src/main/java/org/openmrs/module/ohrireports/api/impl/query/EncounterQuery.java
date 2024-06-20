@@ -147,6 +147,76 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		}
 	}
 	
+	public List<Integer> getFirstEncounterByObsDate(Date start, Date end, String concept, List<Integer> encounters) {
+		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
+		builder.append("(select MIN(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+		
+		builder.append(" where obs_enc.concept_id =").append(conceptQuery(concept));
+		
+		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
+		
+		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
+		if (start != null)
+			builder.append(" and ob.value_datetime >= :start ");
+		if (end != null)
+			builder.append(" and ob.value_datetime <= :end ");
+		if (encounters != null)
+			builder.append(" and ob.encounter_id in (:encounters) ");
+		builder.append(" and ob.concept_id =").append(conceptQuery(concept));
+		
+		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		
+		if (start != null)
+			q.setDate("start", start);
+		if (end != null)
+			q.setDate("end", end);
+		if (encounters != null)
+			q.setParameterList("encounters", encounters);
+		
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
+	
+	public List<Integer> getFirstEncounterByObsDate(Date start, Date end, String concept, Cohort cohort) {
+		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
+		builder.append("(select MIN(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+		
+		builder.append(" where obs_enc.concept_id =").append(conceptQuery(concept));
+		
+		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
+		
+		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
+		if (start != null)
+			builder.append(" and ob.value_datetime >= :start ");
+		if (end != null)
+			builder.append(" and ob.value_datetime <= :end ");
+		if (cohort != null)
+			builder.append(" and ob.person_id in (:cohort) ");
+		builder.append(" and ob.concept_id =").append(conceptQuery(concept));
+		
+		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		
+		if (start != null)
+			q.setDate("start", start);
+		if (end != null)
+			q.setDate("end", end);
+		if (cohort != null)
+			q.setParameterList("cohort", cohort.getMemberIds());
+		
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
+	
 	public List<Integer> getAliveFollowUpEncounters(Date start, Date end) {
 		List<Integer> allEncounters = getLatestDateByFollowUpDate(start, end);
 		

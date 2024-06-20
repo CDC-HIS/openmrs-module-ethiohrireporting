@@ -1,16 +1,14 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis;
 
-import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt.HMISARTTPTEvaluator;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_1.HMISARTTPTCrOneEvaluator;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_2.HMISArtTptCrTwoEvaluator;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.cxca_rx.HmisCxCaRXEvaluator;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.cxca_scrn.HMISCxCaSCRNEvaluator;
-import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fb.HIVArtFBEvaluator;
-import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fb.HIVArtFbMetEvaluator;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp.HIVArtFpEvaluator;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp.HIVArtFpMetEvaluator;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_intr.HIVARTIntrEvaluator;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_re_arv.HIVARTREVEvaluator;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_ret.HIVARTRETEvaluator;
@@ -67,9 +65,9 @@ public class HMISQuery extends ColumnBuilder {
 	@Autowired
 	private HivPlHivEvaluator hivplHivEvaluator;
 	@Autowired
-	private HIVArtFBEvaluator hivArtFBEvaluator;
+	private HIVArtFpEvaluator hivArtFBEvaluator;
 	@Autowired
-	private HIVArtFbMetEvaluator hivArtFbMetEvaluator;
+	private HIVArtFpMetEvaluator hivArtFbMetEvaluator;
 	@Autowired
 	private TPSCRNEvaluator  tpscrnevaluator;
 	@Autowired

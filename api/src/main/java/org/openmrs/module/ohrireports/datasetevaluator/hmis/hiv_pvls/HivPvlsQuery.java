@@ -50,7 +50,7 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 		vlQuery.loadInitialCohort(startDate, endDate, lastEncounterIds);
 	}
 	
-	public Cohort getPatientsWithViralLoadSuppressed(String gender, Date endOnOrBefore) {
+	public Cohort getPatientsWithViralLoadSuppressed(String gender) {
 		Cohort cohort = vlQuery.getViralLoadSuppressed();
 		
 		if (Objects.isNull(gender) || gender.isEmpty())
@@ -101,6 +101,9 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 		query.setParameterList("cohort", vlQuery.cohort.getMemberIds());
 		query.setParameterList("encounters", vlQuery.getVlTakenEncounters());
 		
-		return new Cohort(query.list());
+		List<Integer> counted = query.list();
+		counted.addAll(vlQuery.getSuppressedByVLCount(50, 1000));
+		
+		return new Cohort(counted);
 	}
 }

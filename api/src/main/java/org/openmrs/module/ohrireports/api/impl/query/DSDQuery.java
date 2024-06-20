@@ -58,14 +58,16 @@ public class DSDQuery extends PatientQueryImpDao {
 
     public void generateBaseReport(Date start, Date end) {
         baseEncounter = encounterQuery.getAliveFollowUpEncounters(null, end);
-        latestDSDAssessmentEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE), null, end, baseEncounter);
+        latestDSDAssessmentEncounter = encounterQuery.getEncounters(Collections.singletonList(DSD_ASSESSMENT_DATE),
+                null, end, baseEncounter);
         initialDSDAssessmentEncounter = encounterQuery.getFirstEncounterByObsDate(null, null, DSD_ASSESSMENT_DATE);
-        baseCohort = getActiveOnArtCohort("", null, end, null, initialDSDAssessmentEncounter);
+        baseCohort = getActiveOnArtCohort("", null, end, null, latestDSDAssessmentEncounter);
         latestEncounter = encounterQuery.getLatestDateByFollowUpDate(null, null);
     }
 
     public Cohort getCohortByDSDCategories(String dsdCategoriesUUI) {
-        String sqlBuilder = "SELECT ob.person_id FROM obs as ob WHERE " + " ob.concept_id =" + conceptQuery(DSD_CATEGORY) +
+        String sqlBuilder = "SELECT ob.person_id FROM obs as ob WHERE " + " ob.concept_id ="
+                + conceptQuery(DSD_CATEGORY) +
                 " and ob.value_coded=" + conceptQuery(dsdCategoriesUUI) +
                 " and ob.person_id in (:cohorts) " +
                 " and ob.encounter_id in (:encounters) ";

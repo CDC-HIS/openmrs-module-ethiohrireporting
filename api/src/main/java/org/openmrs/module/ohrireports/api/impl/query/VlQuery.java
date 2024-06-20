@@ -1,12 +1,6 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
@@ -87,7 +81,7 @@ public class VlQuery extends BaseLineListQuery {
 		Query query = getByViralLoadStatus(Arrays.asList(HIV_VIRAL_LOAD_SUPPRESSED, HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA));
 		allPatients.addAll(query.list());
 
-		List<Integer> personIds = getSuppressedByVLCount();
+		List<Integer> personIds = getSuppressedByVLCount(null,50);
 		allPatients.addAll(personIds);
 		return new Cohort(allPatients);
 
@@ -121,10 +115,13 @@ public class VlQuery extends BaseLineListQuery {
 		return getByVLTestIndication(_cohort, TARGET_VIRAL_LOAD);
 	}
 	
-	private List<Integer> getSuppressedByVLCount() {
+	public List<Integer> getSuppressedByVLCount(Integer minVlCount,Integer maxVlCount) {
 		StringBuilder sql = baseQuery(HIV_VIRAL_LOAD_COUNT);
 		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:baseEncounterId) ");
-		sql.append(" and ").append(OBS_ALIAS).append("value_numeric <= 1000");
+		if (!Objects.isNull(minVlCount))
+			sql.append(" and ").append(OBS_ALIAS).append("value_numeric > ").append(minVlCount);
+		if (!Objects.isNull(maxVlCount))
+			sql.append(" and ").append(OBS_ALIAS).append("value_numeric <= ").append(maxVlCount);
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
