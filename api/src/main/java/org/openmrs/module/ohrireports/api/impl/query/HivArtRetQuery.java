@@ -57,6 +57,10 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	}
 
 	private void setPatientRetentionCohort(Date endOnOrBefore) {
+		if(netRetCohort.isEmpty() || netRetCohort.size() == 0) {
+			retCohort = netRetCohort;
+			return;
+		}
 		retCohort = getActiveOnArtCohort("", null, endOnOrBefore, netRetCohort, retEncounter);
 	}
 

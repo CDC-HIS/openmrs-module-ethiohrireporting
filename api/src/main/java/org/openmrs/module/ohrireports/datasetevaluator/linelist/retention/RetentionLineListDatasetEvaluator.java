@@ -93,7 +93,7 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			dataSet.addRow(row);
 		} else {
 			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "TI/TO?", "Latest Follow-up Date in E.C.",
+			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "TI?", "Latest Follow-up Date in E.C.",
 			    "Latest Follow-up status", "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence", "Pregnant",
 			    "Next Visit date in E.C.", "Treatment End Date in E.C.")));
 		}
@@ -120,8 +120,7 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			    retentionLineListQuery.getEthiopianDate(confirmedDate));
 			row.addColumnValue(new DataSetColumn("ART Start Date in E.C.", "ART Start Date in E.C.", String.class),
 			    retentionLineListQuery.getEthiopianDate(artStartDate));
-			row.addColumnValue(new DataSetColumn("TI/TO?", "TI/TO?", String.class),
-			    transferedHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("TI/TO?", "TI?", String.class), transferedHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Latest Follow-up Date in E.C.", "Latest Follow-up Date in E.C.",
 			        String.class), retentionLineListQuery.getEthiopianDate(followUpDateDate));
 			row.addColumnValue(new DataSetColumn("Latest Follow-up status", "Latest Follow-up status", String.class),
