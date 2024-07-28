@@ -4,10 +4,9 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerTreatmentQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_scrn.CxcaScreening;
 import org.openmrs.module.reporting.dataset.DataSet;
-import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
@@ -18,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = {CxCaTreatmentDatasetDefinition.class})
 public class CxCaTreatmentDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -75,11 +72,11 @@ public class CxCaTreatmentDatasetDefinitionEvaluator implements DataSetEvaluator
 
     private CxCaTreatment getCxCaScreeningType(String screeningType) {
         switch (screeningType){
-            case CXCA_FIRST_TIME_SCREENING_TYPE:
+            case ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE:
                 return cervicalCancerTreatmentQuery.getFirstScreening();
-            case CXCA_TYPE_OF_SCREENING_RESCREEN:
+            case ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN:
                 return  cervicalCancerTreatmentQuery.getReScreening();
-            case CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
+            case ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
                 return  cervicalCancerTreatmentQuery.getPostScreening();
             default:
                 return null;

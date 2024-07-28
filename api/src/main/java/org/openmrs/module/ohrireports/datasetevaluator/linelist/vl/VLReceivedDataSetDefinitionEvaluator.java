@@ -8,6 +8,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -19,8 +22,6 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { VLReceivedDataSetDefinition.class })
 public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -55,55 +56,61 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 		
 		List<Integer> baseEncounters = encounterQuery.getEncounters(
-		    Collections.singletonList(DATE_VIRAL_TEST_RESULT_RECEIVED), _DataSetDefinition.getStartDate(),
-		    _DataSetDefinition.getEndDate());
+		    Collections.singletonList(FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED),
+		    _DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate());
 		vlQuery.loadInitialCohort(_DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate(), baseEncounters);
 		
 		List<Person> persons = LineListUtilities.sortPatientByName(patientQueryService.getPersons(vlQuery.cohort));
 		
 		List<Integer> latestFollowupEncounter = encounterQuery.getLatestDateByFollowUpDate(null, null);
 		
-		HashMap<Integer, Object> mrnIdentifierHashMap = vlQuery.getIdentifier(vlQuery.cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uanIdentifierHashMap = vlQuery.getIdentifier(vlQuery.cohort, UAN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> weight = vlQuery.getByValueNumeric(WEIGHT, vlQuery.cohort, baseEncounters);
-		HashMap<Integer, Object> cd4Count = vlQuery.getByValueNumeric(ADULT_CD4_COUNT, vlQuery.cohort, baseEncounters);
+		HashMap<Integer, Object> mrnIdentifierHashMap = vlQuery.getIdentifier(vlQuery.cohort,
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> uanIdentifierHashMap = vlQuery.getIdentifier(vlQuery.cohort,
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> weight = vlQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT, vlQuery.cohort,
+		    baseEncounters);
+		HashMap<Integer, Object> cd4Count = vlQuery.getByValueNumeric(FollowUpConceptQuestions.ADULT_CD4_COUNT,
+		    vlQuery.cohort, baseEncounters);
 		HashMap<Integer, Object> artStartDictionary = vlQuery.getArtStartDate(vlQuery.cohort, null,
 		    _DataSetDefinition.getEndDate());
-		HashMap<Integer, Object> followUpDateHashMap = vlQuery.getObsValueDate(baseEncounters, FOLLOW_UP_DATE,
-		    vlQuery.cohort);
+		HashMap<Integer, Object> followUpDateHashMap = vlQuery.getObsValueDate(baseEncounters,
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, vlQuery.cohort);
 		HashMap<Integer, Object> statusHashMap = vlQuery.getFollowUpStatus(baseEncounters, vlQuery.cohort);
 		HashMap<Integer, Object> regimentDictionary = vlQuery.getRegiment(vlQuery.getVlTakenEncounters(), vlQuery.cohort);
 		HashMap<Integer, Object> viralLoadReceivedDateHashMap = vlQuery.getObsValueDate(baseEncounters,
-		    DATE_VIRAL_TEST_RESULT_RECEIVED, vlQuery.cohort);
-		HashMap<Integer, Object> routineTestTypeHashMap = vlQuery.getByResult(ROUTINE_VIRAL_LOAD, vlQuery.cohort,
-		    baseEncounters);
-		HashMap<Integer, Object> targetedTestTypeHashMap = vlQuery.getByResult(TARGET_VIRAL_LOAD, vlQuery.cohort,
-		    baseEncounters);
+		    FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED, vlQuery.cohort);
+		HashMap<Integer, Object> routineTestTypeHashMap = vlQuery.getByResult(ConceptAnswer.ROUTINE_VIRAL_LOAD,
+		    vlQuery.cohort, baseEncounters);
+		HashMap<Integer, Object> targetedTestTypeHashMap = vlQuery.getByResult(ConceptAnswer.TARGET_VIRAL_LOAD,
+		    vlQuery.cohort, baseEncounters);
 		HashMap<Integer, Object> viralLoadStatus = vlQuery.getStatusViralLoad();
 		HashMap<Integer, Object> dispensedDose = vlQuery.getArtDose();
 		HashMap<Integer, Object> viralLoadCount = vlQuery.getViralLoadCount();
-		HashMap<Integer, Object> viralLoadSentDateHashMap = vlQuery.getObsValueDate(baseEncounters, VL_SENT_DATE,
-		    vlQuery.cohort);
-		HashMap<Integer, Object> adherenceHashMap = vlQuery.getByResult(ARV_ADHERENCE, vlQuery.cohort, baseEncounters);
-		HashMap<Integer, Object> pregnancyStatus = vlQuery.getByResult(PREGNANCY_STATUS, vlQuery.cohort, baseEncounters);
-		HashMap<Integer, Object> breastfeedingStatus = vlQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, vlQuery.cohort,
-		    baseEncounters);
+		HashMap<Integer, Object> viralLoadSentDateHashMap = vlQuery.getObsValueDate(baseEncounters,
+		    FollowUpConceptQuestions.DATE_VL_REQUESTED, vlQuery.cohort);
+		HashMap<Integer, Object> adherenceHashMap = vlQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
+		    vlQuery.cohort, baseEncounters);
+		HashMap<Integer, Object> pregnancyStatus = vlQuery.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS,
+		    vlQuery.cohort, baseEncounters);
+		HashMap<Integer, Object> breastfeedingStatus = vlQuery.getByResult(
+		    FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, vlQuery.cohort, baseEncounters);
 		
 		// fields from latest encounter
 		HashMap<Integer, Object> latestFollowupDateHashMap = vlQuery.getObsValueDate(latestFollowupEncounter,
-		    FOLLOW_UP_DATE, vlQuery.cohort);
-		HashMap<Integer, Object> latestFollowupStatusHashMap = vlQuery.getByResult(FOLLOW_UP_STATUS, vlQuery.cohort,
-		    latestFollowupEncounter);
-		HashMap<Integer, Object> latestRegimenHashMap = vlQuery
-		        .getByResult(REGIMEN, vlQuery.cohort, latestFollowupEncounter);
-		HashMap<Integer, Object> latestArvDoseDaysHashMap = vlQuery.getByResult(ART_DISPENSE_DOSE, vlQuery.cohort,
-		    latestFollowupEncounter);
-		HashMap<Integer, Object> latestAdherenceHashMap = vlQuery.getByResult(ARV_ADHERENCE, vlQuery.cohort,
-		    latestFollowupEncounter);
-		HashMap<Integer, Object> nextVisitDateHashMap = vlQuery.getObsValueDate(latestFollowupEncounter, NEXT_VISIT_DATE,
-		    vlQuery.cohort);
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, vlQuery.cohort);
+		HashMap<Integer, Object> latestFollowupStatusHashMap = vlQuery.getByResult(
+		    FollowUpConceptQuestions.FOLLOW_UP_STATUS, vlQuery.cohort, latestFollowupEncounter);
+		HashMap<Integer, Object> latestRegimenHashMap = vlQuery.getByResult(FollowUpConceptQuestions.REGIMEN,
+		    vlQuery.cohort, latestFollowupEncounter);
+		HashMap<Integer, Object> latestArvDoseDaysHashMap = vlQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE,
+		    vlQuery.cohort, latestFollowupEncounter);
+		HashMap<Integer, Object> latestAdherenceHashMap = vlQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
+		    vlQuery.cohort, latestFollowupEncounter);
+		HashMap<Integer, Object> nextVisitDateHashMap = vlQuery.getObsValueDate(latestFollowupEncounter,
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, vlQuery.cohort);
 		HashMap<Integer, Object> treatmentEndDateHashMap = vlQuery.getObsValueDate(latestFollowupEncounter,
-		    TREATMENT_END_DATE, vlQuery.cohort);
+		    FollowUpConceptQuestions.TREATMENT_END_DATE, vlQuery.cohort);
 		
 		DataSetRow row;
 		if (!persons.isEmpty()) {

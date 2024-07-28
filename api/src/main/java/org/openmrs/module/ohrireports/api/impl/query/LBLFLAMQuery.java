@@ -7,14 +7,12 @@ import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.LF_LAM_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.LF_LAM_RESULT;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TB_SCREENING_DATE;
 
 @Component
 public class LBLFLAMQuery extends PatientQueryImpDao {

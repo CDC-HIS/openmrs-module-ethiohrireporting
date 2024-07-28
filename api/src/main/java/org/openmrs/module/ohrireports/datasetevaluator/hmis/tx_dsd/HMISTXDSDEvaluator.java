@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_dsd;
 
 import org.openmrs.Cohort;
 import org.openmrs.module.ohrireports.api.impl.query.DSDQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -11,8 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
 import java.util.Date;
-
-import static org.openmrs.module.ohrireports.RegimentConstant.*;
 
 @Component
 @Scope("prototype")
@@ -29,7 +28,7 @@ public class HMISTXDSDEvaluator {
 		int total = 0;
 		
 		//clients on 3MMD
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_3MMD);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_3MMD);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_3MMD", 1, 49, 25);
 		DataSetRow headerRow = rowBuilder.buildDatasetColumn("HIV_TX_DSD",
@@ -41,7 +40,7 @@ public class HMISTXDSDEvaluator {
 		rowBuilder.updateDataset(dataSet);
 		
 		// clients on ASM(6MMD)
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_6MMD);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_6MMD);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_ASM", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_ASM", "Total number of clients on ASM(6MMD)",
@@ -50,7 +49,7 @@ public class HMISTXDSDEvaluator {
 		rowBuilder.updateDataset(dataSet);
 		
 		// clients on FTAR
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_FTAR);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_FTAR);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_FTAR", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_FTAR", "Total number of clients on FTAR",
@@ -59,7 +58,7 @@ public class HMISTXDSDEvaluator {
 		rowBuilder.updateDataset(dataSet);
 		
 		// clients on CAG
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_HEP_CAG);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_HEP_CAG);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_CAG", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_CAG", "Total number of clients on CAG",
@@ -68,7 +67,7 @@ public class HMISTXDSDEvaluator {
 		rowBuilder.updateDataset(dataSet);
 		
 		// clients on PCAD
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_PCAD);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_PCAD);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_PCAD", 15, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_PCAD", "Total number of clients on PCAD",
@@ -77,31 +76,31 @@ public class HMISTXDSDEvaluator {
 		rowBuilder.updateDataset(dataSet);
 		
 		// clients on Adolescent DSD
-		int count = dsdQuery.getCohortByDSDCategories(DSD_ADOLESCENT).size();
+		int count = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_ADOLESCENT).size();
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_Adolescent DSD.", "Total number of clients on Adolescent DSD",
 		    String.valueOf(count)));
 		total += count;
 		
 		// clients on KP DSD
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_KP);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_KP);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_KP DSD", "Total number of clients on KP DSD",
 		    String.valueOf(cohort.size())));
 		total += cohort.size();
 		
 		// clients on  MCH DSD
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_MCH);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_MCH);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_MCH DSD", "Total number of clients on MCH DSD",
 		    String.valueOf(cohort.size())));
 		total += cohort.size();
 		
 		// clients on  other types of DSD
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_OTHER);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_OTHER);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_ other types of DSD.",
 		    "Total number of clients on other types of DSD", String.valueOf(cohort.size())));
 		total += cohort.size();
 		
 		// clients on  Advanced HIV Disease Care Model
-		cohort = dsdQuery.getCohortByDSDCategories(DSD_AHDCM);
+		cohort = dsdQuery.getCohortByDSDCategories(ConceptAnswer.DSD_AHDCM);
 		rowBuilder = new RowBuilder(dsdQuery.getPersonList(cohort), end);
 		rowBuilder.buildDataSetRow("HIV_TX_AHDCM", 1, 49, 25);
 		dataSet.addRow(rowBuilder.buildDatasetColumn("HIV_TX_AHDCM",

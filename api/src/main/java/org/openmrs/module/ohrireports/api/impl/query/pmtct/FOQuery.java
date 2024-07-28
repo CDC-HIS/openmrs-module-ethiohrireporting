@@ -5,6 +5,8 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +14,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 import static java.util.Arrays.asList;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 @Component
 public class FOQuery extends PatientQueryImpDao {
@@ -67,7 +69,7 @@ public class FOQuery extends PatientQueryImpDao {
 		        .atStartOfDay(ZoneId.systemDefault()).toInstant());
 		String stringQuery = "select distinct ob.person_id\n" + "from obs ob "
 		        + " INNER JOIN person p where p.person_id = ob.person_id " + "and ob.concept_id = "
-		        + conceptQuery(HEI_ENROLLMENT_DATE) + " and value_datetime IS NOT NULL"
+		        + conceptQuery(ENROLLMENT_DATE) + " and value_datetime IS NOT NULL"
 		        + " and p.birthdate between :start and :end";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
@@ -77,49 +79,53 @@ public class FOQuery extends PatientQueryImpDao {
 		return new Cohort(query.list());
 	}
 	
-	public Cohort getPmtctByHivInfectedStatus() {
+	public Cohort getPMTCTByHivInfectedStatus() {
 		Cohort positiveFinalOutcome = getByOutcomeOrConclusion(
 		    baseCohort,
-		    PMTCT_FINAL_OUTCOME,
-		    asList(PMTCT_POSITIVE_LINKED_OUTSIDE_FACILITY, PMTCT_POSITIVE_LINKED_WITHIN_FACILITY,
-		        PMTCT_POSITIVE_LINKED_UNKNOWN));
-		Cohort discontinueFinalOutcome = getByOutcomeOrConclusion(baseCohort, PMTCT_FINAL_OUTCOME,
-		    asList(DIED, PMTCT_TO, PMTCT_LOST_TO_FOLLOWUP));
-		Cohort evidenceConclusion = getByOutcomeOrConclusion(baseCohort, PMTCT_CONCLUSION,
-		    asList(PMTCT_CLINICAL_EVIDENCE_HIV, PMTCT_LAB_EVIDENCE_HIV));
-		Cohort hivPcrTestResult = getByOutcomeOrConclusion(baseCohort, PMTCT_DNA_PCR_RESULT,
-		    Collections.singletonList(POSITIVE));
+		    PMTCTConceptQuestions.PMTCT_FINAL_OUTCOME,
+		    asList(PMTCTConceptQuestions.PMTCT_POSITIVE_LINKED_OUTSIDE_FACILITY,
+		        PMTCTConceptQuestions.PMTCT_POSITIVE_LINKED_WITHIN_FACILITY,
+		        PMTCTConceptQuestions.PMTCT_POSITIVE_LINKED_UNKNOWN));
+		
+		Cohort discontinueFinalOutcome = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_FINAL_OUTCOME,
+		    asList(ConceptAnswer.DIED, PMTCTConceptQuestions.PMTCT_TO, PMTCTConceptQuestions.PMTCT_LOST_TO_FOLLOWUP));
+		Cohort evidenceConclusion = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_CONCLUSION,
+		    asList(PMTCTConceptQuestions.PMTCT_CLINICAL_EVIDENCE_HIV, PMTCTConceptQuestions.PMTCT_LAB_EVIDENCE_HIV));
+		Cohort hivPcrTestResult = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_DNA_PCR_RESULT,
+		    Collections.singletonList(ConceptAnswer.POSITIVE));
 		
 		return getCohortUnion(positiveFinalOutcome,
 		    Cohort.intersect(discontinueFinalOutcome, getCohortUnion(evidenceConclusion, hivPcrTestResult)));
 	}
 	
-	public Cohort getPmtctByHivUninfectedStatus() {
-		return getByOutcomeOrConclusion(baseCohort, PMTCT_FINAL_OUTCOME, Collections.singletonList(NEGATIVE));
+	public Cohort getPMTCTByHivUninfectedStatus() {
+		return getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_FINAL_OUTCOME,
+		    Collections.singletonList(ConceptAnswer.NEGATIVE));
 	}
 	
-	public Cohort getPmtctByHivStatusUnknown() {
-		Cohort finalStatusUnknown = getByOutcomeOrConclusion(baseCohort, PMTCT_FINAL_OUTCOME,
-		    asList(PMTCT_TO, PMTCT_LOST_TO_FOLLOWUP));
-		Cohort finalStatusNull = getNullValue(baseCohort, PMTCT_FINAL_OUTCOME);
-		Cohort conclusionCohort = getByOutcomeOrConclusion(baseCohort, PMTCT_CONCLUSION,
-		    Collections.singletonList(PMTCT_CONCLUSION_NO_EVIDENCE));
-		Cohort conclusionNull = getNullValue(baseCohort, PMTCT_CONCLUSION);
-		Cohort hivPcrTestResult = getByOutcomeOrConclusion(baseCohort, PMTCT_DNA_PCR_RESULT,
-		    Collections.singletonList(POSITIVE));
+	public Cohort getPMTCTByHivStatusUnknown() {
+		Cohort finalStatusUnknown = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_FINAL_OUTCOME,
+		    asList(PMTCTConceptQuestions.PMTCT_TO, PMTCTConceptQuestions.PMTCT_LOST_TO_FOLLOWUP));
+		Cohort finalStatusNull = getNullValue(baseCohort, PMTCTConceptQuestions.PMTCT_FINAL_OUTCOME);
+		Cohort conclusionCohort = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_CONCLUSION,
+		    Collections.singletonList(PMTCTConceptQuestions.PMTCT_CONCLUSION_NO_EVIDENCE));
+		Cohort conclusionNull = getNullValue(baseCohort, PMTCTConceptQuestions.PMTCT_CONCLUSION);
+		Cohort hivPcrTestResult = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_DNA_PCR_RESULT,
+		    Collections.singletonList(ConceptAnswer.POSITIVE));
 		
 		return getCohortUnion(
 		    Cohort.intersect(finalStatusUnknown,
 		        getCohortUnion(conclusionCohort, getCohortUnion(conclusionNull, hivPcrTestResult))), finalStatusNull);
 	}
 	
-	public Cohort getPmtctDiedWithoutStatusKnown() {
-		Cohort finalOutComeDied = getByOutcomeOrConclusion(baseCohort, PMTCT_FINAL_OUTCOME, Collections.singletonList(DIED));
-		Cohort conclusionCohort = getByOutcomeOrConclusion(baseCohort, PMTCT_CONCLUSION,
-		    Collections.singletonList(PMTCT_CONCLUSION_NO_EVIDENCE));
-		Cohort conclusionNull = getNullValue(baseCohort, PMTCT_CONCLUSION);
-		Cohort hivPcrTestResult = getByOutcomeOrConclusion(baseCohort, PMTCT_DNA_PCR_RESULT,
-		    Collections.singletonList(POSITIVE));
+	public Cohort getPMTCTDiedWithoutStatusKnown() {
+		Cohort finalOutComeDied = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_FINAL_OUTCOME,
+		    Collections.singletonList(ConceptAnswer.DIED));
+		Cohort conclusionCohort = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_CONCLUSION,
+		    Collections.singletonList(PMTCTConceptQuestions.PMTCT_CONCLUSION_NO_EVIDENCE));
+		Cohort conclusionNull = getNullValue(baseCohort, PMTCTConceptQuestions.PMTCT_CONCLUSION);
+		Cohort hivPcrTestResult = getByOutcomeOrConclusion(baseCohort, PMTCTConceptQuestions.PMTCT_DNA_PCR_RESULT,
+		    Collections.singletonList(ConceptAnswer.POSITIVE));
 		
 		return Cohort.intersect(finalOutComeDied,
 		    getCohortUnion(conclusionCohort, getCohortUnion(conclusionNull, hivPcrTestResult)));

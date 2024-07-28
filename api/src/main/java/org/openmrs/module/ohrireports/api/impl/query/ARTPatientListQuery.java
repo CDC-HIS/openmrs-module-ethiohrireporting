@@ -4,12 +4,12 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class ARTPatientListQuery extends PatientQueryImpDao {
@@ -55,7 +55,7 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(null, endDate, INTAKE_A_ENCOUNTER_TYPE);
+		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(null, endDate, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 	}
 	
 	public List<Integer> getBaseEncounter() {
@@ -63,7 +63,7 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getEverEnrolledCohort(Date endOrBefore) {
-		StringBuilder sql = baseQuery(ART_REGISTRATION_DATE, INTAKE_A_ENCOUNTER_TYPE);
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.ART_REGISTRATION_DATE, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		if (endOrBefore != null)
 			sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());

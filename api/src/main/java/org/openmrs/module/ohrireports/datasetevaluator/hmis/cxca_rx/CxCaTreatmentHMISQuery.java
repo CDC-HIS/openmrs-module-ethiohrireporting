@@ -5,14 +5,14 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class CxCaTreatmentHMISQuery extends PatientQueryImpDao {
@@ -56,8 +56,9 @@ public class CxCaTreatmentHMISQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(CXCA_TREATMENT_STARTING_DATE, FOLLOW_UP_DATE), startDate,
-		    endDate);
+		baseEncounter = encounterQuery.getEncounters(
+		    Arrays.asList(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE, FollowUpConceptQuestions.FOLLOW_UP_DATE),
+		    startDate, endDate);
 		currentEncounter = baseEncounter = refineBaseEncounter();
 	}
 	
@@ -68,11 +69,12 @@ public class CxCaTreatmentHMISQuery extends PatientQueryImpDao {
 	}
 	
 	private List<Integer> refineBaseEncounter() {
-		List<String> conceptUUIDs = Arrays.asList(CXCA_TREATMENT_TYPE_THERMOCOAGULATION, CXCA_TREATMENT_TYPE_LEEP,
-		    CXCA_TREATMENT_TYPE_CRYOTHERAPY);
+		List<String> conceptUUIDs = Arrays.asList(ConceptAnswer.CXCA_TREATMENT_TYPE_THERMOCOAGULATION,
+		    ConceptAnswer.CXCA_TREATMENT_TYPE_LEEP, FollowUpConceptQuestions.CXCA_TREATMENT_TYPE_CRYOTHERAPY);
 		StringBuilder stringQuery = new StringBuilder("select distinct ob.encounter_id from obs as ob ");
 		stringQuery.append(" where ob.encounter_id in (:baseEncounter) ");
-		stringQuery.append(" and ob.concept_id = ").append(conceptQuery(CXCA_TREATMENT_PRECANCEROUS_LESIONS));
+		stringQuery.append(" and ob.concept_id = ").append(
+		    conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS));
 		stringQuery.append(" and ob.value_coded in ").append(conceptQuery(conceptUUIDs));
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery.toString());

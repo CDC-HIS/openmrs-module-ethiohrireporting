@@ -6,13 +6,14 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class ARTQuery extends PatientQueryImpDao {
@@ -92,7 +93,8 @@ public class ARTQuery extends PatientQueryImpDao {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 		latestFollowUpEncounter = encounterQuery.getAliveFollowUpEncounters(null, endDate);
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCT_BOOKING_DATE), startDate, endDate,
+		baseEncounter = encounterQuery.getEncounters(
+		    Collections.singletonList(PMTCTConceptQuestions.PMTCT_OTZ_ENROLLMENT_DATE), startDate, endDate,
 		    latestFollowUpEncounter);
 		baseCohort = getByPregnantStatus();
 		pmtctARTCohort = getPMTCTARTCohort();
@@ -101,8 +103,8 @@ public class ARTQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getByPregnantStatus() {
-		StringBuilder sql = baseConceptQuery(PREGNANCY_STATUS);
-		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + " value_coded = " + conceptQuery(YES));
+		StringBuilder sql = baseConceptQuery(FollowUpConceptQuestions.PREGNANCY_STATUS);
+		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + " value_coded = " + conceptQuery(ConceptAnswer.YES));
 		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:latestEncounter) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
@@ -113,7 +115,8 @@ public class ARTQuery extends PatientQueryImpDao {
 	
 	public Cohort getPMTCTARTCohort() {
 		String stringQuery = "select distinct person_id\n" + "from obs\n" + "where concept_id = "
-		        + conceptQuery(PMTCT_BOOKING_DATE) + "and value_datetime >= :start " + " and value_datetime <= :end ";
+		        + conceptQuery(PMTCTConceptQuestions.PMTCT_OTZ_ENROLLMENT_DATE) + "and value_datetime >= :start "
+		        + " and value_datetime <= :end ";
 		if (!baseCohort.getMemberIds().isEmpty())
 			stringQuery = stringQuery + " and person_id in (:personIdList)";
 		
@@ -130,7 +133,8 @@ public class ARTQuery extends PatientQueryImpDao {
 		if (pmtctARTCohort.getMemberIds().isEmpty())
 			return new Cohort();
 		String stringQuery = "select distinct person_id\\n\" + \"from obs\\n\" + \"where concept_id = "
-		        + conceptQuery(PMTCT_STATUS_AT_ENROLLMENT) + " and value_coded = " + conceptQuery(PMTCTEnrollmentType);
+		        + conceptQuery(PMTCTConceptQuestions.PMTCT_STATUS_AT_ENROLLMENT) + " and value_coded = "
+		        + conceptQuery(PMTCTEnrollmentType);
 		if (!pmtctARTCohort.getMemberIds().isEmpty())
 			stringQuery = stringQuery + " and person_id in (:personIdList)";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);

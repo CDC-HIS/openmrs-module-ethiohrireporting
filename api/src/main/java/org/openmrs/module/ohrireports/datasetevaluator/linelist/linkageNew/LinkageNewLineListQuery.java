@@ -4,12 +4,12 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.api.impl.query.HivLinkageNewCtQuery;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct.Linkage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,10 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 @Component
-public class LinkageNewLineListQuery extends BaseLineListQuery {
+public class LinkageNewLineListQuery extends ObsElement {
 	
 	@Autowired
 	private HivLinkageNewCtQuery linkageNewCtQuery;
@@ -109,7 +107,7 @@ public class LinkageNewLineListQuery extends BaseLineListQuery {
 		        .append(" value_coded and cn.locale_preferred =1 and cn.locale='en' ");
 		sql.append(" inner join encounter as e on e.encounter_id = ").append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
-		sql.append(" and et.uuid= '" + POSITIVE_TRACKING + "' ");
+		sql.append(" and et.uuid= '" + EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE + "' ");
 		sql.append(" where obc.concept_id =" + conceptQuery(conceptQuestionUUid));
 		return sql;
 	}
@@ -136,7 +134,7 @@ public class LinkageNewLineListQuery extends BaseLineListQuery {
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
-		sql.append(" and et.uuid= '" + POSITIVE_TRACKING + "' ");
+		sql.append(" and et.uuid= '" + EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE + "' ");
 		sql.append(" where pa.voided = false and " + VALUE_DATE_BASE_ALIAS_OBS + "voided = false ");
 		return sql;
 	}

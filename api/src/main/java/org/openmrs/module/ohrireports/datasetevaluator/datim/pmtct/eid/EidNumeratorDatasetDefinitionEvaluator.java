@@ -13,8 +13,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PMTCT_INITIAL_TEST;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PMTCT_SAMPLE_COLLECTION_DATE;
+import static org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions.PMTCT_SAMPLE_COLLECTION_DATE;
 
 @Handler(supports = { EidNumeratorDatasetDefinition.class })
 public class EidNumeratorDatasetDefinitionEvaluator implements DataSetEvaluator {

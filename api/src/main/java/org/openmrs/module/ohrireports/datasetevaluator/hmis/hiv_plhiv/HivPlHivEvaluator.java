@@ -4,23 +4,17 @@ import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.Gender;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
@@ -44,14 +38,14 @@ public class HivPlHivEvaluator {
       
 
         hivPlvHivQuery.setStartDate(start);
-        hivPlvHivQuery.setEndDate(end, FOLLOW_UP_DATE);
+        hivPlvHivQuery.setEndDate(end, FollowUpConceptQuestions.FOLLOW_UP_DATE);
 
         Cohort plhivCohort = hivPlvHivQuery.getAllCohortPLHIVMalnutrition(hivPlvHivQuery.getBaseEncounter());
         Cohort plhivMAMCohort = hivPlvHivQuery.getAllNUTMAMForAdult(hivPlvHivQuery.getBaseEncounter(), plhivCohort,
-                Arrays.asList(MILD_MAL_NUTRITION, MODERATE_MAL_NUTRITION));
+                Arrays.asList(ConceptAnswer.MILD_MAL_NUTRITION, ConceptAnswer.MODERATE_MAL_NUTRITION));
 
         Cohort plhivSAMCohort = hivPlvHivQuery.getAllNUTSAMForAdult(hivPlvHivQuery.getBaseEncounter(),
-                plhivCohort, Collections.singletonList(SEVERE_MAL_NUTRITION));
+                plhivCohort, Collections.singletonList(ConceptAnswer.SEVERE_MAL_NUTRITION));
 
         Cohort plhivMAMSUPCohort = hivPlvHivQuery.getAllSUP(hivPlvHivQuery.getBaseEncounter(), plhivMAMCohort);
 	    int totalMAM = hivPlvHivQuery.getPersons(plhivMAMCohort).size();
@@ -91,9 +85,9 @@ public class HivPlHivEvaluator {
 
 
         personList = hivPlvHivQuery.getPersons(plhivMAMSUPCohort);
-        personPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, YES,
+        personPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, ConceptAnswer.YES,
                 hivPlvHivQuery.getBaseEncounter()));
-        personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, NO,
+        personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, ConceptAnswer.NO,
                 hivPlvHivQuery.getBaseEncounter()));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP", "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)",
                 hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size() + hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size()));
@@ -113,9 +107,9 @@ public class HivPlHivEvaluator {
 
 
         personList = hivPlvHivQuery.getPersons(plhivSAMSUPCohort);
-        personPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivSAMSUPCohort, YES,
+        personPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivSAMSUPCohort, ConceptAnswer.YES,
                 hivPlvHivQuery.getBaseEncounter()));
-        personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivSAMSUPCohort, NO,
+        personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivSAMSUPCohort, ConceptAnswer.NO,
                 hivPlvHivQuery.getBaseEncounter()));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2", "Total SAM who received therapeutic or supplementary food", personList.size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.1", "< 15 years, Male",

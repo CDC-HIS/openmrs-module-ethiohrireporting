@@ -1,10 +1,9 @@
 package org.openmrs.module.ohrireports.reports.datim;
 
-import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.EidAgeAndTestDisAggregationDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.EidNumeratorDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.*;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -13,12 +12,8 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class PMTCTIEDReport implements ReportManager {
@@ -30,7 +25,7 @@ public class PMTCTIEDReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_TESTING + "-PMTCT_EID";
+		return ReportType.DATIM_REPORT_TESTING + "-PMTCT_EID";
 	}
 	
 	@Override

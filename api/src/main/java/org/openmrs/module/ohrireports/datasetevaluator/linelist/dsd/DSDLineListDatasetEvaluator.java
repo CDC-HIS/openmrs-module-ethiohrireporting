@@ -3,6 +3,9 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.dsd;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
+import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.DSDDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -19,8 +22,6 @@ import static org.openmrs.module.ohrireports.RegimentConstant.DSD_CATEGORY;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { DSDDataSetDefinition.class })
 public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
@@ -61,7 +62,7 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> latestFollowUpDateHashMap = dsdLineListQuery.getObsValueDate(
 		    dsdLineListQuery.getLatestEncounter(), FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> confirmedDateHashMap = dsdLineListQuery.getObsValueDate(
-		    dsdLineListQuery.getBaseEncounter(), HIV_CONFIRMED_DATE, cohort);
+		    dsdLineListQuery.getBaseEncounter(), PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
 		HashMap<Integer, Object> artStartDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
 		    ART_START_DATE, cohort);
 		HashMap<Integer, Object> nextVistDateHashMap = dsdLineListQuery.getObsValueDate(

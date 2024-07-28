@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_COUNSELING_GIVEN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.SCREENING_STRATEGY;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_COUNSELING_GIVEN;
 
 @Component
 public class CXCAScreeningHmisQuery extends PatientQueryImpDao {

@@ -1,36 +1,34 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1d_AZT_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1e_TDF_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1g_ABC_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1j_TDF_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R1k_AZT_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2e_AZT_3TC_LPVr;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2f_AZT_3TC_ATVr;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2g_TDF_3TC_LPVr;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2h_TDF_3TC_ATVr;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2i_ABC_3TC_LPVr;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2j_TDF_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R2k_AZT_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R3a_DRVr_DTG_AZT_3TC;
-import static org.openmrs.module.ohrireports.RegimentConstant.R3b_DRVr_DTG_TDF_3TC;
-import static org.openmrs.module.ohrireports.RegimentConstant.R3c_DRVr_ABC_3TC_DTG;
-import static org.openmrs.module.ohrireports.RegimentConstant.R3e_DRVr_TDF_3TC_EFV;
-import static org.openmrs.module.ohrireports.RegimentConstant.R3f_DRVr_AZT_3TC_EFV;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.YES;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R1d_AZT_3TC_EFV;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R1e_TDF_3TC_EFV;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R1g_ABC_3TC_EFV;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R1j_TDF_3TC_DTG;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R1k_AZT_3TC_DTG;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R2e_AZT_3TC_LPVr;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R2f_AZT_3TC_ATVr;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R2g_TDF_3TC_LPVr;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R2h_TDF_3TC_ATVr;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R2i_ABC_3TC_LPVr;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R2j_TDF_3TC_DTG;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R2k_AZT_3TC_DTG;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R3a_DRVr_DTG_AZT_3TC;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R3b_DRVr_DTG_TDF_3TC;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R3c_DRVr_ABC_3TC_DTG;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R3e_DRVr_TDF_3TC_EFV;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.R3f_DRVr_AZT_3TC_EFV;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.Cohort;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.ColumnBuilder;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr.AggregateByAgeAndRegiment.LEVEL;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr.HmisCurrQuery.Regiment;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class AggregateByAgeGenderAndPregnancyStatus extends ColumnBuilder {
 	

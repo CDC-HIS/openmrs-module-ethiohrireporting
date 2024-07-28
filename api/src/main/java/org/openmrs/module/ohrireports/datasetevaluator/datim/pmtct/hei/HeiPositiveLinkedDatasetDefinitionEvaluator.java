@@ -4,7 +4,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.dao.PMTCTEncounter;
 import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.HeiAgeAndResultDatasetDefinition;
+import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.HeiPositiveLinkedDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { HeiPositiveLinkedDatasetDefinition.class })
 public class HeiPositiveLinkedDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -48,7 +46,8 @@ public class HeiPositiveLinkedDatasetDefinitionEvaluator implements DataSetEvalu
 	
 	private int getCount(int minAge, int maxAge) {
 		int count = 0;
-		List<String> conceptUUIDS = Arrays.asList(PMTCT_POSITIVE_WITH_OUTSIDE_FACILITY, PMTCT_POSITIVE_WITHIN_FACILITY);
+		List<String> conceptUUIDS = Arrays.asList(PMTCTConceptQuestions.PMTCT_POSITIVE_WITH_OUTSIDE_FACILITY,
+		    PMTCTConceptQuestions.PMTCT_POSITIVE_WITHIN_FACILITY);
 		for (Map.Entry<Integer, PMTCTPatient> patientEntry : eidQuery.getPatientEncounterHashMap().entrySet()) {
 			PMTCTPatient patient = patientEntry.getValue();
 			for (PMTCTEncounter encounter : patient.getEncounterList()) {

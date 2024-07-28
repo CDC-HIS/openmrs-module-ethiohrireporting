@@ -1,7 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.RegimentConstant.*;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +11,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.Gender;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -40,9 +40,9 @@ public class HMISARTTPTEvaluator {
 	public void buildDataset(Date start, Date end,SimpleDataSet dataset){
 		
 	
-		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Arrays.asList(TPT_START_DATE),
+		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Arrays.asList(FollowUpConceptQuestions.TPT_START_DATE),
 				start, end);
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null, end,
+		baseEncounter = encounterQuery.getEncounters(Arrays.asList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null, end,
 				tptEncounterEncounter);
 		baseCohort = new Cohort(
 				tbQuery.getArtStartedCohort(baseEncounter, null, end, null));

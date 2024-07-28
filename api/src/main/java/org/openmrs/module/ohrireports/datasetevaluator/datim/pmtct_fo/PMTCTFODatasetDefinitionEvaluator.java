@@ -40,12 +40,12 @@ public class PMTCTFODatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	public void buildDataSetColumn(DataSetRow dataSet) {
 		dataSet.addColumnValue(new DataSetColumn("HIVInfected", "HIV-infected", String.class),
-		    foQuery.getPmtctByHivInfectedStatus());
+		    foQuery.getPMTCTByHivInfectedStatus());
 		dataSet.addColumnValue(new DataSetColumn("HIVUninfected", "HIV-uninfected", Integer.class),
-		    foQuery.getPmtctByHivUninfectedStatus());
+		    foQuery.getPMTCTByHivUninfectedStatus());
 		dataSet.addColumnValue(new DataSetColumn("HIVFinalStatusUnknown", "HIV-final status unknown", Integer.class),
-		    foQuery.getPmtctByHivStatusUnknown());
+		    foQuery.getPMTCTByHivStatusUnknown());
 		dataSet.addColumnValue(new DataSetColumn("DiedWithoutStatusKnown", "Died without status known", Integer.class),
-		    foQuery.getPmtctDiedWithoutStatusKnown());
+		    foQuery.getPMTCTDiedWithoutStatusKnown());
 	}
 }

@@ -37,7 +37,7 @@
 // import java.util.Collections;
 // import java.util.List;
 //
-// import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+// import static org.openmrs.module.ohrireports.constants.OHRIReportsConstants.*;
 //
 // @Component
 // public class Covid19Report implements ReportManager {

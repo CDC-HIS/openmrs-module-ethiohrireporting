@@ -3,6 +3,8 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.scheduleVisit;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ScheduleVisitDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -20,8 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENED_RESULT;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TB_SCREENED_RESULT;
 
 @Handler(supports = { ScheduleVisitDatasetDefinition.class })
 public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -48,26 +49,26 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 		
 		scheduleVisitQuery.generateReport(dsd.getStartDate(), dsd.getEndDate());
 		HashMap<Integer, Object> mrnIdentifierHashMap = scheduleVisitQuery.getIdentifier(scheduleVisitQuery.getBaseCohort(),
-		    MRN_PATIENT_IDENTIFIERS);
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uaIdentifierHashMap = scheduleVisitQuery.getIdentifier(scheduleVisitQuery.getBaseCohort(),
-		    UAN_PATIENT_IDENTIFIERS);
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> artStartDictionary = scheduleVisitQuery.getArtStartDate(scheduleVisitQuery.getBaseCohort(),
 		    null, dsd.getEndDate());
 		HashMap<Integer, Object> regimentDictionary = scheduleVisitQuery.getRegiment(scheduleVisitQuery.getEncounter(),
 		    scheduleVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpDate = scheduleVisitQuery.getObsValueDate(scheduleVisitQuery.getEncounter(),
-		    FOLLOW_UP_DATE, scheduleVisitQuery.getBaseCohort());
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, scheduleVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = scheduleVisitQuery.getFollowUpStatus(scheduleVisitQuery.getEncounter(),
 		    scheduleVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> weight = scheduleVisitQuery.getByValueNumeric(WEIGHT, scheduleVisitQuery.getBaseCohort(),
-		    scheduleVisitQuery.getEncounter());
-		HashMap<Integer, Object> dose = scheduleVisitQuery.getByResult(ARV_DISPENSED_IN_DAYS,
+		HashMap<Integer, Object> weight = scheduleVisitQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT,
 		    scheduleVisitQuery.getBaseCohort(), scheduleVisitQuery.getEncounter());
-		HashMap<Integer, Object> adherenceHashMap = scheduleVisitQuery.getByResult(ARV_ADHERENCE,
+		HashMap<Integer, Object> dose = scheduleVisitQuery.getByResult(FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS,
+		    scheduleVisitQuery.getBaseCohort(), scheduleVisitQuery.getEncounter());
+		HashMap<Integer, Object> adherenceHashMap = scheduleVisitQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
 		    scheduleVisitQuery.getBaseCohort(), scheduleVisitQuery.getEncounter());
 		HashMap<Integer, Object> nextVisitDate = scheduleVisitQuery.getObsValueDate(scheduleVisitQuery.getEncounter(),
-		    NEXT_VISIT_DATE, scheduleVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> tbScreening = scheduleVisitQuery.getByResult(TB_SCREENED,
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, scheduleVisitQuery.getBaseCohort());
+		HashMap<Integer, Object> tbScreening = scheduleVisitQuery.getByResult(FollowUpConceptQuestions.TB_SCREENED,
 		    scheduleVisitQuery.getBaseCohort(), scheduleVisitQuery.getEncounter());
 		HashMap<Integer, Object> tbScreeningResult = scheduleVisitQuery.getByResult(TB_SCREENED_RESULT,
 		    scheduleVisitQuery.getBaseCohort(), scheduleVisitQuery.getEncounter());

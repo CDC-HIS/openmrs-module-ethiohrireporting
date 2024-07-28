@@ -1,6 +1,6 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.CervicalCancerDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -11,11 +11,12 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
+import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 
 @Component
 public class CervicalCancerReport implements ReportManager {
@@ -59,7 +60,7 @@ public class CervicalCancerReport implements ReportManager {
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
 		ReportDesign design = ReportManagerUtil.createExcelDesign("08434046-8847-11ee-b9d1-0242ac120002", reportDefinition);
 		
-		return Arrays.asList(design);
+		return Collections.singletonList(design);
 	}
 	
 	@Override

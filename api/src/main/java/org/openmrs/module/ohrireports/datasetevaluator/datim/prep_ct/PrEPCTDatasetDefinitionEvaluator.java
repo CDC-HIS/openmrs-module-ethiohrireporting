@@ -1,15 +1,15 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.prep_ct;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_FTC_DRUG;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_TENOFOVIR_DRUG;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.TDF_FTC_DRUG;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.TDF_TENOFOVIR_DRUG;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TDF_3TC_DRUG;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PR_EP_STARTED;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.TDF_3TC_DRUG;
+import static org.openmrs.module.ohrireports.reports.linelist.PEPReport.PR_EP_STARTED;
 
 import org.openmrs.Cohort;
 import org.openmrs.Concept;

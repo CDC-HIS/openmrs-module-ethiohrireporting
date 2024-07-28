@@ -1,14 +1,12 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REGIMEN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PREGNANCY_STATUS;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.REGIMEN;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.PREGNANCY_STATUS;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 

@@ -1,6 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr;
 
-import static org.openmrs.module.ohrireports.RegimentConstant.*;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

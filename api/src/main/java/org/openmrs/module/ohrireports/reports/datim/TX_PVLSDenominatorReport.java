@@ -7,7 +7,8 @@ import java.util.List;
 import org.openmrs.EncounterType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDisaggregationByPopulationDatasetDefinition;
@@ -24,7 +25,7 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 @Component
 public class TX_PVLSDenominatorReport implements ReportManager {
@@ -40,7 +41,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_VIRAL_SUPPRESSION.concat("-TX_PVLS(Denominator)");
+		return ReportType.DATIM_REPORT_VIRAL_SUPPRESSION.concat("-TX_PVLS(Denominator)");
 	}
 	
 	@Override
@@ -66,7 +67,8 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.addParameters(getParameters());
 		
-		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		TX_PVLSAutoCalcDatasetDefinition headerDefinition = new TX_PVLSAutoCalcDatasetDefinition();
 		headerDefinition.setParameters(getParameters());
@@ -86,8 +88,8 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		TX_PVLSDatasetDefinition dataSetDefinition = new TX_PVLSDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
 		dataSetDefinition.setIncludeUnSuppressed(true);
-		dataSetDefinition.setEncounterType(Context.getEncounterService()
-		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		dataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Required Disaggregated by Age / Sex / (Fine Disaggregated)."
 		        + " Must complete finer disaggregates unless permitted by program.",
 		    map(dataSetDefinition, "endDate=${endDateGC}"));
@@ -96,7 +98,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		pregnantAndBFDataSetDefinition.setParameters(getParameters());
 		pregnantAndBFDataSetDefinition.setIncludeUnSuppressed(true);
 		pregnantAndBFDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Disaggregated by Pregnant/Breastfeeding.",
 		    map(pregnantAndBFDataSetDefinition, "endDate=${endDateGC}"));
 		
@@ -104,7 +106,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		disaggregationByPopDataSetDefinition.setParameters(getParameters());
 		disaggregationByPopDataSetDefinition.setIncludeUnSuppressed(true);
 		disaggregationByPopDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Disaggregated by key population.",
 		    map(disaggregationByPopDataSetDefinition, "endDate=${endDateGC}"));
 		

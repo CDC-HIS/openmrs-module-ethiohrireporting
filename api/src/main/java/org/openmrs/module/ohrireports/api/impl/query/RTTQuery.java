@@ -5,6 +5,8 @@ import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,6 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static java.util.Arrays.asList;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 /**
  * Cohort of patient for those discontinued ART in previous reporting period and restarted int the
@@ -72,7 +73,7 @@ public class RTTQuery extends PatientQueryImpDao {
 	}
 	private Cohort getCohortByARTDoseEndDate(List<Integer> encounter, Date startDate) {
 		StringBuilder sqlBuilder = new StringBuilder("select ob.person_id from obs as ob where ob.concept_id =");
-		sqlBuilder.append(conceptQuery(TREATMENT_END_DATE));
+		sqlBuilder.append(conceptQuery(FollowUpConceptQuestions.TREATMENT_END_DATE));
 		sqlBuilder.append(" and ").append(OBS_ALIAS).append("value_datetime < :start ");
 		sqlBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounter) ");
 		
@@ -85,9 +86,9 @@ public class RTTQuery extends PatientQueryImpDao {
 	}
 
 	private Cohort getCohortByFollowUp(List<Integer> encounter) {
-		StringBuilder sqlBuilder = baseQuery(FOLLOW_UP_STATUS);
+		StringBuilder sqlBuilder = baseQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS);
 		sqlBuilder.append(" and ").append(OBS_ALIAS).append("value_coded in")
-		        .append(conceptQuery(Arrays.asList(LOST_TO_FOLLOW_UP, DROP, STOP)));
+		        .append(conceptQuery(Arrays.asList(ConceptAnswer.LOST_TO_FOLLOW_UP, ConceptAnswer.DROP, ConceptAnswer.STOP)));
 		sqlBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounter) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
@@ -114,15 +115,15 @@ public class RTTQuery extends PatientQueryImpDao {
 		sqlBuilder.append(" from  obs as ob ");
 		sqlBuilder.append(" inner join ");
 		sqlBuilder.append("(   SELECT  ob_followup.value_datetime , ob_followup.person_id  from  obs as ob_followup");
-		sqlBuilder.append(" where  ob_followup.concept_id =").append(conceptQuery(TREATMENT_END_DATE));
+		sqlBuilder.append(" where  ob_followup.concept_id =").append(conceptQuery(FollowUpConceptQuestions.TREATMENT_END_DATE));
 		sqlBuilder
 				.append(" and ob_followup.encounter_id in (:restartedEncounter) ) as treatmentEnd on treatmentEnd.person_id =ob.person_id");
 		sqlBuilder.append(" inner join ");
 		sqlBuilder.append(" ( SELECT ob_followup.value_datetime , ob_followup.person_id  from  obs as ob_followup");
-		sqlBuilder.append(" where ob_followup.concept_id =").append(conceptQuery(TREATMENT_END_DATE));
+		sqlBuilder.append(" where ob_followup.concept_id =").append(conceptQuery(FollowUpConceptQuestions.TREATMENT_END_DATE));
 		sqlBuilder.append(" and ob_followup.encounter_id in (:interruptedEncounter) ) as innterrup on innterrup.person_id =ob.person_id");
 
-		sqlBuilder.append(" where ob.concept_id =  ").append(conceptQuery(TREATMENT_END_DATE))
+		sqlBuilder.append(" where ob.concept_id =  ").append(conceptQuery(FollowUpConceptQuestions.TREATMENT_END_DATE))
 				.append(" AND ob.value_datetime > :endDate ")
 				.append(" and ob.person_id in (:personIds) and ob.encounter_id in (:betweenEncounters) ");
 
@@ -150,17 +151,17 @@ public class RTTQuery extends PatientQueryImpDao {
 		sqlBuilder.append(" from  obs as ob ");
 		sqlBuilder.append(" inner join ");
 		sqlBuilder.append("(    SELECT       ob_followup.value_datetime , ob_followup.person_id  from  obs as ob_followup");
-		sqlBuilder.append(" where ob_followup.concept_id =").append(conceptQuery(TREATMENT_END_DATE));
+		sqlBuilder.append(" where ob_followup.concept_id =").append(conceptQuery(FollowUpConceptQuestions.TREATMENT_END_DATE));
 		sqlBuilder
 				.append(" and ob_followup.encounter_id in (:restartedEncounter) ) as treatmentEnd on treatmentEnd.person_id =ob.person_id");
 		sqlBuilder.append(" inner join ");
 		sqlBuilder.append(" ( SELECT ob_followup.value_datetime , ob_followup.person_id  from  obs as ob_followup");
-		sqlBuilder.append(" where    ob_followup.concept_id =").append(conceptQuery(FOLLOW_UP_DATE));
+		sqlBuilder.append(" where    ob_followup.concept_id =").append(conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_DATE));
 		sqlBuilder
 				.append(" and ob_followup.encounter_id in (:interruptedEncounter) ) as innterrup on innterrup.person_id =ob.person_id");
 
-		sqlBuilder.append(" where ob.concept_id =  ").append(conceptQuery(FOLLOW_UP_STATUS))
-				.append(" AND ob.value_coded in ").append(conceptQuery(asList(LOST_TO_FOLLOW_UP, DROP)))
+		sqlBuilder.append(" where ob.concept_id =  ").append(conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS))
+				.append(" AND ob.value_coded in ").append(conceptQuery(asList(ConceptAnswer.LOST_TO_FOLLOW_UP, ConceptAnswer.DROP)))
 				.append(" and ob.person_id in (:personIds) and ob.encounter_id in (:betweenEncounters) ");
 
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());

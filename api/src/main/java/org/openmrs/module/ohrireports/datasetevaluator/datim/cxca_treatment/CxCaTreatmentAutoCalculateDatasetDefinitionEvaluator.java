@@ -3,9 +3,8 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_treatment;
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerTreatmentQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCAAutoCalculateDatasetDefinition;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentAutoCalculateDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_scrn.CxcaScreening;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -15,8 +14,6 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { CxCaTreatmentAutoCalculateDatasetDefinition.class })
 public class CxCaTreatmentAutoCalculateDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -34,9 +31,9 @@ public class CxCaTreatmentAutoCalculateDatasetDefinitionEvaluator implements Dat
 			cervicalCancerTreatmentQuery.setStartDate(cxCaTreatmentAutoCalculateDatasetDefinition.getStartDate());
 			cervicalCancerTreatmentQuery.setEndDate(cxCaTreatmentAutoCalculateDatasetDefinition.getEndDate());
 			
-			loadGetCxCaTreatmentByScreeningType(CXCA_FIRST_TIME_SCREENING_TYPE);
-			loadGetCxCaTreatmentByScreeningType(CXCA_TYPE_OF_SCREENING_RESCREEN);
-			loadGetCxCaTreatmentByScreeningType(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
+			loadGetCxCaTreatmentByScreeningType(ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE);
+			loadGetCxCaTreatmentByScreeningType(ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN);
+			loadGetCxCaTreatmentByScreeningType(ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
 			
 			DataSetRow dataSetRow = new DataSetRow();
 			dataSetRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class),
@@ -56,15 +53,15 @@ public class CxCaTreatmentAutoCalculateDatasetDefinitionEvaluator implements Dat
 		cervicalCancerTreatmentQuery.updateCountedCohort(leepCohort);
 		cervicalCancerTreatmentQuery.updateCountedCohort(thermocoagulationCohort);
 		switch (conceptUuId) {
-			case CXCA_FIRST_TIME_SCREENING_TYPE:
+			case ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE:
 				cervicalCancerTreatmentQuery.setFirstScreening(new CxCaTreatment(conceptUuId, cryotherapyCohort, leepCohort,
 				        thermocoagulationCohort));
 				break;
-			case CXCA_TYPE_OF_SCREENING_RESCREEN:
+			case ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN:
 				cervicalCancerTreatmentQuery.setReScreening(new CxCaTreatment(conceptUuId, cryotherapyCohort, leepCohort,
 				        thermocoagulationCohort));
 				break;
-			case CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
+			case ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
 				cervicalCancerTreatmentQuery.setPostScreening(new CxCaTreatment(conceptUuId, cryotherapyCohort, leepCohort,
 				        thermocoagulationCohort));
 				break;

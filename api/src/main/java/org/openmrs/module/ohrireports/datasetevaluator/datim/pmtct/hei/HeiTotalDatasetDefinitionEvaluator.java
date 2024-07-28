@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB;
+import static org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions.PMTCT_DATE_OF_SAMPLE_RECEIVED_BY_LAB;
 
 @Handler(supports = { HeiTotalDatasetDefinition.class })
 public class HeiTotalDatasetDefinitionEvaluator implements DataSetEvaluator {

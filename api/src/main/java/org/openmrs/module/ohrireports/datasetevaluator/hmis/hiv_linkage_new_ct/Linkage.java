@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 
 public class Linkage {
 	
@@ -36,16 +37,16 @@ public class Linkage {
 	
 	public void setLinkage(String conceptUUid, Integer conceptId, String name) {
 		switch (conceptUUid) {
-			case LINKED_TO_CARE_TREATMENT:
+			case PositiveCaseTrackingConceptQuestions.LINKED_TO_CARE_TREATMENT:
 				linkedToCareAndTreatment = new LinkageType(conceptId, name, conceptUUid);
 				break;
-			case STARTED_ART:
+			case FollowUpConceptQuestions.STARTED_ART:
 				startedArt = new LinkageType(conceptId, name, conceptUUid);
 				break;
-			case REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY:
+			case PositiveCaseTrackingConceptQuestions.REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY:
 				reasonForNotStartedArt = new LinkageType(conceptId, name, conceptUUid);
 				break;
-			case FINAL_OUT_COME:
+			case PositiveCaseTrackingConceptQuestions.FINAL_OUT_COME:
 				finalOutCome = new LinkageType(conceptId, name, conceptUUid);
 				break;
 			default:

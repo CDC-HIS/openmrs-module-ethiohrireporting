@@ -10,7 +10,9 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -24,7 +26,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 ;
 
@@ -42,7 +44,7 @@ public class TransferInOutReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- Transferred In/Out";
+		return ReportType.LINE_LIST_REPORT + "- Transferred In/Out";
 	}
 	
 	@Override
@@ -79,7 +81,7 @@ public class TransferInOutReport implements ReportManager {
 		TransferredInOutDataSetDefinition tDataSetDefinition = new TransferredInOutDataSetDefinition();
 		tDataSetDefinition.addParameters(getParameters());
 		tDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("TransferredInOut", EthiOhriUtil.map(tDataSetDefinition, "status=${status}"));
 		
 		return reportDefinition;

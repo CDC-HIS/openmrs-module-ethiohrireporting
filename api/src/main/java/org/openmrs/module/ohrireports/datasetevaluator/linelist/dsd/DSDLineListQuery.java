@@ -4,7 +4,7 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.api.impl.query.DSDQuery;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.HivArtRetQuery;
@@ -19,7 +19,7 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.OHRIReportsConstants.DSD_ASSESSMENT_DATE;
 
 @Component
-public class DSDLineListQuery extends BaseLineListQuery {
+public class DSDLineListQuery extends ObsElement {
 	
 	private DbSessionFactory sessionFactory;
 	

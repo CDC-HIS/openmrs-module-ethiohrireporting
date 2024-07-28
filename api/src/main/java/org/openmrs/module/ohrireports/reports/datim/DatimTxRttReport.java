@@ -4,8 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexAndCD4DataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_rtt.*;
 import org.openmrs.module.ohrireports.datasetevaluator.datim.tx_new.CD4Status;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -15,8 +16,6 @@ import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class DatimTxRttReport implements ReportManager {
@@ -28,7 +27,7 @@ public class DatimTxRttReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_TREATMENT + "-TX_RTT";
+		return ReportType.DATIM_REPORT_TREATMENT + "-TX_RTT";
 	}
 	
 	@Override
@@ -57,7 +56,8 @@ public class DatimTxRttReport implements ReportManager {
 		
 		TxRttAutoCalculateDataSetDefinition aDefinition = new TxRttAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
-		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition
 		        .setDescription("Number of ART patients who experienced IIT during any previous reporting period, who successfully restarted ARVs within the reporting period and remained on treatment until the end of the reporting period.");
 		reportDefinition
@@ -77,7 +77,7 @@ public class DatimTxRttReport implements ReportManager {
 		txRTTCD4L_200Definition.setCountCD4GreaterThan200(CD4Status.CD4LessThan200);
 		txRTTCD4L_200Definition.setDescription("< 200 CD4");
 		txRTTCD4L_200Definition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("< 200 CD4", EthiOhriUtil.map(txRTTCD4L_200Definition));
 		
 		TxRttByAgeAndSexDataSetDefinition txRTTCD4G_200Definition = new TxRttByAgeAndSexDataSetDefinition();
@@ -85,7 +85,7 @@ public class DatimTxRttReport implements ReportManager {
 		txRTTCD4G_200Definition.setCountCD4GreaterThan200(CD4Status.CD4GreaterThan200);
 		txRTTCD4G_200Definition.setDescription(">= 200 CD4");
 		txRTTCD4G_200Definition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition(">= 200 CD4", EthiOhriUtil.map(txRTTCD4G_200Definition));
 		
 		TxRttByAgeAndSexDataSetDefinition txRTTCDUnknownDefinition = new TxRttByAgeAndSexDataSetDefinition();
@@ -93,7 +93,7 @@ public class DatimTxRttReport implements ReportManager {
 		txRTTCDUnknownDefinition.setCountCD4GreaterThan200(CD4Status.CD4Unknown);
 		txRTTCDUnknownDefinition.setDescription("Unknown CD4");
 		txRTTCDUnknownDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Unknown CD4", EthiOhriUtil.map(txRTTCDUnknownDefinition));
 		
 		TxRttByAgeAndSexDataSetDefinition txRTTCDNotEligibleDefinition = new TxRttByAgeAndSexDataSetDefinition();
@@ -101,18 +101,20 @@ public class DatimTxRttReport implements ReportManager {
 		txRTTCDNotEligibleDefinition.setCountCD4GreaterThan200(CD4Status.CD4NotEligible);
 		txRTTCDNotEligibleDefinition.setDescription("Not Eligible for CD4");
 		txRTTCDNotEligibleDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Not Eligible for CD4", EthiOhriUtil.map(txRTTCDNotEligibleDefinition));
 		
 		TxRttIITDataSetDefinition tDefinition = new TxRttIITDataSetDefinition();
 		tDefinition.addParameters(getParameters());
-		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		tDefinition.setDescription("Disaggregated by IIT");
 		reportDefinition.addDataSetDefinition("Conditional Required - Disaggregated by IIT", EthiOhriUtil.map(tDefinition));
 		
 		TxRttKeyPopulationTypeDataSetDefinition oDefinition = new TxRttKeyPopulationTypeDataSetDefinition();
 		oDefinition.addParameters(getParameters());
-		oDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		oDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		oDefinition.setDescription("Disaggregated by key population type");
 		reportDefinition
 		        .addDataSetDefinition("Required Disaggregated by key population type", EthiOhriUtil.map(oDefinition));

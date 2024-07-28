@@ -3,6 +3,8 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.monthlyVisit;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MonthlyVisitDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -19,8 +21,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { MonthlyVisitDatasetDefinition.class })
 public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
@@ -47,37 +47,39 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		monthlyVisitQuery.generateReport(dsd.getStartDate(), dsd.getEndDate());
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = monthlyVisitQuery.getIdentifier(monthlyVisitQuery.getBaseCohort(),
-		    MRN_PATIENT_IDENTIFIERS);
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uaIdentifierHashMap = monthlyVisitQuery.getIdentifier(monthlyVisitQuery.getBaseCohort(),
-		    UAN_PATIENT_IDENTIFIERS);
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> artStartDictionary = monthlyVisitQuery.getArtStartDate(monthlyVisitQuery.getBaseCohort(),
 		    null, dsd.getEndDate());
 		HashMap<Integer, Object> regimentDictionary = monthlyVisitQuery.getRegiment(monthlyVisitQuery.getEncounter(),
 		    monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
-		    FOLLOW_UP_DATE, monthlyVisitQuery.getBaseCohort());
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = monthlyVisitQuery.getFollowUpStatus(monthlyVisitQuery.getEncounter(),
 		    monthlyVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> weight = monthlyVisitQuery.getByValueNumeric(WEIGHT, monthlyVisitQuery.getBaseCohort(),
-		    monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> viralLoadStatus = monthlyVisitQuery.getByResult(VIRAL_LOAD_STATUS,
+		HashMap<Integer, Object> weight = monthlyVisitQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> pregnantHashMap = monthlyVisitQuery.getByResult(PREGNANT_STATUS,
+		HashMap<Integer, Object> viralLoadStatus = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.VIRAL_LOAD_STATUS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(ARV_DISPENSED_IN_DAYS,
+		HashMap<Integer, Object> pregnantHashMap = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> adherence = monthlyVisitQuery.getByResult(ARV_ADHERENCE, monthlyVisitQuery.getBaseCohort(),
-		    monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> adherence = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> nextVisitDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
-		    NEXT_VISIT_DATE, monthlyVisitQuery.getBaseCohort());
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> vlRequestDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
-		    VL_RECEIVED_DATE, monthlyVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> dsdCatagories = monthlyVisitQuery.getByResult(DSD_CATGORIES,
+		    FollowUpConceptQuestions.VL_RECEIVED_DATE, monthlyVisitQuery.getBaseCohort());
+		HashMap<Integer, Object> dsdCatagories = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.DSD_CATGORIES,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> tbScreeningResult = monthlyVisitQuery.getByResult(TB_SCREENED_RESULT,
-		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> treatmentEndDateHashMap = monthlyVisitQuery.getObsValueDate(
-		    monthlyVisitQuery.getEncounter(), TREATMENT_END_DATE, monthlyVisitQuery.getBaseCohort());
+		HashMap<Integer, Object> tbScreeningResult = monthlyVisitQuery
+		        .getByResult(FollowUpConceptQuestions.TB_SCREENED_RESULT, monthlyVisitQuery.getBaseCohort(),
+		            monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> treatmentEndDateHashMap = monthlyVisitQuery
+		        .getObsValueDate(monthlyVisitQuery.getEncounter(), FollowUpConceptQuestions.TREATMENT_END_DATE,
+		            monthlyVisitQuery.getBaseCohort());
 		
 		DataSetRow row;
 		List<Person> personList = LineListUtilities.sortPatientByName(monthlyVisitQuery.getPersons(monthlyVisitQuery

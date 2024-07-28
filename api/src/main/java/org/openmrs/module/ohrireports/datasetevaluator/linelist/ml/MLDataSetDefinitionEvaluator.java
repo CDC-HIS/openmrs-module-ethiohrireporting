@@ -6,6 +6,8 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MLDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -18,14 +20,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { MLDataSetDefinition.class })
 public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -55,22 +50,24 @@ public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
 		List<Person> persons = LineListUtilities.sortPatientByName(mlQueryLineList.getPerson(cohort));
 		
 		HashMap<Integer, Object> artStartDateHashMap = mlQueryLineList.getObsValueDate(mlQueryLineList.getBaseEncounter(),
-		    ART_START_DATE, cohort);
+		    FollowUpConceptQuestions.ART_START_DATE, cohort);
 		HashMap<Integer, Object> lastFollowupDateHashMap = mlQueryLineList.getObsValueDate(
-		    mlQueryLineList.getBaseEncounter(), FOLLOW_UP_DATE, cohort);
+		    mlQueryLineList.getBaseEncounter(), FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> nextVisitDateHashMap = mlQueryLineList.getObsValueDate(mlQueryLineList.getBaseEncounter(),
-		    NEXT_VISIT_DATE, cohort);
-		HashMap<Integer, Object> mrnIdentifierHashMap = mlQueryLineList.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uanIdentifierHashMap = mlQueryLineList.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
+		HashMap<Integer, Object> mrnIdentifierHashMap = mlQueryLineList.getIdentifier(cohort,
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> uanIdentifierHashMap = mlQueryLineList.getIdentifier(cohort,
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> statusHashMap = mlQueryLineList.getFollowUpStatus(mlQueryLineList.getBaseEncounter(),
 		    cohort);
 		HashMap<Integer, Object> regimentHashMap = mlQueryLineList.getRegiment(mlQueryLineList.getBaseEncounter(), cohort);
 		HashMap<Integer, Object> dispensDayHashMap = mlQueryLineList.getConceptName(mlQueryLineList.getBaseEncounter(),
-		    cohort, ARV_DISPENSED_IN_DAYS);
-		HashMap<Integer, Object> adherenceHashMap = mlQueryLineList.getByResult(ARV_ADHERENCE, cohort,
-		    mlQueryLineList.getBaseEncounter());
+		    cohort, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS);
+		HashMap<Integer, Object> adherenceHashMap = mlQueryLineList.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
+		    cohort, mlQueryLineList.getBaseEncounter());
 		HashMap<Integer, Object> lastTxCurrDateHashMap = mlQueryLineList.getObsValueDate(mlQueryLineList.getBaseEncounter(),
-		    TREATMENT_END_DATE, cohort);
+		    FollowUpConceptQuestions.TREATMENT_END_DATE, cohort);
 		//HashMap<Integer, Object> onPMTCTHashMap = mlQueryLineList.getByResult(,cohort,mlQueryLineList.getBaseEncounter());
 		
 		DataSetRow row;

@@ -1,10 +1,10 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ORAL_CONTRACEPTIVE_PILL;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.ORAL_CONTRACEPTIVE_PILL;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.INJECTABLE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.IMPLANTABLE_HORMONE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.INTRAUTERINE_DEVICE;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.INJECTABLE;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.IMPLANTABLE_HORMONE;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.INTRAUTERINE_DEVICE;
 
 import java.util.Arrays;
 import java.util.Collections;

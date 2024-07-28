@@ -1,7 +1,7 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DSD_ASSESSMENT_DATE;
-import static org.openmrs.module.ohrireports.RegimentConstant.DSD_CATEGORY;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DSD_ASSESSMENT_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DSD_CATEGORY;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;

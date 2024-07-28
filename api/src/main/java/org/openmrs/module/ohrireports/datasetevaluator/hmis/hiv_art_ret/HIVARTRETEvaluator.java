@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_ret;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.module.ohrireports.api.impl.query.HivArtRetQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
@@ -41,7 +41,7 @@ public class HIVARTRETEvaluator {
 		}
 		currentCohort = isNetRetention ? hivArtRetQuery.getNetRetCohort() : hivArtRetQuery.getRetCohort();
 		currentEncounter = isNetRetention ? hivArtRetQuery.getNetRetEncounter() : hivArtRetQuery.getRetEncounter();
-		 pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(currentCohort, YES, currentEncounter);
+		 pregnantCohort = hivArtRetQuery.getPatientByPregnantStatus(currentCohort, ConceptAnswer.YES, currentEncounter);
 		buildData(dataSetDefinition);
 
 	}
@@ -61,107 +61,107 @@ public class HIVARTRETEvaluator {
 		dataSet.addRow(buildColumn(" ",
 				isNetRetention ? descriptionNet : description, getTotalCount()));
 
-		dataSet.addRow(buildColumn(".1", "< 1 year, Male", getCount(new QueryParameter(0D, 0.9, "M", UNKNOWN))));
+		dataSet.addRow(buildColumn(".1", "< 1 year, Male", getCount(new QueryParameter(0D, 0.9, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".3", "< 1 year, Female-non-pregnant",
-				getCount(new QueryParameter(0D, 0.9, "F", UNKNOWN))));
+				getCount(new QueryParameter(0D, 0.9, "F", ConceptAnswer.NOT_APPLICABLE))));
 		// 1-4
 		dataSet.addRow(buildColumn(".4", "1-4 year, Male",
-				getCount( new QueryParameter(1D, 4D, "M", UNKNOWN))));
+				getCount( new QueryParameter(1D, 4D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".6", "1-4 year, Female-non-pregnant",
-				getCount( new QueryParameter(1D, 4D, "F", UNKNOWN))));
+				getCount( new QueryParameter(1D, 4D, "F", ConceptAnswer.NOT_APPLICABLE))));
 
 		// 5-9
 		dataSet.addRow(buildColumn(".7", "5-9 year, Male",
-			getCount(	new QueryParameter(5D, 9D, "M", UNKNOWN))));
+			getCount(	new QueryParameter(5D, 9D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".9", "5-9 year, Female-non-pregnant",
-			getCount(new QueryParameter(5D, 9D, "F", UNKNOWN))));
+			getCount(new QueryParameter(5D, 9D, "F", ConceptAnswer.NOT_APPLICABLE))));
 
 		// 10-14
 		dataSet.addRow(buildColumn(".10", "10-14 year, Male",
-			getCount(new QueryParameter(10D, 14D, "M", UNKNOWN))));
+			getCount(new QueryParameter(10D, 14D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".12", "10-14 year, Female-non-pregnant",
-			getCount(	new QueryParameter(10D, 14D, "F", UNKNOWN))));
+			getCount(	new QueryParameter(10D, 14D, "F", ConceptAnswer.NOT_APPLICABLE))));
 
 		// 15-19
 		dataSet.addRow(buildColumn(".13", "15-19 year, Male",
-				getCount( new QueryParameter(15D, 19D, "M", UNKNOWN))));
+				getCount( new QueryParameter(15D, 19D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".14", "15-19 year, Female-pregnant",
-				getCount(new QueryParameter(15D, 19D, "F", YES))));
+				getCount(new QueryParameter(15D, 19D, "F", ConceptAnswer.YES))));
 
 		dataSet.addRow(buildColumn(".15", "15-19 year, Female-non-pregnant",
-				getCount( new QueryParameter(15D, 19D, "F", NO))));
+				getCount( new QueryParameter(15D, 19D, "F", ConceptAnswer.NO))));
 
 		// 20-24
 		dataSet.addRow(buildColumn(".16", "20-24 year, Male",
-				getCount(	new QueryParameter(20D, 24D, "M", UNKNOWN))));
+				getCount(	new QueryParameter(20D, 24D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".17", "20-24 year, Female-pregnant",
-				getCount(	new QueryParameter(20D, 24D, "F", YES))));
+				getCount(	new QueryParameter(20D, 24D, "F", ConceptAnswer.YES))));
 
 		dataSet.addRow(buildColumn(".18", "20-24 year, Female-non-pregnant",
-				getCount(	new QueryParameter(20D, 24D, "F", NO))));
+				getCount(	new QueryParameter(20D, 24D, "F", ConceptAnswer.NO))));
 
 		// 25-29
 		dataSet.addRow(buildColumn(".19", "25-29 year, Male",
-				getCount(	new QueryParameter(25D, 29D, "M", UNKNOWN))));
+				getCount(	new QueryParameter(25D, 29D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".20", "25-29 year, Female-pregnant",
-				getCount(new QueryParameter(25D, 29D, "F", YES))));
+				getCount(new QueryParameter(25D, 29D, "F", ConceptAnswer.YES))));
 
 		dataSet.addRow(buildColumn(".21", "25-29 year, Female-non-pregnant",
-				getCount	(new QueryParameter(25D, 29D, "F", NO))));
+				getCount	(new QueryParameter(25D, 29D, "F", ConceptAnswer.NO))));
 
 		// 30-34
 		dataSet.addRow(buildColumn(".22", "30-34 year, Male",
-				getCount( 	new QueryParameter(30D, 34D, "M", UNKNOWN))));
+				getCount( 	new QueryParameter(30D, 34D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".23", "30-34 year, Female-pregnant",
-				getCount	(new QueryParameter(30D, 34D, "F", YES))));
+				getCount	(new QueryParameter(30D, 34D, "F", ConceptAnswer.YES))));
 
 		dataSet.addRow(buildColumn(".24", "30-34 year, Female-non-pregnant",
-				getCount(	new QueryParameter(30D, 34D, "F", NO))));
+				getCount(	new QueryParameter(30D, 34D, "F", ConceptAnswer.NO))));
 
 		// 35-39
 		dataSet.addRow(buildColumn(".25", "35-39 year, Male",
-				getCount	(new QueryParameter(35D, 39D, "M", UNKNOWN))));
+				getCount	(new QueryParameter(35D, 39D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".26", "35-39 year, Female-pregnant",
-				getCount(	new QueryParameter(35D, 39D, "F", YES))));
+				getCount(	new QueryParameter(35D, 39D, "F", ConceptAnswer.YES))));
 
 		dataSet.addRow(buildColumn(".27", "35-39 year, Female-non-pregnant",
-				getCount	(new QueryParameter(35D, 39D, "F", NO))));
+				getCount	(new QueryParameter(35D, 39D, "F", ConceptAnswer.NO))));
 
 		// 40-44
 		dataSet.addRow(buildColumn(".28", "40-44 year, Male",
-				getCount	(new QueryParameter(40D, 44D, "M", UNKNOWN))));
+				getCount	(new QueryParameter(40D, 44D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".29", "40-44 year, Female-pregnant",
-				getCount(	new QueryParameter(40D, 44D, "F", YES))));
+				getCount(	new QueryParameter(40D, 44D, "F", ConceptAnswer.YES))));
 
 		dataSet.addRow(buildColumn(".30", "40-44 year, Female-non-pregnant",
-				getCount	(new QueryParameter(40D, 44D, "F", NO))));
+				getCount	(new QueryParameter(40D, 44D, "F", ConceptAnswer.NO))));
 
 		// 45-49
 		dataSet.addRow(buildColumn(".31", "45-49 year, Male",
-				getCount(	new QueryParameter(45D, 49D, "M", UNKNOWN))));
+				getCount(	new QueryParameter(45D, 49D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".32", "45-49 year, Female-pregnant",
-				getCount(	new QueryParameter(45D, 49D, "F", YES))));
+				getCount(	new QueryParameter(45D, 49D, "F", ConceptAnswer.YES))));
 
 		dataSet.addRow(buildColumn(".33", "45-49 year, Female-non-pregnant",
-				getCount(	new QueryParameter(45D, 49D, "F", NO))));
+				getCount(	new QueryParameter(45D, 49D, "F", ConceptAnswer.NO))));
 
 		// >=50
 		dataSet.addRow(buildColumn(".34", ">=50 year, Male",
-				getCount( new QueryParameter(50D, 200D, "M", UNKNOWN))));
+				getCount( new QueryParameter(50D, 200D, "M", ConceptAnswer.NOT_APPLICABLE))));
 
 		dataSet.addRow(buildColumn(".36", ">=50 year, Female-non-pregnant",
-				getCount(new QueryParameter(50D, 200D, "F", NO))));
+				getCount(new QueryParameter(50D, 200D, "F", ConceptAnswer.NO))));
 	}
 
 	private int getTotalCount() {
@@ -207,7 +207,7 @@ public class HIVARTRETEvaluator {
 			}
 		}// For Age Range
 		else if(Objects.equals(parameter.gender,"F")) {
-			if (Objects.equals(parameter.isPregnant, YES)) {
+			if (Objects.equals(parameter.isPregnant, ConceptAnswer.YES)) {
 				Optional personOption;
 				Person person;
 				for (Integer personId : pregnantCohort.getMemberIds()) {

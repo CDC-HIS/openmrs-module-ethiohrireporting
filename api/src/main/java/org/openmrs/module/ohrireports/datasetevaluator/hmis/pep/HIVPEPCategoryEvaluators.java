@@ -1,10 +1,10 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.pep;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.SEXUAL_ASSAULT;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.SEXUAL_ASSAULT;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.OCCUPATIONAL;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.NON_OCCUPATIONAL;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.OCCUPATIONAL;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.NON_OCCUPATIONAL;
 
 import org.openmrs.module.ohrireports.api.impl.query.PepQuery;
 import org.openmrs.module.reporting.dataset.DataSetColumn;

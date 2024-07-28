@@ -1,6 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED;
 
 import java.util.Arrays;
 import java.util.Calendar;

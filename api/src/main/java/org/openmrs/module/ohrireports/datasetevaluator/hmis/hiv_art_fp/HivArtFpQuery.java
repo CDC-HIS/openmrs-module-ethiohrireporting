@@ -10,10 +10,10 @@ import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class HivArtFpQuery extends PatientQueryImpDao {
@@ -54,7 +54,7 @@ public class HivArtFpQuery extends PatientQueryImpDao {
 	
 	private Cohort getPatientsOnFamilyPlanning() {
 		StringBuilder sqlBuilder = new StringBuilder("select distinct fb.person_id from obs as fb where fb.concept_id  =")
-		        .append(conceptQuery(FAMILY_PLANNING_METHODS));
+		        .append(conceptQuery(FollowUpConceptQuestions.FAMILY_PLANNING_METHODS));
 		sqlBuilder
 		        .append(" and fb.value_coded not in ")
 		        .append("(select concept_id from concept where uuid ='" + ABSTINENCE + "')")

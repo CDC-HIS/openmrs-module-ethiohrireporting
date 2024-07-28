@@ -5,19 +5,18 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 @Component
-public class MissedAppointmentQuery extends BaseLineListQuery {
+public class MissedAppointmentQuery extends ObsElement {
 	
 	private final DbSessionFactory sessionFactory;
 	
@@ -56,7 +55,7 @@ public class MissedAppointmentQuery extends BaseLineListQuery {
 	private Cohort getMissideCohort(Date reportEnd) {
 		StringBuilder sqlBuilder = new StringBuilder("select ob.person_id from obs as ob ");
 		sqlBuilder.append(" where ob.encounter_id in (:encounter) ");
-		sqlBuilder.append(" and ob.concept_id= ").append(conceptQuery(NEXT_VISIT_DATE));
+		sqlBuilder.append(" and ob.concept_id= ").append(conceptQuery(FollowUpConceptQuestions.NEXT_VISIT_DATE));
 		sqlBuilder.append(" and ob.person_id in (:personId) ");
 		sqlBuilder.append(" and DATEDIFF(:endDate, ob.value_datetime)>0");
 		
@@ -69,8 +68,9 @@ public class MissedAppointmentQuery extends BaseLineListQuery {
 	}
 	
 	private Cohort getCohortHasFollowUpAfterDate(Date reportEnd) {
-		List<Integer> afterDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE),
-		    reportEnd, null, HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		List<Integer> afterDateEncounter = encounterQuery.getEncounters(
+		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), reportEnd, null,
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		return getCohort(afterDateEncounter);
 	}
 	

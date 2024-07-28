@@ -2,7 +2,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.pmtct;
 
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
-public class EidLineListQuery extends BaseLineListQuery {
+public class EidLineListQuery extends ObsElement {
 	
 	private DbSessionFactory sessionFactory;
 	

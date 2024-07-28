@@ -3,41 +3,11 @@ package org.openmrs.module.ohrireports.reports.hmis;
 import java.util.Collections;
 import java.util.List;
 
-import org.openmrs.api.context.Context;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.HMISDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt.HmisArtTptDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_1.HmisArtTptCrOneDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_2.HmisArtTptCrTwoDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_rx.HmisCxCaRxDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_scrn.HmisCxCaScrnDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_fb.HivArtFbDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_fb.HivArtFbMetDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_intr.HivArtIntrDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_re_arv.HivArtReArvDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_art_ret.HIVARTRETDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_linkage_new_ct.HIVLinkageNewCtDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_r_ep_cat.HivPEPCategoryDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_p_rep.HivPrepDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPlHivDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_plhiv.HivPvlHivType;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISARTDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISEIDDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEIABTSTDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEIARVDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISHEICOTRDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pr_ep_curr.HivPrEpCurrDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_Lb_Lf_Lam.TbLbLfLamDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.tb_scrn.HmisTbScrnDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_curr.HmisTXCurrDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_dsd.HmisTXDsdDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.tx_new.HIVTXNewDatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -56,7 +26,7 @@ public class HMISReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return HMIS_REPORT + "-DHIS 2";
+		return ReportType.HMIS_REPORT + "-DHIS 2";
 	}
 	
 	@Override

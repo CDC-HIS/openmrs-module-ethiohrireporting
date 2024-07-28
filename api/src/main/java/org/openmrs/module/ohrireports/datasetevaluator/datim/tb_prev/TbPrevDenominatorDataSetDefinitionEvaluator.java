@@ -1,13 +1,12 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tb_prev;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TPT_START_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TPT_START_DATE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;

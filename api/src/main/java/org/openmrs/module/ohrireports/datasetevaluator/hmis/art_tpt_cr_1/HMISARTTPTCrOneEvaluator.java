@@ -1,7 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_1;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.RegimentConstant.*;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.*;
 
 import java.util.*;
 
@@ -10,14 +9,10 @@ import org.openmrs.Person;
 
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_1.HmisArtTptCrOneDataSetDefinition;
-import org.openmrs.module.reporting.dataset.DataSet;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -46,15 +41,15 @@ public class HMISARTTPTCrOneEvaluator {
 		startDate = getSubTwelveMonth(start);
 		endDate = getSubTwelveMonth(end);
 
-		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(TPT_START_DATE),
+		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE),
 				start, end);
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), null, end,
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null, end,
 				tptEncounterEncounter);
 
 		baseCohort = new Cohort(
 				tbQuery.getArtStartedCohort(baseEncounter, null, end, null));
 
-		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, TPT_START_DATE, startDate,
+		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, FollowUpConceptQuestions.TPT_START_DATE, startDate,
 				endDate);
 		baseCohort = new Cohort(
 				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptInitiatedCohort));

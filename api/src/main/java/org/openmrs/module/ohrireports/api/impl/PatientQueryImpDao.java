@@ -11,13 +11,13 @@ import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSession;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.dao.PatientQueryDao;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQueryDao {
@@ -58,7 +58,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
         if (encounters.isEmpty() || (cohort != null && cohort.isEmpty()))
             return new ArrayList<>();
 
-        StringBuilder sql = baseQuery(ART_START_DATE);
+        StringBuilder sql = baseQuery(FollowUpConceptQuestions.ART_START_DATE);
 
         sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 
@@ -104,7 +104,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
         if (encounters.isEmpty())
             return new ArrayList<>();
 
-        StringBuilder sql = baseQuery(ART_START_DATE);
+        StringBuilder sql = baseQuery(FollowUpConceptQuestions.ART_START_DATE);
 
         sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
         if (startOnOrAfter != null)
@@ -142,7 +142,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		if (cohort == null || cohort.isEmpty())
 			return new Cohort(new ArrayList<Integer>());
 		
-		StringBuilder sql = baseQuery(ADULT_CD4_COUNT);
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.ADULT_CD4_COUNT);
 		
 		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 		
@@ -172,7 +172,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	}
 	
 	public Cohort getArtStartedCohort(Date startOnOrAfter, Date endOrBefore) {
-		StringBuilder sql = baseQuery(ART_START_DATE);
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.ART_START_DATE);
 		
 		if (startOnOrAfter != null)
 			sql.append(" and ").append(OBS_ALIAS).append("value_datetime >= :start ");
@@ -205,7 +205,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 		if (encounters == null || encounters.isEmpty())
 			return new Cohort();
 		
-		StringBuilder sql = baseQuery(TREATMENT_END_DATE);
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.TREATMENT_END_DATE);
 		
 		sql.append("and ").append(OBS_ALIAS).append("encounter_id in (:encounterIds) ");
 		
@@ -253,7 +253,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	}
 	
 	public Cohort getAllCohortPLHIVMalnutrition(List<Integer> encounters) {
-		StringBuilder stringBuilder = baseQuery(NUTRITIONAL_SCREENING_RESULT);
+		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.NUTRITIONAL_SCREENING_RESULT);
 		stringBuilder.append(" and ob.encounter_id in (:encounters)");
 		stringBuilder.append(" and value_coded is not null");
 		
@@ -273,7 +273,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	
 	@Override
 	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, List<Integer> encounters) {
-		StringBuilder sql = baseQuery(PREGNANT_STATUS);
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.PREGNANCY_STATUS);
 		if (encounters == null || encounters.isEmpty())
 			return new Cohort();
 		sql.append(" and ").append(OBS_ALIAS).append("value_coded =").append(conceptQuery(conceptUUID));
@@ -296,9 +296,9 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	@NotNull
 	@Contract("_ -> new")
 	private Cohort transferredInFacility(List<Integer> encounters) {
-		StringBuilder sql = baseQuery(REASON_FOR_ART_ELIGIBILITY);
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
 		
-		sql.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(TRANSFERRED_IN));
+		sql.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(ConceptAnswer.TRANSFERRED_IN));
 		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounter) ");
 		
 		Query q = getSession().createSQLQuery(sql.toString());

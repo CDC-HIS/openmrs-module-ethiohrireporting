@@ -5,17 +5,18 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 @Component
-public class MonthlyVisitQuery extends BaseLineListQuery {
+public class MonthlyVisitQuery extends ObsElement {
 	
 	private final DbSessionFactory sessionFactory;
 	
@@ -65,11 +66,13 @@ public class MonthlyVisitQuery extends BaseLineListQuery {
 	}
 	
 	public List<Integer> getMonthlyVisitEncounter(Date start, Date end) {
-		List<Integer> allEncounters = encounterQuery.getAllEncounters(Collections.singletonList(FOLLOW_UP_DATE), start, end,
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		List<Integer> allEncounters = encounterQuery.getAllEncounters(
+		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), start, end,
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
-		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id =" + conceptQuery(FOLLOW_UP_STATUS)
-		        + " and ob.value_coded in " + conceptQuery(Arrays.asList(RESTART, ALIVE, STOP))
+		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id ="
+		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS) + " and ob.value_coded in "
+		        + conceptQuery(Arrays.asList(ConceptAnswer.RESTART, ConceptAnswer.ALIVE, ConceptAnswer.STOP))
 		        + " and ob.encounter_id in (:encounters)";
 		
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(builder);

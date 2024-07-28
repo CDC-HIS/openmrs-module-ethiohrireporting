@@ -1,22 +1,17 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.mtct_art;
 
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.ARTQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISARTDatasetDefinition;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_dsd.RowBuilder;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
@@ -41,16 +36,16 @@ public class HMISARTEvaluator {
 		
 		dataSet.addRow(buildColumn("MTCT_ART.1.", "Number of HIV positive women who received ART to "
 		        + "reduce the risk of mother to child transmission during ANC for the first time",
-		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(NEW_FROM_ANC).size())));
+		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(ConceptAnswer.NEW_FROM_ANC).size())));
 		dataSet.addRow(buildColumn("MTCT_ART.2.", "Number of HIV positive Pregnant women who received "
 		        + "ART to reduce the risk of mother to child transmission during L and D for the first time",
-		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(NEW_FROM_LD).size())));
+		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(ConceptAnswer.NEW_FROM_LD).size())));
 		dataSet.addRow(buildColumn("MTCT_ART.3.", "Number of HIV positive lactating women who received "
 		        + "ART to reduce the risk of mother to child transmission during PNC for the first time",
-		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(NEW_FROM_PNC).size())));
+		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(ConceptAnswer.NEW_FROM_PNC).size())));
 		dataSet.addRow(buildColumn("MTCT_ART.4.", "Number of HIV-positive women who get pregnant while "
 		        + "on ART and linked to ANC",
-		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(LINKED_FROM_ART).size())));
+		    String.valueOf(artQuery.getCohortByPMTCTEnrollmentStatus(ConceptAnswer.LINKED_FROM_ART).size())));
 		
 	}
 	

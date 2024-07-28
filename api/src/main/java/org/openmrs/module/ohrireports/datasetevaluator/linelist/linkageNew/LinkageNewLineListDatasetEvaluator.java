@@ -3,6 +3,10 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.linkageNew;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
+import org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions;
+import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.LinkageNewLineListDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct.Linkage;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
@@ -54,11 +58,11 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
         Cohort cohort = linkageNewLineListQuery.getBaseCohort();
 
         HashMap<Integer, Object> registrationDateHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                POSITIVE_TRACKING_REGISTRATION_DATE, cohort);
+                ENROLLMENT_DATE, cohort);
         HashMap<Integer, Object> confirmedDateHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                HIV_CONFIRMED_DATE, cohort);
+                PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
         HashMap<Integer, Object> dateLinkedToCareHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                LINKED_TO_CARE_DATE, cohort);
+                PositiveCaseTrackingConceptQuestions.LINKED_TO_CARE_DATE, cohort);
         HashMap<Integer, Object> finalOutComeHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
                 FINAL_OUT_COME_DATE, cohort);
         HashMap<Integer,Object> planForNextHashMap = linkageNewLineListQuery.getConceptValue(PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING,linkageNewLineListQuery.getBaseEncounters(),cohort);

@@ -1,22 +1,16 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_ml;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 import java.math.BigDecimal;
 
 import java.util.HashMap;
 
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
-import org.openmrs.Concept;
-import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.api.impl.query.MLQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_ml.TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
-import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;

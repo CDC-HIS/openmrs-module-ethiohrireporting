@@ -5,7 +5,8 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.ARTPatientListQuery;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.*;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ARTPatientListDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -19,8 +20,6 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { ARTPatientListDatasetDefinition.class })
 public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -78,7 +77,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		Cohort baseCohort = getCohortOnlyHaveMRN(artPatientListQuery.getCohort(artPatientListQuery.getBaseEncounter()));
 		
 		List<Integer> encounterWithAtleastOneFollow = encounterQuery.getEncounters(
-		    Collections.singletonList(FOLLOW_UP_DATE), null, new Date(), baseCohort);
+		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null, new Date(), baseCohort);
 		
 		Cohort cohortWithAtleastOneFollow = artPatientListQuery.getCohort(encounterWithAtleastOneFollow);
 		latestFollowup = encounterQuery.getLatestDateByFollowUpDate(cohortWithAtleastOneFollow, null, new Date());
@@ -155,18 +154,25 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	}
 	
 	private void loadColumnDictionary(List<Integer> encounters, Cohort cohort) {
-		uanIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
-		registrationDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters, ART_REGISTRATION_DATE, cohort,
-		    INTAKE_A_ENCOUNTER_TYPE);
-		hivConfirmedDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters, HIV_CONFIRMED_DATE, cohort);
-		artStartDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters, ART_START_DATE, cohort);
-		latestFollowupDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters, FOLLOW_UP_DATE, cohort);
-		latestFollowupStatus = artPatientListLineListQuery.getByResult(FOLLOW_UP_STATUS, cohort, encounters);
-		regimen = artPatientListLineListQuery.getByResult(REGIMEN, cohort, encounters);
-		arvDoseDays = artPatientListLineListQuery.getByResult(ART_DISPENSE_DOSE, cohort, encounters);
-		adherence = artPatientListLineListQuery.getByResult(ARV_ADHERENCE, cohort, encounters);
-		nextVisitDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters, NEXT_VISIT_DATE, cohort);
-		tiHashMap = artPatientListLineListQuery.getConceptName(encounters, cohort, REASON_FOR_ART_ELIGIBILITY);
+		uanIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
+		registrationDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		hivConfirmedDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		    PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
+		artStartDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.ART_START_DATE, cohort);
+		latestFollowupDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
+		latestFollowupStatus = artPatientListLineListQuery.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort,
+		    encounters);
+		regimen = artPatientListLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, cohort, encounters);
+		arvDoseDays = artPatientListLineListQuery
+		        .getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort, encounters);
+		adherence = artPatientListLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort, encounters);
+		nextVisitDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
+		tiHashMap = artPatientListLineListQuery.getConceptName(encounters, cohort,
+		    FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
@@ -187,7 +193,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	}
 	
 	public Cohort getCohortOnlyHaveMRN(Cohort cohort) {
-        mrnIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
+        mrnIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
         for (Map.Entry<Integer, Object> entry : mrnIdentifierHashMap.entrySet()) {
             if (Objects.isNull(entry.getValue())) {
                 cohort.getMemberships().removeIf(c -> c.getPatientId().equals(entry.getKey()));
