@@ -12,6 +12,9 @@ package org.openmrs.module.ohrireports.reports.library;
 import org.openmrs.Concept;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.reporting.cohort.definition.*;
 import org.openmrs.module.reporting.data.encounter.definition.EncounterDataDefinition;
 import org.openmrs.module.reporting.data.encounter.definition.ObsForEncounterDataDefinition;
@@ -22,8 +25,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class EncounterDataLibrary extends BaseDefinitionLibrary<EncounterDataDefinition> {
@@ -83,13 +84,13 @@ public class EncounterDataLibrary extends BaseDefinitionLibrary<EncounterDataDef
 	
 	public EncounterWithCodedObsCohortDefinition getHtsEncountersCohort(char c) {
 		EncounterWithCodedObsCohortDefinition ecd = new EncounterWithCodedObsCohortDefinition();
-		ecd.addEncounterType(encounterService.getEncounterTypeByUuid(HTS_ENCOUNTER_TYPE));
-		ecd.addEncounterType(encounterService.getEncounterTypeByUuid(HTS_RETROSPECTIVE_ENCOUNTER_TYPE));
-		ecd.setConcept(conceptService.getConceptByUuid(FINAL_HIV_RESULT));
+		ecd.addEncounterType(encounterService.getEncounterTypeByUuid(EncounterType.HTS_ENCOUNTER_TYPE));
+		ecd.addEncounterType(encounterService.getEncounterTypeByUuid(EncounterType.HTS_RETROSPECTIVE_ENCOUNTER_TYPE));
+		ecd.setConcept(conceptService.getConceptByUuid(FollowUpConceptQuestions.FINAL_HIV_RESULT));
 		if (c == '+') {
-			ecd.setIncludeCodedValues(Collections.singletonList(conceptService.getConceptByUuid(POSITIVE)));
+			ecd.setIncludeCodedValues(Collections.singletonList(conceptService.getConceptByUuid(ConceptAnswer.POSITIVE)));
 		} else if (c == '-') {
-			ecd.setIncludeCodedValues(Collections.singletonList(conceptService.getConceptByUuid(NEGATIVE)));
+			ecd.setIncludeCodedValues(Collections.singletonList(conceptService.getConceptByUuid(ConceptAnswer.NEGATIVE)));
 		}
 		return ecd;
 	}

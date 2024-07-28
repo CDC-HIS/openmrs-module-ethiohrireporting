@@ -4,22 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_DIAGNOSTIC_TEST_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.POSITIVE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PREGNANCY_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
-
-import org.joda.time.chrono.IslamicChronology;
-import org.openmrs.Concept;
-import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.ARTQuery;
-import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -29,8 +16,6 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
-import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { PMTCTARTDataSetDefinition.class })

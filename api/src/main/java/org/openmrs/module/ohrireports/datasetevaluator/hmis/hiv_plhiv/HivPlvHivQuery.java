@@ -7,10 +7,12 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 @Component
 public class HivPlvHivQuery extends PatientQueryImpDao {
@@ -56,8 +58,9 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getAssessedPatients() {
 		
-		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS_ADULT,
-		    Arrays.asList(MILD_MAL_NUTRITION, MODERATE_MAL_NUTRITION, UNDERNOURISHED, SEVERE_MAL_NUTRITION));
+		StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT, Arrays.asList(
+		    ConceptAnswer.MILD_MAL_NUTRITION, ConceptAnswer.MODERATE_MAL_NUTRITION, ConceptAnswer.UNDERNOURISHED,
+		    ConceptAnswer.SEVERE_MAL_NUTRITION));
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
 		query.setParameterList("person_id", baseCohort.getMemberIds());
@@ -68,7 +71,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	}
 	
 	public Set<Integer> getPatientUndernourished() {
-        StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS_ADULT, Arrays.asList(UNDERNOURISHED));
+        StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT, Arrays.asList(ConceptAnswer.UNDERNOURISHED));
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
         query.setParameterList("person_id", baseCohort.getMemberIds());
@@ -80,8 +83,8 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPatientModerateMalNutrition() {
 
-        StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS_ADULT,
-                Arrays.asList(MODERATE_MAL_NUTRITION, MILD_MAL_NUTRITION));
+        StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT,
+                Arrays.asList(ConceptAnswer.MODERATE_MAL_NUTRITION, ConceptAnswer.MILD_MAL_NUTRITION));
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
@@ -94,7 +97,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPatientSevereMalNutrition() {
 
-        StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS_ADULT, Arrays.asList(SEVERE_MAL_NUTRITION));
+        StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT, Arrays.asList(ConceptAnswer.SEVERE_MAL_NUTRITION));
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
         query.setParameterList("person_id", baseCohort.getMemberIds());
@@ -106,9 +109,9 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPatientMATookSupplement() {
 		
-		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, YES));
-		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS_ADULT,
-		    Arrays.asList(MILD_MAL_NUTRITION, MODERATE_MAL_NUTRITION));
+		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, ConceptAnswer.YES));
+		StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT,
+		    Arrays.asList(ConceptAnswer.MILD_MAL_NUTRITION, ConceptAnswer.MODERATE_MAL_NUTRITION));
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
@@ -121,8 +124,9 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPatientSVTookSupplement() {
 		
-		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, YES));
-		StringBuilder sql = getPatientBySupplementType(NUTRITIONAL_STATUS_ADULT, Arrays.asList(SEVERE_MAL_NUTRITION));
+		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, ConceptAnswer.YES));
+		StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT,
+		    Arrays.asList(ConceptAnswer.SEVERE_MAL_NUTRITION));
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
@@ -134,7 +138,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getAllNUTMAMForAdult(List<Integer> encounters, Cohort cohort, List<String> conceptUUids) {
-		StringBuilder stringBuilder = baseQuery(NUTRITIONAL_STATUS_ADULT);
+		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT);
 		stringBuilder.append(" and ob.encounter_id in (:encounters)");
 		stringBuilder.append(" and ob.person_id in (:cohort)");
 		stringBuilder.append(" and value_coded in ").append(conceptQuery(conceptUUids));
@@ -147,7 +151,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getAllNUTSAMForAdult(List<Integer> encounters, Cohort cohort, List<String> conceptUUids) {
-		StringBuilder stringBuilder = baseQuery(NUTRITIONAL_STATUS_ADULT);
+		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT);
 		stringBuilder.append(" and ob.encounter_id in (:encounters)");
 		stringBuilder.append(" and ob.person_id in (:cohort)");
 		stringBuilder.append(" and value_coded in ").append(conceptQuery(conceptUUids));
@@ -163,7 +167,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 		StringBuilder stringBuilder = baseQuery(THERAPEUTIC_SUPPLEMENTARY_FOOD);
 		stringBuilder.append(" and ob.encounter_id in (:encounters)");
 		stringBuilder.append(" and ob.person_id in (:cohort)");
-		stringBuilder.append(" and value_coded = ").append(conceptQuery(YES));
+		stringBuilder.append(" and value_coded = ").append(conceptQuery(ConceptAnswer.YES));
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
 		query.setParameterList("encounters", encounters);
@@ -174,7 +178,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	@Override
 	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, List<Integer> encounters) {
-		StringBuilder sql = baseQuery(PREGNANT_STATUS);
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.PREGNANCY_STATUS);
 		if (encounters == null || encounters.isEmpty())
 			return new Cohort();
 		sql.append(" and ").append(OBS_ALIAS).append("value_coded =").append(conceptQuery(conceptUUID));
@@ -194,7 +198,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPregnant() {
 		
-		Set<Integer> pregnantIntegers = getPatientByStatus(PREGNANT_STATUS, YES);
+		Set<Integer> pregnantIntegers = getPatientByStatus(FollowUpConceptQuestions.PREGNANCY_STATUS, ConceptAnswer.YES);
 		return pregnantIntegers;
 	}
 	

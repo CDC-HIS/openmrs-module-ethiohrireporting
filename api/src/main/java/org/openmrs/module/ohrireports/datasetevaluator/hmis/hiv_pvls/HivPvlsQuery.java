@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.VIRAL_LOAD_STATUS;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_COUNT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.VIRAL_LOAD_STATUS;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.HIV_VIRAL_LOAD_COUNT;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;

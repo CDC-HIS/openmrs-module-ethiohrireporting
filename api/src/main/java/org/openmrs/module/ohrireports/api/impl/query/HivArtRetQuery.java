@@ -4,7 +4,8 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class HivArtRetQuery extends PatientQueryImpDao {
@@ -67,8 +66,8 @@ public class HivArtRetQuery extends PatientQueryImpDao {
 	
 	private Cohort removeTransferredOutPatients() {
 		StringBuilder sqlBuilder = new StringBuilder("select person_id from obs where ");
-		sqlBuilder.append(" encounter_id in (:encounters) and concept_id = ").append(conceptQuery(FOLLOW_UP_STATUS));
-		sqlBuilder.append(" and value_coded <> ").append(conceptQuery(TRANSFERRED_OUT_UUID));
+		sqlBuilder.append(" encounter_id in (:encounters) and concept_id = ").append(conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS));
+		sqlBuilder.append(" and value_coded <> ").append(conceptQuery(ConceptAnswer.TRANSFERRED_OUT_UUID));
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
 		query.setParameterList("encounters",netRetEncounter);

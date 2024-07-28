@@ -4,14 +4,13 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class TransferInOutQuery extends PatientQueryImpDao {
@@ -113,9 +112,10 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getTOCohort() {
-		StringBuilder stringBuilder = baseQuery(FOLLOW_UP_STATUS);
+		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS);
 		
-		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(TRANSFERRED_OUT_UUID));
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ")
+		        .append(conceptQuery(ConceptAnswer.TRANSFERRED_OUT_UUID));
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
@@ -125,9 +125,10 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getTICohort() {
-		StringBuilder stringBuilder = baseQuery(REASON_FOR_ART_ELIGIBILITY);
+		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
 		
-		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(TRANSFERRED_IN));
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ")
+		        .append(conceptQuery(ConceptAnswer.TRANSFERRED_IN));
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());

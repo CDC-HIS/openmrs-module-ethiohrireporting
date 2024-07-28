@@ -1,8 +1,6 @@
 package org.openmrs.module.ohrireports.reports.datim;
 
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.EidAgeAndTestDisAggregationDatasetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.EidNumeratorDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_fo.PMTCTFOAutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_fo.PMTCTFODataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -16,8 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATIM_REPORT_TESTING;
+import static org.openmrs.module.ohrireports.constants.ReportType.DATIM_REPORT_TESTING;
 
 @Component
 public class PMTCTFOReport implements ReportManager {

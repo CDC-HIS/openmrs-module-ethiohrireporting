@@ -1,25 +1,16 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.cxca_rx;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Cohort;
-import org.openmrs.Obs;
 import org.openmrs.Person;
-import org.openmrs.api.ConceptService;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_rx.HmisCxCaRxDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.hmis.Gender;
-import org.openmrs.module.reporting.dataset.DataSet;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -48,11 +39,11 @@ public class HmisCxCaRXEvaluator  {
 
 
         Cohort cryotherapyCohort = cxCaTreatmentHMISQuery
-                .getCohortByConceptAndBaseEncounter(CXCA_TREATMENT_PRECANCEROUS_LESIONS, CXCA_TREATMENT_TYPE_CRYOTHERAPY);
+                .getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS, FollowUpConceptQuestions.CXCA_TREATMENT_TYPE_CRYOTHERAPY);
         Cohort leepCohort = cxCaTreatmentHMISQuery
-                .getCohortByConceptAndBaseEncounter(CXCA_TREATMENT_PRECANCEROUS_LESIONS, CXCA_TREATMENT_TYPE_LEEP);
+                .getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS, ConceptAnswer.CXCA_TREATMENT_TYPE_LEEP);
         Cohort thermocoagulationCohort = cxCaTreatmentHMISQuery
-                .getCohortByConceptAndBaseEncounter(CXCA_TREATMENT_PRECANCEROUS_LESIONS, CXCA_TREATMENT_TYPE_THERMOCOAGULATION);
+                .getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS, ConceptAnswer.CXCA_TREATMENT_TYPE_THERMOCOAGULATION);
         int  totalPrecancerousLesion = cryotherapyCohort.size() + leepCohort.size() + thermocoagulationCohort.size();
 
 

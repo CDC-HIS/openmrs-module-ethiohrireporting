@@ -6,12 +6,9 @@ import java.util.*;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
 import org.openmrs.module.ohrireports.api.impl.query.MLQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
 
 @Component
 public class MLHmisQuery {

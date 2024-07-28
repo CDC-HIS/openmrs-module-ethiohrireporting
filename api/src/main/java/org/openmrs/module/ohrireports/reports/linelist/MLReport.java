@@ -1,6 +1,6 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MLDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -11,11 +11,12 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
+import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 
 @Component
 public class MLReport implements ReportManager {
@@ -59,7 +60,7 @@ public class MLReport implements ReportManager {
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
 		ReportDesign design = ReportManagerUtil.createExcelDesign("646e6c28-2d1e-4e8b-b51a-fcb0ce16033b", reportDefinition);
-		return Arrays.asList(design);
+		return Collections.singletonList(design);
 	}
 	
 	@Override
@@ -73,14 +74,6 @@ public class MLReport implements ReportManager {
 	}
 	
 	private List<Parameter> getDateRangeParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(true);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(true);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 }

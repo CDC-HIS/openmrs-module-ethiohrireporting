@@ -1,8 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_new;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.ART_START_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.CURRENTLY_BREAST_FEEDING_CHILD;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.YES;
 
 import java.util.List;
 

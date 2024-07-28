@@ -1,7 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.cxca_scrn;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,17 +7,11 @@ import java.util.List;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Person;
-import org.openmrs.api.ConceptService;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.cxca_scrn.HmisCxCaScrnDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.hmis.Gender;
-import org.openmrs.module.reporting.dataset.DataSet;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -46,8 +38,8 @@ public class HMISCxCaSCRNEvaluator  {
         cxcaScreeningHmisQuery.setStartDate(start);
         cxcaScreeningHmisQuery.setEndDate(end);
 
-        Cohort viaScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(SCREENING_STRATEGY,VIA );
-        Cohort hpvScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(SCREENING_STRATEGY, HPV_DNA_SCREENING_VIA_TRIAGE);
+        Cohort viaScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.SCREENING_STRATEGY, ConceptAnswer.VIA );
+        Cohort hpvScreenedCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.SCREENING_STRATEGY, FollowUpConceptQuestions.HPV_DNA_SCREENING_VIA_TRIAGE);
         int totalScreenedCohort = viaScreenedCohort.size() + hpvScreenedCohort.size();
 
 
@@ -55,11 +47,11 @@ public class HMISCxCaSCRNEvaluator  {
         data.addRow(buildColumn("1. 1", "Screened by VIA", viaScreenedCohort.size()));
         data.addRow(buildColumn("1. 2", "Screened by HPV DNA", hpvScreenedCohort.size()));
 
-        Cohort viaNormalCervixCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(VIA_SCREENING_RESULT, VIA_NEGATIVE);
-        Cohort viaPositiveEligibleForCrypto = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(VIA_SCREENING_RESULT, VIA_POSITIVE_ELIGIBLE_FOR_CRYO);
-        Cohort viaPositiveNonEligibleForCrypto = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(VIA_SCREENING_RESULT, VIA_POSITIVE_NON_ELIGIBLE_FOR_CRYO);
+        Cohort viaNormalCervixCohort = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.VIA_SCREENING_RESULT, ConceptAnswer.VIA_NEGATIVE);
+        Cohort viaPositiveEligibleForCrypto = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.VIA_SCREENING_RESULT, ConceptAnswer.VIA_POSITIVE_ELIGIBLE_FOR_CRYO);
+        Cohort viaPositiveNonEligibleForCrypto = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.VIA_SCREENING_RESULT, ConceptAnswer.VIA_POSITIVE_NON_ELIGIBLE_FOR_CRYO);
         Cohort viaPrecancerousLesion = Cohort.union(viaPositiveEligibleForCrypto, viaPositiveNonEligibleForCrypto);
-        Cohort viaSuspiciousCxCa = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(VIA_SCREENING_RESULT, VIA_SUSPICIOUS_RESULT);
+        Cohort viaSuspiciousCxCa = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.VIA_SCREENING_RESULT, ConceptAnswer.SUSPECTED_CERVICAL_CANCER);
 
         int totalViaScreeningResult = viaNormalCervixCohort.size()
                 + viaPrecancerousLesion.size()
@@ -110,7 +102,7 @@ public class HMISCxCaSCRNEvaluator  {
                 , getCohortSizeByAgeAndGender(50, 150)));
 
 
-        Cohort hpvDNATestPositive = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(HPV_DNA_SCREENING_RESULT, POSITIVE);
+        Cohort hpvDNATestPositive = cxcaScreeningHmisQuery.getCohortByConceptAndBaseEncounter(FollowUpConceptQuestions.HPV_DNA_SCREENING_RESULT, ConceptAnswer.POSITIVE);
 
         personList = cxcaScreeningHmisQuery.getPersons(hpvDNATestPositive);
 

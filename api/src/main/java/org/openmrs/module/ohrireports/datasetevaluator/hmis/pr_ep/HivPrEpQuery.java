@@ -7,11 +7,15 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.PrepConceptQuestions;
+import org.openmrs.module.ohrireports.constants.RegimentConstant;
+import org.openmrs.module.ohrireports.reports.linelist.PEPReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.FOLLOW_UP_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FOLLOW_UP_DATE;
 
 @Component
 public class HivPrEpQuery extends PatientQueryImpDao {
@@ -97,8 +101,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	 * Newly enrolled patients to Prep
 	 */
 	private String getSubQueryClauses() {
-		String subQueryClauses = "" + PERSON_ID_SUB_ALIAS_OBS + "concept_id =" + conceptQuery(PR_EP_STARTED) + " and "
-		        + PERSON_ID_SUB_ALIAS_OBS + "voided = false and " + PERSON_ID_SUB_ALIAS_OBS
+		String subQueryClauses = "" + PERSON_ID_SUB_ALIAS_OBS + "concept_id =" + conceptQuery(PEPReport.PR_EP_STARTED)
+		        + " and " + PERSON_ID_SUB_ALIAS_OBS + "voided = false and " + PERSON_ID_SUB_ALIAS_OBS
 		        + "value_datetime >= :endOnOrAfter  ";
 		return subQueryClauses;
 	}
@@ -114,8 +118,9 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public Integer getFemaleSexWorkerOnPrep(Boolean isCurrent) {
 		
-		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id =" + conceptQuery(FEMALE_SEX_WORKER) + " and "
-		        + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(YES) + " ";
+		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id ="
+		        + conceptQuery(PrepConceptQuestions.FEMALE_SEX_WORKER) + " and " + PERSON_ID_ALIAS_OBS + "value_coded = "
+		        + conceptQuery(ConceptAnswer.YES) + " ";
 		StringBuilder sql = personIdQuery(isCurrent ? getCurrQueryClauses() : getSubQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
@@ -132,7 +137,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	public Cohort getCategoryOnPrep(String clientCategoryUUid, Cohort cohort) {
 		
 		String stringQuery = "select distinct ob.person_id from obs as ob " + " where person_id in (:cohorts) "
-		        + "and  concept_id = " + conceptQuery(clientCategoryUUid) + " and value_coded = " + conceptQuery(YES);
+		        + "and  concept_id = " + conceptQuery(clientCategoryUUid) + " and value_coded = "
+		        + conceptQuery(ConceptAnswer.YES);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		query.setParameterList("cohorts", cohort.getMemberIds());
@@ -141,7 +147,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPrEpDrugs() {
 		StringBuilder sql = new StringBuilder("select distinct concept_id from concept ");
-		sql.append("where uuid in ('" + TDF_TENOFOVIR_DRUG + "','" + TDF_FTC_DRUG + "','" + TDF_3TC_DRUG + "')");
+		sql.append("where uuid in ('" + RegimentConstant.TDF_TENOFOVIR_DRUG + "','" + RegimentConstant.TDF_FTC_DRUG + "','"
+		        + RegimentConstant.TDF_3TC_DRUG + "')");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		return new HashSet<Integer>(query.list());
@@ -149,8 +156,9 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public Integer getCountByExposureType(String uuid) {
 		
-		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id =" + conceptQuery(PEP_EXPOSURE_TYPE) + " and "
-		        + PERSON_ID_ALIAS_OBS + "value_coded = " + conceptQuery(uuid) + "";
+		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id ="
+		        + conceptQuery(PrepConceptQuestions.PEP_EXPOSURE_TYPE) + " and " + PERSON_ID_ALIAS_OBS + "value_coded = "
+		        + conceptQuery(uuid) + "";
 		StringBuilder sql = personIdQuery(getCurrQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
@@ -174,9 +182,9 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public Cohort getAllPrEPCurr() {
 		List<Integer> basePrEPCTEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null, endDate,
-		    PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		List<Integer> filteredEncounterForPrepCT = filterEncounterByPrePStatusForPrepCT(Arrays.asList(PREP_DOSE_END_DATE),
-		    null, endDate, basePrEPCTEncounter);
+		    EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		List<Integer> filteredEncounterForPrepCT = filterEncounterByPrePStatusForPrepCT(
+		    Arrays.asList(PrepConceptQuestions.PREP_DOSE_END_DATE), null, endDate, basePrEPCTEncounter);
 		
 		baseCohort = getCohort(filteredEncounterForPrepCT);
 		

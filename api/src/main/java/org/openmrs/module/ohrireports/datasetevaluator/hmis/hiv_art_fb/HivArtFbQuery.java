@@ -1,19 +1,17 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fb;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class HivArtFbQuery extends PatientQueryImpDao {
@@ -54,11 +52,11 @@ public class HivArtFbQuery extends PatientQueryImpDao {
 	
 	private Cohort getPatientsOnFamilyPlanning() {
 		StringBuilder sqlBuilder = new StringBuilder("select distinct fb.person_id from obs as fb where fb.concept_id  =")
-		        .append(conceptQuery(FAMILY_PLANNING_METHODS));
+		        .append(conceptQuery(FollowUpConceptQuestions.FAMILY_PLANNING_METHODS));
 		sqlBuilder
 		        .append(" and fb.value_coded is not null and fb.encounter_id in (:encounters) and fb.person_id in (select distinct p.person_id from obs as p where ");
-		sqlBuilder.append("  p.concept_id =").append(conceptQuery(PREGNANT_STATUS)).append(" and p.value_coded <> ")
-		        .append(conceptQuery(YES));
+		sqlBuilder.append("  p.concept_id =").append(conceptQuery(FollowUpConceptQuestions.PREGNANCY_STATUS))
+		        .append(" and p.value_coded <> ").append(conceptQuery(ConceptAnswer.YES));
 		sqlBuilder.append(" and p.encounter_id in (:pEncounters) and p.person_id in(:pPersonIds)) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
@@ -72,8 +70,9 @@ public class HivArtFbQuery extends PatientQueryImpDao {
 	
 	public Integer getPatientByMethodOfOtherFP(List<String> conceptTypeUUID) {
 		String sqlBuilder = "select obt.person_id from obs as obt where obt.concept_id = "
-		        + conceptQuery(FAMILY_PLANNING_METHODS) + " and obt.value_coded in " + conceptQuery(conceptTypeUUID)
-		        + " and obt.encounter_id in (:encounter)" + " and obt.person_id in (:cohort)";
+		        + conceptQuery(FollowUpConceptQuestions.FAMILY_PLANNING_METHODS) + " and obt.value_coded in "
+		        + conceptQuery(conceptTypeUUID) + " and obt.encounter_id in (:encounter)"
+		        + " and obt.person_id in (:cohort)";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder);
 		query.setParameterList("encounter", baseEncounter);
 		query.setParameterList("cohort", cohort.getMemberIds());

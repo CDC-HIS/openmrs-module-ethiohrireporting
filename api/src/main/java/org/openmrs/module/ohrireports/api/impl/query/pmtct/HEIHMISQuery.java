@@ -6,14 +6,14 @@ import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class HEIHMISQuery extends PatientQueryImpDao {
@@ -47,7 +47,7 @@ public class HEIHMISQuery extends PatientQueryImpDao {
 	}
 	
 	public void generateHMISCORT(Date start, Date end){
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCT_FOLLOW_UP_DATE),null,end,PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE);
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCTConceptQuestions.PMTCT_FOLLOW_UP_DATE),null,end, EncounterType.PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE);
 		baseCohort = new Cohort();
 		hashMap = getHEIWithCotrimoxazole(baseEncounter);
 		hashMap.forEach((k,i)->{
@@ -64,7 +64,7 @@ public class HEIHMISQuery extends PatientQueryImpDao {
 	}
 	
 	public void generateHMISCONFORMATORY(Date start, Date end){
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCT_CONFORMATORY_TEST_DONE),null,end,PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE);
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCTConceptQuestions.PMTCT_CONFORMATORY_TEST_DONE),null,end, EncounterType.PMTCT_CHILD_FOLLOW_UP_ENCOUNTER_TYPE);
 		baseCohort = new Cohort();
 		hashMap = getHEIRapidConformatoryTest(baseEncounter,end);
 		hashMap.forEach((k,i)->{
@@ -90,7 +90,7 @@ public class HEIHMISQuery extends PatientQueryImpDao {
 		sqlBuilder.append(" inner  join person as p on p.person_id = ob.person_id ");
 		sqlBuilder.append(" inner  join concept_name as c on c.concept_id = ob.value_coded ");
 		sqlBuilder.append(" where ob.encounter_id in (:encounterIds) and ob.concept_id = ").append(
-		    conceptQuery(PMTCT_RAPID_ANTIBODY_RESULT));
+		    conceptQuery(PMTCTConceptQuestions.PMTCT_RAPID_ANTIBODY_RESULT));
 		sqlBuilder.append(" and ob.value_coded is not null");
 		sqlBuilder
 		        .append(" and PERIOD_DIFF(EXTRACT(YEAR_MONTH FROM (:reportEnd)), EXTRACT(YEAR_MONTH FROM p.birthDate)) <=18");
@@ -102,7 +102,7 @@ public class HEIHMISQuery extends PatientQueryImpDao {
 	}
 	
 	public void generateHMISIARV(Date start, Date end){
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCT_CHILD_ENROLLMENT_DATE),null,end,PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE);
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PMTCTConceptQuestions.PMTCT_CHILD_ENROLLMENT_DATE),null,end, EncounterType.PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE);
 		baseCohort = new Cohort();
 		hashMap = getHEIARVProphylaxis(baseEncounter);
 		hashMap.forEach((k,i)->{
@@ -113,7 +113,8 @@ public class HEIHMISQuery extends PatientQueryImpDao {
 	private HashMap<Integer, Object> getHEIWithCotrimoxazole(List<Integer> baseEncounter) {
 		StringBuilder sqlBuilder = new StringBuilder("select distinct ob.person_id,p.birthdate from obs as ob");
 		sqlBuilder.append(" inner  join person as p on p.person_id = ob.person_id ");
-		sqlBuilder.append(" where ob.encounter_id in (:encounterIds) and ob.concept_id = ").append(conceptQuery(PMTCT_DOSE));
+		sqlBuilder.append(" where ob.encounter_id in (:encounterIds) and ob.concept_id = ").append(
+		    conceptQuery(PMTCTConceptQuestions.PMTCT_DOSE));
 		sqlBuilder.append(" and ob.value_coded is not null");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
@@ -125,7 +126,7 @@ public class HEIHMISQuery extends PatientQueryImpDao {
 		StringBuilder sqlBuilder = new StringBuilder("select distinct ob.person_id,p.birthdate from obs as ob");
 		sqlBuilder.append(" inner  join person as p on p.person_id = ob.person_id ");
 		sqlBuilder.append(" where ob.encounter_id in (:encounterIds) and ob.concept_id = ").append(
-		    conceptQuery(PMTCT_ARV_PROPHYLAXIS_STARTED));
+		    conceptQuery(PMTCTConceptQuestions.PMTCT_ARV_PROPHYLAXIS_STARTED));
 		sqlBuilder.append(" and ob.value_coded is not null");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());

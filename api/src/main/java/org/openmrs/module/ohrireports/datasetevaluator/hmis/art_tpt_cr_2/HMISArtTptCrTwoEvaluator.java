@@ -1,7 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_2;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.RegimentConstant.*;
+import static org.openmrs.module.ohrireports.constants.RegimentConstant.*;
 
 import java.util.*;
 
@@ -9,7 +8,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.art_tpt_cr_2.HmisArtTptCrTwoDataSetDefinition;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 
@@ -83,7 +82,7 @@ public class HMISArtTptCrTwoEvaluator {
 		Cohort _baseCohort = new Cohort(
 				tbQuery.getArtStartedCohort(baseEncounter, null, end, null));
 
-		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, TPT_START_DATE, startDate,
+		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, FollowUpConceptQuestions.TPT_START_DATE, startDate,
 				endDate);
 		baseCohort = new Cohort(
 				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptInitiatedCohort));
@@ -96,14 +95,14 @@ public class HMISArtTptCrTwoEvaluator {
 	}
 
 	private List<Integer> getBaseEncounter() {
-		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(TPT_START_DATE),
+		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE),
 				start,end);
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), null,
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null,
 				end,
 				tptEncounterEncounter);
 		Cohort cohort = tbQuery.getCohort(baseEncounter);
 		
-		return encounterQuery.getEncounters(Collections.singletonList(TPT_COMPLETED_DATE),
+		return encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE),
 				null, end, cohort);
 
 	}

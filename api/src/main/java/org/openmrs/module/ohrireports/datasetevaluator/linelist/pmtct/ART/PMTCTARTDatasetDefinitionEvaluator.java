@@ -4,6 +4,9 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.ARTQuery;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
+import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PMTCTARTClientDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -18,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { PMTCTARTClientDataSetDefinition.class })
 public class PMTCTARTDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -110,35 +111,42 @@ public class PMTCTARTDatasetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private void loadColumnDictionary(Cohort baseCohort) {
-		mrnIdentifierHashMap = pmtctARTLineListQuery.getIdentifier(baseCohort, MRN_PATIENT_IDENTIFIERS);
-		uanIdentifierHashMap = pmtctARTLineListQuery.getIdentifier(baseCohort, UAN_PATIENT_IDENTIFIERS);
+		mrnIdentifierHashMap = pmtctARTLineListQuery.getIdentifier(baseCohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
+		uanIdentifierHashMap = pmtctARTLineListQuery.getIdentifier(baseCohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
 		
-		artStartDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), ART_START_DATE, baseCohort);
-		pmtctBookingDate = pmtctARTLineListQuery
-		        .getObsValueDate(artQuery.getBaseEncounter(), PMTCT_BOOKING_DATE, baseCohort);
-		statusAtEnrollment = pmtctARTLineListQuery.getByResult(PMTCT_STATUS_AT_ENROLLMENT, baseCohort,
+		artStartDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),
+		    FollowUpConceptQuestions.ART_START_DATE, baseCohort);
+		pmtctBookingDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),
+		    PMTCTConceptQuestions.PMTCT_OTZ_ENROLLMENT_DATE, baseCohort);
+		statusAtEnrollment = pmtctARTLineListQuery.getByResult(PMTCTConceptQuestions.PMTCT_STATUS_AT_ENROLLMENT, baseCohort,
 		    artQuery.getBaseEncounter());
-		pmtctReferredDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), PMTCT_REFERRED_DATE,
-		    baseCohort);
-		isPregnant = pmtctARTLineListQuery.getByResult(PREGNANT_STATUS, baseCohort, artQuery.getBaseEncounter());
-		isBreastFeeding = pmtctARTLineListQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, baseCohort,
+		pmtctReferredDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),
+		    PMTCTConceptQuestions.PMTCT_REFERRED_DATE, baseCohort);
+		isPregnant = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS, baseCohort,
 		    artQuery.getBaseEncounter());
-		dischargeDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), PMTCT_DISCHARGE_DATE, baseCohort);
-		reasonForDischarge = pmtctARTLineListQuery
-		        .getByResult(REASON_FOR_DISCHARGE, baseCohort, artQuery.getBaseEncounter());
-		maternalPMTCTFinalOutcome = pmtctARTLineListQuery.getByResult(PMTCT_FINAL_OUTCOME, baseCohort,
+		isBreastFeeding = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD,
+		    baseCohort, artQuery.getBaseEncounter());
+		dischargeDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),
+		    PMTCTConceptQuestions.PMTCT_DISCHARGE_DATE, baseCohort);
+		reasonForDischarge = pmtctARTLineListQuery.getByResult(PMTCTConceptQuestions.REASON_FOR_DISCHARGE, baseCohort,
 		    artQuery.getBaseEncounter());
-		finalOutcomeDate = pmtctARTLineListQuery
-		        .getObsValueDate(artQuery.getBaseEncounter(), FINAL_OUTCOME_DATE, baseCohort);
-		latestFollowupDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), LATEST_FOLLOWUP_DATE,
-		    baseCohort);
-		regimen = pmtctARTLineListQuery.getByResult(REGIMEN, baseCohort, artQuery.getBaseEncounter());
-		dose = pmtctARTLineListQuery.getByResult(PMTCT_DOSE, baseCohort, artQuery.getBaseEncounter());
-		nutritionalStatus = pmtctARTLineListQuery.getByResult(NUTRITIONAL_STATUS_ADULT, baseCohort,
+		maternalPMTCTFinalOutcome = pmtctARTLineListQuery.getByResult(PMTCTConceptQuestions.PMTCT_FINAL_OUTCOME, baseCohort,
 		    artQuery.getBaseEncounter());
-		latestVLStatus = pmtctARTLineListQuery.getByResult(LATEST_VL_STATUS, baseCohort, artQuery.getBaseEncounter());
-		adherence = pmtctARTLineListQuery.getByResult(ARV_ADHERENCE, baseCohort, artQuery.getBaseEncounter());
-		nextVisitDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(), NEXT_VISIT_DATE, baseCohort);
+		finalOutcomeDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),
+		    FollowUpConceptQuestions.FINAL_OUTCOME_DATE, baseCohort);
+		latestFollowupDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),
+		    FollowUpConceptQuestions.LATEST_FOLLOWUP_DATE, baseCohort);
+		regimen = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, baseCohort,
+		    artQuery.getBaseEncounter());
+		dose = pmtctARTLineListQuery.getByResult(PMTCTConceptQuestions.PMTCT_DOSE, baseCohort, artQuery.getBaseEncounter());
+		nutritionalStatus = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT, baseCohort,
+		    artQuery.getBaseEncounter());
+		latestVLStatus = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.LATEST_VL_STATUS, baseCohort,
+		    artQuery.getBaseEncounter());
+		adherence = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, baseCohort,
+		    artQuery.getBaseEncounter());
+		nextVisitDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, baseCohort);
 		
 	}
 	

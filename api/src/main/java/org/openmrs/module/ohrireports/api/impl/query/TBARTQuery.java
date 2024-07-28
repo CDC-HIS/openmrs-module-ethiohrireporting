@@ -5,14 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.logic.op.In;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class TBARTQuery extends PatientQueryImpDao {
@@ -95,19 +93,19 @@ public class TBARTQuery extends PatientQueryImpDao {
     private StringBuilder getQuery() {
         StringBuilder sqlBuilder = new StringBuilder("select distinct (person_id) from obs ");
         sqlBuilder.append(" where encounter_id in (:encounterIds) and person_id in (:personId)");
-        sqlBuilder.append(" and concept_id=").append(conceptQuery(ART_START_DATE));
+        sqlBuilder.append(" and concept_id=").append(conceptQuery(FollowUpConceptQuestions.ART_START_DATE));
         return sqlBuilder;
     }
 
     private Cohort getCurrentOnActiveTB(Date start, Date end, List<Integer> encounters) {
 
         Date startDate = getOneYearBackFromEndDate(end);
-        tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_START_DATE), startDate, end,encounters);
-        activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_ACTIVE_DATE), startDate, end, encounters);
+        tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_START_DATE), startDate, end,encounters);
+        activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_ACTIVE_DATE), startDate, end, encounters);
 
         // to be excluded encounters from TX_TB counting
-        tbTreatmentCompletedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_COMPLETED_DATE), null, end, encounters);
-        tbTreatmentDiscontinuedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_TREATMENT_DISCONTINUED_DATE), null,end, encounters);
+        tbTreatmentCompletedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_COMPLETED_DATE), null, end, encounters);
+        tbTreatmentDiscontinuedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_DISCONTINUED_DATE), null,end, encounters);
         List<Integer> toBeExcludedEncounters = unionTwoMembership(tbTreatmentCompletedDateEncounter, tbTreatmentCompletedDateEncounter);
 
 

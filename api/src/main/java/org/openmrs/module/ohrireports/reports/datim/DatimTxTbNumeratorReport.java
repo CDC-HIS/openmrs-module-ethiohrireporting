@@ -3,11 +3,10 @@ package org.openmrs.module.ohrireports.reports.datim;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_numerator.TxTbNumeratorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_numerator.TxTbNumeratorAutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -28,7 +27,7 @@ public class DatimTxTbNumeratorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_TREATMENT + "-TX_TB(Numerator)";
+		return ReportType.DATIM_REPORT_TREATMENT + "-TX_TB(Numerator)";
 	}
 	
 	@Override
@@ -57,7 +56,8 @@ public class DatimTxTbNumeratorReport implements ReportManager {
 		
 		TxTbNumeratorAutoCalculateDataSetDefinition aDefinition = new TxTbNumeratorAutoCalculateDataSetDefinition();
 		aDefinition.addParameters(getParameters());
-		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		aDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		aDefinition
 		        .setDescription("Number of adults and children currently enrolling ART and has documented Active on TB treatment");
 		reportDefinition.addDataSetDefinition(
@@ -66,7 +66,8 @@ public class DatimTxTbNumeratorReport implements ReportManager {
 		
 		TxTbNumeratorARTByAgeAndSexDataSetDefinition cDefinition = new TxTbNumeratorARTByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());
-		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		cDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		cDefinition.setDescription("Disaggregated by Current/New on ART by Age/Sex");
 		reportDefinition.addDataSetDefinition("Required : Disaggregated by Current/New on ART by Age/Sex",
 		    EthiOhriUtil.map(cDefinition));

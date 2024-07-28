@@ -1,10 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_rtt;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TREATMENT_END_DATE;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.RTTQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_rtt.TxRttAutoCalculateDataSetDefinition;
@@ -16,7 +11,6 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Handler(supports = { TxRttAutoCalculateDataSetDefinition.class })

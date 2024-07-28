@@ -4,17 +4,17 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.api.impl.query.PepQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.PEP_VISIT_PERIOD;
+import static org.openmrs.module.ohrireports.constants.PrepConceptQuestions.PEP_VISIT_PERIOD;
 
 @Component
-public class PEPQueryLineList extends BaseLineListQuery {
+public class PEPQueryLineList extends ObsElement {
 	
 	@Autowired
 	private PepQuery pepQuery;

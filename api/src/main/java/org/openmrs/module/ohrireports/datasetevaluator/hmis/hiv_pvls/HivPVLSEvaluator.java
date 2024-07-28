@@ -1,9 +1,9 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_pvls;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DATE_VIRAL_TEST_RESULT_RECEIVED;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.NO;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.UNKNOWN;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.YES;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.NO;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.NOT_APPLICABLE;
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.YES;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
@@ -74,37 +74,37 @@ public class HivPVLSEvaluator {
 			dataSet.addRow(row++, headerDataSetRow);
 		}
 		dataSet.addRow(row++, buildColumn(" ","Number of adult and pediatric ART patients for whom viral load test result received in the reporting period" ,
-				new QueryParameter(0D, 0D, "", UNKNOWN)));
+				new QueryParameter(0D, 0D, "", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".1", "< 1 year, Male",
-				new QueryParameter(0D, 0.9, "M", UNKNOWN)));
+				new QueryParameter(0D, 0.9, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".3", "< 1 year, Female-non-pregnant",
-				new QueryParameter(0D, 0.9, "F", UNKNOWN)));
+				new QueryParameter(0D, 0.9, "F", NOT_APPLICABLE)));
 		// 1-4
 		dataSet.addRow(row++, buildColumn(".4", "1-4 year, Male",
-				new QueryParameter(1D, 4D, "M", UNKNOWN)));
+				new QueryParameter(1D, 4D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".6", "1-4 year, Female-non-pregnant",
-				new QueryParameter(1D, 4D, "F", UNKNOWN)));
+				new QueryParameter(1D, 4D, "F", NOT_APPLICABLE)));
 
 		// 5-9
 		dataSet.addRow(row++, buildColumn(".7", "5-9 year, Male",
-				new QueryParameter(5D, 9D, "M", UNKNOWN)));
+				new QueryParameter(5D, 9D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".9", "5-9 year, Female-non-pregnant",
-				new QueryParameter(5D, 9D, "F", UNKNOWN)));
+				new QueryParameter(5D, 9D, "F", NOT_APPLICABLE)));
 
 		// 10-14
 		dataSet.addRow(row++, buildColumn(".10", "10-14 year, Male",
-				new QueryParameter(10D, 14D, "M", UNKNOWN)));
+				new QueryParameter(10D, 14D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".12", "10-14 year, Female-non-pregnant",
-				new QueryParameter(10D, 14D, "F", UNKNOWN)));
+				new QueryParameter(10D, 14D, "F", NOT_APPLICABLE)));
 
 		// 15-19
 		dataSet.addRow(row++, buildColumn(".13", "15-19 year, Male",
-				new QueryParameter(15D, 19D, "M", UNKNOWN)));
+				new QueryParameter(15D, 19D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".14", "15-19 year, Female-pregnant",
 				new QueryParameter(15D, 19D, "F", YES)));
@@ -114,7 +114,7 @@ public class HivPVLSEvaluator {
 
 		// 20-24
 		dataSet.addRow(row++, buildColumn(".16", "20-24 year, Male",
-				new QueryParameter(20D, 24D, "M", UNKNOWN)));
+				new QueryParameter(20D, 24D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".17", "20-24 year, Female-pregnant",
 				new QueryParameter(20D, 24D, "F", YES)));
@@ -124,7 +124,7 @@ public class HivPVLSEvaluator {
 
 		// 25-29
 		dataSet.addRow(row++, buildColumn(".19", "25-29 year, Male",
-				new QueryParameter(25D, 29D, "M", UNKNOWN)));
+				new QueryParameter(25D, 29D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".20", "25-29 year, Female-pregnant",
 				new QueryParameter(25D, 29D, "F", YES)));
@@ -134,7 +134,7 @@ public class HivPVLSEvaluator {
 
 		// 30-34
 		dataSet.addRow(row++, buildColumn(".22", "30-34 year, Male",
-				new QueryParameter(30D, 34D, "M", UNKNOWN)));
+				new QueryParameter(30D, 34D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".23", "30-34 year, Female-pregnant",
 				new QueryParameter(30D, 34D, "F", YES)));
@@ -144,7 +144,7 @@ public class HivPVLSEvaluator {
 
 		// 35-39
 		dataSet.addRow(row++, buildColumn(".25", "35-39 year, Male",
-				new QueryParameter(35D, 39D, "M", UNKNOWN)));
+				new QueryParameter(35D, 39D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".26", "35-39 year, Female-pregnant",
 				new QueryParameter(35D, 39D, "F", YES)));
@@ -154,7 +154,7 @@ public class HivPVLSEvaluator {
 
 		// 40-44
 		dataSet.addRow(row++, buildColumn(".28", "40-44 year, Male",
-				new QueryParameter(40D, 44D, "M", UNKNOWN)));
+				new QueryParameter(40D, 44D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".29", "40-44 year, Female-pregnant",
 				new QueryParameter(40D, 44D, "F", YES)));
@@ -164,7 +164,7 @@ public class HivPVLSEvaluator {
 
 		// 45-49
 		dataSet.addRow(row++, buildColumn(".31", "45-49 year, Male",
-				new QueryParameter(45D, 49D, "M", UNKNOWN)));
+				new QueryParameter(45D, 49D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".32", "45-49 year, Female-pregnant",
 				new QueryParameter(45D, 49D, "F", YES)));
@@ -174,7 +174,7 @@ public class HivPVLSEvaluator {
 
 		// >=50
 		dataSet.addRow(row++, buildColumn(".34", ">=50 year, Male",
-				new QueryParameter(50D, 200D, "M", UNKNOWN)));
+				new QueryParameter(50D, 200D, "M", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".36", ">=50 year, Female-non-pregnant",
 				new QueryParameter(50D, 200D, "F", NO)));
@@ -242,7 +242,7 @@ public class HivPVLSEvaluator {
 
 			}
 
-			if (!Objects.equals(parameter.isPregnant, UNKNOWN)) {
+			if (!Objects.equals(parameter.isPregnant, NOT_APPLICABLE)) {
 				Cohort pregnantCohort = hivPvlsQuery.getPatientByPregnantStatus(cohort, YES,
 						hivPvlsQuery.getLastEncounterIds());
 				if (Objects.equals(parameter.isPregnant, YES)) {

@@ -3,6 +3,9 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.dsd;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
+import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.DSDDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -14,15 +17,13 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import static org.openmrs.module.ohrireports.RegimentConstant.DSD_CATEGORY;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DSD_CATEGORY;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { DSDDataSetDefinition.class })
 public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
@@ -45,30 +46,32 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 		List<Person> persons = LineListUtilities.sortPatientByName(dsdLineListQuery.getPersons(cohort));
 		
 		HashMap<Integer, Object> followUpDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
-		    FOLLOW_UP_DATE, cohort);
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> confirmedDateHashMap = dsdLineListQuery.getObsValueDate(
-		    dsdLineListQuery.getBaseEncounter(), HIV_CONFIRMED_DATE, cohort);
+		    dsdLineListQuery.getBaseEncounter(), PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
 		HashMap<Integer, Object> artStartDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
-		    ART_START_DATE, cohort);
+		    FollowUpConceptQuestions.ART_START_DATE, cohort);
 		HashMap<Integer, Object> nextVistDateHashMap = dsdLineListQuery.getObsValueDate(dsdLineListQuery.getBaseEncounter(),
-		    NEXT_VISIT_DATE, cohort);
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
 		HashMap<Integer, Object> treatmentDateHashMap = dsdLineListQuery.getObsValueDate(
-		    dsdLineListQuery.getBaseEncounter(), TREATMENT_END_DATE, cohort);
+		    dsdLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.TREATMENT_END_DATE, cohort);
 		HashMap<Integer, Object> categoryAssesumentDateHashMap = dsdLineListQuery.getObsValueDate(
-		    dsdLineListQuery.getBaseEncounter(), DSD_ASSESSMENT_DATE, cohort);
+		    dsdLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.DSD_ASSESSMENT_DATE, cohort);
 		HashMap<Integer, Object> transferedHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
-		    cohort, REASON_FOR_ART_ELIGIBILITY);
+		    cohort, FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
 		HashMap<Integer, Object> currentDSDCategoryHashMap = dsdLineListQuery.getConceptName(
 		    dsdLineListQuery.getBaseEncounter(), cohort, DSD_CATEGORY);
 		HashMap<Integer, Object> doseDisPenseHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
-		    cohort, ARV_DISPENSED_IN_DAYS);
+		    cohort, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS);
 		HashMap<Integer, Object> regimentHashMap = dsdLineListQuery.getRegiment(dsdLineListQuery.getBaseEncounter(), cohort);
 		HashMap<Integer, Object> adherenceHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
-		    cohort, ARV_ADHERENCE);
+		    cohort, FollowUpConceptQuestions.ARV_ADHERENCE);
 		HashMap<Integer, Object> followUpStatusHashMap = dsdLineListQuery.getConceptName(
-		    dsdLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);
-		HashMap<Integer, Object> mrnIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uanIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
+		    dsdLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.FOLLOW_UP_STATUS);
+		HashMap<Integer, Object> mrnIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort,
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> uanIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort,
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		
 		DataSetRow row;
 		if (!persons.isEmpty()) {

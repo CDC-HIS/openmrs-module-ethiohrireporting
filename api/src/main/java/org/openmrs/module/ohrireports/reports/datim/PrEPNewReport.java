@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.*;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -15,7 +16,7 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 @Component
 public class PrEPNewReport implements ReportManager {
@@ -27,7 +28,7 @@ public class PrEPNewReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_PREVENTION + "-PrEP_NEW";
+		return ReportType.DATIM_REPORT_PREVENTION + "-PrEP_NEW";
 	}
 	
 	@Override
@@ -49,7 +50,8 @@ public class PrEPNewReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.addParameters(getParameters());
 		
-		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		AutoCalculatePrepNewDataSetDefinition headerDefinition = new AutoCalculatePrepNewDataSetDefinition();
 		headerDefinition.setParameters(getParameters());
@@ -66,8 +68,8 @@ public class PrEPNewReport implements ReportManager {
 		
 		PrEPNewDatasetDefinition dataSetDefinition = new PrEPNewDatasetDefinition();
 		dataSetDefinition.setParameters(getParameters());
-		dataSetDefinition.setEncounterType(Context.getEncounterService()
-		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		dataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Disaggregated by Age / Sex", EthiOhriUtil.map(dataSetDefinition));
 		
 		DisaggregatedByPopulationTypDatasetDefinition dDataSetDefinition = new DisaggregatedByPopulationTypDatasetDefinition();

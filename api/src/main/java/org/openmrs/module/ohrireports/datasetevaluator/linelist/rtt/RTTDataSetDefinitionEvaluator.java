@@ -3,8 +3,10 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.rtt;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.RTTDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetevaluator.datim.tx_new.CD4Status;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -17,8 +19,6 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { RTTDataSetDefinition.class })
 public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -48,41 +48,43 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		List<Person> persons = rttLineListQuery.getPerson(cohort);
 		
 		HashMap<Integer, Object> artStartDateHashMap = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
-		    ART_START_DATE, cohort);
+		    FollowUpConceptQuestions.ART_START_DATE, cohort);
 		HashMap<Integer, Object> followupDateHashMap = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
-		    FOLLOW_UP_DATE, cohort);
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> treatmentEndDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
-		    TREATMENT_END_DATE, cohort);
+		    FollowUpConceptQuestions.TREATMENT_END_DATE, cohort);
 		
-		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByValueNumeric(WEIGHT, cohort,
-		    rttLineListQuery.getBaseEncounter());
-		HashMap<Integer, Object> cd4HashMap = rttLineListQuery.getByValueNumeric(ADULT_CD4_COUNT, cohort,
-		    rttLineListQuery.getBaseEncounter());
-		HashMap<Integer, Object> mrnIdentifierHashMap = rttLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uanIdentifierHashMap = rttLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT,
+		    cohort, rttLineListQuery.getBaseEncounter());
+		HashMap<Integer, Object> cd4HashMap = rttLineListQuery.getByValueNumeric(FollowUpConceptQuestions.ADULT_CD4_COUNT,
+		    cohort, rttLineListQuery.getBaseEncounter());
+		HashMap<Integer, Object> mrnIdentifierHashMap = rttLineListQuery.getIdentifier(cohort,
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> uanIdentifierHashMap = rttLineListQuery.getIdentifier(cohort,
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> followUpStatus = rttLineListQuery.getFollowUpStatus(rttLineListQuery.getBaseEncounter(),
 		    cohort);
 		HashMap<Integer, Object> regimentHashMap = rttLineListQuery.getRegiment(rttLineListQuery.getBaseEncounter(), cohort);
 		HashMap<Integer, Object> dispensDayHashMap = rttLineListQuery.getConceptName(rttLineListQuery.getBaseEncounter(),
-		    cohort, ARV_DISPENSED_IN_DAYS);
-		HashMap<Integer, Object> adherence = rttLineListQuery.getByResult(ON_ADHERENCE, cohort,
+		    cohort, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS);
+		HashMap<Integer, Object> adherence = rttLineListQuery.getByResult(ConceptAnswer.ON_ADHERENCE, cohort,
 		    rttLineListQuery.getBaseEncounter());
 		HashMap<Integer, Object> nextVisitDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
-		    NEXT_VISIT_DATE, cohort);
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
 		
 		HashMap<Integer, Object> lastFollowUpDate = rttLineListQuery.getObsValueDate(
-		    rttLineListQuery.getInterruptedEncounter(), FOLLOW_UP_DATE, cohort);
+		    rttLineListQuery.getInterruptedEncounter(), FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		
 		HashMap<Integer, Object> lastFollowUpStatus = rttLineListQuery.getFollowUpStatus(
 		    rttLineListQuery.getInterruptedEncounter(), cohort);
 		HashMap<Integer, Object> lastRegimen = rttLineListQuery.getRegiment(rttLineListQuery.getInterruptedEncounter(),
 		    cohort);
 		HashMap<Integer, Object> lastDispenseDay = rttLineListQuery.getConceptName(
-		    rttLineListQuery.getInterruptedEncounter(), cohort, ARV_DISPENSED_IN_DAYS);
-		HashMap<Integer, Object> lastAdherence = rttLineListQuery.getByResult(ON_ADHERENCE, cohort,
+		    rttLineListQuery.getInterruptedEncounter(), cohort, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS);
+		HashMap<Integer, Object> lastAdherence = rttLineListQuery.getByResult(ConceptAnswer.ON_ADHERENCE, cohort,
 		    rttLineListQuery.getInterruptedEncounter());
 		HashMap<Integer, Object> lastTreatmentEndDate = rttLineListQuery.getObsValueDate(
-		    rttLineListQuery.getInterruptedEncounter(), TREATMENT_END_DATE, cohort);
+		    rttLineListQuery.getInterruptedEncounter(), FollowUpConceptQuestions.TREATMENT_END_DATE, cohort);
 		
 		// if last followup status is lost or dead then we can't find the treatment end date
 		// thus we take last followup date as treatment end date

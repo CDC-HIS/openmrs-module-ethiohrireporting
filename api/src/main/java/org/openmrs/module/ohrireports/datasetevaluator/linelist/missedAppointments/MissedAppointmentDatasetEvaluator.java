@@ -3,6 +3,8 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.missedAppointme
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MissedAppointmentDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -16,8 +18,6 @@ import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { MissedAppointmentDatasetDefinition.class })
 public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
@@ -36,25 +36,26 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		appointmentQuery.generateReport(dsd.getEndDate());
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
-		    MRN_PATIENT_IDENTIFIERS);
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uaIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
-		    UAN_PATIENT_IDENTIFIERS);
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> artStartDictionary = appointmentQuery.getArtStartDate(appointmentQuery.getBaseCohort(),
 		    null, dsd.getEndDate());
-		HashMap<Integer, Object> adherenceHashmap = appointmentQuery.getByResult(ARV_ADHERENCE,
+		HashMap<Integer, Object> adherenceHashmap = appointmentQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
 		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
-		HashMap<Integer, Object> regimentHashmap = appointmentQuery.getByResult(REGIMEN, appointmentQuery.getBaseCohort(),
+		HashMap<Integer, Object> regimentHashmap = appointmentQuery.getByResult(FollowUpConceptQuestions.REGIMEN,
+		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
+		HashMap<Integer, Object> arvDoseHashmap = appointmentQuery.getByResult(
+		    FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS, appointmentQuery.getBaseCohort(),
 		    appointmentQuery.getEncounter());
-		HashMap<Integer, Object> arvDoseHashmap = appointmentQuery.getByResult(ARV_DISPENSED_IN_DAYS,
-		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
 		HashMap<Integer, Object> followUpDate = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
-		    FOLLOW_UP_DATE, appointmentQuery.getBaseCohort());
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = appointmentQuery.getFollowUpStatus(appointmentQuery.getEncounter(),
 		    appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> nextVisitDate = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
-		    NEXT_VISIT_DATE, appointmentQuery.getBaseCohort());
+		    FollowUpConceptQuestions.NEXT_VISIT_DATE, appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> lastCurrDate = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
-		    TREATMENT_END_DATE, appointmentQuery.getBaseCohort());
+		    FollowUpConceptQuestions.TREATMENT_END_DATE, appointmentQuery.getBaseCohort());
 		DataSetRow row;
 		
 		List<Person> personList = LineListUtilities.sortPatientByName(appointmentQuery.getPersons(appointmentQuery

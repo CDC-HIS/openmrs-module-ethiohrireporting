@@ -4,28 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.openmrs.Cohort;
-import org.openmrs.Concept;
-import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCADatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
-import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
-import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = {CXCADatasetDefinition.class})
 public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -81,11 +73,11 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
 
     private CxcaScreening getCxcaScreening(String screeningType) {
         switch (screeningType) {
-            case CXCA_FIRST_TIME_SCREENING_TYPE:
+            case ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE:
                 return cervicalCancerQuery.getFirstScreening();
-            case CXCA_TYPE_OF_SCREENING_RESCREEN:
+            case ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN:
                 return cervicalCancerQuery.getReScreening();
-            case CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
+            case ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
                 return cervicalCancerQuery.getPostScreening();
             default:
                 return null;

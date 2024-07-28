@@ -3,6 +3,10 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.linkageNew;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
+import org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions;
+import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.LinkageNewLineListDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct.Linkage;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
@@ -19,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 @Handler(supports = { LinkageNewLineListDataSetDefinition.class })
 public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
@@ -42,19 +46,19 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
         List<Person> persons = LineListUtilities.sortPatientByName(linkageNewLineListQuery.getPersons());
 
         HashMap<Integer, Object> registrationDateHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                POSITIVE_TRACKING_REGISTRATION_DATE, cohort);
+                ENROLLMENT_DATE, cohort);
         HashMap<Integer, Object> confirmedDateHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                HIV_CONFIRMED_DATE, cohort);
+                PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
         HashMap<Integer, Object> dateLinkedToCareHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                LINKED_TO_CARE_DATE, cohort);
+                PositiveCaseTrackingConceptQuestions.LINKED_TO_CARE_DATE, cohort);
         HashMap<Integer, Object> finalOutComeHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                FINAL_OUT_COME_DATE, cohort);
-        HashMap<Integer,Object> planForNextHashMap = linkageNewLineListQuery.getConceptValue(PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING,linkageNewLineListQuery.getBaseEncounters(),cohort);
-        HashMap<Integer, Object> artStartedDateHashMap = linkageNewLineListQuery.getDate(cohort, ART_START_DATE);
-        HashMap<Integer, Object> followHiveConfirmedDateHashMap = linkageNewLineListQuery.getDate(cohort, HIV_CONFIRMED_DATE);
-        HashMap<Integer, Object> mrnIdentifierHashMap = linkageNewLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-        HashMap<Integer, Object> uanIdentifierHashMap = linkageNewLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
-        HashMap<Integer, Object> enterPointHashMap = linkageNewLineListQuery.getConceptValue(ENTRE_POINT, linkageNewLineListQuery.getBaseEncounters(),
+                PositiveCaseTrackingConceptQuestions.FINAL_OUT_COME_DATE, cohort);
+        HashMap<Integer,Object> planForNextHashMap = linkageNewLineListQuery.getConceptValue(PositiveCaseTrackingConceptQuestions.PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING,linkageNewLineListQuery.getBaseEncounters(),cohort);
+        HashMap<Integer, Object> artStartedDateHashMap = linkageNewLineListQuery.getDate(cohort, FollowUpConceptQuestions.ART_START_DATE);
+        HashMap<Integer, Object> followHiveConfirmedDateHashMap = linkageNewLineListQuery.getDate(cohort, PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE);
+        HashMap<Integer, Object> mrnIdentifierHashMap = linkageNewLineListQuery.getIdentifier(cohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
+        HashMap<Integer, Object> uanIdentifierHashMap = linkageNewLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
+        HashMap<Integer, Object> enterPointHashMap = linkageNewLineListQuery.getConceptValue(IntakeAConceptQuestions.ENTRE_POINT, linkageNewLineListQuery.getBaseEncounters(),
                 cohort);
 
 

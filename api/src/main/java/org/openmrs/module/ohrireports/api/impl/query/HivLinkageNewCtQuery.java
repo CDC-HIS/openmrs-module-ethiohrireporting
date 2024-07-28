@@ -4,14 +4,12 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.*;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct.Linkage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
@@ -27,7 +25,7 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
     public List<Integer> baseEncounter;
     public Cohort baseCohort;
     public void initialize(Date startOnOrAfter, Date endOnOrBefore) {
-        baseEncounter = encounterQuery.getEncounters(Collections.singletonList(HIV_CONFIRMED_DATE), startOnOrAfter, endOnOrBefore, POSITIVE_TRACKING);
+        baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE), startOnOrAfter, endOnOrBefore, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
         baseCohort = getCohort(baseEncounter);
         linkageList = new ArrayList<>();
         for (Integer patientId : baseCohort.getMemberIds()) {
@@ -37,7 +35,7 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
         setConcepts();
     }
     private void setConcepts() {
-       List<String> uuids =Arrays.asList(YES, NO, STARTED_ART, ON_ADHERENCE, IO_MANAGEMENT, KNOWN_POSITIVE_ON_ART, CONFIRMED_REFERRAL, LOST_TO_FOLLOW_UP, STARTED_ART_IN_OTHER_FACILITY, REFERRED_TX_NOT_INITIATED, DIED, DECLINED, OTHER);
+       List<String> uuids =Arrays.asList(ConceptAnswer.YES, ConceptAnswer.NO, FollowUpConceptQuestions.STARTED_ART, ConceptAnswer.ON_ADHERENCE, ConceptAnswer.IO_MANAGEMENT, ConceptAnswer.KNOWN_POSITIVE_ON_ART, ConceptAnswer.CONFIRMED_REFERRAL, ConceptAnswer.LOST_TO_FOLLOW_UP, ConceptAnswer.STARTED_ART_IN_OTHER_FACILITY, ConceptAnswer.REFERRED_TX_NOT_INITIATED, ConceptAnswer.DIED, ConceptAnswer.DECLINED, ConceptAnswer.OTHER);
         Query query = sessionFactory.getCurrentSession().createSQLQuery("select concept_id,uuid from concept where uuid in ('" + String.join("','", uuids) + "')");
 
         List list = query.list();
@@ -49,43 +47,43 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
             String uuid = (String) objects[1];
 
             switch (uuid) {
-                case YES:
+                case ConceptAnswer.YES:
                     yesConceptId = conceptId;
                     break;
-                case STARTED_ART:
+                case FollowUpConceptQuestions.STARTED_ART:
                     startedArtConceptId = conceptId;
                     break;
-                case ON_ADHERENCE:
+                case ConceptAnswer.ON_ADHERENCE:
                     onAdherencePreparationConceptId = conceptId;
                     break;
-                case IO_MANAGEMENT:
+                case ConceptAnswer.IO_MANAGEMENT:
                     onOIManagementConceptId = conceptId;
                     break;
-                case KNOWN_POSITIVE_ON_ART:
+                case ConceptAnswer.KNOWN_POSITIVE_ON_ART:
                     knownPositiveConceptId = conceptId;
                     break;
-                case DECLINED:
+                case ConceptAnswer.DECLINED:
                     declinedConceptId = conceptId;
                     break;
-                case CONFIRMED_REFERRAL:
+                case ConceptAnswer.CONFIRMED_REFERRAL:
                     conformedReferralConceptId = conceptId;
                     break;
-                case LOST_TO_FOLLOW_UP:
+                case ConceptAnswer.LOST_TO_FOLLOW_UP:
                     lostToFollowUpConceptId = conceptId;
                     break;
-                case STARTED_ART_IN_OTHER_FACILITY:
+                case ConceptAnswer.STARTED_ART_IN_OTHER_FACILITY:
                     startArtinOtherHFConceptId = conceptId;
                     break;
-                case REFERRED_TX_NOT_INITIATED:
+                case ConceptAnswer.REFERRED_TX_NOT_INITIATED:
                     referredTxNotInitiatedConceptId = conceptId;
                     break;
-                case DIED:
+                case ConceptAnswer.DIED:
                     diedConceptId = conceptId;
                     break;
-                case OTHER:
+                case ConceptAnswer.OTHER:
                     otherConceptId = conceptId;
                     break;
-                case NO:
+                case ConceptAnswer.NO:
                     noConceptId = conceptId;
                     break;
                 default:
@@ -95,10 +93,10 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
         }
     }
     private void setLinkage() {
-        setLinkage(LINKED_TO_CARE_TREATMENT);
-        setLinkage(REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY);
-        setLinkage(FINAL_OUT_COME);
-        setLinkage(STARTED_ART);
+        setLinkage(PositiveCaseTrackingConceptQuestions.LINKED_TO_CARE_TREATMENT);
+        setLinkage(PositiveCaseTrackingConceptQuestions.REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY);
+        setLinkage(PositiveCaseTrackingConceptQuestions.FINAL_OUT_COME);
+        setLinkage(FollowUpConceptQuestions.STARTED_ART);
         totalCount = linkageList.size();
     }
     private void setLinkage(String conceptUUid) {

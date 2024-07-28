@@ -37,8 +37,8 @@ public class PMTCTFOAutoCalculateDataSetDefinisionEvaluator implements DataSetEv
 			foQuery.setStartDate(_dataSetDefinition.getStartDate());
 			foQuery.setEndDate(_dataSetDefinition.getEndDate());
 			
-			pmtctfo = new PMTCTFO(foQuery.getPmtctByHivInfectedStatus(), foQuery.getPmtctByHivUninfectedStatus(),
-			        foQuery.getPmtctByHivStatusUnknown(), foQuery.getPmtctDiedWithoutStatusKnown());
+			pmtctfo = new PMTCTFO(foQuery.getPMTCTByHivInfectedStatus(), foQuery.getPMTCTByHivUninfectedStatus(),
+			        foQuery.getPMTCTByHivStatusUnknown(), foQuery.getPMTCTDiedWithoutStatusKnown());
 			
 			DataSetRow dataSet = new DataSetRow();
 			dataSet.addColumnValue(new DataSetColumn("Denominator", "Denominator", Integer.class), foQuery.getBaseCohort()

@@ -2,11 +2,11 @@ package org.openmrs.module.ohrireports.reports.datim;
 
 import java.util.Arrays;
 import java.util.List;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorAutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorDiagnosticTestDataSetDefinition;
@@ -30,7 +30,7 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_TREATMENT + "-TX_TB (Denominator)";
+		return ReportType.DATIM_REPORT_TREATMENT + "-TX_TB (Denominator)";
 	}
 	
 	@Override

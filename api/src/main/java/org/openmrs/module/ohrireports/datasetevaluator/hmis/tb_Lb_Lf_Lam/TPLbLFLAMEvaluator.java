@@ -1,10 +1,10 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tb_Lb_Lf_Lam;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
 import org.openmrs.module.ohrireports.api.impl.query.LBLFLAMQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.reporting.dataset.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,8 +22,8 @@ public class TPLbLFLAMEvaluator {
 	public void buildDataset(Date start, Date end, SimpleDataSet dataset) {
 		
 		lblflamQuery.generateReport(start, end);
-		int positiveCount = lblflamQuery.getByResult(POSITIVE).size();
-		int negativeCount = lblflamQuery.getByResult(NEGATIVE).size();
+		int positiveCount = lblflamQuery.getByResult(ConceptAnswer.POSITIVE).size();
+		int negativeCount = lblflamQuery.getByResult(ConceptAnswer.NEGATIVE).size();
 		
 		DataSetRow headerRow = buildColumn("TB_LB_LF-LAM",
 		    "Total Number of tests performed using Lateral Flow Urine Lipoarabinomannan (LF-LAM) assay", positiveCount

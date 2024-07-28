@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.BreastFeedingStatusDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexAndCD4DataSetDefinition;
@@ -19,8 +20,6 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 @Component
 public class DatimTxNewReport implements ReportManager {
 	
@@ -31,7 +30,7 @@ public class DatimTxNewReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_TREATMENT + "-TX_NEW";
+		return ReportType.DATIM_REPORT_TREATMENT + "-TX_NEW";
 	}
 	
 	@Override
@@ -51,7 +50,8 @@ public class DatimTxNewReport implements ReportManager {
 		reportDefinition.setName(getName());
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
-		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		AutoCalculateDataSetDefinition headerDefinition = new AutoCalculateDataSetDefinition();
 		headerDefinition.addParameters(getParameters());

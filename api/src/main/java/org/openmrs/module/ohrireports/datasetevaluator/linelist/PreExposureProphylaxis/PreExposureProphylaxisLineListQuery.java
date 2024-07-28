@@ -3,16 +3,15 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.PreExposureProp
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 @Component
-public class PreExposureProphylaxisLineListQuery extends BaseLineListQuery {
+public class PreExposureProphylaxisLineListQuery extends ObsElement {
 	
 	private final DbSessionFactory sessionFactory;
 	
@@ -27,7 +26,7 @@ public class PreExposureProphylaxisLineListQuery extends BaseLineListQuery {
 	}
 	
 	public HashMap<Integer, Object> getScreeningObsValueDate(String concept, Cohort cohort, List<Integer> encounters) {
-		StringBuilder stringQuery = baseValueDateQuery(concept, PREP_SCREENING_ENCOUNTER_TYPE);
+		StringBuilder stringQuery = baseValueDateQuery(concept, EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		stringQuery.append(" and  ").append(VALUE_DATE_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
 		stringQuery.append(" and  ").append(VALUE_DATE_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
 		

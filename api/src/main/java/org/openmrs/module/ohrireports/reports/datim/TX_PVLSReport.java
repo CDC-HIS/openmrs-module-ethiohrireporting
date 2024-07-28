@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.EncounterType;
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDisaggregationByPopulationDatasetDefinition;
@@ -21,10 +21,9 @@ import org.openmrs.module.reporting.report.ReportRequest;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
 import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 @Component
 public class TX_PVLSReport implements ReportManager {
@@ -37,7 +36,7 @@ public class TX_PVLSReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_VIRAL_SUPPRESSION.concat("-TX_PVLS(Numerator)");
+		return ReportType.DATIM_REPORT_VIRAL_SUPPRESSION.concat("-TX_PVLS(Numerator)");
 	}
 	
 	@Override
@@ -63,7 +62,8 @@ public class TX_PVLSReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.addParameters(getParameters());
 		
-		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		EncounterType followUpEncounter = Context.getEncounterService().getEncounterTypeByUuid(
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		TX_PVLSAutoCalcDatasetDefinition headerDefinition = new TX_PVLSAutoCalcDatasetDefinition();
 		headerDefinition.setParameters(getParameters());
@@ -85,8 +85,8 @@ public class TX_PVLSReport implements ReportManager {
 		TX_PVLSDatasetDefinition DataSetDefinition = new TX_PVLSDatasetDefinition();
 		DataSetDefinition.setParameters(getParameters());
 		DataSetDefinition.setIncludeUnSuppressed(false);
-		DataSetDefinition.setEncounterType(Context.getEncounterService()
-		        .getEncounterTypeByUuid(HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		DataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition(
 		    "Required: Disaggregated by Age / Sex / (Fine Disaggregated). Must complete finer"
 		            + " disaggregates unless permitted by program.", map(DataSetDefinition, "endDate=${endDateGC}"));
@@ -95,7 +95,7 @@ public class TX_PVLSReport implements ReportManager {
 		pregnantAndBFDataSetDefinition.setParameters(getParameters());
 		pregnantAndBFDataSetDefinition.setIncludeUnSuppressed(false);
 		pregnantAndBFDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Required: Disaggregated by Pregnant/Breastfeeding.",
 		    map(pregnantAndBFDataSetDefinition, "endDate=${endDateGC}"));
 		
@@ -103,7 +103,7 @@ public class TX_PVLSReport implements ReportManager {
 		disaggregationByPopDataSetDefinition.setParameters(getParameters());
 		disaggregationByPopDataSetDefinition.setIncludeUnSuppressed(false);
 		disaggregationByPopDataSetDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
-		    HTS_FOLLOW_UP_ENCOUNTER_TYPE));
+		    org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		reportDefinition.addDataSetDefinition("Disaggregated by key population type",
 		    map(disaggregationByPopDataSetDefinition, "endDate=${endDateGC}"));
 		return reportDefinition;

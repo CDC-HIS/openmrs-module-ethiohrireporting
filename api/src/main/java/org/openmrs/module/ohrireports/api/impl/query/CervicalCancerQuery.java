@@ -4,6 +4,8 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_scrn.CxcaScreening;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class CervicalCancerQuery extends PatientQueryImpDao {
@@ -94,7 +94,8 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(DATE_COUNSELING_GIVEN), startDate, endDate);
+		baseEncounter = encounterQuery.getEncounters(Arrays.asList(FollowUpConceptQuestions.DATE_COUNSELING_GIVEN),
+		    startDate, endDate);
 		currentEncounter = baseEncounter;
 	}
 	
@@ -109,7 +110,7 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	
 	public Cohort loadScreenedCohort() {
 		
-		StringBuilder stringBuilder = baseQuery(DATE_COUNSELING_GIVEN);
+		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.DATE_COUNSELING_GIVEN);
 		
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
 		
@@ -125,13 +126,13 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "(select distinct  ob.person_id from obs as ob inner join  \n" + "\n"
 		        + "(select max(ib.value_datetime) as value_datetime,ib.person_id \n"
 		        + " from obs as ib  where ib.concept_id = "
-		        + conceptQuery(DATE_COUNSELING_GIVEN)
+		        + conceptQuery(FollowUpConceptQuestions.DATE_COUNSELING_GIVEN)
 		        + " and ib.value_datetime>= :joinStartDate1 and ib.value_datetime<= :joinEndDate1 \n"
 		        + "  group by ib.person_id \n "
 		        + "  \n"
 		        + " ) as o\n"
 		        + "on o.person_id = ob.person_id and  ob.value_datetime = o.value_datetime and ob.concept_id = "
-		        + conceptQuery(DATE_COUNSELING_GIVEN)
+		        + conceptQuery(FollowUpConceptQuestions.DATE_COUNSELING_GIVEN)
 		        + " ) as ps\n"
 		        + "\n"
 		        + "inner join \n"
@@ -142,13 +143,13 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "\n"
 		        + "(select max(ib.value_datetime) as value_datetime,ib.person_id \n"
 		        + " from obs as ib  where ib.concept_id = "
-		        + conceptQuery(FOLLOW_UP_DATE)
+		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_DATE)
 		        + " and ib.value_datetime>= :joinStartDate2 and ib.value_datetime<= :joinEndDate2 \n"
 		        + "  group by ib.person_id \n"
 		        + "  \n"
 		        + " ) as o\n"
 		        + "on o.person_id = ob.person_id and  ob.value_datetime = o.value_datetime and ob.concept_id = "
-		        + conceptQuery(FOLLOW_UP_DATE)
+		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_DATE)
 		        + ") as d \n"
 		        + "on ps.person_id = d.person_id\n"
 		        + "\n"
@@ -156,18 +157,18 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "\n"
 		        + "(select ob.person_id,ob.value_coded,ob.encounter_id from obs as ob\n"
 		        + " where ob.concept_id = "
-		        + conceptQuery(FOLLOW_UP_STATUS)
+		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS)
 		        + " and ob.value_coded in "
-		        + conceptQuery(Arrays.asList(ALIVE, RESTART))
+		        + conceptQuery(Arrays.asList(ConceptAnswer.ALIVE, ConceptAnswer.RESTART))
 		        + " ) as fs \n"
 		        + "on fs.person_id = d.person_id and d.encounter_id = fs.encounter_id "
 		        + "inner join\n"
 		        + "\n"
 		        + "(select person_id \n"
 		        + "from obs where concept_id = "
-		        + conceptQuery(CXCA_SCREENING_DONE)
+		        + conceptQuery(FollowUpConceptQuestions.CXCA_SCREENING_DONE)
 		        + "and value_coded = "
-		        + conceptQuery(CXCA_SCREENING_DONE_YES)
+		        + conceptQuery(FollowUpConceptQuestions.CXCA_SCREENING_DONE_YES)
 		        + ") as cxcasd on cxcasd.person_id = d.person_id";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		
@@ -184,13 +185,14 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		String stringQuery = "SELECT distinct ps.person_id\n" + "FROM\n" + "  (SELECT DISTINCT ob.person_id\n"
 		        + "   FROM obs AS ob\n" + "     INNER JOIN\n"
 		        + "     (SELECT MAX(ib.value_datetime) AS value_datetime, ib.person_id\n" + "      FROM obs AS ib\n"
-		        + "      WHERE ib.concept_id = " + conceptQuery(DATE_COUNSELING_GIVEN)
+		        + "      WHERE ib.concept_id = " + conceptQuery(FollowUpConceptQuestions.DATE_COUNSELING_GIVEN)
 		        + "        AND ib.value_datetime >= :joinEndDate1\n" + "        AND ib.value_datetime <= :joinEndDate2\n"
 		        + "      GROUP BY ib.person_id\n" + "     ) AS o\n" + "     ON o.person_id = ob.person_id\n"
 		        + "        AND ob.value_datetime = o.value_datetime\n" + "        AND ob.concept_id = "
-		        + conceptQuery(DATE_COUNSELING_GIVEN) + "INNER JOIN\n" + "    (select distinct person_id \n"
-		        + "		from obs \n" + "        where concept_id = " + conceptQuery(CXCA_TYPE_OF_SCREENING)
-		        + "and value_coded = " + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id";
+		        + conceptQuery(FollowUpConceptQuestions.DATE_COUNSELING_GIVEN) + "INNER JOIN\n"
+		        + "    (select distinct person_id \n" + "		from obs \n" + "        where concept_id = "
+		        + conceptQuery(FollowUpConceptQuestions.CXCA_TYPE_OF_SCREENING) + "and value_coded = "
+		        + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id";
 		if (countedCohort.getMemberIds().size() > 0) {
 			stringQuery = stringQuery + "  and tos.person_id NOT IN (:personIdList) ";
 		}
@@ -208,38 +210,38 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	public Cohort getNegativeResult(Cohort cohort) {
 		String stringQuery = "SELECT distinct cxcaN.person_id FROM (" + "SELECT distinct hpvn.person_id\n"
 		        + "FROM obs as hpvn \n" + "where hpvn.concept_id ="
-		        + conceptQuery(HPV_DNA_SCREENING_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.HPV_DNA_SCREENING_RESULT)
 		        + " and "
 		        + "hpvn.value_coded = "
-		        + conceptQuery(NEGATIVE)
+		        + conceptQuery(ConceptAnswer.NEGATIVE)
 		        + " and hpvn.encounter_id in (:baseEncounter)"
 		        + " UNION "
 		        + "SELECT distinct person_id\n"
 		        + "FROM obs\n"
 		        + "WHERE \n"
 		        + "  (concept_id = "
-		        + conceptQuery(HPV_DNA_SCREENING_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.HPV_DNA_SCREENING_RESULT)
 		        + "AND value_coded = "
-		        + conceptQuery(POSITIVE)
+		        + conceptQuery(ConceptAnswer.POSITIVE)
 		        + ") AND \n"
 		        + "  (\n"
 		        + "    (concept_id = "
-		        + conceptQuery(VIA_SCREENING_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.VIA_SCREENING_RESULT)
 		        + " AND value_coded = "
-		        + conceptQuery(VIA_NEGATIVE)
+		        + conceptQuery(ConceptAnswer.VIA_NEGATIVE)
 		        + ") OR\n"
 		        + "    (concept_id = "
-		        + conceptQuery(CYTOLOGY_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.CYTOLOGY_RESULT)
 		        + " AND (value_coded = "
-		        + conceptQuery(CYTOLOGY_NEGATIVE)
+		        + conceptQuery(ConceptAnswer.NON_REACTIVE)
 		        + " OR "
 		        + "value_coded = "
-		        + conceptQuery(CYTOLOGY_ASCUS)
+		        + conceptQuery(ConceptAnswer.CYTOLOGY_ASCUS)
 		        + ")) OR\n"
 		        + "    (concept_id = "
-		        + conceptQuery(COLPOSCOPY_EXAM_FINDING)
+		        + conceptQuery(FollowUpConceptQuestions.COLPOSCOPY_EXAM_FINDING)
 		        + " AND value_coded = "
-		        + conceptQuery(NORMAL)
+		        + conceptQuery(ConceptAnswer.NORMAL)
 		        + ")\n"
 		        + "  )  and encounter_id in ( :baseEncounter) and person_id in (:personIdList)\n"
 		        + "  \n"
@@ -248,9 +250,9 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "SELECT distinct person_id\n"
 		        + "FROM obs\n"
 		        + "WHERE concept_id = "
-		        + conceptQuery(VIA_SCREENING_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.VIA_SCREENING_RESULT)
 		        + " AND value_coded = "
-		        + conceptQuery(VIA_NEGATIVE)
+		        + conceptQuery(ConceptAnswer.VIA_NEGATIVE)
 		        + "and encounter_id in ( :baseEncounter) and person_id in (:personIdList)\n"
 		        + "\n"
 		        + "UNION\n"
@@ -258,24 +260,24 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "SELECT distinct person_id \n"
 		        + "FROM obs\n"
 		        + "WHERE concept_id ="
-		        + conceptQuery(CYTOLOGY_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.CYTOLOGY_RESULT)
 		        + " AND \n"
 		        + "\t(\t\n"
 		        + "\t\tvalue_coded = "
-		        + conceptQuery(CYTOLOGY_NEGATIVE)
+		        + conceptQuery(ConceptAnswer.NON_REACTIVE)
 		        + " OR \n"
 		        + "        value_coded = "
-		        + conceptQuery(CYTOLOGY_ASCUS)
+		        + conceptQuery(ConceptAnswer.CYTOLOGY_ASCUS)
 		        + " OR \n"
 		        + "        (\n"
 		        + "\t\t\t-- Cytology Result = >Ascus and Colposcopy = Normal\n"
 		        + "    value_coded = "
-		        + conceptQuery(CYTOLOGY_GREATER_ASCUS_SUSPICIOUS)
+		        + conceptQuery(ConceptAnswer.CYTOLOGY_GREATER_ASCUS_SUSPICIOUS)
 		        + " AND \n"
 		        + "    (concept_id = "
-		        + conceptQuery(COLPOSCOPY_EXAM_FINDING)
+		        + conceptQuery(FollowUpConceptQuestions.COLPOSCOPY_EXAM_FINDING)
 		        + " AND value_coded = "
-		        + conceptQuery(NORMAL)
+		        + conceptQuery(ConceptAnswer.NORMAL)
 		        + " )\n"
 		        + "\t\t)\n"
 		        + "    ) and encounter_id in ( :baseEncounter) and person_id in (:personIdList)\n" + ") as cxcaN\n ";
@@ -290,32 +292,32 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	public Cohort getPositiveResult(Cohort cohort) {
 		String stringQuery = "SELECT distinct person_id\n" + "FROM (\n" + "SELECT distinct person_id\n" + "FROM obs\n"
 		        + "WHERE \n" + "  (concept_id = "
-		        + conceptQuery(HPV_DNA_SCREENING_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.HPV_DNA_SCREENING_RESULT)
 		        + " AND "
 		        + " value_coded = "
-		        + conceptQuery(POSITIVE)
+		        + conceptQuery(ConceptAnswer.POSITIVE)
 		        + ") AND \n"
 		        + "    (concept_id = "
-		        + conceptQuery(VIA_SCREENING_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.VIA_SCREENING_RESULT)
 		        + " AND "
 		        + " (value_coded = "
-		        + conceptQuery(VIA_POSITIVE_ELIGIBLE_FOR_CRYO)
+		        + conceptQuery(ConceptAnswer.VIA_POSITIVE_ELIGIBLE_FOR_CRYO)
 		        + " OR value_coded = "
-		        + conceptQuery(VIA_POSITIVE_NON_ELIGIBLE_FOR_CRYO)
+		        + conceptQuery(ConceptAnswer.VIA_POSITIVE_NON_ELIGIBLE_FOR_CRYO)
 		        + "))  OR\n"
 		        + "    ((concept_id = "
-		        + conceptQuery(CYTOLOGY_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.CYTOLOGY_RESULT)
 		        + " AND value_coded = "
-		        + conceptQuery(CYTOLOGY_ASCUS)
+		        + conceptQuery(ConceptAnswer.CYTOLOGY_ASCUS)
 		        + ") "
 		        + " AND (concept_id = "
-		        + conceptQuery(COLPOSCOPY_EXAM_FINDING)
+		        + conceptQuery(FollowUpConceptQuestions.COLPOSCOPY_EXAM_FINDING)
 		        + " "
 		        + " AND (value_coded = "
-		        + conceptQuery(COLPOSCOPY_LOW_GRADE_SIL)
+		        + conceptQuery(ConceptAnswer.COLPOSCOPY_LOW_GRADE_SIL)
 		        + " OR "
 		        + " value_coded = "
-		        + conceptQuery(COLPOSCOPY_HIGH_GRADE_SIL)
+		        + conceptQuery(ConceptAnswer.COLPOSCOPY_HIGH_GRADE_SIL)
 		        + " ))) \n"
 		        + "   and encounter_id in ( :baseEncounter) and person_id in (:personIdList)\n"
 		        + "  \n"
@@ -324,13 +326,13 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "SELECT distinct person_id\n"
 		        + "FROM obs\n"
 		        + "WHERE (concept_id = "
-		        + conceptQuery(VIA_SCREENING_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.VIA_SCREENING_RESULT)
 		        + " "
 		        + " AND (value_coded = "
-		        + conceptQuery(VIA_POSITIVE_ELIGIBLE_FOR_CRYO)
+		        + conceptQuery(ConceptAnswer.VIA_POSITIVE_ELIGIBLE_FOR_CRYO)
 		        + " "
 		        + " OR value_coded = "
-		        + conceptQuery(VIA_POSITIVE_NON_ELIGIBLE_FOR_CRYO)
+		        + conceptQuery(ConceptAnswer.VIA_POSITIVE_NON_ELIGIBLE_FOR_CRYO)
 		        + ")) \n"
 		        + "\tand encounter_id in ( :baseEncounter) and person_id in (:personIdList)\n"
 		        + "\n"
@@ -339,19 +341,19 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		        + "SELECT distinct person_id\n"
 		        + "FROM obs\n"
 		        + "WHERE (concept_id = "
-		        + conceptQuery(CYTOLOGY_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.CYTOLOGY_RESULT)
 		        + " "
 		        + "AND value_coded = "
-		        + conceptQuery(CYTOLOGY_ASCUS)
+		        + conceptQuery(ConceptAnswer.CYTOLOGY_ASCUS)
 		        + ") "
 		        + "AND (concept_id = "
-		        + conceptQuery(COLPOSCOPY_EXAM_FINDING)
+		        + conceptQuery(FollowUpConceptQuestions.COLPOSCOPY_EXAM_FINDING)
 		        + " "
 		        + "AND (value_coded = "
-		        + conceptQuery(COLPOSCOPY_LOW_GRADE_SIL)
+		        + conceptQuery(ConceptAnswer.COLPOSCOPY_LOW_GRADE_SIL)
 		        + " OR "
 		        + "value_coded = "
-		        + conceptQuery(COLPOSCOPY_LOW_GRADE_SIL)
+		        + conceptQuery(ConceptAnswer.COLPOSCOPY_LOW_GRADE_SIL)
 		        + " ))\n"
 		        + "\t\tand encounter_id in ( :baseEncounter) and person_id in (:personIdList)) cxcaP;\n";
 		
@@ -364,7 +366,8 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 	
 	public Cohort getSuspectedResult(Cohort cohort) {
 		String stringQuery = "Select distinct person_id\n" + "from obs\n" + "WHERE concept_id = "
-		        + conceptQuery(VIA_SCREENING_RESULT) + " AND\n" + "value_coded = " + conceptQuery(VIA_SUSPICIOUS_RESULT)
+		        + conceptQuery(FollowUpConceptQuestions.VIA_SCREENING_RESULT) + " AND\n" + "value_coded = "
+		        + conceptQuery(ConceptAnswer.SUSPECTED_CERVICAL_CANCER)
 		        + " and encounter_id in ( :baseEncounter) and person_id in (:personIdList)";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);

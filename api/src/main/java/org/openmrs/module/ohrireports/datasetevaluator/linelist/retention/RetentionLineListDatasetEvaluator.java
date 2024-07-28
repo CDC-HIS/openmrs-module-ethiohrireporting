@@ -3,6 +3,9 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.retention;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
+import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.RetentionLineListDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -20,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { RetentionLineListDataSetDefinition.class })
 public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
@@ -44,29 +45,29 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		List<Person> persons = LineListUtilities.sortPatientByName(retentionLineListQuery.getPerson(cohort));
 		
 		HashMap<Integer, Object> followUpDateHashMap = retentionLineListQuery.getObsValueDate(
-		    retentionLineListQuery.getBaseEncounter(), FOLLOW_UP_DATE, cohort);
+		    retentionLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		HashMap<Integer, Object> confirmedDateHashMap = retentionLineListQuery.getObsValueDate(
-		    retentionLineListQuery.getBaseEncounter(), HIV_CONFIRMED_DATE, cohort);
+		    retentionLineListQuery.getBaseEncounter(), PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
 		HashMap<Integer, Object> artStartDateHashMap = retentionLineListQuery.getObsValueDate(
-		    retentionLineListQuery.getBaseEncounter(), ART_START_DATE, cohort);
+		    retentionLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.ART_START_DATE, cohort);
 		HashMap<Integer, Object> nextVistDateHashMap = retentionLineListQuery.getObsValueDate(
-		    retentionLineListQuery.getBaseEncounter(), NEXT_VISIT_DATE, cohort);
+		    retentionLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
 		HashMap<Integer, Object> treatmentDateHashMap = retentionLineListQuery.getObsValueDate(
-		    retentionLineListQuery.getBaseEncounter(), TREATMENT_END_DATE, cohort);
+		    retentionLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.TREATMENT_END_DATE, cohort);
 		HashMap<Integer, Object> transferedHashMap = retentionLineListQuery.getConceptName(
-		    retentionLineListQuery.getBaseEncounter(), cohort, REASON_FOR_ART_ELIGIBILITY);
+		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
 		HashMap<Integer, Object> doseDisPenseHashMap = retentionLineListQuery.getConceptName(
-		    retentionLineListQuery.getBaseEncounter(), cohort, ARV_DISPENSED_IN_DAYS);
+		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS);
 		HashMap<Integer, Object> regimentHashMap = retentionLineListQuery.getRegiment(
 		    retentionLineListQuery.getBaseEncounter(), cohort);
 		HashMap<Integer, Object> adherenceHashMap = retentionLineListQuery.getConceptName(
-		    retentionLineListQuery.getBaseEncounter(), cohort, ARV_ADHERENCE);
+		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.ARV_ADHERENCE);
 		HashMap<Integer, Object> followUpStatusHashMap = retentionLineListQuery.getConceptName(
-		    retentionLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);
-		HashMap<Integer, Object> mrnIdentifierHashMap = retentionLineListQuery
-		        .getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uanIdentifierHashMap = retentionLineListQuery
-		        .getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
+		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.FOLLOW_UP_STATUS);
+		HashMap<Integer, Object> mrnIdentifierHashMap = retentionLineListQuery.getIdentifier(cohort,
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> uanIdentifierHashMap = retentionLineListQuery.getIdentifier(cohort,
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		//TODO: identify still on treatment  concept
 		//		HashMap<Integer, Object> stillOnTreatmentHashMap = retentionLineListQuery.getConceptName(
 		//				retentionLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);

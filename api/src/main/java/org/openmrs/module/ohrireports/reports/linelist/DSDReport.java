@@ -1,6 +1,6 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.DSDDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.LINE_LIST_REPORT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.REPORT_VERSION;
+import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 
 @Component
 public class DSDReport implements ReportManager {

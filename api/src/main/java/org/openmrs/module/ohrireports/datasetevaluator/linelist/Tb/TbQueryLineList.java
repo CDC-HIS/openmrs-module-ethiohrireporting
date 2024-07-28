@@ -1,8 +1,8 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.Tb;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_RESULT;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_TREATMENT_START_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TB_SCREENING_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TB_SCREENING_RESULT;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TB_TREATMENT_START_DATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,11 +11,11 @@ import java.util.List;
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TbQueryLineList extends BaseLineListQuery {
+public class TbQueryLineList extends ObsElement {
 	private DbSessionFactory sessionFactory;
 
 	public List<Integer> getScreenedOnDateEncounters() {

@@ -5,17 +5,16 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 @Component
-public class ScheduleVisitQuery extends BaseLineListQuery {
+public class ScheduleVisitQuery extends ObsElement {
 	
 	private final DbSessionFactory sessionFactory;
 	
@@ -45,8 +44,8 @@ public class ScheduleVisitQuery extends BaseLineListQuery {
 	
 	public void generateReport(Date start, Date end) {
 		encounter = encounterQuery.getAliveFollowUpEncounters(null, end);
-		List<Integer> visitEncounter = encounterQuery.getEncounters(Collections.singletonList(NEXT_VISIT_DATE), start, end,
-		    encounter);
+		List<Integer> visitEncounter = encounterQuery.getEncounters(
+		    Collections.singletonList(FollowUpConceptQuestions.NEXT_VISIT_DATE), start, end, encounter);
 		baseCohort = getCohort(visitEncounter);
 	}
 	

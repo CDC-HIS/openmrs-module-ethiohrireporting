@@ -1,11 +1,9 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.pmtct;
 
-import org.openmrs.Cohort;
-import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.dao.PMTCTEncounter;
 import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
-import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
+import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.EidDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -19,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { EidDatasetDefinition.class })
 public class EidDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -59,7 +55,7 @@ public class EidDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private void buildColumnForRapidAntiBody(SimpleDataSet dataSet) {
 		DataSetRow row;
-		HashMap<Integer,Object> heiCodeHashMap = eidQuery.getResult(PMTCT_HEI_CODE,pmtctPatientRapidAntiBodies.stream().map(PMTCTPatientRapidAntiBody::getPersonId).collect(Collectors.toList()));
+		HashMap<Integer,Object> heiCodeHashMap = eidQuery.getResult(PMTCTConceptQuestions.PMTCT_HEI_CODE,pmtctPatientRapidAntiBodies.stream().map(PMTCTPatientRapidAntiBody::getPersonId).collect(Collectors.toList()));
 		heiCodeHashMap.forEach((k, p) -> {
 			pmtctPatientRapidAntiBodies.forEach(d -> {
 				if (d.getPersonId() == k) {

@@ -8,6 +8,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.TxCurrARVDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -21,12 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { TxCurrARVDataSetDefinition.class })
 public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -55,7 +53,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 		List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,hdsd.getEndDate());
 		Cohort baseCohort  = patientQueryService.getActiveOnArtCohort("",null,hdsd.getEndDate(),null,encounters);
 		personList = patientQueryService.getPersons(baseCohort);
-         patientWithDispenseDay = patientQueryService.getObsValue(baseCohort,ARV_DISPENSED_IN_DAYS, PatientQueryImpDao.ObsValueType.CONCEPT_UUID,encounters);
+         patientWithDispenseDay = patientQueryService.getObsValue(baseCohort, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS, PatientQueryImpDao.ObsValueType.CONCEPT_UUID,encounters);
 
 
 		DataSetRow femaleDateSet = new DataSetRow();
@@ -63,26 +61,26 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		femaleDateSet.addColumnValue(
 				new DataSetColumn("3munknownAge", "<3 months of ARVs (not MMD)  Unknown Age", Integer.class),
-				getUnknownAgeByGender(Arrays.asList(ARV_30_Day,ARV_60_Day),"F"));
+				getUnknownAgeByGender(Arrays.asList(ConceptAnswer.ARV_30_Day, ConceptAnswer.ARV_60_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("3m<15", "<3 months of ARVs (not MMD) <15", Integer.class),
-				getBelow15(Arrays.asList(ARV_30_Day,ARV_60_Day),"F"));
+				getBelow15(Arrays.asList(ConceptAnswer.ARV_30_Day, ConceptAnswer.ARV_60_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("3m15+", "<3 months of ARVs (not MMD) 15+", Integer.class),
-				getAbove15(Arrays.asList(ARV_30_Day,ARV_60_Day),"F"));
+				getAbove15(Arrays.asList(ConceptAnswer.ARV_30_Day, ConceptAnswer.ARV_60_Day),"F"));
 
 		femaleDateSet.addColumnValue(new DataSetColumn("5munknownAge", "3-5 months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"F"));
+				getUnknownAgeByGender(Arrays.asList(ConceptAnswer.ARV_90_Day, ConceptAnswer.ARV_120_Day, ConceptAnswer.ARV_150_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("5m<15", "3-5 months of ARVs <15", Integer.class),
-				getBelow15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"F"));
+				getBelow15(Arrays.asList(ConceptAnswer.ARV_90_Day, ConceptAnswer.ARV_120_Day, ConceptAnswer.ARV_150_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("5m15+", "3-5 months of ARVs 15+", Integer.class),
-				getAbove15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"F"));
+				getAbove15(Arrays.asList(ConceptAnswer.ARV_90_Day, ConceptAnswer.ARV_120_Day, ConceptAnswer.ARV_150_Day),"F"));
 
 		femaleDateSet.addColumnValue(
 				new DataSetColumn("6munknownAge", "6 or more months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(Arrays.asList(ARV_180_Day),"F"));
+				getUnknownAgeByGender(Arrays.asList(ConceptAnswer.ARV_180_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("6m<15", "6 or more months of ARVs <15", Integer.class),
-				getBelow15(Arrays.asList(ARV_180_Day),"F"));
+				getBelow15(Arrays.asList(ConceptAnswer.ARV_180_Day),"F"));
 		femaleDateSet.addColumnValue(new DataSetColumn("6m15+", "6 or more months of ARVs 15+", Integer.class),
-				getAbove15(Arrays.asList(ARV_180_Day),"F"));
+				getAbove15(Arrays.asList(ConceptAnswer.ARV_180_Day),"F"));
 
 		set.addRow(femaleDateSet);
 
@@ -91,26 +89,26 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 		maleDataSet.addColumnValue(
 				new DataSetColumn("3munknownAge", "<3 months of ARVs (not MMD)  Unknown Age", Integer.class),
-				getUnknownAgeByGender(Arrays.asList(ARV_30_Day,ARV_60_Day),"M"));
+				getUnknownAgeByGender(Arrays.asList(ConceptAnswer.ARV_30_Day, ConceptAnswer.ARV_60_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("3m<15", "<3 months of ARVs (not MMD) <15", Integer.class),
-				getBelow15(Arrays.asList(ARV_30_Day,ARV_60_Day),"M"));
+				getBelow15(Arrays.asList(ConceptAnswer.ARV_30_Day, ConceptAnswer.ARV_60_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("3m15+", "<3 months of ARVs (not MMD) 15+", Integer.class),
-				getAbove15(Arrays.asList(ARV_30_Day,ARV_60_Day),"M"));
+				getAbove15(Arrays.asList(ConceptAnswer.ARV_30_Day, ConceptAnswer.ARV_60_Day),"M"));
 
 		maleDataSet.addColumnValue(new DataSetColumn("5munknownAge", "3-5 months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"M"));
+				getUnknownAgeByGender(Arrays.asList(ConceptAnswer.ARV_90_Day, ConceptAnswer.ARV_120_Day, ConceptAnswer.ARV_150_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("5m<15", "3-5 months of ARVs <15", Integer.class),
-				getBelow15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"M"));
+				getBelow15(Arrays.asList(ConceptAnswer.ARV_90_Day, ConceptAnswer.ARV_120_Day, ConceptAnswer.ARV_150_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("5m15+", "3-5 months of ARVs 15+", Integer.class),
-				getAbove15(Arrays.asList(ARV_90_Day,ARV_120_Day,ARV_150_Day),"M"));
+				getAbove15(Arrays.asList(ConceptAnswer.ARV_90_Day, ConceptAnswer.ARV_120_Day, ConceptAnswer.ARV_150_Day),"M"));
 
 		maleDataSet.addColumnValue(
 				new DataSetColumn("6munknownAge", "6 or more months of ARVs Unknown Age", Integer.class),
-				getUnknownAgeByGender(Arrays.asList(ARV_180_Day),"M"));
+				getUnknownAgeByGender(Arrays.asList(ConceptAnswer.ARV_180_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("6m<15", "6 or more months of ARVs <15", Integer.class),
-				getBelow15(Arrays.asList(ARV_180_Day),"M"));
+				getBelow15(Arrays.asList(ConceptAnswer.ARV_180_Day),"M"));
 		maleDataSet.addColumnValue(new DataSetColumn("6m15+", "6 or more months of ARVs 15+", Integer.class),
-				getAbove15(Arrays.asList(ARV_180_Day),"M"));
+				getAbove15(Arrays.asList(ConceptAnswer.ARV_180_Day),"M"));
 
 		set.addRow(maleDataSet);
 

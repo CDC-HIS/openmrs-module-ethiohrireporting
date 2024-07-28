@@ -6,10 +6,11 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 public class TBQuery extends PatientQueryImpDao {
@@ -36,24 +37,24 @@ public class TBQuery extends PatientQueryImpDao {
     
     public void generateDenominatorReport(Date start, Date end) {
 
-        tbScreeningEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_SCREENING_DATE), start,end);
+        tbScreeningEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_SCREENING_DATE), start,end);
         Cohort cohort = getCohort(tbScreeningEncounter);
         cohort =   new Cohort(getArtStartedCohort(tbScreeningEncounter,null,end,cohort));
 
         denomiatorCohort = new Cohort(getArtStartedCohort(tbScreeningEncounter, null, end, cohort));
-        followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE),null,end,denomiatorCohort);
+        followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE),null,end,denomiatorCohort);
         
     }
     public void generateNumeratorReport(Date start, Date end) {
         tbTreatmentEncounter = encounterQuery.getEncounters(
-		        Collections.singletonList(TB_TREATMENT_START_DATE), start, end);
+		        Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_START_DATE), start, end);
         
         Cohort cohort = getCohort(tbTreatmentEncounter);
         
          cohort =   new Cohort(getArtStartedCohort(tbTreatmentEncounter,null,end,cohort));
         
         numeratorCohort = getActiveOnArtCohort("", null,end, cohort, tbTreatmentEncounter);
-        followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE),null,end,numeratorCohort);
+        followUpEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE),null,end,numeratorCohort);
     }
 
     public void setEncountersByScreenDate(List<Integer> encounters) {
@@ -61,17 +62,17 @@ public class TBQuery extends PatientQueryImpDao {
     }
 
     public Cohort getCohortByTbScreenedNegative(Cohort cohort, String gender) {
-        Query query = getTBScreenedByResult(cohort, gender, NEGATIVE);
+        Query query = getTBScreenedByResult(cohort, gender, ConceptAnswer.NEGATIVE);
         return new Cohort(query.list());
     }
 
     public Cohort getCohortByTbScreenedPositive(Cohort cohort, String gender) {
-        Query query = getTBScreenedByResult(cohort, gender, POSITIVE);
+        Query query = getTBScreenedByResult(cohort, gender, ConceptAnswer.POSITIVE);
         return new Cohort(query.list());
     }
 
     private Query getTBScreenedByResult(Cohort cohort, String gender, String resultConcept) {
-        StringBuilder sql = baseQuery(TB_SCREENING_RESULT);
+        StringBuilder sql = baseQuery(FollowUpConceptQuestions.TB_SCREENING_RESULT);
         sql.append(" and " + OBS_ALIAS + "value_coded = " + conceptQuery(resultConcept));
 
         if (!Objects.isNull(gender) && !gender.isEmpty()) sql.append(" and p.gender = '" + gender + "' ");
@@ -87,30 +88,30 @@ public class TBQuery extends PatientQueryImpDao {
     }
 
     public Cohort getSpecimenSent(Cohort cohort, Date startDate, Date endDate) {
-        Query query = getByResultTypeQuery(cohort, startDate, endDate, SPECIMEN_SENT, YES);
+        Query query = getByResultTypeQuery(cohort, startDate, endDate, FollowUpConceptQuestions.SPECIMEN_SENT, ConceptAnswer.YES);
         return new Cohort(query.list());
     }
 
     public Cohort getSmearOnly(Cohort cohort, Date startDate, Date endDate) {
-        Query query = getByResultTypeQuery(cohort, startDate, endDate, DIAGNOSTIC_TEST, SMEAR_ONLY);
+        Query query = getByResultTypeQuery(cohort, startDate, endDate, FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST, ConceptAnswer.SMEAR_ONLY);
         return new Cohort(query.list());
 
     }
 
     public Cohort getLFMResult(Cohort cohort, Date startDate, Date endDate) {
-        Query query = getByResultTypeQuery(cohort, startDate, endDate, DIAGNOSTIC_TEST, Arrays.asList(LF_LAM_RESULT, GENE_XPERT_RESULT));
+        Query query = getByResultTypeQuery(cohort, startDate, endDate, FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST, Arrays.asList(FollowUpConceptQuestions.LF_LAM_RESULT, FollowUpConceptQuestions.GENE_XPERT_RESULT));
         return new Cohort(query.list());
 
     }
 
     public Cohort getOtherThanLFMResult(Cohort cohort, Date startDate, Date endDate) {
-        Query query = getByResultTypeQuery(cohort, startDate, endDate, DIAGNOSTIC_TEST, ADDITIONAL_TEST_OTHERTHAN_GENE_XPERT);
+        Query query = getByResultTypeQuery(cohort, startDate, endDate, FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST, ConceptAnswer.ADDITIONAL_TEST_OTHERTHAN_GENE_XPERT);
         return new Cohort(query.list());
 
     }
 
     public Cohort getTBDiagnosticPositiveResult(Cohort cohort, Date startDate, Date endDate) {
-        Query query = getByResultTypeQuery(cohort, startDate, endDate, TB_DIAGNOSTIC_TEST_RESULT, POSITIVE);
+        Query query = getByResultTypeQuery(cohort, startDate, endDate, FollowUpConceptQuestions.TB_DIAGNOSTIC_TEST_RESULT, ConceptAnswer.POSITIVE);
 
         return new Cohort(query.list());
 
@@ -143,7 +144,7 @@ public class TBQuery extends PatientQueryImpDao {
     }
 
     public Cohort getTBScreenedCohort(Cohort cohort,List<Integer> encounter) {
-        StringBuilder sql = baseQuery(TB_SCREENING_DATE);
+        StringBuilder sql = baseQuery(FollowUpConceptQuestions.TB_SCREENING_DATE);
         sql.append(" and " + OBS_ALIAS + "encounter_id in (:encounters)");
         sql.append(" and  " + OBS_ALIAS + "person_id in (:cohorts)");
 
@@ -158,7 +159,7 @@ public class TBQuery extends PatientQueryImpDao {
     public Cohort getTBTreatmentStartedCohort(Cohort cohort, String gender, List<Integer> treatmentStatedDateEncounters) {
         //getBaseEncounters(TB_TREATMENT_START_DATE, starDate, endDate);
 
-        StringBuilder sql = baseQuery(TB_TREATMENT_START_DATE);
+        StringBuilder sql = baseQuery(FollowUpConceptQuestions.TB_TREATMENT_START_DATE);
         sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");
         sql.append(" and " + OBS_ALIAS + " person_id in (:cohorts)");
 
@@ -176,7 +177,7 @@ public class TBQuery extends PatientQueryImpDao {
 
     public Cohort getTPTStartedCohort(Cohort cohort, List<Integer> treatmentStatedDateEncounters, String gender) {
 
-        StringBuilder sql = baseQuery(TPT_START_DATE);
+        StringBuilder sql = baseQuery(FollowUpConceptQuestions.TPT_START_DATE);
         sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");
         if (cohort != null && !cohort.isEmpty()) sql.append(" and " + OBS_ALIAS + " person_id in (:cohorts)");
 
@@ -234,11 +235,11 @@ public class TBQuery extends PatientQueryImpDao {
         sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");
         sql.append("inner join person as p on pa.patient_id = p.person_id ");
         sql.append("inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.retired = false ");
-        sql.append("and c.uuid= '" + TPT_COMPLETED_DATE + "' ");
+        sql.append("and c.uuid= '" + FollowUpConceptQuestions.TPT_COMPLETED_DATE + "' ");
         sql.append("inner join encounter as e on e.encounter_id = " + OBS_ALIAS + "encounter_id ");
         sql.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
-        sql.append("left join (select * from obs where concept_id=" + conceptQuery(TPT_START_DATE) + " and encounter_id in (:joinedEncounters) ) as otherOb on otherOb.person_id = ob.person_id ");
-        sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
+        sql.append("left join (select * from obs where concept_id=" + conceptQuery(FollowUpConceptQuestions.TPT_START_DATE) + " and encounter_id in (:joinedEncounters) ) as otherOb on otherOb.person_id = ob.person_id ");
+        sql.append(" and et.uuid= '" + EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
         sql.append(" where pa.voided = false and " + OBS_ALIAS + "voided = false and otherOb.value_datetime < ob.value_datetime");
         sql.append(" and " + OBS_ALIAS + " encounter_id in (:encounters)");
 

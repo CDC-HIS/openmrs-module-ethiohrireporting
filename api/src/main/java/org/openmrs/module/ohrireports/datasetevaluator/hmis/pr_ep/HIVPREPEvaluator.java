@@ -1,6 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
@@ -8,6 +8,8 @@ import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.PrepConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.Gender;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -34,11 +36,11 @@ public class HIVPREPEvaluator {
 		this.end = end; 
 	
 		hivPrEPQuery.setStartDate(start);
-		hivPrEPQuery.setEndDate(end,PREP_SCREENED_DATE, PREP_SCREENING_ENCOUNTER_TYPE);
+		hivPrEPQuery.setEndDate(end, PrepConceptQuestions.PREP_SCREENED_DATE, EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 
 
 		Cohort prepScreeningCohort = hivPrEPQuery
-				.getCohortByConceptAndBaseEncounter(PREP_SCREENED_DATE);
+				.getCohortByConceptAndBaseEncounter(PrepConceptQuestions.PREP_SCREENED_DATE);
 		
 		//patientIds = hivPrEPQuery.getPatientStartedPrep();
 
@@ -65,7 +67,7 @@ public class HIVPREPEvaluator {
 		dataset.addRow(buildColumn("1.1 .16", ">=50 years, Female", getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
 
 		int total = 0;
-		Cohort fsw = hivPrEPQuery.getCategoryOnPrep(FEMALE_SEX_WORKER, prepScreeningCohort);
+		Cohort fsw = hivPrEPQuery.getCategoryOnPrep(PrepConceptQuestions.FEMALE_SEX_WORKER, prepScreeningCohort);
 		Cohort discordantCouple = hivPrEPQuery.getCategoryOnPrep(DISCORDANT_COUPLE, prepScreeningCohort);
 		total = fsw.size() + discordantCouple.size();
 		

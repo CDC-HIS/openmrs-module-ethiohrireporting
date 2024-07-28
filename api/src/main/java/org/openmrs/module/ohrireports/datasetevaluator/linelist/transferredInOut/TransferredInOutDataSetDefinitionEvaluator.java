@@ -2,16 +2,16 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.transferredInOu
 
 import java.util.*;
 
-import org.openmrs.*;
+import org.openmrs.Cohort;
+import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.TransferInOutQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
-import org.openmrs.module.ohrireports.reports.linelist.TXTBReport;
 import org.openmrs.module.ohrireports.reports.linelist.TransferInOutReport;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -21,12 +21,7 @@ import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
-import org.openmrs.module.reporting.evaluation.querybuilder.HqlQueryBuilder;
-import org.openmrs.module.reporting.evaluation.service.EvaluationService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.SCHEDULE_TYPE;
 
 /*
  *
@@ -176,16 +171,17 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				        String.class), followUpEthiopianDate);
 				row.addColumnValue(new DataSetColumn("followUpStatus", "Follow-up Status", Integer.class),
 				    followUpStatus.get(person.getPersonId()));
-				row.addColumnValue(new DataSetColumn("LastRegimen", "Last Regimen", String.class),
-				    transferredInOutLineListQuery.getByResult(REGIMEN, cohort, transferInOutQuery.getBeforeLastEncounter())
-				            .get(person.getPersonId()));
+				row.addColumnValue(
+				    new DataSetColumn("LastRegimen", "Last Regimen", String.class),
+				    transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, cohort,
+				        transferInOutQuery.getBeforeLastEncounter()).get(person.getPersonId()));
 				row.addColumnValue(
 				    new DataSetColumn("LastDose", "Last ARV Dose", Integer.class),
-				    transferredInOutLineListQuery.getByResult(ART_DISPENSE_DOSE, cohort,
+				    transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort,
 				        transferInOutQuery.getBeforeLastEncounter()).get(person.getPersonId()));
 				row.addColumnValue(
 				    new DataSetColumn("LastAdherence", "Last Adherence", Integer.class),
-				    transferredInOutLineListQuery.getByResult(ARV_ADHERENCE, cohort,
+				    transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort,
 				        transferInOutQuery.getBeforeLastEncounter()).get(person.getPersonId()));
 				dataSet.addRow(row);
 			}
@@ -198,7 +194,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 			
 			loadColumnDictionary(cohort, transferInOutQuery.getFirstEncounter());
 			HashMap<Integer, Object> nextVisitDateHashMap = transferredInOutLineListQuery.getObsValueDate(
-			    transferInOutQuery.getLastEncounter(), NEXT_VISIT_DATE, cohort);
+			    transferInOutQuery.getLastEncounter(), FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
 			DataSetRow row;
 			
 			if (!persons.isEmpty()) {
@@ -236,19 +232,20 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				        Integer.class), transferredInOutLineListQuery.getEthiopianDate(_followUpDate));
 				row.addColumnValue(
 				    new DataSetColumn("followUpStatus", "Latest Follow-up Status", Integer.class),
-				    transferredInOutLineListQuery.getByResult(FOLLOW_UP_STATUS, cohort,
+				    transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort,
 				        transferInOutQuery.getLastEncounter()).get(person.getPersonId()));
 				row.addColumnValue(
 				    new DataSetColumn("LastRegimen", "Last Regimen", String.class),
-				    transferredInOutLineListQuery.getByResult(REGIMEN, cohort, transferInOutQuery.getLastEncounter()).get(
-				        person.getPersonId()));
+				    transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, cohort,
+				        transferInOutQuery.getLastEncounter()).get(person.getPersonId()));
 				row.addColumnValue(
 				    new DataSetColumn("LastDose", "Last ARV Dose", Integer.class),
-				    transferredInOutLineListQuery.getByResult(ART_DISPENSE_DOSE, cohort,
+				    transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort,
 				        transferInOutQuery.getLastEncounter()).get(person.getPersonId()));
-				row.addColumnValue(new DataSetColumn("LastAdherence", "Last Adherence", Integer.class),
-				    transferredInOutLineListQuery.getByResult(ARV_ADHERENCE, cohort, transferInOutQuery.getLastEncounter())
-				            .get(person.getPersonId()));
+				row.addColumnValue(
+				    new DataSetColumn("LastAdherence", "Last Adherence", Integer.class),
+				    transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort,
+				        transferInOutQuery.getLastEncounter()).get(person.getPersonId()));
 				row.addColumnValue(new DataSetColumn("NextVisitDate", "Next Visit Date", Date.class),
 				    transferredInOutLineListQuery.getEthiopianDate(nextVisitDate));
 				dataSet.addRow(row);
@@ -260,15 +257,20 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 	}
 	
 	private void loadColumnDictionary(Cohort baseCohort, List<Integer> followUpEncounters) {
-		mrnIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, MRN_PATIENT_IDENTIFIERS);
-		uanIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, UAN_PATIENT_IDENTIFIERS);
+		mrnIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
+		uanIdentifierHashMap = transferredInOutLineListQuery.getIdentifier(baseCohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
 		artStartDictionary = transferredInOutLineListQuery
 		        .getArtStartDate(baseCohort, null, transferInOutQuery.getEndDate());
-		followUpDate = transferredInOutLineListQuery.getObsValueDate(followUpEncounters, FOLLOW_UP_DATE, baseCohort);
-		followUpStatus = transferredInOutLineListQuery.getByResult(FOLLOW_UP_STATUS, baseCohort, followUpEncounters);
-		regimen = transferredInOutLineListQuery.getByResult(REGIMEN, baseCohort, followUpEncounters);
-		arvDose = transferredInOutLineListQuery.getByResult(ART_DISPENSE_DOSE, baseCohort, followUpEncounters);
-		adherence = transferredInOutLineListQuery.getByResult(ARV_ADHERENCE, baseCohort, followUpEncounters);
+		followUpDate = transferredInOutLineListQuery.getObsValueDate(followUpEncounters,
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, baseCohort);
+		followUpStatus = transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, baseCohort,
+		    followUpEncounters);
+		regimen = transferredInOutLineListQuery
+		        .getByResult(FollowUpConceptQuestions.REGIMEN, baseCohort, followUpEncounters);
+		arvDose = transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, baseCohort,
+		    followUpEncounters);
+		adherence = transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, baseCohort,
+		    followUpEncounters);
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {

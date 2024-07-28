@@ -3,10 +3,9 @@ package org.openmrs.module.ohrireports.reports.datim;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-
 import org.openmrs.EncounterType;
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTAutoCalculateDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -29,7 +28,7 @@ public class DatimPMTCTARTReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_TREATMENT + "-PMTCT_ART";
+		return ReportType.DATIM_REPORT_TREATMENT + "-PMTCT_ART";
 	}
 	
 	@Override

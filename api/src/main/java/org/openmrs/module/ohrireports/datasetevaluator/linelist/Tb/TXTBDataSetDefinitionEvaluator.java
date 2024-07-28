@@ -12,6 +12,8 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBARTQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TXTBDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.ohrireports.reports.linelist.TXTBReport;
@@ -24,8 +26,6 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Handler(supports = { TXTBDataSetDefinition.class })
 public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -89,7 +89,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (hdsd.getType().equals(TXTBReport.numerator)) {
 			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
-			    Collections.singletonList(TB_TREATMENT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate());
+			    Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_START_DATE), hdsd.getStartDate(),
+			    hdsd.getEndDate());
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
 			
 			getTXTbTreatmentAndTBArtDictionary(baseEncountersOfTreatmentStartDate, cohort);
@@ -98,7 +99,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			tbQueryLineList.setEncountersByScreenDate(tbQuery.getFollowUpEncounter());
 			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
-			    Collections.singletonList(TB_SCREENING_DATE), hdsd.getStartDate(), hdsd.getEndDate());
+			    Collections.singletonList(FollowUpConceptQuestions.TB_SCREENING_DATE), hdsd.getStartDate(),
+			    hdsd.getEndDate());
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
 			
 			getTXTbScreeningDictionary(baseEncountersOfTreatmentStartDate, cohort);
@@ -108,8 +110,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			getTXTbTreatmentAndTBArtDictionary(tbartQuery.getTbArtEncounter(), cohort);
 		}
 		
-		mrnIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		uanIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
+		mrnIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
+		uanIdentifierHashMap = tbQueryLineList.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
 		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
 		
 		DataSetRow row;
@@ -132,54 +134,66 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private void getTXTbTreatmentAndTBArtDictionary(List<Integer> encounters, Cohort cohort) {
-		artStartDictionary = tbQueryLineList.getObsValueDate(encounters, ART_START_DATE, cohort);
+		artStartDictionary = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.ART_START_DATE, cohort);
 		regimentDictionary = tbQueryLineList.getRegiment(encounters, cohort);
-		followUpDate = tbQueryLineList.getObsValueDate(encounters, FOLLOW_UP_DATE, cohort);
+		followUpDate = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		followUpStatus = tbQueryLineList.getFollowUpStatus(encounters, cohort);
-		dispensDayHashMap = tbQueryLineList.getByResult(ART_DISPENSE_DOSE, cohort, encounters);
-		adherenceHashMap = tbQueryLineList.getByResult(ARV_ADHERENCE, cohort, encounters);
-		pregnancyStatusHashMap = tbQueryLineList.getByResult(PREGNANCY_STATUS, cohort, encounters);
-		breastfeedingStatusHashMap = tbQueryLineList.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort, encounters);
-		tbActiveDate = tbQueryLineList.getObsValueDate(encounters, TB_ACTIVE_DATE, cohort);
-		tbTxStartDateDictionary = tbQueryLineList.getObsValueDate(encounters, TB_TREATMENT_START_DATE, cohort);
-		tbTreatmentStatus = tbQueryLineList.getByResult(TB_TREATMENT_STATUS, cohort, encounters);
-		tbTreatmentCompletedDateDictionary = tbQueryLineList
-		        .getObsValueDate(encounters, TB_TREATMENT_COMPLETED_DATE, cohort);
-		tbTreatmentDiscontinuedDateDictionary = tbQueryLineList.getObsValueDate(encounters, TB_TREATMENT_DISCONTINUED_DATE,
+		dispensDayHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort, encounters);
+		adherenceHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort, encounters);
+		pregnancyStatusHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS, cohort, encounters);
+		breastfeedingStatusHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD,
+		    cohort, encounters);
+		tbActiveDate = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.TB_ACTIVE_DATE, cohort);
+		tbTxStartDateDictionary = tbQueryLineList.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.TB_TREATMENT_START_DATE, cohort);
+		tbTreatmentStatus = tbQueryLineList.getByResult(FollowUpConceptQuestions.TB_TREATMENT_STATUS, cohort, encounters);
+		tbTreatmentCompletedDateDictionary = tbQueryLineList.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.TB_TREATMENT_COMPLETED_DATE, cohort);
+		tbTreatmentDiscontinuedDateDictionary = tbQueryLineList.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.TB_TREATMENT_DISCONTINUED_DATE, cohort);
+		tbScreeningDateHashMap = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.TB_SCREENING_DATE,
 		    cohort);
-		tbScreeningDateHashMap = tbQueryLineList.getObsValueDate(encounters, TB_SCREENING_DATE, cohort);
-		tbScreeningResultsHashMap = tbQueryLineList.getByResult(TB_SCREENING_RESULT, cohort, encounters);
-		_LAMResults = tbQueryLineList.getByResult(LF_LAM_RESULT, cohort, encounters);
-		geneXpertResult = tbQueryLineList.getByResult(GENE_XPERT_RESULT, cohort, encounters);
-		OtherDiagnosticTest = tbQueryLineList.getByResult(DIAGNOSTIC_TEST, cohort, encounters);
-		OtherDiagResult = tbQueryLineList.getByResult(TB_DIAGNOSTIC_TEST_RESULT, cohort, encounters);
+		tbScreeningResultsHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.TB_SCREENING_RESULT, cohort,
+		    encounters);
+		_LAMResults = tbQueryLineList.getByResult(FollowUpConceptQuestions.LF_LAM_RESULT, cohort, encounters);
+		geneXpertResult = tbQueryLineList.getByResult(FollowUpConceptQuestions.GENE_XPERT_RESULT, cohort, encounters);
+		OtherDiagnosticTest = tbQueryLineList.getByResult(FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST, cohort,
+		    encounters);
+		OtherDiagResult = tbQueryLineList
+		        .getByResult(FollowUpConceptQuestions.TB_DIAGNOSTIC_TEST_RESULT, cohort, encounters);
 		
 	}
 	
 	private void getTXTbScreeningDictionary(List<Integer> encounters, Cohort cohort) {
-		artStartDictionary = tbQueryLineList.getObsValueDate(encounters, ART_START_DATE, cohort);
+		artStartDictionary = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.ART_START_DATE, cohort);
 		regimentDictionary = tbQueryLineList.getRegiment(encounters, cohort);
-		followUpDate = tbQueryLineList.getObsValueDate(encounters, FOLLOW_UP_DATE, cohort);
+		followUpDate = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		followUpStatus = tbQueryLineList.getFollowUpStatus(encounters, cohort);
-		dispensDayHashMap = tbQueryLineList.getByResult(ART_DISPENSE_DOSE, cohort, encounters);
-		adherenceHashMap = tbQueryLineList.getByResult(ARV_ADHERENCE, cohort, encounters);
-		pregnancyStatusHashMap = tbQueryLineList.getByResult(PREGNANCY_STATUS, cohort, encounters);
-		breastfeedingStatusHashMap = tbQueryLineList.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort, encounters);
-		tbScreeningDateHashMap = tbQueryLineList.getObsValueDate(encounters, TB_SCREENING_DATE, cohort);
-		tbScreeningResultsHashMap = tbQueryLineList.getByResult(TB_SCREENING_RESULT, cohort, encounters);
-		specimen = tbQueryLineList.getByResult(SPECIMEN_SENT, cohort, encounters);
-		_LAMResults = tbQueryLineList.getByResult(LF_LAM_RESULT, cohort, encounters);
-		geneXpertResult = tbQueryLineList.getByResult(GENE_XPERT_RESULT, cohort, encounters);
-		OtherDiagnosticTest = tbQueryLineList.getByResult(DIAGNOSTIC_TEST, cohort, encounters);
-		OtherDiagResult = tbQueryLineList.getByResult(TB_DIAGNOSTIC_TEST_RESULT, cohort, encounters);
-		
-		tbActiveDate = tbQueryLineList.getObsValueDate(encounters, TB_ACTIVE_DATE, cohort);
-		tbTxStartDateDictionary = tbQueryLineList.getObsValueDate(encounters, TB_TREATMENT_START_DATE, cohort);
-		tbTreatmentStatus = tbQueryLineList.getByResult(TB_TREATMENT_STATUS, cohort, encounters);
-		tbTreatmentCompletedDateDictionary = tbQueryLineList
-		        .getObsValueDate(encounters, TB_TREATMENT_COMPLETED_DATE, cohort);
-		tbTreatmentDiscontinuedDateDictionary = tbQueryLineList.getObsValueDate(encounters, TB_TREATMENT_DISCONTINUED_DATE,
+		dispensDayHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort, encounters);
+		adherenceHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort, encounters);
+		pregnancyStatusHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS, cohort, encounters);
+		breastfeedingStatusHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD,
+		    cohort, encounters);
+		tbScreeningDateHashMap = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.TB_SCREENING_DATE,
 		    cohort);
+		tbScreeningResultsHashMap = tbQueryLineList.getByResult(FollowUpConceptQuestions.TB_SCREENING_RESULT, cohort,
+		    encounters);
+		specimen = tbQueryLineList.getByResult(FollowUpConceptQuestions.SPECIMEN_SENT, cohort, encounters);
+		_LAMResults = tbQueryLineList.getByResult(FollowUpConceptQuestions.LF_LAM_RESULT, cohort, encounters);
+		geneXpertResult = tbQueryLineList.getByResult(FollowUpConceptQuestions.GENE_XPERT_RESULT, cohort, encounters);
+		OtherDiagnosticTest = tbQueryLineList.getByResult(FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST, cohort,
+		    encounters);
+		OtherDiagResult = tbQueryLineList
+		        .getByResult(FollowUpConceptQuestions.TB_DIAGNOSTIC_TEST_RESULT, cohort, encounters);
+		
+		tbActiveDate = tbQueryLineList.getObsValueDate(encounters, FollowUpConceptQuestions.TB_ACTIVE_DATE, cohort);
+		tbTxStartDateDictionary = tbQueryLineList.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.TB_TREATMENT_START_DATE, cohort);
+		tbTreatmentStatus = tbQueryLineList.getByResult(FollowUpConceptQuestions.TB_TREATMENT_STATUS, cohort, encounters);
+		tbTreatmentCompletedDateDictionary = tbQueryLineList.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.TB_TREATMENT_COMPLETED_DATE, cohort);
+		tbTreatmentDiscontinuedDateDictionary = tbQueryLineList.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.TB_TREATMENT_DISCONTINUED_DATE, cohort);
 	}
 	
 	private void getRowForActiveTB(SimpleDataSet data, List<Person> persons) {

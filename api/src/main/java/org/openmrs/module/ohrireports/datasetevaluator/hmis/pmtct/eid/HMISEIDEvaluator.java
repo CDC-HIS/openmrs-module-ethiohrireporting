@@ -1,25 +1,18 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.pmtct.eid;
 
-import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.dao.PMTCTEncounter;
 import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
-import org.openmrs.module.ohrireports.datasetdefinition.hmis.pmtct.HMISEIDDatasetDefinition;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_dsd.RowBuilder;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
-import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
-import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
-import org.openmrs.module.reporting.evaluation.EvaluationContext;
-import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
-
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
 
 @Component
 @Scope("prototype")
@@ -30,7 +23,7 @@ public class HMISEIDEvaluator {
 	
 	public void buildDataset(Date start, Date end, SimpleDataSet dataset) {
 		RowBuilder rowBuilder = new RowBuilder();
-		eidQuery.generateReportForHMIS(start, end, PMTCT_SAMPLE_COLLECTION_DATE);
+		eidQuery.generateReportForHMIS(start, end, PMTCTConceptQuestions.PMTCT_SAMPLE_COLLECTION_DATE);
 		
 		dataset.addRow(rowBuilder.buildDatasetColumn("MTCT_HEI_EID.",
 		    "Percentage of  HIV exposed infants who received a virologic HIV test (sample collected) within 12 month ",
@@ -69,7 +62,8 @@ public class HMISEIDEvaluator {
 		for (Map.Entry<Integer, PMTCTPatient> patientEntry : eidQuery.getPatientEncounterHashMap().entrySet()) {
 			PMTCTPatient patient = patientEntry.getValue();
 			for (PMTCTEncounter encounter : patient.getEncounterList()) {
-				if (encounter.getTestType().equals(PMTCT_INITIAL_TEST) && encounter.getDnaPcrResult().equals(NEGATIVE)
+				if (encounter.getTestType().equals(PMTCTConceptQuestions.PMTCT_INITIAL_TEST)
+				        && encounter.getDnaPcrResult().equals(ConceptAnswer.NEGATIVE)
 				        && (encounter.getAge() >= minAge && encounter.getAge() <= maxAge)) {
 					count++;
 				}
@@ -96,7 +90,8 @@ public class HMISEIDEvaluator {
 		for (Map.Entry<Integer, PMTCTPatient> patientEntry : eidQuery.getPatientEncounterHashMap().entrySet()) {
 			PMTCTPatient patient = patientEntry.getValue();
 			for (PMTCTEncounter encounter : patient.getEncounterList()) {
-				if (encounter.getTestType().equals(PMTCT_INITIAL_TEST) && encounter.getDnaPcrResult().equals(POSITIVE)
+				if (encounter.getTestType().equals(PMTCTConceptQuestions.PMTCT_INITIAL_TEST)
+				        && encounter.getDnaPcrResult().equals(ConceptAnswer.POSITIVE)
 				        && (encounter.getAge() >= minAge && encounter.getAge() <= maxAge)) {
 					count++;
 				}

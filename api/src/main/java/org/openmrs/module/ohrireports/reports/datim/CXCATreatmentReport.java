@@ -1,6 +1,8 @@
 package org.openmrs.module.ohrireports.reports.datim;
 
-import org.openmrs.module.ohrireports.cohorts.util.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
+import org.openmrs.module.ohrireports.constants.ReportType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentAutoCalculateDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentDatasetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
 @Component
 public class CXCATreatmentReport implements ReportManager {
@@ -26,7 +28,7 @@ public class CXCATreatmentReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return DATIM_REPORT_TREATMENT + "- CXCA_TX";
+		return ReportType.DATIM_REPORT_TREATMENT + "- CXCA_TX";
 	}
 	
 	@Override
@@ -63,19 +65,19 @@ public class CXCATreatmentReport implements ReportManager {
 		            EthiOhriUtil.map(cxcaTreatmentDataSet));
 		
 		CxCaTreatmentDatasetDefinition firstTimeScreeningCxCaTreatmentDatasetDefinition = new CxCaTreatmentDatasetDefinition();
-		firstTimeScreeningCxCaTreatmentDatasetDefinition.setScreeningType(CXCA_FIRST_TIME_SCREENING_TYPE);
+		firstTimeScreeningCxCaTreatmentDatasetDefinition.setScreeningType(ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE);
 		firstTimeScreeningCxCaTreatmentDatasetDefinition.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition("First time screened for cervical cancer",
 		    EthiOhriUtil.map(firstTimeScreeningCxCaTreatmentDatasetDefinition));
 		
 		CxCaTreatmentDatasetDefinition reScreenedDatasetDefinition = new CxCaTreatmentDatasetDefinition();
-		reScreenedDatasetDefinition.setScreeningType(CXCA_TYPE_OF_SCREENING_RESCREEN);
+		reScreenedDatasetDefinition.setScreeningType(ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN);
 		reScreenedDatasetDefinition.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition("Rescreened after previous negative cancer",
 		    EthiOhriUtil.map(reScreenedDatasetDefinition));
 		
 		CxCaTreatmentDatasetDefinition postTreatmentDatasetDefinition = new CxCaTreatmentDatasetDefinition();
-		postTreatmentDatasetDefinition.setScreeningType(CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
+		postTreatmentDatasetDefinition.setScreeningType(ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
 		postTreatmentDatasetDefinition.addParameters(getParameters());
 		reportDefinition.addDataSetDefinition("Post-treatment followup", EthiOhriUtil.map(postTreatmentDatasetDefinition));
 		
