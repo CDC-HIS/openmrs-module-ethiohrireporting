@@ -5,16 +5,15 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
-import org.openmrs.module.ohrireports.api.impl.query.BaseLineListQuery;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.STOP;
-
-public class HIVPositiveTrackingLineListQuery extends BaseLineListQuery {
+public class HIVPositiveTrackingLineListQuery extends ObsElement {
 	
 	private final DbSessionFactory sessionFactory;
 	
@@ -42,8 +41,9 @@ public class HIVPositiveTrackingLineListQuery extends BaseLineListQuery {
 	}
 	
 	public void generateReport(Date start, Date end) {
-		baseEncounter = encounterQuery.getAllEncounters(Collections.singletonList(POSITIVE_TRACKING_REGISTRATION_DATE),
-		    start, end, HIV_POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		baseEncounter = encounterQuery.getAllEncounters(
+		    Collections.singletonList(PositiveCaseTrackingConceptQuestions.POSITIVE_TRACKING_REGISTRATION_DATE), start, end,
+		    EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		baseCohort = getCohort(baseEncounter);
 		
 	}

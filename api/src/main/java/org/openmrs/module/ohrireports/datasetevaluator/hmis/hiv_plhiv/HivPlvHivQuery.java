@@ -12,8 +12,6 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
-
 @Component
 public class HivPlvHivQuery extends PatientQueryImpDao {
 	
@@ -109,7 +107,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPatientMATookSupplement() {
 		
-		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, ConceptAnswer.YES));
+		Cohort cohort = new Cohort(getPatientByStatus(ConceptAnswer.THERAPEUTIC_SUPPLEMENTARY_FOOD, ConceptAnswer.YES));
 		StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT,
 		    Arrays.asList(ConceptAnswer.MILD_MAL_NUTRITION, ConceptAnswer.MODERATE_MAL_NUTRITION));
 		
@@ -124,7 +122,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	
 	public Set<Integer> getPatientSVTookSupplement() {
 		
-		Cohort cohort = new Cohort(getPatientByStatus(THERAPEUTIC_SUPPLEMENTARY_FOOD, ConceptAnswer.YES));
+		Cohort cohort = new Cohort(getPatientByStatus(ConceptAnswer.THERAPEUTIC_SUPPLEMENTARY_FOOD, ConceptAnswer.YES));
 		StringBuilder sql = getPatientBySupplementType(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT,
 		    Arrays.asList(ConceptAnswer.SEVERE_MAL_NUTRITION));
 		
@@ -164,7 +162,7 @@ public class HivPlvHivQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getAllSUP(List<Integer> encounters, Cohort cohort) {
-		StringBuilder stringBuilder = baseQuery(THERAPEUTIC_SUPPLEMENTARY_FOOD);
+		StringBuilder stringBuilder = baseQuery(ConceptAnswer.THERAPEUTIC_SUPPLEMENTARY_FOOD);
 		stringBuilder.append(" and ob.encounter_id in (:encounters)");
 		stringBuilder.append(" and ob.person_id in (:cohort)");
 		stringBuilder.append(" and value_coded = ").append(conceptQuery(ConceptAnswer.YES));

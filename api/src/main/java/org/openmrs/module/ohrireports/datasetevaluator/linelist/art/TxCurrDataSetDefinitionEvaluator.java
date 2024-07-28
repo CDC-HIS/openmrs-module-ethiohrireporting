@@ -23,7 +23,11 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DSD_CATEGORY;
+import static org.openmrs.module.ohrireports.constants.EncounterType.INTAKE_A_ENCOUNTER_TYPE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.*;
+import static org.openmrs.module.ohrireports.constants.Identifiers.MRN_PATIENT_IDENTIFIERS;
+import static org.openmrs.module.ohrireports.constants.Identifiers.UAN_PATIENT_IDENTIFIERS;
+import static org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE;
 
 @Handler(supports = {TxCurrDataSetDefinition.class})
 public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -71,9 +75,9 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
         HashMap<Integer, Object> pregnancyStatus = artQuery.getByResult(PREGNANCY_STATUS, cohort, latestEncounters);
         HashMap<Integer, Object> breastfeedingStatus = artQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort,
                 latestEncounters);
-        HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getByResult(NUTRITIONAL_STATUS, cohort,
+        HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getByResult(NUTRITIONAL_STATUS_ADULT, cohort,
                 latestEncounters);
-        HashMap<Integer, Object> therapeuticSupplementaryHashMap = artQuery.getByResult(THERAPEUTIC_SUPPLEMENTARY_FOOD,
+        HashMap<Integer, Object> therapeuticSupplementaryHashMap = artQuery.getByResult(ConceptAnswer.THERAPEUTIC_SUPPLEMENTARY_FOOD,
                 cohort, latestEncounters);
         HashMap<Integer, Object> dispensDayHashMap = artQuery
                 .getConceptName(latestEncounters, cohort, ARV_DISPENSED_IN_DAYS);
@@ -84,7 +88,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
                 cohort);
         HashMap<Integer, Object> tbTreatmentCompletedDateHashMap = artQuery.getObsValueDate(latestEncounters,
                 TB_TREATMENT_COMPLETED_DATE, cohort);
-        HashMap<Integer, Object> vlSentDateHashMap = artQuery.getObsValueDate(latestEncounters, VL_SENT_DATE, cohort);
+        HashMap<Integer, Object> vlSentDateHashMap = artQuery.getObsValueDate(latestEncounters, DATE_VL_REQUESTED, cohort);
         HashMap<Integer, Object> vlStatusHashMap = artQuery.getByResult(VIRAL_LOAD_STATUS, cohort, latestEncounters);
         HashMap<Integer, Object> nextVisitDateHashMap = artQuery.getObsValueDate(latestEncounters, NEXT_VISIT_DATE, cohort);
         HashMap<Integer, Object> treatmentEndDateHashMap = artQuery.getObsValueDate(latestEncounters, TREATMENT_END_DATE,

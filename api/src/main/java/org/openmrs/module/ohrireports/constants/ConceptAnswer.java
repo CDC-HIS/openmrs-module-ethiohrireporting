@@ -70,6 +70,8 @@ public class ConceptAnswer {
 	
 	public final static String DIED = "160034AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String ABSTINENCE = "159524AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String ORAL_CONTRACEPTIVE_PILL = "780AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String INJECTABLE = "5279AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -162,4 +164,6 @@ public class ConceptAnswer {
 	public final static String DSD_OTHER = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String DSD_AHDCM = "69e20fac-25ff-46c5-8681-756ba0078c80";
+	
+	public final static String THERAPEUTIC_SUPPLEMENTARY_FOOD = "161005AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 }

@@ -11,8 +11,6 @@ package org.openmrs.module.ohrireports.constants;
 
 public class ETHIOHRIReportsConstants {
 	
-	public final static String THERAPEUTIC_SUPPLEMENTARY_FOOD = "161005AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
 	//Intake-b concept question
 	public final static String DISCORDANT_COUPLE = "6096AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

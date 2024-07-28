@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ARV_ADHERENCE;
+
 @Handler(supports = { MissedAppointmentDatasetDefinition.class })
 public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 	

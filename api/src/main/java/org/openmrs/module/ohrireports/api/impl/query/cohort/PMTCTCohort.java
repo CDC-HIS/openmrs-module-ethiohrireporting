@@ -108,7 +108,7 @@ public class PMTCTCohort extends ObsElement {
 	
 	private void reportForInFacilityEnrolled() {
 		
-		List<Integer> firstEncounters = encounterQuery.getFirstEncounterByFollowUpDate(null, null);
+		List<Integer> firstEncounters = encounterQuery.getAliveFirstFollowUpEncounters(null, null);
 		
 		List<Integer> enrolledPatients = new ArrayList<>(pmtctEnrolledCohort.getMemberIds());
 		transferred = getByResultByUUID(FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY, ConceptAnswer.TRANSFERRED_IN, pmtctEnrolledCohort, firstEncounters);
@@ -173,7 +173,7 @@ public class PMTCTCohort extends ObsElement {
 	
 	private void generateTotalTI(Date startDate, Date endDate) {
 		List<Integer> enrolledAtOtherFacility = new ArrayList<Integer>();
-		List<Integer> firstEncounters = encounterQuery.getFirstEncounterByFollowUpDate(startDate, endDate);
+		List<Integer> firstEncounters = encounterQuery.getAliveFirstFollowUpEncounters(startDate, endDate);
 		for (Map.Entry<Integer, Object> entry : transferred.entrySet()) {
 			
 			Object _transferredInDate = transferredInDatePatientId.get(entry.getKey());

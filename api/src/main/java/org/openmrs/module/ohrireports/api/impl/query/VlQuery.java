@@ -10,6 +10,8 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.HIV_VIRAL_LOAD_COUNT;
+
 @Component
 public class VlQuery extends ObsElement {
 	
@@ -219,7 +221,7 @@ public class VlQuery extends ObsElement {
 	}
 	
 	public HashMap<Integer, Object> getViralLoadCount() {
-		Query query = getObsNumber(VlTakenEncounters, FollowUpConceptQuestions.HIV_VIRAL_LOAD_COUNT, cohort);
+		Query query = getObsNumber(VlTakenEncounters, HIV_VIRAL_LOAD_COUNT, cohort);
 		return getDictionary(query);
 	}
 }

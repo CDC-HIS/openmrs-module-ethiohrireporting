@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.PREGNANCY_STATUS;
+
 @Handler(supports = { RetentionLineListDataSetDefinition.class })
 public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 	

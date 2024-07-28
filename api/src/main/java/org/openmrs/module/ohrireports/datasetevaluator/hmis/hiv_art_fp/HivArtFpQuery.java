@@ -15,6 +15,10 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.openmrs.module.ohrireports.constants.ConceptAnswer.YES;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FAMILY_PLANNING_METHODS;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.PREGNANCY_STATUS;
+
 @Component
 public class HivArtFpQuery extends PatientQueryImpDao {
 	
@@ -54,13 +58,13 @@ public class HivArtFpQuery extends PatientQueryImpDao {
 	
 	private Cohort getPatientsOnFamilyPlanning() {
 		StringBuilder sqlBuilder = new StringBuilder("select distinct fb.person_id from obs as fb where fb.concept_id  =")
-		        .append(conceptQuery(FollowUpConceptQuestions.FAMILY_PLANNING_METHODS));
+		        .append(conceptQuery(FAMILY_PLANNING_METHODS));
 		sqlBuilder
 		        .append(" and fb.value_coded not in ")
-		        .append("(select concept_id from concept where uuid ='" + ABSTINENCE + "')")
+		        .append("(select concept_id from concept where uuid ='" + ConceptAnswer.ABSTINENCE + "')")
 		        .append(
 		            " and fb.encounter_id in (:encounters) and fb.person_id in(:fbPersonIds) and fb.person_id not in (select distinct p.person_id from obs as p where ");
-		sqlBuilder.append("  p.concept_id =").append(conceptQuery(PREGNANT_STATUS)).append(" and p.value_coded = ")
+		sqlBuilder.append("  p.concept_id =").append(conceptQuery(PREGNANCY_STATUS)).append(" and p.value_coded = ")
 		        .append(conceptQuery(YES));
 		sqlBuilder.append(" and p.encounter_id in (:pEncounters) and p.person_id in(:pPersonIds))");
 		

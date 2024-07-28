@@ -20,7 +20,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.*;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ART_START_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FINAL_OUTCOME_DATE;
+import static org.openmrs.module.ohrireports.constants.Identifiers.MRN_PATIENT_IDENTIFIERS;
+import static org.openmrs.module.ohrireports.constants.Identifiers.UAN_PATIENT_IDENTIFIERS;
+import static org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions.ENTRE_POINT;
+import static org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities.getDayDifference;
 
 public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {

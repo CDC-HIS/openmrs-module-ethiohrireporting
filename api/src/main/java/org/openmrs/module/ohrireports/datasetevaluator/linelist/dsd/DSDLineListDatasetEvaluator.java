@@ -3,7 +3,6 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.dsd;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.DSDDataSetDefinition;
@@ -18,7 +17,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.openmrs.module.ohrireports.RegimentConstant.DSD_CATEGORY;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -94,8 +93,10 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 		    dsdLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);
 		HashMap<Integer, Object> latestFollowUpStatusHashMap = dsdLineListQuery.getConceptName(
 		    dsdLineListQuery.getLatestEncounter(), cohort, FOLLOW_UP_STATUS);
-		HashMap<Integer, Object> mrnIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uanIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> mrnIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort,
+		    Identifiers.MRN_PATIENT_IDENTIFIERS);
+		HashMap<Integer, Object> uanIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort,
+		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		
 		DataSetRow row;
 		List<Person> persons = LineListUtilities.sortPatientByName(dsdLineListQuery.getPersons(cohort));

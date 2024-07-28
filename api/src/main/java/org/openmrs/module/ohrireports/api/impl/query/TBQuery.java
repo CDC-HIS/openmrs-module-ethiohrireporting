@@ -12,6 +12,8 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TB_SCREENING_DATE;
+
 @Component
 public class TBQuery extends PatientQueryImpDao {
 
@@ -37,7 +39,7 @@ public class TBQuery extends PatientQueryImpDao {
     
     public void generateDenominatorReport(Date start, Date end) {
 
-        tbScreeningEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_SCREENING_DATE), start,end);
+        tbScreeningEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_SCREENING_DATE), start,end);
         Cohort cohort = getCohort(tbScreeningEncounter);
         cohort =   new Cohort(getArtStartedCohort(tbScreeningEncounter,null,end,cohort));
 

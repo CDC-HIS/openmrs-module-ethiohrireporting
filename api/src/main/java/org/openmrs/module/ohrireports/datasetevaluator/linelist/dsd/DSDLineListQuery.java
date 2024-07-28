@@ -16,7 +16,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.DSD_ASSESSMENT_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DSD_ASSESSMENT_DATE;
+
 
 @Component
 public class DSDLineListQuery extends ObsElement {

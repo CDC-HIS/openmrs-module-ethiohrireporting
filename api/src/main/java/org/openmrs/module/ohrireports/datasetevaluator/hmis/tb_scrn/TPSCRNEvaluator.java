@@ -1,6 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.tb_scrn;
 
-import static org.openmrs.module.ohrireports.OHRIReportsConstants.TB_SCREENING_DATE;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TB_SCREENING_DATE;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 

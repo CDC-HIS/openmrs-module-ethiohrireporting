@@ -15,4 +15,6 @@ public class PositiveCaseTrackingConceptQuestions {
 	public final static String REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY = "d8ffb301-9a47-45ee-a465-f053cc060aab";
 	
 	public final static String HIV_CONFIRMED_DATE = "160554AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public static final String POSITIVE_TRACKING_REGISTRATION_DATE = "1ebc345c-6f09-43e1-a616-d7e52fff4c7d";
 }

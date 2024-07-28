@@ -4,11 +4,15 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FOLLOW_UP_DATE;
 
 @Component
 public class TransferInOutQuery extends PatientQueryImpDao {
