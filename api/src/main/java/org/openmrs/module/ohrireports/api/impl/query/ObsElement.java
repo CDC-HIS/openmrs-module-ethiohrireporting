@@ -170,6 +170,10 @@ public class ObsElement extends BaseEthiOhriQuery {
 		return getDictionary(getObsNumber(encounterIds, concept, cohort));
 	}
 	
+	public HashMap<Integer, Object> getByValueText(String concept, Cohort cohort, List<Integer> encounterIds) {
+		return getDictionary(getObsText(encounterIds, concept, cohort));
+	}
+	
 	protected HashMap<Integer, Object> getDictionary(Query query) {
         List list = query.list();
         HashMap<Integer, Object> dictionary = new HashMap<>();
@@ -216,6 +220,20 @@ public class ObsElement extends BaseEthiOhriQuery {
 		return query;
 	}
 	
+	protected Query getObsText(List<Integer> baseEncounters, String concept, Cohort cohort) {
+		StringBuilder sql = baseValueTextQuery(concept);
+		
+		sql.append(" and  ").append(VALUE_TEXT_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
+		sql.append(" and  ").append(VALUE_TEXT_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return query;
+	}
+	
 	public HashMap<Integer, Object> getObsValueDate(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		return getDictionary(getObsValueDateQuery(baseEncounters, concept, cohort));
 	}
@@ -228,8 +246,8 @@ public class ObsElement extends BaseEthiOhriQuery {
 	protected Query getObsValueDateQuery(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseValueDateQuery(concept);
 		
-		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
-		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "person_id in (:cohorts) ");
+		sql.append(" and  ").append(VALUE_DATE_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
+		sql.append(" and  ").append(VALUE_DATE_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		

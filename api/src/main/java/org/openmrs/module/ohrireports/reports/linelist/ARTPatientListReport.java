@@ -1,7 +1,9 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
+import org.joda.time.LocalDateTime;
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ARTPatientListDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -10,6 +12,10 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.DateFormatter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
@@ -35,14 +41,16 @@ public class ARTPatientListReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Calendar calendar = Calendar.getInstance();
-		Date nowDate = calendar.getTime();
-		Parameter endDate = new Parameter("endDate", "Enrolled Before:", Date.class);
+		EthiopianDate date = EthiOhriUtil.getEthiopiaDate(Calendar.getInstance().getTime());
+		
+		Parameter endDate = new Parameter("endDate", "Enrolled Before", String.class);
 		endDate.setRequired(false);
-		endDate.setDefaultValue(nowDate);
+		endDate.setDefaultValue(date.getMonth() + "/" + date.getDay() + "/" + date.getYear());
+		endDate.addToWidgetConfiguration("width", "100px");
+		
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
-		endDate.setDefaultValue(EthiOhriUtil.getEthiopianDate(nowDate));
+		endDateGC.setDefaultValue(Calendar.getInstance().getTime());
 		return Arrays.asList(endDate, endDateGC);
 	}
 	

@@ -45,7 +45,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		_dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		SimpleDataSet dataSet = new SimpleDataSet(_dataSetDefinition, evalContext);
 		
 		// Check start date and end date are valid
 		// If start date is greater than end date
@@ -157,8 +157,9 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		uanIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
 		registrationDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
-		hivConfirmedDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
-		    PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
+		hivConfirmedDateDictionary = artPatientListLineListQuery.getObsValueDate(null,
+		    IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		;
 		artStartDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.ART_START_DATE, cohort);
 		latestFollowupDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,

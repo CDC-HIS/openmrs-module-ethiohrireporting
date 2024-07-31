@@ -72,4 +72,6 @@ public class PrepConceptQuestions {
 	public final static String STI_SCREENING_RESULT = "7a643a93-3f11-4ad0-acfa-b15f2d7c8ddc";
 	
 	public final static String EGFR_ESTIMATE = "165570AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String UIC = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 }

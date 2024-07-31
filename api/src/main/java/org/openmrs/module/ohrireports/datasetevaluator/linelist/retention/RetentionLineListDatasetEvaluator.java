@@ -3,11 +3,10 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.retention;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
-import org.openmrs.module.ohrireports.constants.Identifiers;
-import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
+import org.openmrs.module.ohrireports.constants.*;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.RetentionLineListDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -57,8 +56,8 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		
 		HashMap<Integer, Object> followUpDateHashMap = retentionLineListQuery.getObsValueDate(
 		    retentionLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
-		HashMap<Integer, Object> confirmedDateHashMap = retentionLineListQuery.getObsValueDate(
-		    retentionLineListQuery.getBaseEncounter(), PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
+		HashMap<Integer, Object> confirmedDateHashMap = retentionLineListQuery.getObsValueDate(null,
+		    IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> artStartDateHashMap = retentionLineListQuery.getObsValueDate(
 		    retentionLineListQuery.getBaseEncounter(), FollowUpConceptQuestions.ART_START_DATE, cohort);
 		HashMap<Integer, Object> nextVistDateHashMap = retentionLineListQuery.getObsValueDate(
@@ -120,12 +119,12 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			    person.getAge(_datasetDefinition.getEndDate()));
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("HIV Confirmed Date in E.C.", "HIV Confirmed Date in E.C.", String.class),
-			    retentionLineListQuery.getEthiopianDate(confirmedDate));
+			    EthiOhriUtil.getEthiopianDate(confirmedDate));
 			row.addColumnValue(new DataSetColumn("ART Start Date in E.C.", "ART Start Date in E.C.", String.class),
-			    retentionLineListQuery.getEthiopianDate(artStartDate));
+			    EthiOhriUtil.getEthiopianDate(artStartDate));
 			row.addColumnValue(new DataSetColumn("TI/TO?", "TI?", String.class), transferedHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Latest Follow-up Date in E.C.", "Latest Follow-up Date in E.C.",
-			        String.class), retentionLineListQuery.getEthiopianDate(followUpDateDate));
+			        String.class), EthiOhriUtil.getEthiopianDate(followUpDateDate));
 			row.addColumnValue(new DataSetColumn("Latest Follow-up status", "Latest Follow-up status", String.class),
 			    followUpStatusHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Latest Regimen", "Latest Regimen", String.class),
@@ -137,9 +136,9 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Pregnant?", "Pregnant?", String.class),
 			    pregnancyStatusHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Next Visit date in E.C.", "Next Visit date in E.C.", String.class),
-			    retentionLineListQuery.getEthiopianDate(nextVisitDate));
+			    EthiOhriUtil.getEthiopianDate(nextVisitDate));
 			row.addColumnValue(new DataSetColumn("Treatment End Date in E.C.", "Treatment End Date in E.C.", String.class),
-			    retentionLineListQuery.getEthiopianDate(treatmentDate));
+			    EthiOhriUtil.getEthiopianDate(treatmentDate));
 			
 			dataSet.addRow(row);
 			

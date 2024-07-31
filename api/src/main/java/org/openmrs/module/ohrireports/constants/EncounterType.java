@@ -6,6 +6,8 @@ public class EncounterType {
 	
 	public final static String INTAKE_A_ENCOUNTER_TYPE = "05add044-67f8-48c9-928d-79002ab19efe";
 	
+	public final static String REGISTRATION_ENCOUNTER_TYPE = "a0fde61e-f493-4f1f-b709-22aa94f72dc3";
+	
 	//TODO: remove this one
 	public final static String HTS_RETROSPECTIVE_ENCOUNTER_TYPE = "79c1f50f-f77d-42e2-ad2a-d29304dde2fe";
 	

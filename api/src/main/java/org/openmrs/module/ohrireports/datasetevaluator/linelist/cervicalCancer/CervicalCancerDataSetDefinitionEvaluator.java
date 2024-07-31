@@ -206,6 +206,7 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 			Date treatmentEndDateEC = cervicalCancerLineListQuery.getDate(treatmentEndDate.get(person.getPersonId()));
 			
 			row = new DataSetRow();
+			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);

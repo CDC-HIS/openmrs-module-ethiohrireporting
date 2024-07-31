@@ -54,7 +54,7 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> treatmentEndDate = rttLineListQuery.getObsValueDate(rttLineListQuery.getBaseEncounter(),
 		    FollowUpConceptQuestions.TREATMENT_END_DATE, cohort);
 		
-		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT,
+		HashMap<Integer, Object> weightDateHashMap = rttLineListQuery.getByValueText(FollowUpConceptQuestions.WEIGHT,
 		    cohort, rttLineListQuery.getBaseEncounter());
 		HashMap<Integer, Object> cd4HashMap = rttLineListQuery.getByValueNumeric(FollowUpConceptQuestions.ADULT_CD4_COUNT,
 		    cohort, rttLineListQuery.getBaseEncounter());

@@ -58,7 +58,7 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = monthlyVisitQuery.getFollowUpStatus(monthlyVisitQuery.getEncounter(),
 		    monthlyVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> weight = monthlyVisitQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT,
+		HashMap<Integer, Object> weight = monthlyVisitQuery.getByValueText(FollowUpConceptQuestions.WEIGHT,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> viralLoadStatus = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.VIRAL_LOAD_STATUS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());

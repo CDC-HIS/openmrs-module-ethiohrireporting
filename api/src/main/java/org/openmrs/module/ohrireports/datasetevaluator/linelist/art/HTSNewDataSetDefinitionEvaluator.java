@@ -59,10 +59,11 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		patientQuery = Context.getService(PatientQueryService.class);
 		List<Integer> encounters = encounterQuery.getAliveFirstFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
 		Cohort cohort = patientQuery.getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounters);
+		
 		HashMap<Integer, Object> mrnIdentifierHashMap = artQuery.getIdentifier(cohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = artQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
 		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
-		HashMap<Integer, Object> weight = artQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT, cohort, encounters);
+		HashMap<Integer, Object> weight = artQuery.getByValueText(FollowUpConceptQuestions.WEIGHT, cohort, encounters);
 		HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(FollowUpConceptQuestions.ADULT_CD4_COUNT, cohort,
 		    encounters);
 		HashMap<Integer, Object> whoStage = artQuery.getByResult(FollowUpConceptQuestions.WHO_STAGE, cohort, encounters);
@@ -72,10 +73,10 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    cohort, encounters);
 		
 		HashMap<Integer, Object> enrollmentDate = artQuery.getObsValueDate(null,
-		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.REGISTRATION_ENCOUNTER_TYPE);
 		
-		HashMap<Integer, Object> hivConfirmedDate = artQuery.getObsValueDate(encounters,
-		    PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
+		HashMap<Integer, Object> hivConfirmedDate = artQuery.getObsValueDate(null,
+		    IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		
 		HashMap<Integer, Object> artStartDate = artQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.ART_START_DATE, cohort);
