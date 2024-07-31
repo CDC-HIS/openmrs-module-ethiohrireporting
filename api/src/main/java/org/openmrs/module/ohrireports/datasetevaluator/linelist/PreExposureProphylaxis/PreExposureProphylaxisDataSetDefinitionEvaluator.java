@@ -68,9 +68,8 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = preExposureProphylaxisLineListQuery.getIdentifier(baseCohort,
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> uniqueIdentificationCode = preExposureProphylaxisLineListQuery
-		        .getConceptValue(Identifiers.UAN_PATIENT_IDENTIFIERS, baseCohort,
-		            EncounterType.PREP_SCREENING_ENCOUNTER_TYPE, screeningEncounter);
+		HashMap<Integer, Object> uniqueIdentificationCode = preExposureProphylaxisLineListQuery.getConceptValue(
+		    PrepConceptQuestions.UIC, baseCohort, EncounterType.PREP_SCREENING_ENCOUNTER_TYPE, screeningEncounter);
 		
 		HashMap<Integer, Object> screenedDateHashMap = preExposureProphylaxisLineListQuery.getScreeningObsValueDate(
 		    PrepConceptQuestions.PREP_SCREENED_DATE, baseCohort, screeningEncounter);
@@ -156,9 +155,9 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		    screeningEncounter, PrepConceptQuestions.HAVE_HIV_POSITIVE_PARTNER, baseCohort,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepProvisionSite = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
-		    PrepConceptQuestions.PREP_PROVISION_SITE, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		    PrepConceptQuestions.PREP_PROVISION_SITE, baseCohort, EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> referredFrom = preExposureProphylaxisLineListQuery.getConceptName(screeningEncounter,
-		    PrepConceptQuestions.REFERRED_FROM, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		    PrepConceptQuestions.REFERRED_FROM, baseCohort, EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		
 		DataSetRow row;
 		if (!persons.isEmpty()) {

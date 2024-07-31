@@ -19,4 +19,6 @@ public class ETHIOHRIReportsConstants {
 	
 	public final static String REPORT_VERSION = "1.0.0-SNAPSHOT";
 	
+	public final static String VIRAL_LOAD_CALCULATION_RANGE = "_viralLoad12MSetting";
+	
 }

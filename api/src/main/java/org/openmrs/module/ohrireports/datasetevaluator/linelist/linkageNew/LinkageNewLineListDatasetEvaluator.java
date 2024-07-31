@@ -3,6 +3,8 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.linkageNew;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions;
 import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.LinkageNewLineListDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct.Linkage;
@@ -61,15 +63,16 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
 
         HashMap<Integer, Object> registrationDateHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
                 ENROLLMENT_DATE, cohort);
-        HashMap<Integer, Object> confirmedDateHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
-                HIV_CONFIRMED_DATE, cohort);
+        HashMap<Integer, Object> confirmedDateHashMap = linkageNewLineListQuery.getObsValueDate(null,
+                IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
         HashMap<Integer, Object> dateLinkedToCareHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
                 PositiveCaseTrackingConceptQuestions.LINKED_TO_CARE_DATE, cohort);
         HashMap<Integer, Object> finalOutComeHashMap = linkageNewLineListQuery.getObsValueDate(linkageNewLineListQuery.getBaseEncounters(),
                 FINAL_OUT_COME_DATE, cohort);
         HashMap<Integer,Object> planForNextHashMap = linkageNewLineListQuery.getConceptValue(PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING,linkageNewLineListQuery.getBaseEncounters(),cohort);
         HashMap<Integer, Object> artStartedDateHashMap = linkageNewLineListQuery.getDate(cohort, ART_START_DATE);
-        HashMap<Integer, Object> followHiveConfirmedDateHashMap = linkageNewLineListQuery.getDate(cohort, HIV_CONFIRMED_DATE);
+        HashMap<Integer, Object> followHiveConfirmedDateHashMap = linkageNewLineListQuery.getObsValueDate(null,
+                IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort,EncounterType.INTAKE_A_ENCOUNTER_TYPE);
         HashMap<Integer, Object> mrnIdentifierHashMap = linkageNewLineListQuery.getIdentifier(cohort, MRN_PATIENT_IDENTIFIERS);
         HashMap<Integer, Object> uanIdentifierHashMap = linkageNewLineListQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
         HashMap<Integer, Object> entryPointHashMap = linkageNewLineListQuery.getConceptValue(ENTRE_POINT, linkageNewLineListQuery.getBaseEncounters(),

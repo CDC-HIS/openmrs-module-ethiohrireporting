@@ -12,7 +12,10 @@ import java.util.*;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.api.query.GlobalPropertyService;
+import org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -46,7 +49,15 @@ public class HivPVLSEvaluator {
 		 * -11 is because calendar library start count month from zero,
 		 * the idea is to check all record from past twelve months
 		 */
-	
+		GlobalPropertyService globalPropertyService = Context.getService(GlobalPropertyService.class);
+		Object viralLoadType = globalPropertyService.getGlobalProperty(ETHIOHRIReportsConstants.VIRAL_LOAD_CALCULATION_RANGE);
+
+		if( Objects.nonNull(viralLoadType) && viralLoadType.toString().equalsIgnoreCase("YES")){
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(end);
+			calendar.add(Calendar.MONTH,-12);
+			startDate = calendar.getTime();
+		}
 
 		List<Integer> encounter = encounterQuery.getEncounters(Collections.singletonList(DATE_VIRAL_TEST_RESULT_RECEIVED),
 				startDate,end);

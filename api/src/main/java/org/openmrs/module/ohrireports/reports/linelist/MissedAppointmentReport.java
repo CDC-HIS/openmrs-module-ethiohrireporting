@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.reports.linelist;
 
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MissedAppointmentDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -36,16 +37,15 @@ public class MissedAppointmentReport implements ReportManager {
 	@Override
 	public List<Parameter> getParameters() {
 		
-		Date nowDate = new Date();
-		Parameter endDate = new Parameter("endDate", "Reporting Date", Date.class);
-		endDate.setDefaultValue(nowDate);
-		endDate.setRequired(false);
-		Properties properties = new Properties();
+		EthiopianDate date = EthiOhriUtil.getEthiopiaDate(Calendar.getInstance().getTime());
 		
-		endDate.setWidgetConfiguration(properties);
+		Parameter endDate = new Parameter("endDate", "Reporting Date", String.class);
+		endDate.setDefaultValue(date.getMonth() + "/" + date.getDay() + "/" + date.getYear());
+		endDate.setRequired(false);
+		
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
-		endDate.setDefaultValue(EthiOhriUtil.getEthiopianDate(nowDate));
+		endDateGC.setDefaultValue(Calendar.getInstance().getTime());
 		
 		return Arrays.asList(endDate, endDateGC);
 	}

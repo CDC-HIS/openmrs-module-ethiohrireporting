@@ -16,6 +16,8 @@ public abstract class BaseEthiOhriQuery {
 	
 	protected String VALUE_NUMERIC_BASE_ALIAS_OBS = "obvnd.";
 	
+	protected String VALUE_TEXT_BASE_ALIAS_OBS = "obvtext.";
+	
 	protected String LATEST_ENCOUNTER_BASE_ALIAS_OBS = "obenc.";
 	
 	protected String SUB_QUERY_BASE_ALIAS_OBS = "obsq.";
@@ -39,7 +41,7 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("inner join encounter as e on e.encounter_id = " + OBS_ALIAS + "encounter_id ");
 		sql.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append("and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append("where pa.voided = false and " + OBS_ALIAS + "voided = false ");
+		sql.append("where pa.voided = 0 and " + OBS_ALIAS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -54,7 +56,7 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("inner join encounter as e on e.encounter_id = " + OBS_ALIAS + "encounter_id ");
 		sql.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append("and et.uuid= '" + encounterTypeUUID + "' ");
-		sql.append("where pa.voided = false and " + OBS_ALIAS + "voided = false ");
+		sql.append("where pa.voided = 0 and " + OBS_ALIAS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -64,12 +66,12 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("select ob.* from obs as ob ");
 		sql.append("inner join patient as pa on pa.patient_id = " + OBS_ALIAS + "person_id ");
 		sql.append("inner join person as p on pa.patient_id = p.person_id ");
-		sql.append("inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.retired = false ");
+		sql.append("inner join concept as c on c.concept_id = " + OBS_ALIAS + "concept_id and c.retired = 0 ");
 		sql.append("and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append("inner join encounter as e on e.encounter_id = " + OBS_ALIAS + "encounter_id ");
 		sql.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append("and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append("where pa.voided = false and " + OBS_ALIAS + "voided = false ");
+		sql.append("where pa.voided = 0 and " + OBS_ALIAS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -79,14 +81,13 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("select " + PERSON_BASE_ALIAS_OBS + "person_id from obs as  obp");
 		sql.append(" inner join patient as pa on pa.patient_id = " + PERSON_BASE_ALIAS_OBS + "person_id");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
-		sql.append(" inner join concept as c on c.concept_id = " + PERSON_BASE_ALIAS_OBS
-		        + "concept_id and c.retired = false ");
+		sql.append(" inner join concept as c on c.concept_id = " + PERSON_BASE_ALIAS_OBS + "concept_id and c.retired = 0 ");
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" and " + PERSON_BASE_ALIAS_OBS + "value_coded =" + conceptQuery(valueCoded) + " ");
 		sql.append(" inner join encounter as e on e.encounter_id = " + PERSON_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where pa.voided = false and " + PERSON_BASE_ALIAS_OBS + "voided = false ");
+		sql.append(" where pa.voided = 0 and " + PERSON_BASE_ALIAS_OBS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -96,14 +97,13 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("select " + PERSON_BASE_ALIAS_OBS + "person_id from obs as  obp");
 		sql.append(" inner join patient as pa on pa.patient_id = " + PERSON_BASE_ALIAS_OBS + "person_id");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
-		sql.append(" inner join concept as c on c.concept_id = " + PERSON_BASE_ALIAS_OBS
-		        + "concept_id and c.retired = false ");
+		sql.append(" inner join concept as c on c.concept_id = " + PERSON_BASE_ALIAS_OBS + "concept_id and c.retired = 0 ");
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" and " + PERSON_BASE_ALIAS_OBS + "value_coded in (" + conceptQuery(answers) + ")");
 		sql.append(" inner join encounter as e on e.encounter_id = " + PERSON_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where pa.voided = false and " + PERSON_BASE_ALIAS_OBS + "voided = false ");
+		sql.append(" where pa.voided = 0 and " + PERSON_BASE_ALIAS_OBS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -119,8 +119,25 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join encounter as e on e.encounter_id = " + CONCEPT_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where obc.concept_id =" + conceptQuery(conceptQuestionUUid));
+		sql.append(" where obc.voided =0 and obc.concept_id =" + conceptQuery(conceptQuestionUUid));
 		return sql;
+	}
+	
+	protected StringBuilder baseConceptQuery(String conceptQuestionUUid, String encounterTypeUUID) {
+		
+		return new StringBuilder()
+		        .append("select " + CONCEPT_BASE_ALIAS_OBS + "person_id,cn.name from obs as  obc")
+		        .append(" inner join patient as pa on pa.patient_id = " + CONCEPT_BASE_ALIAS_OBS + "person_id ")
+		        .append(" inner join person as p on pa.patient_id = p.person_id ")
+		        .append(" inner join concept as c on c.concept_id = " + CONCEPT_BASE_ALIAS_OBS + " concept_id  ")
+		        .append(
+		            " inner join concept_name as cn on cn.concept_id = " + CONCEPT_BASE_ALIAS_OBS
+		                    + " value_coded and cn.locale_preferred =1 and cn.locale='en' ")
+		        .append(" inner join encounter as e on e.encounter_id = " + CONCEPT_BASE_ALIAS_OBS + "encounter_id ")
+		        .append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ")
+		        .append(" and et.uuid= '" + encounterTypeUUID + "' ")
+		        .append(" where obc.voided =0 and obc.concept_id =" + conceptQuery(conceptQuestionUUid));
+		
 	}
 	
 	protected StringBuilder baseConceptUUIDQuery(String conceptQuestionUUid) {
@@ -133,7 +150,7 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join encounter as e on e.encounter_id = " + CONCEPT_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where obc.concept_id =" + conceptQuery(conceptQuestionUUid));
+		sql.append(" where obc.voided =0 and obc.concept_id =" + conceptQuery(conceptQuestionUUid));
 		return sql;
 	}
 	
@@ -145,12 +162,12 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join patient as pa on pa.patient_id = ").append(CONCEPT_BASE_ALIAS_OBS).append("person_id ");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
 		sql.append(" inner join concept as c on c.concept_id = ").append(CONCEPT_BASE_ALIAS_OBS)
-		        .append(" concept_id and c.retired = false ");
+		        .append(" concept_id and c.retired = 0 ");
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" inner join encounter as e on e.encounter_id = " + CONCEPT_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where pa.voided = false and " + CONCEPT_BASE_ALIAS_OBS + "voided = false ");
+		sql.append(" where pa.voided = 0 and " + CONCEPT_BASE_ALIAS_OBS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -162,12 +179,12 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_DATE_BASE_ALIAS_OBS + "person_id ");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
 		sql.append(" inner join concept as c on c.concept_id = " + VALUE_DATE_BASE_ALIAS_OBS
-		        + " concept_id and c.retired = false ");
+		        + " concept_id and c.retired = 0 ");
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where pa.voided = false and " + VALUE_DATE_BASE_ALIAS_OBS + "voided = false ");
+		sql.append(" where pa.voided = 0 and " + VALUE_DATE_BASE_ALIAS_OBS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -179,12 +196,12 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_DATE_BASE_ALIAS_OBS + "person_id ");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
 		sql.append(" inner join concept as c on c.concept_id = " + VALUE_DATE_BASE_ALIAS_OBS
-		        + " concept_id and c.retired = false ");
+		        + " concept_id and c.retired = 0 ");
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + encounterType + "' ");
-		sql.append(" where pa.voided = false and " + VALUE_DATE_BASE_ALIAS_OBS + "voided = false ");
+		sql.append(" where pa.voided = 0 and " + VALUE_DATE_BASE_ALIAS_OBS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -196,12 +213,63 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS + "person_id ");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
 		sql.append(" inner join concept as c on c.concept_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS
-		        + " concept_id and c.retired = false ");
+		        + " concept_id and c.retired = 0 ");
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where pa.voided = false and " + VALUE_NUMERIC_BASE_ALIAS_OBS + "voided = false ");
+		sql.append(" where pa.voided = 0 and " + VALUE_NUMERIC_BASE_ALIAS_OBS + "voided = 0 ");
+		return sql;
+	}
+	
+	protected StringBuilder baseValueNumberQuery(String conceptQuestionUUid, String encounterTypeUUId) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select " + VALUE_NUMERIC_BASE_ALIAS_OBS + "person_id," + VALUE_NUMERIC_BASE_ALIAS_OBS
+		        + "value_numeric from obs as  obvnd ");
+		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS + "person_id ");
+		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
+		sql.append(" inner join concept as c on c.concept_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS
+		        + " concept_id and c.retired = 0 ");
+		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
+		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_NUMERIC_BASE_ALIAS_OBS + "encounter_id ");
+		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append(" and et.uuid= '" + encounterTypeUUId + "' ");
+		sql.append(" where pa.voided = 0 and " + VALUE_NUMERIC_BASE_ALIAS_OBS + "voided = 0 ");
+		return sql;
+	}
+	
+	protected StringBuilder baseValueTextQuery(String conceptQuestionUUid) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select " + VALUE_TEXT_BASE_ALIAS_OBS + "person_id," + VALUE_TEXT_BASE_ALIAS_OBS
+		        + "value_text from obs as  obvtext ");
+		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_TEXT_BASE_ALIAS_OBS + "person_id ");
+		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
+		sql.append(" inner join concept as c on c.concept_id = " + VALUE_TEXT_BASE_ALIAS_OBS
+		        + " concept_id and c.retired = 0 ");
+		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
+		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_TEXT_BASE_ALIAS_OBS + "encounter_id ");
+		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
+		sql.append(" where pa.voided = 0 and " + VALUE_TEXT_BASE_ALIAS_OBS + "voided = 0 ");
+		return sql;
+	}
+	
+	protected StringBuilder baseValueTextQuery(String conceptQuestionUUid, String encounterTypeUUID) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select " + VALUE_TEXT_BASE_ALIAS_OBS + "person_id," + VALUE_TEXT_BASE_ALIAS_OBS
+		        + "value_text from obs as  obvtext ");
+		sql.append(" inner join patient as pa on pa.patient_id = " + VALUE_TEXT_BASE_ALIAS_OBS + "person_id ");
+		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
+		sql.append(" inner join concept as c on c.concept_id = " + VALUE_TEXT_BASE_ALIAS_OBS
+		        + " concept_id and c.retired = 0 ");
+		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
+		sql.append(" inner join encounter as e on e.encounter_id = " + VALUE_TEXT_BASE_ALIAS_OBS + "encounter_id ");
+		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append(" and et.uuid= '" + encounterTypeUUID + "' ");
+		sql.append(" where pa.voided = 0 and " + VALUE_TEXT_BASE_ALIAS_OBS + "voided = 0 ");
 		return sql;
 	}
 	
@@ -229,7 +297,7 @@ public abstract class BaseEthiOhriQuery {
 	
 	protected StringBuilder baseSubQuery(String condition) {
 		StringBuilder sql = new StringBuilder("(select MAX(" + SUB_QUERY_BASE_ALIAS_OBS + "obs_id) from obs as obsq where "
-		        + SUB_QUERY_BASE_ALIAS_OBS + "voided=false ");
+		        + SUB_QUERY_BASE_ALIAS_OBS + "voided=0 ");
 		if (condition == null || condition.isEmpty()) {
 			return sql.append("  group by " + SUB_QUERY_BASE_ALIAS_OBS + " person_id )");
 			
@@ -241,7 +309,7 @@ public abstract class BaseEthiOhriQuery {
 	
 	protected StringBuilder baseLatestEncounter(String condition) {
 		StringBuilder sql = new StringBuilder("(select MAX(" + LATEST_ENCOUNTER_BASE_ALIAS_OBS
-		        + "encounter_id) from obs as obenc  where " + LATEST_ENCOUNTER_BASE_ALIAS_OBS + "voided=false ");
+		        + "encounter_id) from obs as obenc  where " + LATEST_ENCOUNTER_BASE_ALIAS_OBS + "voided=0 ");
 		if (condition == null || condition.isEmpty()) {
 			return sql.append("  group by " + LATEST_ENCOUNTER_BASE_ALIAS_OBS + "person_id )");
 			
@@ -255,11 +323,11 @@ public abstract class BaseEthiOhriQuery {
 		StringBuilder sql = new StringBuilder();
 		if (query == null || query.isEmpty())
 			return sql.append("(select MAX(" + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "obs_id) from obs as obsqj " + joinQuery
-			        + " where " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "voided=false  group by " + SUB_QUERY_JOIN_BASE_ALIAS_OBS
+			        + " where " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "voided=0  group by " + SUB_QUERY_JOIN_BASE_ALIAS_OBS
 			        + " person_id )");
 		
 		return sql.append("(select MAX(" + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "obs_id) from obs as obsqj " + joinQuery
-		        + " where " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "voided=false and " + query + "  group by "
+		        + " where " + SUB_QUERY_JOIN_BASE_ALIAS_OBS + "voided=0 and " + query + "  group by "
 		        + SUB_QUERY_JOIN_BASE_ALIAS_OBS + " person_id)");
 		
 	}

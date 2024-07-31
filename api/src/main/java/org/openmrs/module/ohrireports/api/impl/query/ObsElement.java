@@ -149,6 +149,22 @@ public class ObsElement extends BaseEthiOhriQuery {
 		
 	}
 	
+	public HashMap<Integer, Object> getByResult(String concept, Cohort cohort, List<Integer> encounterIds,
+	        String encounterType) {
+		
+		StringBuilder sql = baseConceptQuery(concept, encounterType);
+		sql.append(" and ").append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id in (:encounters)");
+		sql.append(" and  ").append(CONCEPT_BASE_ALIAS_OBS).append("person_id in (:cohorts)");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
+		query.setParameterList("encounters", encounterIds);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return getDictionary(query);
+		
+	}
+	
 	public HashMap<Integer, Object> getByResultByUUID(String concept, String answerConcept, Cohort cohort,
 	        List<Integer> encounterIds) {
 		
@@ -168,6 +184,10 @@ public class ObsElement extends BaseEthiOhriQuery {
 	
 	public HashMap<Integer, Object> getByValueNumeric(String concept, Cohort cohort, List<Integer> encounterIds) {
 		return getDictionary(getObsNumber(encounterIds, concept, cohort));
+	}
+	
+	public HashMap<Integer, Object> getByValueText(String concept, Cohort cohort, List<Integer> encounterIds) {
+		return getDictionary(getObsText(encounterIds, concept, cohort));
 	}
 	
 	protected HashMap<Integer, Object> getDictionary(Query query) {
@@ -202,11 +222,52 @@ public class ObsElement extends BaseEthiOhriQuery {
 		return query;
 	}
 	
+	protected Query getObs(List<Integer> baseEncounters, String concept, Cohort cohort, String encounterType) {
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(
+		    baseConceptQuery(concept, encounterType).append(" and  ").append(CONCEPT_BASE_ALIAS_OBS)
+		            .append("encounter_id in (:encounters) ").append(" and  ").append(CONCEPT_BASE_ALIAS_OBS)
+		            .append("person_id in (:cohorts) ").toString());
+		
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return query;
+	}
+	
 	protected Query getObsNumber(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseValueNumberQuery(concept);
 		
 		sql.append(" and  ").append(VALUE_NUMERIC_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
 		sql.append(" and  ").append(VALUE_NUMERIC_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return query;
+	}
+	
+	protected Query getObsNumber(List<Integer> baseEncounters, String concept, Cohort cohort, String encounterTypeUUID) {
+		StringBuilder sql = baseValueNumberQuery(concept, encounterTypeUUID);
+		
+		sql.append(" and  ").append(VALUE_NUMERIC_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
+		sql.append(" and  ").append(VALUE_NUMERIC_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+		
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return query;
+	}
+	
+	protected Query getObsText(List<Integer> baseEncounters, String concept, Cohort cohort) {
+		StringBuilder sql = baseValueTextQuery(concept);
+		
+		sql.append(" and  ").append(VALUE_TEXT_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
+		sql.append(" and  ").append(VALUE_TEXT_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
@@ -228,8 +289,8 @@ public class ObsElement extends BaseEthiOhriQuery {
 	protected Query getObsValueDateQuery(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseValueDateQuery(concept);
 		
-		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "encounter_id in (:encounters) ");
-		sql.append(" and  " + VALUE_DATE_BASE_ALIAS_OBS + "person_id in (:cohorts) ");
+		sql.append(" and  ").append(VALUE_DATE_BASE_ALIAS_OBS).append("encounter_id in (:encounters) ");
+		sql.append(" and  ").append(VALUE_DATE_BASE_ALIAS_OBS).append("person_id in (:cohorts) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
@@ -290,5 +351,10 @@ public class ObsElement extends BaseEthiOhriQuery {
 	 */
 	public HashMap<Integer, Object> getConceptName(List<Integer> encounters, Cohort cohort, String arvDispensedInDays) {
 		return getDictionary(getObs(encounters, arvDispensedInDays, cohort));
+	}
+	
+	public HashMap<Integer, Object> getConceptName(List<Integer> encounters, Cohort cohort, String conceptUUId,
+	        String encounterType) {
+		return getDictionary(getObs(encounters, conceptUUId, cohort, encounterType));
 	}
 }

@@ -88,7 +88,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		if (hdsd.getType().equals(TXTBReport.numerator)) {
 			
-			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
+			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncountersByMaxObsDate(
 			    Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_START_DATE), hdsd.getStartDate(),
 			    hdsd.getEndDate());
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
@@ -98,7 +98,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			tbQueryLineList.setEncountersByScreenDate(tbQuery.getFollowUpEncounter());
 			
-			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
+			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncountersByMaxObsDate(
 			    Collections.singletonList(FollowUpConceptQuestions.TB_SCREENING_DATE), hdsd.getStartDate(),
 			    hdsd.getEndDate());
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);

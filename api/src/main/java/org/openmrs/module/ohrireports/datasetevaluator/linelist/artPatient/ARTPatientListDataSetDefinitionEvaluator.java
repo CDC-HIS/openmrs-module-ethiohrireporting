@@ -45,7 +45,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		_dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
-		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		SimpleDataSet dataSet = new SimpleDataSet(_dataSetDefinition, evalContext);
 		
 		// Check start date and end date are valid
 		// If start date is greater than end date
@@ -76,16 +76,15 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		// remove cohort with no MRN
 		Cohort baseCohort = getCohortOnlyHaveMRN(artPatientListQuery.getCohort(artPatientListQuery.getBaseEncounter()));
 		
-		List<Integer> encounterWithAtleastOneFollow = encounterQuery.getEncounters(
+		List<Integer> encounterWithLeastOneFollow = encounterQuery.getEncounters(
 		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null, new Date(), baseCohort);
 		
-		Cohort cohortWithAtleastOneFollow = artPatientListQuery.getCohort(encounterWithAtleastOneFollow);
-		latestFollowup = encounterQuery.getLatestDateByFollowUpDate(cohortWithAtleastOneFollow, null, new Date());
+		Cohort cohortWithLeastOneFollow = artPatientListQuery.getCohort(encounterWithLeastOneFollow);
+		latestFollowup = encounterQuery.getLatestDateByFollowUpDate(cohortWithLeastOneFollow, null, new Date());
 		
-		List<Person> persons = LineListUtilities.sortPatientByName(artPatientListQuery
-		        .getPersons(cohortWithAtleastOneFollow));
+		List<Person> persons = LineListUtilities.sortPatientByName(artPatientListQuery.getPersons(cohortWithLeastOneFollow));
 		
-		loadColumnDictionary(latestFollowup, cohortWithAtleastOneFollow);
+		loadColumnDictionary(latestFollowup, cohortWithLeastOneFollow);
 		
 		DataSetRow row;
 		
@@ -120,7 +119,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 			addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
 			row.addColumnValue(new DataSetColumn("AgeAtEnrollment", "Age at Enrollment", String.class),
-			    getAgeByEnrollmentDate(person.getBirthDateTime(), registrationDate));
+			    getAgeByEnrollmentDate(person.getBirthdate(), registrationDate));
 			row.addColumnValue(new DataSetColumn("Current Age", "Current Age", String.class), person.getAge(new Date()));
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", Integer.class), person.getGender());
 			row.addColumnValue(new DataSetColumn("Mobile No.", "Mobile No.", String.class),
@@ -155,10 +154,11 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	
 	private void loadColumnDictionary(List<Integer> encounters, Cohort cohort) {
 		uanIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
-		registrationDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		registrationDateDictionary = artPatientListLineListQuery.getObsValueDate(null,
 		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
-		hivConfirmedDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
-		    PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
+		hivConfirmedDateDictionary = artPatientListLineListQuery.getObsValueDate(null,
+		    IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		;
 		artStartDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.ART_START_DATE, cohort);
 		latestFollowupDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
@@ -188,7 +188,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			return birthDate.toString();
 		}
 		Date enrDate = (Date) enrollmentDate;
-		return String.valueOf(EthiOhriUtil.getAgeInMonth(birthDate, enrDate));
+		return String.valueOf(EthiOhriUtil.getAgeInYear(birthDate, enrDate));
 		
 	}
 	

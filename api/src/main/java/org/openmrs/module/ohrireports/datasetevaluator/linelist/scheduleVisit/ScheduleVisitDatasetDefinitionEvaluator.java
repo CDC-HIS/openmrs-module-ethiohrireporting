@@ -60,7 +60,7 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, scheduleVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = scheduleVisitQuery.getFollowUpStatus(scheduleVisitQuery.getEncounter(),
 		    scheduleVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> weight = scheduleVisitQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT,
+		HashMap<Integer, Object> weight = scheduleVisitQuery.getByValueText(FollowUpConceptQuestions.WEIGHT,
 		    scheduleVisitQuery.getBaseCohort(), scheduleVisitQuery.getEncounter());
 		HashMap<Integer, Object> dose = scheduleVisitQuery.getByResult(FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS,
 		    scheduleVisitQuery.getBaseCohort(), scheduleVisitQuery.getEncounter());

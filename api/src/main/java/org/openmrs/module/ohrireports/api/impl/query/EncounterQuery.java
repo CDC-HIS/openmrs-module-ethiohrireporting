@@ -417,10 +417,10 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         if (end != null)
             builder.append(" and obs_enc.value_datetime <= :end ");
 
-        builder.append("and obs_enc.encounter_id in ( select distinct ob.encounter_id from obs as ob ");
+        builder.append("and obs_enc.voided =0 and obs_enc.encounter_id in ( select distinct ob.encounter_id from obs as ob ") ;
 
         builder.append("inner join ( select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id ");
-        builder.append("from obs as obs_enc where obs_enc.concept_id = (select concept_id from concept where uuid in ('")
+        builder.append("from obs as obs_enc where obs_enc.voided =0 and obs_enc.concept_id = (select concept_id from concept where uuid in ('")
                 .append(String.join("','", questionConcept)).append("'))");//.append(conceptQuery(questionConcept));
         if (start != null)
             builder.append(" and obs_enc.value_datetime >= :start ");
@@ -428,7 +428,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         if (end != null)
             builder.append(" and obs_enc.value_datetime <= :end ");
         builder.append(" GROUP BY obs_enc.person_id ) as sub1 on ob.value_datetime = sub1.value_datetime ");
-        builder.append(" and ob.person_id = sub1.person_id and ob.concept_id = (select concept_id from concept where uuid in ('")
+        builder.append(" and ob.voided =0 and ob.person_id = sub1.person_id and ob.concept_id = (select concept_id from concept where uuid in ('")
                 .append(String.join("','", questionConcept)).append("'))");//.append(conceptQuery(questionConcept));
         builder.append(" ) GROUP BY obs_enc.person_id ORDER BY obs_enc.person_id ");
         builder.append(" ) as subd on subd.value_datetime = u.value_datetime and u.person_id = subd.person_id ");
@@ -460,7 +460,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join  ");
         builder.append(" encounter as e on e.encounter_id = ob.encounter_id inner join ");
         builder.append(" encounter_type as et on et.encounter_type_id = e.encounter_type and et.uuid ='").append(encounterTypeUUId).append("' ");
-        builder.append(" where ob.concept_id in " + conceptQuery(questionConcept));
+        builder.append(" where ob.voided =0 and ob.concept_id in " + conceptQuery(questionConcept));
 
         if (start != null)
             builder.append(" and ob.value_datetime >= :start ");
@@ -496,7 +496,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         builder.append("inner join encounter as e on e.encounter_id = obs_enc.encounter_id ");
         builder.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
         builder.append("and et.uuid= '").append(encounterType).append("' ");
-        builder.append(" where obs_enc.concept_id in ").append(conceptQuery(questionConcept));
+        builder.append(" where obs_enc.voided =0 and obs_enc.concept_id in ").append(conceptQuery(questionConcept));
 
 
         if (start != null)
@@ -581,7 +581,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         builder.append(" GROUP BY obs_enc.person_id ) as sub ");
         builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
         builder.append(" and ob.concept_id in " + conceptQuery(questionConcept));
-        builder.append(" and ob.person_id in (:cohort) ");
+        builder.append(" and ob.voided =0 and ob.person_id in (:cohort) ");
 
         Query q = getCurrentSession().createSQLQuery(builder.toString());
         q.setParameterList("cohort", cohort.getMemberIds());

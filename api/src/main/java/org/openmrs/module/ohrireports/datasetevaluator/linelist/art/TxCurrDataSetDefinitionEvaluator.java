@@ -27,7 +27,6 @@ import static org.openmrs.module.ohrireports.constants.EncounterType.INTAKE_A_EN
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.*;
 import static org.openmrs.module.ohrireports.constants.Identifiers.MRN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.constants.Identifiers.UAN_PATIENT_IDENTIFIERS;
-import static org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE;
 
 @Handler(supports = {TxCurrDataSetDefinition.class})
 public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -63,9 +62,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
         HashMap<Integer, Object> uanIdentifierHashMap = artQuery.getIdentifier(cohort, UAN_PATIENT_IDENTIFIERS);
         HashMap<Integer, Object> registrationDateDictionary = artQuery.getObsValueDate(null, ART_REGISTRATION_DATE, cohort,
                 INTAKE_A_ENCOUNTER_TYPE);
-        HashMap<Integer, Object> weight = artQuery.getByValueNumeric(WEIGHT, cohort, latestEncounters);
+        HashMap<Integer, Object> weight = artQuery.getByValueText(WEIGHT, cohort, latestEncounters);
         HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(ADULT_CD4_COUNT, cohort, latestEncounters);
-        HashMap<Integer, Object> hivConfirmedDate = artQuery.getObsValueDate(latestEncounters, HIV_CONFIRMED_DATE, cohort);
+        HashMap<Integer, Object> hivConfirmedDate = artQuery.getObsValueDate(null,
+                IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort,EncounterType.INTAKE_A_ENCOUNTER_TYPE);
         HashMap<Integer, Object> artStartDate = artQuery.getObsValueDate(latestEncounters, ART_START_DATE, cohort);
         HashMap<Integer, Object> followUpDate = artQuery.getObsValueDate(latestEncounters, FOLLOW_UP_DATE, cohort);
         HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(latestEncounters, cohort);

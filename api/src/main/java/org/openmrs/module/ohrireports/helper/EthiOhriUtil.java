@@ -77,6 +77,10 @@ public class EthiOhriUtil {
 		
 	}
 	
+	public static int getAgeInYear(Date birthDate, Date asOfDate) {
+		return (int) (getAgeInMonth(birthDate, asOfDate) / MONTHS_IN_A_YEAR);
+	}
+	
 	public static String getEthiopianDate(Date date) {
 		if (date == null) {
 			return "--";
@@ -92,6 +96,21 @@ public class EthiOhriUtil {
 		}
 		return ethiopianDate == null ? "" : ethiopianDate.getDay() + "/" + ethiopianDate.getMonth() + "/"
 		        + ethiopianDate.getYear();
+	}
+	
+	public static EthiopianDate getEthiopiaDate(Date date) {
+		if (date == null) {
+			return null;
+		}
+		LocalDate lDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		EthiopianDate ethiopianDate = null;
+		try {
+			ethiopianDate = EthiopianDateConverter.ToEthiopianDate(lDate);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ethiopianDate;
 	}
 	
 }

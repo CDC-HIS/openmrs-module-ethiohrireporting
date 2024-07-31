@@ -54,89 +54,107 @@ public class PEPDatasetDefinitionEvaluator implements DataSetEvaluator {
 		}
 		
 		pepQueryLineList.generateReport(_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate());
-		twoWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PrepConceptQuestions.PEP_TWO_WEEK_FOLLOW_UP);
-		fourWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PrepConceptQuestions.PEP_FOUR_WEEK_FOLLOW_UP);
-		sixWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PrepConceptQuestions.PEP_SIX_WEEK_FOLLOW_UP);
-		threeMthFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PrepConceptQuestions.PEP_THREE_MONTH_FOLLOW_UP);
-		sixMthFollowup = pepQueryLineList.getEncounterBaseOnPeriod(PrepConceptQuestions.PEP_SIX_MONTH_FOLLOW_UP);
+		twoWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PostExposureConceptQuestions.PEP_TWO_WEEK_FOLLOW_UP);
+		fourWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PostExposureConceptQuestions.PEP_FOUR_WEEK_FOLLOW_UP);
+		sixWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PostExposureConceptQuestions.PEP_SIX_WEEK_FOLLOW_UP);
+		threeMthFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PostExposureConceptQuestions.PEP_THREE_MONTH_FOLLOW_UP);
+		sixMthFollowup = pepQueryLineList.getEncounterBaseOnPeriod(PostExposureConceptQuestions.PEP_SIX_MONTH_FOLLOW_UP);
 		
 		HashMap<Integer, Object> reportDateHashMap = pepQueryLineList.getObsValueDate(pepQueryLineList.getBaseEncounter(),
 		
-		PostExposureConceptQuestions.POST_REPORTING_DATE, pepQueryLineList.getBaseCohort());
+		PostExposureConceptQuestions.POST_REPORTING_DATE, pepQueryLineList.getBaseCohort(),
+		    EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		//two week
 		HashMap<Integer, Object> visitDateTwoWeek = pepQueryLineList.getObsValueDate(twoWksFollowUp,
-		    PrepConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort());
+		    PostExposureConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort(),
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> adherenceTwoWeek = pepQueryLineList.getConceptName(twoWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE);
+		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> sideEffectTwoWeek = pepQueryLineList.getConceptName(twoWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS,
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> exposedClientTwoWeek = pepQueryLineList.getConceptName(twoWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT);
+		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		
 		//fourths week
 		HashMap<Integer, Object> visitDateFourthWeek = pepQueryLineList.getObsValueDate(fourWksFollowUp,
-		    PrepConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort());
+		    PostExposureConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort(),
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> adherenceFourthWeek = pepQueryLineList.getConceptName(fourWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE);
+		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> sideEffectFourthWeek = pepQueryLineList.getConceptName(fourWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS,
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> exposedClientFourthWeek = pepQueryLineList.getConceptName(fourWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT);
+		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		
 		//six week
 		HashMap<Integer, Object> visitDateSixWeek = pepQueryLineList.getObsValueDate(sixWksFollowUp,
-		    PrepConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort());
+		    PostExposureConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort(),
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> adherenceSixWeek = pepQueryLineList.getConceptName(sixWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE);
+		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> sideEffectSixWeek = pepQueryLineList.getConceptName(sixWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS,
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> exposedClientSixWeek = pepQueryLineList.getConceptName(sixWksFollowUp,
-		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT);
+		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		
 		//three month
 		HashMap<Integer, Object> visitDateThreeMonth = pepQueryLineList.getObsValueDate(threeMthFollowUp,
-		    PrepConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort());
+		    PostExposureConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort(),
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> adherenceThreeMonth = pepQueryLineList.getConceptName(threeMthFollowUp,
-		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE);
+		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> sideEffectThreeMonth = pepQueryLineList.getConceptName(threeMthFollowUp,
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS,
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> exposedClientThreeMonth = pepQueryLineList.getConceptName(threeMthFollowUp,
-		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT);
+		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		
 		//six month
 		HashMap<Integer, Object> visitDateSixMonth = pepQueryLineList.getObsValueDate(sixMthFollowup,
-		    PrepConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort());
+		    PostExposureConceptQuestions.PEP_VISIT_DATE, pepQueryLineList.getBaseCohort(),
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> adherenceSixMonth = pepQueryLineList.getConceptName(sixMthFollowup,
-		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE);
+		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.ARV_ADHERENCE, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> sideEffectSixMonth = pepQueryLineList.getConceptName(sixMthFollowup,
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS,
+		    EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		HashMap<Integer, Object> exposedClientSixMonth = pepQueryLineList.getConceptName(sixMthFollowup,
-		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT);
+		    pepQueryLineList.getBaseCohort(), ConceptAnswer.PEP_SIDE_EFFECT, EncounterType.PEP_FOLLOWUP_ENCOUNTER);
 		
 		HashMap<Integer, Object> occupationHashMap = pepQueryLineList.getConceptName(pepQueryLineList.getBaseEncounter(),
-		    pepQueryLineList.getBaseCohort(), ConceptAnswer.OCCUPATIONAL);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.POST_OCCUPATION,
+		    EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> departementHashMap = pepQueryLineList.getConceptName(pepQueryLineList.getBaseEncounter(),
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_CASE_TEAM);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_CASE_TEAM,
+		    EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> exposureDurationHashMap = pepQueryLineList.getConceptNumber(
-		    pepQueryLineList.getBaseEncounter(), PostExposureConceptQuestions.POST_EXPOSURE_DURATION);
+		    pepQueryLineList.getBaseEncounter(), PostExposureConceptQuestions.POST_EXPOSURE_DURATION,
+		    EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> exposureTypeHashMap = pepQueryLineList.getConceptName(pepQueryLineList.getBaseEncounter(),
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_EXPOSURE_TYPE);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_EXPOSURE_TYPE,
+		    EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> exposureCodeHashMap = pepQueryLineList.getConceptName(pepQueryLineList.getBaseEncounter(),
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_EXPOSURE_CODE);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_EXPOSURE_CODE,
+		    EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> sourcePersonHivStatusHashMap = pepQueryLineList.getConceptName(
 		    pepQueryLineList.getBaseEncounter(), pepQueryLineList.getBaseCohort(),
-		    PrepConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS);
+		    PostExposureConceptQuestions.PEP_SOURCE_PERSON_HIV_STATUS, EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> exposedPersonHivStatusHashMap = pepQueryLineList.getConceptName(
 		    pepQueryLineList.getBaseEncounter(), pepQueryLineList.getBaseCohort(),
-		    PrepConceptQuestions.PEP_EXPOSED_PERSON_HIV_STATUS);
+		    PostExposureConceptQuestions.PEP_EXPOSED_PERSON_HIV_STATUS, EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> sourceOfExposureHashMap = pepQueryLineList.getConceptName(
-		    pepQueryLineList.getBaseEncounter(), pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_SOURCE_EXPOSED);
+		    pepQueryLineList.getBaseEncounter(), pepQueryLineList.getBaseCohort(),
+		    PostExposureConceptQuestions.PEP_SOURCE_EXPOSED, EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> eligiblityHashMap = pepQueryLineList.getConceptName(pepQueryLineList.getBaseEncounter(),
-		    pepQueryLineList.getBaseCohort(), PrepConceptQuestions.PEP_ELIGIBLE);
-		HashMap<Integer, Object> arvRegimentHashMap = pepQueryLineList.getConceptName(pepQueryLineList.getBaseEncounter(),
-		    pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.REGIMEN);
+		    pepQueryLineList.getBaseCohort(), PostExposureConceptQuestions.PEP_ELIGIBLE,
+		    EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> arvRegimentHashMap = pepQueryLineList.getConceptName(
+		    pepQueryLineList.getPepFollowUpEncounter(), pepQueryLineList.getBaseCohort(), FollowUpConceptQuestions.REGIMEN);
 		HashMap<Integer, Object> inBetweenHashMap = pepQueryLineList.getConceptNumber(pepQueryLineList.getBaseEncounter(),
-		    PrepConceptQuestions.PEP_TIME_BETWEEN);
+		    PostExposureConceptQuestions.PEP_TIME_BETWEEN, EncounterType.PEP_REGISTRATION_ENCOUNTER_TYPE);
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = pepQueryLineList.getIdentifier(pepQueryLineList.getBaseCohort(),
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);

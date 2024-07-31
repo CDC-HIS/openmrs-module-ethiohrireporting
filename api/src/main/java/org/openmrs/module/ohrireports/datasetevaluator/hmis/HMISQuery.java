@@ -100,48 +100,48 @@ public class HMISQuery extends ColumnBuilder {
 	    hmistxCurrEvaluator.buildDataSet(dataSet, end, encounterQuery.getAliveFollowUpEncounters(null, end));
 		//TODO: encounter should be updated
 	    hmistxNewEvaluator.buildDataSet(dataSet, start, end,encounterAlive);
-	
+
 	    hivartretEvaluator.buildDataSet(dataSet, false ,start, end);
 	    hivartretEvaluator.buildDataSet(dataSet, true ,start, end);
 
 	    hivLinkageNewCTEvaluator.buildDataset(start, end,dataSet);
-	    
-	    hivpVLSEvaluator.buildDataset(start,end,dataSet,".1", HivPvlsType.TESTED,"Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)");
-	    hivpVLSEvaluator.buildDataset(start,end,dataSet,"_UN", HivPvlsType.SUPPRESSED,"Total number of adult and paediatric ART patients with an undetectable viral load(<50 copies/ml) in the reporting period ");
-	    hivpVLSEvaluator.buildDataset(start,end,dataSet,"_LV", HivPvlsType.LOW_LEVEL_LIVERMIA,"Total number of adult and paediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period   ");
-		
+
+		hivpVLSEvaluator.buildDataset(start, end, dataSet, ".1", HivPvlsType.TESTED, "Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)");
+		hivpVLSEvaluator.buildDataset(start, end, dataSet, "_UN", HivPvlsType.SUPPRESSED, "Total number of adult and paediatric ART patients with an undetectable viral load(<50 copies/ml) in the reporting period ");
+		hivpVLSEvaluator.buildDataset(start, end, dataSet, "_LV", HivPvlsType.LOW_LEVEL_LIVERMIA, "Total number of adult and paediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period   ");
+
 	    hmistxdsdEvaluator.buildDataset(start,end,dataSet);
-		
+
 	    hivartIntrEvaluator.buildDataset(start,end,dataSet);
-	    
+
 	    hivartrevevaluator.buildDataset(start,end,dataSet);
-		
+
 	    hivprepevaluator.buildDataset(start,end,dataSet);
-	    
+
 	    hivprepCurrEvaluator.buildDataset(start,end,dataSet);
-	    
+
 	    hivpepcategoryEvaluators.buildDataset(start,end,dataSet);
-	  
+
 	    hivplHivEvaluator.buildDataset(start,end,dataSet);
-		
+
 	    hivArtFBEvaluator.buildDataset(start,end,"Number of non-pregnant women living with HIV on ART aged 15-49 reporting the use of any method of modern family planning by age",dataSet);
-	    
+
 	    hivArtFbMetEvaluator.buildDataset(dataSet);
-	
+
 	    tpscrnevaluator.buildDataset(start,end,dataSet);
-	
+
 	    hmisarttptEvaluator.buildDataset(start,end,dataSet);
-	
+
 	    hmisarttptCrOneEvaluator.buildDataset(start,end,dataSet);
-	    
+
 		hmisArtTptCrTwoEvaluator.buildDataset(start,end,dataSet);
-		
+
 	    hmisCxCaSCRNEvaluator.buildDataset(start,end,dataSet);
-	    
+
 		hmisCxCaRXEvaluator.buildDataset(start,end,dataSet);
-	 
+
 		tpLbLFLAMEvaluator.buildDataset(start,end,dataSet);
-		
+
 	    hmisartEvaluator.buildDataset(start,end,dataSet);
 	    hmiseidEvaluator.buildDataset(start,end,dataSet);
 	    hmisheicotrevaluator.buildDataset(start,end,dataSet);

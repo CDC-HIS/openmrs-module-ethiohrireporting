@@ -58,20 +58,34 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = monthlyVisitQuery.getFollowUpStatus(monthlyVisitQuery.getEncounter(),
 		    monthlyVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> weight = monthlyVisitQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT,
-		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> viralLoadStatus = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.VIRAL_LOAD_STATUS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> pregnantHashMap = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> weightHashMap = monthlyVisitQuery.getByValueText(FollowUpConceptQuestions.WEIGHT,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> bmiHashMap = monthlyVisitQuery.getByValueText(FollowUpConceptQuestions.BMI,
+		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> nutritionalStatusHashMap = monthlyVisitQuery.getConceptName(
+		    monthlyVisitQuery.getEncounter(), monthlyVisitQuery.getBaseCohort(),
+		    FollowUpConceptQuestions.NUTRITIONAL_SCREENING_RESULT);
+		
 		HashMap<Integer, Object> adherence = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> nextVisitDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
 		    FollowUpConceptQuestions.NEXT_VISIT_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> vlRequestDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
 		    FollowUpConceptQuestions.VL_RECEIVED_DATE, monthlyVisitQuery.getBaseCohort());
+		HashMap<Integer, Object> cd4CatagoriesHashMap = monthlyVisitQuery.getByResult(
+		    FollowUpConceptQuestions.ADULT_CD4_COUNT, monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> nutirationStatusHashMap = monthlyVisitQuery.getByResult(
+		    FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT, monthlyVisitQuery.getBaseCohort(),
+		    monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> tptStatusCatagoriesHashmap = monthlyVisitQuery.getByResult(
+		    FollowUpConceptQuestions.TPT_FOLLOW_UP_STATUS, monthlyVisitQuery.getBaseCohort(),
+		    monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> dsdCatagories = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.DSD_CATGORIES,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> tbScreeningResult = monthlyVisitQuery
@@ -93,8 +107,9 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			dataSet.addRow(row);
 		} else {
 			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Weight", "Pregnant?", "ART Start Date", "Follow-up Date E.C", "Follow-up Status", "Regimen", "ARV Dose",
-			    "Adherence", "VL Request Date", "VL Status", "TB Screening Result", "DSD Category", "Next Visit Date",
+			    "Weight", "BMI", "Nutritional Screening Result", "Pregnant?", "ART Start Date", "Follow-up Date E.C",
+			    "Follow-up Status", "Regimen", "ARV Dose", "Adherence", "VL Request Date", "VL Status", "CD4",
+			    "Nutrition Status ", "TPT Status", "TB Screening Result", "DSD Category", "Next Visit Date",
 			    "Treatment End Date in E.C.", "Mobile No.")));
 		}
 		
@@ -108,7 +123,12 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Age", "Age", String.class), person.getAge());
 			row.addColumnValue(new DataSetColumn("Sex", "Sex", String.class), person.getGender());
-			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weight.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Weight", "Weight", String.class), weightHashMap.get(person.getPersonId()));
+			
+			row.addColumnValue(new DataSetColumn("BMI", "BMI", String.class), bmiHashMap.get(person.getPersonId()));
+			
+			row.addColumnValue(new DataSetColumn("Nutritional Screening Result", "Nutritional Screening Result",
+			        String.class), nutritionalStatusHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Pregnant?", "Pregnant?", String.class),
 			    pregnantHashMap.get(person.getPersonId()));
 			
@@ -118,24 +138,37 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 			    monthlyVisitQuery.getEthiopianDate((Date) followUpDate.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("followUpStatus", "Follow-up Status", String.class),
 			    followUpStatus.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("ARVRegiment", "Regimen", String.class),
 			    regimentDictionary.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("ARVDoseDays", "ARV Dose", String.class), dose.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("adherence", "Adherence", String.class),
 			    adherence.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("vl-request-date", "VL Request Date", String.class),
 			    monthlyVisitQuery.getEthiopianDate((Date) vlRequestDate.get(person.getPersonId())));
+			
 			row.addColumnValue(new DataSetColumn("vl-status", "VL Status", String.class),
 			    viralLoadStatus.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("CD4", "CD4", String.class), cd4CatagoriesHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Nutrition Status", "Nutrition Status", String.class),
+			    nutirationStatusHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("TPT-Status", "TPT Status", String.class),
+			    tptStatusCatagoriesHashmap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("TBScreeningResult", "TB Screening Result", String.class),
 			    tbScreeningResult.get(person.getPersonId()));
+			
 			row.addColumnValue(new DataSetColumn("DSD Category", "DSD Category", String.class),
 			    dsdCatagories.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("nextVisitDate", "Next Visit Date", String.class),
 			    monthlyVisitQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
+			
 			row.addColumnValue(new DataSetColumn("Treatment End Date in E.C.", "Treatment End Date in E.C.", String.class),
 			    monthlyVisitQuery.getEthiopianDate((Date) treatmentEndDateHashMap.get(person.getPersonId())));
+			
 			row.addColumnValue(new DataSetColumn("Mobile", "Mobile No.", String.class),
 			    getPhone(person.getActiveAttributes()));
 			dataSet.addRow(row);
@@ -145,11 +178,6 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 	}
 	
 	private String getPhone(List<PersonAttribute> activeAttributes) {
-		for (PersonAttribute personAttribute : activeAttributes) {
-			if (personAttribute.getValue().startsWith("09") || personAttribute.getValue().startsWith("+251")) {
-				return personAttribute.getValue();
-			}
-		}
-		return "";
+		return LineListUtilities.getPhone(activeAttributes);
 	}
 }

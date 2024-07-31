@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static org.openmrs.module.ohrireports.constants.PrepConceptQuestions.PEP_VISIT_PERIOD;
+import static org.openmrs.module.ohrireports.constants.PostExposureConceptQuestions.PEP_VISIT_PERIOD;
 
 @Component
 public class PEPQueryLineList extends ObsElement {
@@ -46,6 +46,10 @@ public class PEPQueryLineList extends ObsElement {
 	
 	public HashMap<Integer, Object> getConceptNumber(List<Integer> encounters, String conceptUUId) {
 		return getDictionary(super.getObsNumber(encounters, conceptUUId, getBaseCohort()));
+	}
+	
+	public HashMap<Integer, Object> getConceptNumber(List<Integer> encounters, String conceptUUId, String encounterTypeUUID) {
+		return getDictionary(super.getObsNumber(encounters, conceptUUId, getBaseCohort(), encounterTypeUUID));
 	}
 	
 	public void generateReport(Date start, Date end) {

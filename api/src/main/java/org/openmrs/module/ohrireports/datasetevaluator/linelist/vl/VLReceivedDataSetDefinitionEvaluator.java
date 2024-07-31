@@ -68,7 +68,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = vlQuery.getIdentifier(vlQuery.cohort,
 		    Identifiers.UAN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> weight = vlQuery.getByValueNumeric(FollowUpConceptQuestions.WEIGHT, vlQuery.cohort,
+		HashMap<Integer, Object> weight = vlQuery.getByValueText(FollowUpConceptQuestions.WEIGHT, vlQuery.cohort,
 		    baseEncounters);
 		HashMap<Integer, Object> cd4Count = vlQuery.getByValueNumeric(FollowUpConceptQuestions.ADULT_CD4_COUNT,
 		    vlQuery.cohort, baseEncounters);

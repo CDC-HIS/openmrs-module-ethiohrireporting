@@ -25,7 +25,7 @@ public class HivLinkageNewCtQuery extends BaseEthiOhriQuery {
     public List<Integer> baseEncounter;
     public Cohort baseCohort;
     public void initialize(Date startOnOrAfter, Date endOnOrBefore) {
-        baseEncounter = encounterQuery.getEncounters(Collections.singletonList(PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE), startOnOrAfter, endOnOrBefore, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+        baseEncounter = encounterQuery.getEncounters(Collections.singletonList(IntakeAConceptQuestions.HIV_CONFIRMED_DATE), startOnOrAfter, endOnOrBefore, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
         baseCohort = getCohort(baseEncounter);
         linkageList = new ArrayList<>();
         for (Integer patientId : baseCohort.getMemberIds()) {

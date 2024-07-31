@@ -10,9 +10,11 @@ import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class HIVPositiveTrackingLineListQuery extends ObsElement {
 	
 	private final DbSessionFactory sessionFactory;

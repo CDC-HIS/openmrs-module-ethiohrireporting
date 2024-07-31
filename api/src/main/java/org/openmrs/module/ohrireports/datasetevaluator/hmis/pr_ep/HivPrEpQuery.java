@@ -7,10 +7,7 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
-import org.openmrs.module.ohrireports.constants.ConceptAnswer;
-import org.openmrs.module.ohrireports.constants.EncounterType;
-import org.openmrs.module.ohrireports.constants.PrepConceptQuestions;
-import org.openmrs.module.ohrireports.constants.RegimentConstant;
+import org.openmrs.module.ohrireports.constants.*;
 import org.openmrs.module.ohrireports.reports.linelist.PEPReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -157,8 +154,8 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	public Integer getCountByExposureType(String uuid) {
 		
 		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id ="
-		        + conceptQuery(PrepConceptQuestions.PEP_EXPOSURE_TYPE) + " and " + PERSON_ID_ALIAS_OBS + "value_coded = "
-		        + conceptQuery(uuid) + "";
+		        + conceptQuery(PostExposureConceptQuestions.PEP_EXPOSURE_TYPE) + " and " + PERSON_ID_ALIAS_OBS
+		        + "value_coded = " + conceptQuery(uuid) + "";
 		StringBuilder sql = personIdQuery(getCurrQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());

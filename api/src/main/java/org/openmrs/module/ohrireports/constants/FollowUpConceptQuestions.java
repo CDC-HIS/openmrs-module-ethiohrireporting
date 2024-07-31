@@ -10,6 +10,10 @@ public class FollowUpConceptQuestions {
 	
 	public final static String PREGNANCY_STATUS = "5272AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
+	public final static String BMI = "e3c2efba-3ec9-4029-9bd9-716948995433";
+	
+	public final static String TPT_FOLLOW_UP_STATUS = "0166677a-5a8e-45fa-b3f6-3c5aa9f13d00";
+	
 	public final static String REASON_FOR_ART_ELIGIBILITY = "613718f1-ecf2-4228-b9c2-6157d574bd0b";
 	
 	public final static String FOLLOW_UP_DATE = "5c118396-52dc-4cac-8860-e6d8e4a7f296";
@@ -166,7 +170,7 @@ public class FollowUpConceptQuestions {
 	public final static String DSD_CATGORIES = "defeb4ff-d07b-4e4a-bbd6-d4281c1384a2";
 	
 	//TODO: find out what concept is should be.
-	public final static String FINAL_OUTCOME_DATE = "";
+	public final static String FINAL_OUTCOME_DATE = "413b265c-87ef-4988-a7bc-1bfc6b5e5528";
 	
 	public final static String BIOPSY_RESULT = "df94b4c4-8a3a-46b2-be5b-e948403081a0";
 	

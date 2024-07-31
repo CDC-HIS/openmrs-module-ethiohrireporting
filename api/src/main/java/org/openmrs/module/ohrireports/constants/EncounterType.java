@@ -6,6 +6,8 @@ public class EncounterType {
 	
 	public final static String INTAKE_A_ENCOUNTER_TYPE = "05add044-67f8-48c9-928d-79002ab19efe";
 	
+	public final static String REGISTRATION_ENCOUNTER_TYPE = "a0fde61e-f493-4f1f-b709-22aa94f72dc3";
+	
 	//TODO: remove this one
 	public final static String HTS_RETROSPECTIVE_ENCOUNTER_TYPE = "79c1f50f-f77d-42e2-ad2a-d29304dde2fe";
 	
@@ -24,7 +26,7 @@ public class EncounterType {
 	
 	public final static String PEP_FOLLOWUP_ENCOUNTER = "c7f3c349-8771-432b-8e1e-240a53b3bda3";
 	
-	public final static String PEP_ENCOUNTER_TYPE = "de4cef7c-0aca-4593-9b5f-64a51c841c9d";
+	public final static String PEP_REGISTRATION_ENCOUNTER_TYPE = "de4cef7c-0aca-4593-9b5f-64a51c841c9d";
 	
 	public final static String POSITIVE_TRACKING_ENCOUNTER_TYPE = "f28bb488-0f83-417c-98ba-06ea5f1765e3";
 	

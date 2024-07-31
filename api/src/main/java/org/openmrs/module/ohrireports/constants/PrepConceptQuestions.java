@@ -23,36 +23,6 @@ public class PrepConceptQuestions {
 	
 	public final static String PREP_TYPE_OF_CLIENT = "166597AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String PEP_TIME_BETWEEN = "0885bb1e-6a2e-47d0-a597-8e8da07e4e59";
-	
-	public final static String PEP_CASE_TEAM = "cdc0f46f-7cc4-490b-a32b-8088c67c884a";
-	
-	public final static String PEP_VISIT_DATE = "163260AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
-	public final static String PEP_EXPOSURE_TYPE = "916eebc3-1141-40e6-beaa-ad2b5685956b";
-	
-	public final static String PEP_EXPOSURE_CODE = "2d55e533-6670-45be-960a-99e8eeb31938";
-	
-	public final static String PEP_EXPOSED_PERSON_HIV_STATUS = "ad4935e0-624a-4e01-8e51-02acd0b45f07";
-	
-	public final static String PEP_SOURCE_EXPOSED = "1c92b574-953a-458e-9fa7-82f5538d8aee";
-	
-	public final static String PEP_ELIGIBLE = "78dc1be4-4668-4170-b994-fc5e9a697e56";
-	
-	public final static String PEP_VISIT_PERIOD = "957a79b4-e771-4ab8-bcc6-e77f7dbcfd9d";
-	
-	public final static String PEP_TWO_WEEK_FOLLOW_UP = "bdbf6e4c-1220-4127-895f-e973f14e19b4";
-	
-	public final static String PEP_FOUR_WEEK_FOLLOW_UP = "aaa46f5c-e2d4-49c8-9ffd-8fad7c9d428b";
-	
-	public final static String PEP_SIX_WEEK_FOLLOW_UP = "ced31074-6e31-4bac-90c7-945f83985f63";
-	
-	public final static String PEP_THREE_MONTH_FOLLOW_UP = "1ff1eae4-b786-468b-bea1-14a0061d2725";
-	
-	public final static String PEP_SIX_MONTH_FOLLOW_UP = "ae68ba55-9fa8-4df4-8790-411cc7a6fd0b";
-	
-	public final static String PEP_SOURCE_PERSON_HIV_STATUS = "21ea1d83-acd7-4c99-b4cc-33a90e6dd7d7";
-	
 	public final static String REASON_FOR_STOPPING_PREP = "4bf84596-dd44-4b81-a638-4617e189a89d";
 	
 	public final static String REFERRED_FROM = "e2fc6b60-70e8-4a87-a164-fb175c788330";
@@ -72,4 +42,7 @@ public class PrepConceptQuestions {
 	public final static String STI_SCREENING_RESULT = "7a643a93-3f11-4ad0-acfa-b15f2d7c8ddc";
 	
 	public final static String EGFR_ESTIMATE = "165570AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String UIC = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 }

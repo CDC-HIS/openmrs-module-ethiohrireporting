@@ -1,7 +1,7 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.HIVPositiveDatasetDefinition;
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.LinkageNewLineListDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -11,6 +11,7 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPO
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 
 @Component
-public class LinkageNewReport implements ReportManager {
+public class PositiveTrackingReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
@@ -37,17 +38,8 @@ public class LinkageNewReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
-		startDate.setRequired(false);
-		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
-		startDateGC.setRequired(false);
-		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
-		endDate.setRequired(false);
-		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
-		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, startDateGC, endDate, endDateGC);
 		
-		//return EthiOhriUtil.getDateRangeParameters();
+		return EthiOhriUtil.getDateRangeParameters();
 	}
 	
 	@Override
@@ -58,7 +50,7 @@ public class LinkageNewReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		LinkageNewLineListDataSetDefinition dataSetDefinition = new LinkageNewLineListDataSetDefinition();
+		HIVPositiveDatasetDefinition dataSetDefinition = new HIVPositiveDatasetDefinition();
 		dataSetDefinition.addParameters(getParameters());
 		
 		reportDefinition.addDataSetDefinition("HIV +ve Tracking", EthiOhriUtil.map(dataSetDefinition));
@@ -68,7 +60,7 @@ public class LinkageNewReport implements ReportManager {
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
 		ReportDesign design = ReportManagerUtil.createExcelDesign("068b06fd-1531-4f27-b952-42d16823470f", reportDefinition);
-		return Arrays.asList(design);
+		return Collections.singletonList(design);
 	}
 	
 	@Override

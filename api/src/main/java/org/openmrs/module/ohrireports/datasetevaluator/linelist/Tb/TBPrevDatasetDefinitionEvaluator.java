@@ -9,9 +9,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
-import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
-import org.openmrs.module.ohrireports.constants.Identifiers;
-import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
+import org.openmrs.module.ohrireports.constants.*;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -192,8 +190,8 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		tptType = tbQueryLineList.getByResult(FollowUpConceptQuestions.TPT_TYPE, cohort, baseTPTStartDateEncounters);
 		tptEndDate = tbQueryLineList.getObsValueDate(baseTPTStartDateEncounters,
 		    FollowUpConceptQuestions.TPT_COMPLETED_DATE, cohort);
-		hiveConfirmedDate = tbQueryLineList.getObsValueDate(baseTPTStartDateEncounters,
-		    PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE, cohort);
+		hiveConfirmedDate = tbQueryLineList.getObsValueDate(null, IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort,
+		    EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		tptStartDate = tbQueryLineList.getObsValueDate(baseTPTStartDateEncounters, FollowUpConceptQuestions.TPT_START_DATE,
 		    cohort);
 		tpDosDayType = tbQueryLineList.getByResult(FollowUpConceptQuestions.TPT_DOSE_DAY_TYPE_INH, cohort,

@@ -3,6 +3,8 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.hivPositiveTrac
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.Person;
+import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.HIVPositiveDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -28,6 +30,7 @@ import static org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions.E
 import static org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions.*;
 import static org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities.getDayDifference;
 
+@Handler(supports = HIVPositiveDatasetDefinition.class)
 public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 	
 	@Autowired
@@ -35,13 +38,13 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
-		HIVPositiveDatasetDefinition datasetDefinition = (HIVPositiveDatasetDefinition) dataSetDefinition;
-		SimpleDataSet dataSet = new SimpleDataSet(datasetDefinition, evalContext);
+		HIVPositiveDatasetDefinition _datasetDefinition = (HIVPositiveDatasetDefinition) dataSetDefinition;
+		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		
 		// Check start date and end date are valid
 		// If start date is greater than end date
-		if (datasetDefinition.getStartDate() != null && datasetDefinition.getEndDate() != null
-		        && datasetDefinition.getStartDate().compareTo(datasetDefinition.getEndDate()) > 0) {
+		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
+		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
 			DataSetRow row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
 			    "Report start date cannot be after report end date");
@@ -49,9 +52,11 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 			return dataSet;
 		}
 		
-		if (datasetDefinition.getEndDate() == null) {
-			datasetDefinition.setEndDate(new Date());
+		if (_datasetDefinition.getEndDate() == null) {
+			_datasetDefinition.setEndDate(new Date());
 		}
+		
+		hivPositiveTrackingLineListQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
 		Cohort cohort = hivPositiveTrackingLineListQuery.getBaseCohort();
 		List<Integer> encounter = hivPositiveTrackingLineListQuery.getBaseEncounter();
@@ -61,27 +66,33 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> uaIdentifierHashMap = hivPositiveTrackingLineListQuery.getIdentifier(cohort,
 		    UAN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> registrationDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    POSITIVE_TRACKING_REGISTRATION_DATE, cohort);
+		    POSITIVE_TRACKING_REGISTRATION_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> dateTestedHivPositiveHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    HIV_CONFIRMED_DATE, cohort);
+		    HIV_CONFIRMED_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> entryPointHashMap = hivPositiveTrackingLineListQuery.getByResult(ENTRE_POINT, cohort,
-		    encounter);
+		    encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> hivConfirmedDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    HIV_CONFIRMED_DATE, cohort);
+		    HIV_CONFIRMED_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> artStartDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    ART_START_DATE, cohort);
+		    ART_START_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> linkedToCareAndTreatmentHashMap = hivPositiveTrackingLineListQuery.getByResult(
-		    LINKED_TO_CARE_TREATMENT, cohort, encounter);
+		    LINKED_TO_CARE_TREATMENT, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> linkedToCareAndTreatmentDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(
-		    encounter, LINKED_TO_CARE_DATE, cohort);
+		    encounter, LINKED_TO_CARE_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> reasonForNotStartingARTheSameDayHashMap = hivPositiveTrackingLineListQuery.getByResult(
-		    REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY, cohort, encounter);
+		    REASON_FOR_NOT_STARTING_ART_THE_SAME_DAY, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> planForNextStepHashMap = hivPositiveTrackingLineListQuery.getByResult(
-		    PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING, cohort, encounter);
+		    PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    FINAL_OUTCOME_DATE, cohort);
+		    FINAL_OUTCOME_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownHashMap = hivPositiveTrackingLineListQuery.getByResult(FINAL_OUT_COME,
-		    cohort, encounter);
+		    cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		
 		DataSetRow row;
 		List<Person> personList = LineListUtilities.sortPatientByName(hivPositiveTrackingLineListQuery.getPersons(cohort));
@@ -117,6 +128,7 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 			long daysDifference = getDayDifference(hivConfirmedDate, artStartDate);
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));
@@ -151,6 +163,8 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 			    hivPositiveTrackingLineListQuery.getEthiopianDate(finalOutcomeKnownDate));
 			row.addColumnValue(new DataSetColumn("Final Outcome", "Final Outcome", String.class),
 			    finalOutcomeKnownHashMap.get(person.getPersonId()));
+			
+			dataSet.addRow(row);
 		}
 		return dataSet;
 	}

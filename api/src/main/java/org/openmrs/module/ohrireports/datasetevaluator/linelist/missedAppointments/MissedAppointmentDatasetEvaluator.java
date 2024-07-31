@@ -75,7 +75,7 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ART Start Date", "Last Follow-up Date E.C", "Last Appointment Date E.C", "No. of Missed Days",
 			    "Tracing Status", "Last Follow-up Status", "Last Regimen", "Last ARV Dose", "Adherence",
-			    "Last TX_CURR Date E.C", "Mobile#")));
+			    "Last TX_CURR Date E.C", "Mobile#", "Zone", "Woreda")));
 		}
 		
 		int missedDate = 0;
@@ -94,7 +94,9 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 			    appointmentQuery.getEthiopianDate((Date) followUpDate.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("Last Appointment Date Eth", "Last Appointment Date E.C", String.class),
 			    appointmentQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
+			
 			missedDate = getDaysDiff((Date) nextVisitDate.get(person.getPersonId()), _datasetDefinition.getEndDate());
+			
 			row.addColumnValue(new DataSetColumn("No. of Missed Days", "No. of Missed Days", String.class), missedDate);
 			row.addColumnValue(new DataSetColumn("tracing-status", "Tracing Status", String.class),
 			    getTracingStatus(missedDate));
@@ -109,7 +111,10 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Last TX_CURR Date Eth", "Last TX_CURR Date E.C", String.class),
 			    appointmentQuery.getEthiopianDate((Date) lastCurrDate.get(person.getPersonId())));
 			row.addColumnValue(new DataSetColumn("Mobile#", "Mobile#", String.class), getPhone(person.getActiveAttributes()));
-			
+			row.addColumnValue(new DataSetColumn("Zone", "Zone", String.class), person.getPersonAddress()
+			        .getCountyDistrict());
+			row.addColumnValue(new DataSetColumn("Woreda", "Woreda", String.class), person.getPersonAddress()
+			        .getCityVillage());
 			dataSet.addRow(row);
 		}
 		
@@ -117,7 +122,6 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 	}
 	
 	private String getTracingStatus(int missedDays) {
-		String output = "";
 		if (missedDays <= 30) {
 			return "Missed Appointment";
 		} else if (missedDays < 60) {
@@ -130,26 +134,23 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 	}
 	
 	private String getPhone(List<PersonAttribute> activeAttributes) {
-		for (PersonAttribute personAttribute : activeAttributes) {
-			if (personAttribute.getValue().startsWith("09") || personAttribute.getValue().startsWith("+251")) {
-				return personAttribute.getValue();
-			}
-		}
-		return "";
+		return LineListUtilities.getPhone(activeAttributes);
 	}
 	
 	private int getDaysDiff(Date appointmentDate, Date toDate) {
-		if (Objects.isNull(appointmentDate)) {
+		if (!Objects.isNull(appointmentDate)) {
+			Calendar appointCalendar = Calendar.getInstance();
+			appointCalendar.setTime(appointmentDate);
+			Calendar toDCal = Calendar.getInstance();
+			toDCal.setTime(toDate);
+			int yearInDays = (toDCal.get(Calendar.YEAR) - appointCalendar.get(Calendar.YEAR)) * 365;
+			int dayInMonth = toDCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+			int monthInDays = (toDCal.get(Calendar.MONTH) - appointCalendar.get(Calendar.MONTH)) * dayInMonth;
+			
+			int days = toDCal.get(Calendar.DATE) - appointCalendar.get(Calendar.DATE);
+			return yearInDays + monthInDays + days;
+		} else {
 			return 0;
 		}
-		Calendar apntCal = Calendar.getInstance();
-		apntCal.setTime(appointmentDate);
-		Calendar toDCal = Calendar.getInstance();
-		toDCal.setTime(toDate);
-		int yearInDays = (toDCal.get(Calendar.YEAR) - apntCal.get(Calendar.YEAR)) * 365;
-		int monthInDays = (toDCal.get(Calendar.MONTH) - apntCal.get(Calendar.MONTH)) * 30;
-		
-		int days = toDCal.get(Calendar.DATE) - apntCal.get(Calendar.DATE);
-		return yearInDays + monthInDays + days;
 	}
 }
