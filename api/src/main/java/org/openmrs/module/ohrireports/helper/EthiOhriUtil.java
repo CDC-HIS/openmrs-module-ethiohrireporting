@@ -108,6 +108,7 @@ public class EthiOhriUtil {
 			ethiopianDate = EthiopianDateConverter.ToEthiopianDate(lDate);
 		}
 		catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return ethiopianDate;

@@ -44,5 +44,4 @@ public class PrepConceptQuestions {
 	public final static String EGFR_ESTIMATE = "165570AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String UIC = "164402AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	
 }

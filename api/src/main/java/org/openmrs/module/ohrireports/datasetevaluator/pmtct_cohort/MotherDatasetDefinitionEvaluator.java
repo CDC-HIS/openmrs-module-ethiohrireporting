@@ -13,7 +13,6 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import sun.security.krb5.internal.crypto.Des;
 
 import java.util.Calendar;
 import java.util.Date;
