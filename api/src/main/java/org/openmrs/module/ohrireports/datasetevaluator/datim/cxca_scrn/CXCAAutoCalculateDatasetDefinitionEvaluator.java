@@ -51,7 +51,6 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
 			loadGetScreening(ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE);
 			loadGetScreening(ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT);
 			loadGetScreening(ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN);
-			
 			DataSetRow dataSetRow = new DataSetRow();
 			dataSetRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class),
 			    cervicalCancerQuery.getTotalCohortCount());

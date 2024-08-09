@@ -334,7 +334,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
 
             age = person.getAge(calculateAgeFrom);
             if (person.getGender().equals(gender) && (Objects.isNull(person.getAge()) ||
-                    age <= 0)) {
+                    age < 0)) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;
@@ -358,7 +358,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
 
             age = person.getAge(calculateAgeFrom);
             if ((Objects.isNull(person.getAge()) ||
-                    age <= 0)) {
+                    age < 0)) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;

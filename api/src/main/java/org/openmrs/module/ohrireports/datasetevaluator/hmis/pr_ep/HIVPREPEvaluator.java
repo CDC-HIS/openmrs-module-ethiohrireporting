@@ -30,6 +30,7 @@ public class HIVPREPEvaluator {
 	private EvaluationContext context;
 	List<Person> personList = new ArrayList<>();
 	private Date start,end;
+	private  int indexHeader =0;
 
 	public void buildDataset(Date start,Date end,SimpleDataSet dataset) {
 		this.start= start;
@@ -46,6 +47,7 @@ public class HIVPREPEvaluator {
 
 		dataset.addRow(buildColumn("", "Number of individuals receiving Pre-Exposure Prophylaxis",0));
 		dataset.addRow(buildColumn("1", "PrEP (New Number of individuals who were newly enrolled on PrEP", 0));
+
 
 		personList = hivPrEPQuery.getPersons(prepScreeningCohort);
 		dataset.addRow(buildColumn("1.1", "By Age and Sex",prepScreeningCohort.size()));
@@ -77,7 +79,7 @@ public class HIVPREPEvaluator {
 		clientCategoryRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), "By Client Category");
 		clientCategoryRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class), total);
 	
-		dataset.addRow( clientCategoryRow);
+		dataset.addRow(clientCategoryRow);
 	
 		DataSetRow discordantCoupleCategoryRow = new DataSetRow();
 

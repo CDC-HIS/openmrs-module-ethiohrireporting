@@ -91,7 +91,7 @@ public class RegimentCategory {
                     R1j_TDF_3TC_DTG, R1i_OTHER_ADULT_1ST_LINE_REGIMEN, R1k_AZT_3TC_DTG);
 
             // adult and include others
-        } else if (isChildren == false) {
+        } else if (!isChildren) {
             return Arrays.asList(R1d_AZT_3TC_EFV, R1e_TDF_3TC_EFV, R1g_ABC_3TC_EFV,
                     R1j_TDF_3TC_DTG, R1k_AZT_3TC_DTG,
                     R1a30_D4T_30_3TC_NVP, R1a40_D4T_40_3TC_NVP, R1b30_D4T_30_3TC_EFV, R1b40_D4T_40_3TC_EFV,
@@ -112,16 +112,16 @@ public class RegimentCategory {
                     R2g_TDF_3TC_LPVr, R2h_TDF_3TC_ATVr,
                     R2i_ABC_3TC_LPVr, R2j_TDF_3TC_DTG, R2k_AZT_3TC_DTG, R2a_ABC_DDL_LPV, R2b_ABC_DDL_NFV,
                     R2c_TDF_DDL_LPV, 
-                    R2h_TDF_3TC_ATVr,
+                    R2h_TDF_3TC_ATVr,R2d_TDF_DDL_NFV,
                     R2L_OTHER_ADULT_2ND_LINE_REGIMEN,
                     R2a_ABC_DDL_LPV, R2b_ABC_DDL_NFV, R2c_TDF_DDL_LPV,
                     R2e_AZT_3TC_LPVr, R2f_AZT_3TC_ATVr, R2g_TDF_3TC_LPVr, R2h_TDF_3TC_ATVr, R2i_ABC_3TC_LPVr,
                     R2j_TDF_3TC_DTG);
-        } else if (isChildren == false) {
+        } else if (!isChildren) {
             return Arrays.asList(
                     R2a_ABC_DDL_LPV, R2b_ABC_DDL_NFV, R2c_TDF_DDL_LPV, 
-                    R2h_TDF_3TC_ATVr,
-                    R2e_AZT_3TC_LPVr, R2f_AZT_3TC_ATVr, R2g_TDF_3TC_LPVr, R2h_TDF_3TC_ATVr, R2i_ABC_3TC_LPVr,
+                    R2d_TDF_DDL_NFV,
+                    R2e_AZT_3TC_LPVr, R2f_AZT_3TC_ATVr, R2g_TDF_3TC_LPVr, R2i_ABC_3TC_LPVr,
                     R2j_TDF_3TC_DTG,
                     R2k_AZT_3TC_DTG, R2L_OTHER_ADULT_2ND_LINE_REGIMEN,
                     R5a_ABC_DDL_LPY, R5b_ABC_DDL_NFV, R5c_TDF_DDL_LPV,

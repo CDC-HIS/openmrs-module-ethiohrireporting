@@ -44,7 +44,7 @@ public class ConceptAnswer {
 	
 	public final static String NEGATIVE = "5e4fc757-0b14-49ae-b3b7-419666f41e15";
 	
-	public final static String TRANSFERRED_IN = "160563AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String TRANSFERRED_IN = "cc2dfcbd-e099-47d5-b01c-74caa296ba3c";
 	
 	public final static String VIA_NEGATIVE = "a08ab377-30bc-4ef6-bb9d-4cf6a0564ccc";
 	
@@ -68,7 +68,7 @@ public class ConceptAnswer {
 	
 	public final static String HIV_HIGH_VIRAL_LOAD = "162185AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
-	public final static String DIED = "160034AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String DIED = "160432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String ABSTINENCE = "159524AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
@@ -81,6 +81,8 @@ public class ConceptAnswer {
 	public final static String INTRAUTERINE_DEVICE = "5275AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String OTHER = "5622AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	public final static String UNKNOWN = "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	public final static String NEW_FROM_ANC = "1726AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	

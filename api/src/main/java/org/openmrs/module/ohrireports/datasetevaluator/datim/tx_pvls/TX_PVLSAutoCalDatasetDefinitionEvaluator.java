@@ -11,6 +11,7 @@ import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -54,10 +55,13 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 				    start, end);
 				vlQuery.loadInitialCohort(start, end, laIntegers);
 			}
-			Cohort cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery.getViralLoadSuppressed();
+			Cohort cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery
+			        .getViralLoadSuppressed(Arrays.asList(ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED,
+			            ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA));
 			
 			DataSetRow setRow = new DataSetRow();
-			setRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", String.class), cohort.getMemberIds().size());
+			setRow.addColumnValue(new DataSetColumn(txDatasetDefinition.getType(), txDatasetDefinition.getType(),
+			        String.class), cohort.getMemberIds().size());
 			dataSet.addRow(setRow);
 		}
 		return dataSet;

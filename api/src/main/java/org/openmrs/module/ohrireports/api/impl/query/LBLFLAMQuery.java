@@ -41,9 +41,7 @@ public class LBLFLAMQuery extends PatientQueryImpDao {
 	}
 	
 	public void generateReport(Date start, Date end) {
-		List<Integer> latestFollowUpEncounter = encounterQuery.getAliveFollowUpEncounters(null, end);
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_SCREENING_DATE), start, end,
-		    latestFollowUpEncounter);
+		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(TB_SCREENING_DATE), start, end);
 		cohort = getActiveOnArtCohort("", null, end, null, baseEncounter);
 		
 	}

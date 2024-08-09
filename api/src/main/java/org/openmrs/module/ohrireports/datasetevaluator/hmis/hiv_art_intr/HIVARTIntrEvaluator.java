@@ -40,8 +40,12 @@ public class HIVARTIntrEvaluator {
 		// lost to follow-up Lost after treatment < 3month
 		Cohort cohort = hivArtIntrQuery.getBelowThreeMonthInterruption(hivArtIntrQuery.getLostToFollowUp(end));
 		List<Person> personList = hivArtIntrQuery.getPerson(cohort);
+		int total = cohort.size();
 		dataSet.addRow(buildColumn("HIV_ART_INTR", "Number of ART Clients that interrupted Treatment", ""));
 		dataSet.addRow(buildColumn("HIV_ART_INTR_OUT", "Number of ART Clients Interrupted treatment by outcome", ""));
+		
+		int headerIndex = dataSet.getRows().size();
+		
 		dataSet.addRow(buildRow(".1", "Lost after treatment < 3month", cohort.size()));
 		
 		dataSet.addRow(buildRow(".1. 1", "< 15 years, Male",
@@ -59,6 +63,7 @@ public class HIVARTIntrEvaluator {
 		// lost to follow-up Lost after treatemnt > 3month
 		cohort = hivArtIntrQuery.getAboveThreeMonthInterruption(hivArtIntrQuery.getLostToFollowUp(end));
 		personList = hivArtIntrQuery.getPerson(cohort);
+		total += cohort.size();
 		
 		dataSet.addRow(buildRow(".2", "Lost after treatement > 3month", cohort.size()));
 		
@@ -77,6 +82,8 @@ public class HIVARTIntrEvaluator {
 		// Transferred out
 		cohort = hivArtIntrQuery.getTransferredOut(hivArtIntrQuery.getBaseCohort());
 		personList = hivArtIntrQuery.getPerson(cohort);
+		total += cohort.size();
+		
 		dataSet.addRow(buildRow(".3", "Transferred out", cohort.size()));
 		
 		dataSet.addRow(buildRow(".3. 1", "< 15 years, Male",
@@ -94,6 +101,8 @@ public class HIVARTIntrEvaluator {
 		// Refused (stopped) treatment
 		cohort = hivArtIntrQuery.getRefusedOrStopped(hivArtIntrQuery.getBaseCohort());
 		personList = hivArtIntrQuery.getPerson(cohort);
+		total += cohort.size();
+		
 		dataSet.addRow(buildRow(".4", "Refused (stopped) treatment", cohort.size()));
 		
 		dataSet.addRow(buildRow(".4. 1", "< 15 years, Male",
@@ -111,6 +120,8 @@ public class HIVARTIntrEvaluator {
 		// Died
 		cohort = hivArtIntrQuery.getDead(hivArtIntrQuery.getBaseCohort());
 		personList = hivArtIntrQuery.getPerson(cohort);
+		total += cohort.size();
+		
 		dataSet.addRow(buildRow(".5", "Died", cohort.size()));
 		
 		dataSet.addRow(buildRow(".5. 1", "< 15 years, Male",
@@ -124,6 +135,12 @@ public class HIVARTIntrEvaluator {
 		
 		dataSet.addRow(buildRow(".5. 4", ">= 15 years, Female",
 		    hivArtIntrQuery.getByAgeAndGender(Range.ABOVE_OR_EQUAL_TO_FIFTY, "F", personList)));
+		
+		//updating header total
+		dataSet.addRow(headerIndex - 1,
+		    buildColumn("HIV_ART_INTR", "Number of ART Clients that interrupted Treatment", total));
+		dataSet.addRow(headerIndex,
+		    buildColumn("HIV_ART_INTR_OUT", "Number of ART Clients Interrupted treatment by outcome", total));
 		
 	}
 	

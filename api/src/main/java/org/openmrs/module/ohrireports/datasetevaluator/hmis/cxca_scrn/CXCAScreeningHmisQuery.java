@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_COUNSELING_GIVEN;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.*;
 
 @Component
 public class CXCAScreeningHmisQuery extends PatientQueryImpDao {
@@ -56,7 +56,8 @@ public class CXCAScreeningHmisQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(DATE_COUNSELING_GIVEN), startDate, endDate);
+		baseEncounter = encounterQuery.getEncounters(
+		    Arrays.asList(HPV_DNA_RESULT_RECEIVED_DATE, VIA_SCREENING_DATE, DATE_COUNSELING_GIVEN), startDate, endDate);
 		currentEncounter = baseEncounter;
 	}
 	

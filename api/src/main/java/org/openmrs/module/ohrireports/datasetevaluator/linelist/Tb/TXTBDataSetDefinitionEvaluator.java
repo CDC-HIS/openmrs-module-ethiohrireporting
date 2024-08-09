@@ -98,7 +98,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			tbQueryLineList.setEncountersByScreenDate(tbQuery.getFollowUpEncounter());
 			
-			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncountersByMaxObsDate(
+			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncounters(
 			    Collections.singletonList(FollowUpConceptQuestions.TB_SCREENING_DATE), hdsd.getStartDate(),
 			    hdsd.getEndDate());
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
@@ -267,7 +267,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 		row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class), mrnIdentifierHashMap.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uanIdentifierHashMap.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(hdsd.getEndDate()));
+		row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(_followUpDate));
+		row.addColumnValue(new DataSetColumn("DateOfBirth", "Date of birth", Date.class), person.getBirthdate());
 		row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
 		row.addColumnValue(new DataSetColumn("ArtStartDateEth", "Art Start Date E.C", String.class), artEthiopianDate);
 		row.addColumnValue(new DataSetColumn("followUpDateEth", "FollowUp Date E.C", String.class), followUpEthiopianDate);

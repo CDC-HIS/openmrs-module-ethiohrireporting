@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.openmrs.Cohort;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_curr.RegimentCategory.REGIMENT_TYPE;
-import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;

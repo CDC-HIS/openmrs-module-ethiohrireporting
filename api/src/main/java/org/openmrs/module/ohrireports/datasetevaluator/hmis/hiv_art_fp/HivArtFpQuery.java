@@ -95,7 +95,8 @@ public class HivArtFpQuery extends PatientQueryImpDao {
 	private Integer getCount(List<Person> personList, int initialAge, int maxAge) {
 		List<Person> _personList = new ArrayList<>();
 		for (Person person : personList) {
-			if (person.getGender().equals("F") && person.getAge() >= initialAge && person.getAge() <= maxAge) {
+			int age = person.getAge(endDate);
+			if (person.getGender().equals("F") && age >= initialAge && age <= maxAge) {
 				_personList.add(person);
 			}
 		}

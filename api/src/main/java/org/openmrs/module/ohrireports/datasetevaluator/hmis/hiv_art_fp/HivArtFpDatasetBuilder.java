@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Person;
@@ -23,11 +24,15 @@ public class HivArtFpDatasetBuilder {
 	
 	private String baseName;
 	
-	public HivArtFpDatasetBuilder(List<Person> personList, SimpleDataSet dataSet, String description, String baseName) {
+	private Date endDate;
+	
+	public HivArtFpDatasetBuilder(List<Person> personList, SimpleDataSet dataSet, String description, String baseName,
+	    Date _endDate) {
 		this.personList = personList;
 		this.dataSet = dataSet;
 		this.description = description;
 		this.baseName = baseName;
+		endDate = _endDate;
 	}
 	
 	private String column_3_name = "Number";
@@ -36,7 +41,7 @@ public class HivArtFpDatasetBuilder {
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), baseName);
 		row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), description);
-		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(10, 49));
+		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(15, 49));
 		dataSet.addRow(row);
 		buildRowByAge();
 	}
@@ -72,7 +77,9 @@ public class HivArtFpDatasetBuilder {
 	private Integer getCount(int initialAge, int maxAge) {
 		List<Person> _personList = new ArrayList<>();
 		for (Person person : personList) {
-			if (person.getGender().equals("F") && person.getAge() >= initialAge && person.getAge() <= maxAge) {
+			//Age calculation is as of the report end date
+			int age =person.getAge(endDate);
+			if (person.getGender().equals("F") && age>= initialAge && age <= maxAge) {
 				_personList.add(person);
 			}
 		}

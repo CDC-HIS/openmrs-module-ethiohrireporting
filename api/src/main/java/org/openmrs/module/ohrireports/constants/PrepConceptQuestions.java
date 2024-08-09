@@ -21,7 +21,7 @@ public class PrepConceptQuestions {
 	
 	public final static String PREP_MISSED_TABLETS = "a10bb1c2-64a5-4f62-9d2f-05ef1b261fb8";
 	
-	public final static String PREP_TYPE_OF_CLIENT = "166597AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String PREP_TYPE_OF_CLIENT = "da8c5265-2ab4-43f8-af66-ec1c9c8e9d4f ";
 	
 	public final static String REASON_FOR_STOPPING_PREP = "4bf84596-dd44-4b81-a638-4617e189a89d";
 	

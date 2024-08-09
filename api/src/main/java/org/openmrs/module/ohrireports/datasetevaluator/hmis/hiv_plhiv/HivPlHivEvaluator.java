@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_plhiv;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import org.openmrs.Cohort;
@@ -32,6 +33,7 @@ public class HivPlHivEvaluator {
     @Autowired
     private EncounterQuery encounterQuery;
 	private Date end;
+    private int underNourished, supplementaryFood =0;
 
     public void buildDataset(Date start, Date end, SimpleDataSet dataSet) {
 	    this.end = end;
@@ -57,6 +59,8 @@ public class HivPlHivEvaluator {
         personList = hivPlvHivQuery.getPersons(plhivCohort);
         dataSet.addRow(buildColumn("HIV_PLHIV_TSP", "Proportion of clinically undernourished People Living with HIV (PLHIV)" +
                 " who received therapeutic or supplementary food", personList.size()));
+        int headerIndex = dataSet.getRows().size();
+        
         dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1", "Number of PLHIV who were assessed/screened for malnutrition", personList.size()));
 
         dataSet.addRow(buildColumn("HIV_PLHIV_TSP.1.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
@@ -66,9 +70,9 @@ public class HivPlHivEvaluator {
 
         personList = hivPlvHivQuery.getPersons(plhivMAMCohort);
         //totalMAM = personList.size();
+        underNourished =hivPlvHivQuery.getPersons(plhivMAMCohort).size() + hivPlvHivQuery.getPersons(plhivSAMCohort).size();
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT", "Number of PLHIV who were nutritionally assessed" +
-                "and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)",
-                hivPlvHivQuery.getPersons(plhivMAMCohort).size() + hivPlvHivQuery.getPersons(plhivSAMCohort).size()));
+                "and found to be clinically undernourished (disaggregated by Age, Sex and Pregnancy)",underNourished));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM", "Total MAM", personList.size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.1", "< 15 years, Male", getCohortSizeByAgeAndGender(0, 15, Gender.Male)));
         dataSet.addRow(buildColumn("HIV_PLHIV_NUT_MAM.2", "< 15 years, Female", getCohortSizeByAgeAndGender(0, 15, Gender.Female)));
@@ -89,8 +93,9 @@ public class HivPlHivEvaluator {
                 hivPlvHivQuery.getBaseEncounter()));
         personNonPregnantList = hivPlvHivQuery.getPersons(hivPlvHivQuery.getPatientByPregnantStatus(plhivMAMSUPCohort, ConceptAnswer.NO,
                 hivPlvHivQuery.getBaseEncounter()));
+        supplementaryFood =hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size() + hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size();
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP", "Clinically undernourished PLHIV who received therapeutic or supplementary food (disaggregated by age, sex and pregnancy status)",
-                hivPlvHivQuery.getPersons(plhivMAMSUPCohort).size() + hivPlvHivQuery.getPersons(plhivSAMSUPCohort).size()));
+               supplementaryFood ));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1", "Total MAM who received therapeutic or supplementary food", personList.size()));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.1.1", "< 15 years, Male",
                 getCohortSizeByAgeGenderAndPregnancyStatus(0, 15, Gender.Male, personList)));
@@ -124,6 +129,19 @@ public class HivPlHivEvaluator {
                 getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Female, personPregnantList)));
         dataSet.addRow(buildColumn("HIV_PLHIV_SUP.2.6", ">= 15 years, Female - non-pregnant",
                 getCohortSizeByAgeGenderAndPregnancyStatus(15, 150, Gender.Female, personNonPregnantList)));
+        
+        //update proportion value
+        dataSet.addRow(headerIndex,buildColumn("HIV_PLHIV_TSP", "Proportion of clinically undernourished People Living with HIV (PLHIV)" +
+                " who received therapeutic or supplementary food", getProportion()));
+
+    }
+
+    private String getProportion() {
+        if(underNourished <=0)
+            return "0 %";
+        DecimalFormat decimalFormat = new DecimalFormat("###.##");
+        String output = String.valueOf(Double.parseDouble(decimalFormat.format((supplementaryFood/Double.valueOf(underNourished))*100)));
+        return output +" %";
 
     }
 
@@ -137,6 +155,21 @@ public class HivPlHivEvaluator {
 	    
 	    String COLUMN_3_NAME = "Number";
 	    prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
+                col_3_value);
+
+        return prepDataSetRow;
+    }
+
+    private DataSetRow buildColumn(String col_1_value, String col_2_value, String col_3_value) {
+        DataSetRow prepDataSetRow = new DataSetRow();
+        prepDataSetRow.addColumnValue(
+                new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+                col_1_value);
+        prepDataSetRow.addColumnValue(
+                new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+
+        String COLUMN_3_NAME = "Number";
+        prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, String.class),
                 col_3_value);
 
         return prepDataSetRow;

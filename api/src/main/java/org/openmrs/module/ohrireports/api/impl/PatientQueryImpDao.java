@@ -202,7 +202,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	@Contract("_, _, _, null -> new")
 	private Cohort getCurrentOnTreatmentCohort(String gender, Date endOnOrBefore, Cohort cohort, List<Integer> encounters) {
 		
-		if (encounters == null || encounters.isEmpty())
+		if (encounters == null || (cohort != null && cohort.isEmpty()))
 			return new Cohort();
 		
 		StringBuilder sql = baseQuery(FollowUpConceptQuestions.TREATMENT_END_DATE);
@@ -274,12 +274,13 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	@Override
 	public Cohort getPatientByPregnantStatus(Cohort patient, String conceptUUID, List<Integer> encounters) {
 		StringBuilder sql = baseQuery(FollowUpConceptQuestions.PREGNANCY_STATUS);
-		if (encounters == null || encounters.isEmpty())
+		if (encounters == null || encounters.isEmpty() || (patient != null && patient.isEmpty()))
 			return new Cohort();
+		
 		sql.append(" and ").append(OBS_ALIAS).append("value_coded =").append(conceptQuery(conceptUUID));
 		
 		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
-		if (patient != null && !patient.isEmpty())
+		if (patient != null)
 			sql.append("and p.person_id in (:personIds) ");
 		
 		Query q = getSession().createSQLQuery(sql.toString());
@@ -319,7 +320,7 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 				rawQuery = " select ob.person_id,ob.value_numeric from obs as ob WHERE ob.value_numeric is not null ";
 				break;
 			case DATE_VALUE:
-				rawQuery = " select ob.person_id,ob.value_datetime from obs as ob WHERE ob.value_datetime is not null ";
+				rawQuery = " select ob.person_id,ob.value_datetime from obs as ob WHERE ob.value_datetime is not null and";
 				break;
 			case CONCEPT_NAME:
 				rawQuery = "select ob.person_id, cn.name from obs as ob \n"
