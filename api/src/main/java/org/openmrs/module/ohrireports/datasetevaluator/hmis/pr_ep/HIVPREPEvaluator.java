@@ -47,6 +47,7 @@ public class HIVPREPEvaluator {
 		dataset.addRow(buildColumn("1", "PrEP (New Number of individuals who were newly enrolled on PrEP", ""));
 
 
+
 		personList = hivPrEPQuery.getPersons(prepScreeningCohort);
 		dataset.addRow(buildColumn("1.1", "By Age and Sex",prepScreeningCohort.size()));
 		dataset.addRow(buildColumn("1.1 .1", "15 - 19 years, Male", getCohortSizeByAgeAndGender(15, 19, Gender.Male)));

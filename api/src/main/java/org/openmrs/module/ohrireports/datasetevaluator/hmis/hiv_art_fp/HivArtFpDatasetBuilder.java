@@ -40,6 +40,7 @@ public class HivArtFpDatasetBuilder {
 		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), baseName);
 		row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), description);
 		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(15, 49));
+		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(15, 49));
 		dataSet.addRow(row);
 		buildRowByAge();
 	}
