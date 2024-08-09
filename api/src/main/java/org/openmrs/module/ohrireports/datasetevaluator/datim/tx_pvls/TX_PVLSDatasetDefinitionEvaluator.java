@@ -1,11 +1,9 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FOLLOW_UP_DATE;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -15,6 +13,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -65,7 +64,11 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 			vlQuery.loadInitialCohort(start, end, laIntegers);
 		}
 		
-		Cohort _cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery.getViralLoadSuppressed();
+		Cohort _cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery
+		        .getViralLoadSuppressed(Arrays.asList(ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED,
+		            ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA));
+		HashMap<Integer, Object> followUpHashSet = vlQuery.getObsValueDate(vlQuery.getVlTakenEncounters(), FOLLOW_UP_DATE,
+		    _cohort);
 		
 		// #region Routing test indication
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
@@ -74,19 +77,21 @@ public class TX_PVLSDatasetDefinitionEvaluator implements DataSetEvaluator {
 		dataSet.addRow(routineDataSetRow);
 		
 		List<Person> persons = patientQueryService.getPersons(_cohort);
+		_AggregateBuilder.setFollowUpDate(followUpHashSet);
+		
 		_AggregateBuilder.setPersonList(persons);
 		_AggregateBuilder.setLowerBoundAge(0);
 		_AggregateBuilder.setUpperBoundAge(65);
 		DataSetRow femaleRow = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(femaleRow, "F");
+		_AggregateBuilder.buildDataSetColumnWithFollowUpDate(femaleRow, "F");
 		dataSet.addRow(femaleRow);
 		
 		DataSetRow maleRow = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(maleRow, "M");
+		_AggregateBuilder.buildDataSetColumnWithFollowUpDate(maleRow, "M");
 		dataSet.addRow(maleRow);
 		
 		DataSetRow total = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(total, "T");
+		_AggregateBuilder.buildDataSetColumnWithFollowUpDate(total, "T");
 		dataSet.addRow(total);
 		
 		return dataSet;

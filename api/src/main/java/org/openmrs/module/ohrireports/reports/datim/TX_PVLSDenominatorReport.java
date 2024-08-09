@@ -80,6 +80,7 @@ public class TX_PVLSDenominatorReport implements ReportManager {
 		autoCalDataSetDefinition.setParameters(getParameters());
 		autoCalDataSetDefinition.setIncludeUnSuppressed(true);
 		autoCalDataSetDefinition.setEncounterType(followUpEncounter);
+		autoCalDataSetDefinition.setType("Denominator");
 		reportDefinition.addDataSetDefinition("Auto-Calculate Adult and Pediatric ART patients with viral load "
 		        + " result documented in the medical records and/or supporting"
 		        + " laboratory results within the past 12 months. Denominator will auto-calculate from the sum of the "

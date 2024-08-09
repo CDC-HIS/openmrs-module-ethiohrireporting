@@ -22,6 +22,17 @@ public class TX_PVLSAutoCalcDatasetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private Boolean header = false;
 	
+	@ConfigurationProperty
+	private String type;
+	
+	public String getType() {
+		return type;
+	}
+	
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	public Boolean getIncludeUnSuppressed() {
 		return includeUnSuppressed;
 	}

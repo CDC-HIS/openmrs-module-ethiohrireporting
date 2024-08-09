@@ -72,7 +72,7 @@ public class HmisCurrQuery extends PatientQueryImpDao {
 	
 	public List<Regiment> getPatientCountByRegiment(List<String> regimentConceptUUIDS, Cohort cohort) {
 		List<Regiment> regiments = getConcepts(regimentConceptUUIDS);
-		if (cohort == null || cohort.size() == 0)
+		if (cohort == null || cohort.isEmpty())
 			return regiments;
 		
 		StringBuilder sql = baseConceptCountQuery(REGIMEN);

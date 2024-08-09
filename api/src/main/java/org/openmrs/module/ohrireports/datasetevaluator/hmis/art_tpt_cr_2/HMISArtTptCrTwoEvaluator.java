@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_2;
 
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TPT_COMPLETED_DATE;
 import static org.openmrs.module.ohrireports.constants.RegimentConstant.*;
 
 import java.util.*;
@@ -9,6 +10,7 @@ import org.openmrs.Person;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_1.HMISARTTPTCrOneEvaluator;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 
@@ -32,20 +34,12 @@ public class HMISArtTptCrTwoEvaluator {
 	Date endDate = new Date();
 
 	@Autowired
-	private EncounterQuery encounterQuery;
-	private List<Integer> baseEncounter;
+	private HMISARTTPTCrOneEvaluator hmisarttptCrOneEvaluator;
 
 	
 	public void buildDataset(Date start,Date end,SimpleDataSet data) {
-		this.start=start;
-		this.end=end;
 
-		startDate = getSubTwelveMonth(start);
-		endDate = getSubTwelveMonth(end);
-
-		baseEncounter = getBaseEncounter();
-
-		baseCohort = getBaseCohort(baseEncounter);
+		baseCohort = tbQuery.getTPTCohort(hmisarttptCrOneEvaluator.getBaseCohort(),hmisarttptCrOneEvaluator.getBaseEncounter(),TPT_COMPLETED_DATE);
 
 		data.addRow(buildColumn("2",
 				"Number of ART patients who started TPT 12 months prior to the reporting period that completed a full course of therapy",
@@ -78,34 +72,34 @@ public class HMISArtTptCrTwoEvaluator {
 
 	}
 
-	private Cohort getBaseCohort(List<Integer> baseEncounter) {
-		Cohort _baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, end, null));
+//	private Cohort getBaseCohort(List<Integer> baseEncounter) {
+//		Cohort _baseCohort = new Cohort(
+//				tbQuery.getArtStartedCohort(baseEncounter, null, end, null));
+//
+//		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, FollowUpConceptQuestions.TPT_START_DATE, startDate,
+//				endDate);
+//		baseCohort = new Cohort(
+//				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptInitiatedCohort));
+//
+//		Cohort tptCompleteCohort = tbQuery.getTPTByCompletedConceptCohort(baseEncounter, baseCohort);
+//
+//		_baseCohort = new Cohort(
+//				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptCompleteCohort));
+//		return _baseCohort;
+//	}
 
-		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, FollowUpConceptQuestions.TPT_START_DATE, startDate,
-				endDate);
-		baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptInitiatedCohort));
-
-		Cohort tptCompleteCohort = tbQuery.getTPTByCompletedConceptCohort(baseEncounter, baseCohort);
-
-		_baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptCompleteCohort));
-		return _baseCohort;
-	}
-
-	private List<Integer> getBaseEncounter() {
-		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE),
-				start,end);
-		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null,
-				end,
-				tptEncounterEncounter);
-		Cohort cohort = tbQuery.getCohort(baseEncounter);
-		
-		return encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE),
-				null, end, cohort);
-
-	}
+//	private List<Integer> getBaseEncounter() {
+//		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE),
+//				start,end);
+//		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null,
+//				end,
+//				tptEncounterEncounter);
+//		Cohort cohort = tbQuery.getCohort(baseEncounter);
+//
+//		return encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE),
+//				null, end, cohort);
+//
+//	}
 
 	private Date getSubTwelveMonth(Date date) {
 		Calendar newDate = Calendar.getInstance();
@@ -150,12 +144,20 @@ public class HMISArtTptCrTwoEvaluator {
 			}
 
 		}
+
+		for (Integer pa:patients){
+			persons.removeIf(p->
+                    Objects.equals(p.getPersonId(), pa)
+            );
+
+		}
+
 		return patients.size();
 	}
 
 	public Cohort getTPTTreatmentBYType(String question, String answer) {
 
-		return tbQuery.getTPTByConceptCohort(baseEncounter, baseCohort, question, Arrays.asList(answer));
+		return tbQuery.getTPTByConceptCohort(hmisarttptCrOneEvaluator.getBaseEncounter(), hmisarttptCrOneEvaluator.getBaseCohort(), question, Arrays.asList(answer));
 
 	}
 

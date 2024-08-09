@@ -4,19 +4,23 @@ import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.
 import static org.openmrs.module.ohrireports.constants.ConceptAnswer.NO;
 import static org.openmrs.module.ohrireports.constants.ConceptAnswer.NOT_APPLICABLE;
 import static org.openmrs.module.ohrireports.constants.ConceptAnswer.YES;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FOLLOW_UP_DATE;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
 
 import java.util.*;
 
+import org.jetbrains.annotations.NotNull;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.GlobalPropertyService;
 import org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants;
 import org.openmrs.module.ohrireports.datasetdefinition.hmis.hiv_pvls.HivPvlsType;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -30,6 +34,7 @@ public class HivPVLSEvaluator {
 	private String baseName;
 	private final String column_3_name = "Number";
 	private int cohortAll, cohortLV, cohortUN = 0;
+	private int headerRowNumber =0;
 	private Date endDate;
 	@Autowired
 	private HivPvlsQuery hivPvlsQuery;
@@ -38,13 +43,14 @@ public class HivPVLSEvaluator {
 	private HivPvlsType type;
 
 	List<Person> persons = new ArrayList<>();
+	private List<Integer> encounter;
+	private HashMap<Integer, Object> followUpDate;
 
-	
+
 	public void buildDataset(Date start,Date end, SimpleDataSet dataSetDefinition,String prefix,HivPvlsType type,String description) {
 		this.type= type;
 		endDate = end;
 		Date startDate = start;
-;
 		/*
 		 * -11 is because calendar library start count month from zero,
 		 * the idea is to check all record from past twelve months
@@ -59,15 +65,13 @@ public class HivPVLSEvaluator {
 			startDate = calendar.getTime();
 		}
 
-		List<Integer> encounter = encounterQuery.getEncounters(Collections.singletonList(DATE_VIRAL_TEST_RESULT_RECEIVED),
+		encounter = encounterQuery.getEncounters(Collections.singletonList(DATE_VIRAL_TEST_RESULT_RECEIVED),
 				startDate,end);
 		hivPvlsQuery.setData(startDate, end, encounter);
 
 		baseName = "HIV_TX_PVLS";
 		baseName = baseName + prefix;
-		cohortAll = 0;
-		cohortLV = 0;
-		cohortUN = 0;
+
 		buildDataSet(dataSetDefinition, type,description);
 	}
 
@@ -75,16 +79,11 @@ public class HivPVLSEvaluator {
 		int row = dataSet.getRows().size();
 		  row++;
 		if (type == HivPvlsType.TESTED) {
-			DataSetRow headerDataSetRow = new DataSetRow();
-			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
-					"HIV_TX_PVLS");
-			headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
-					description);
-			headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, String.class),
-					calculatePercentage() + "%");
-			dataSet.addRow(row++, headerDataSetRow);
+			headerRowNumber = row++;
+			DataSetRow headerDataSetRow = getHeaderDataSetRow("");
+			dataSet.addRow(headerRowNumber, headerDataSetRow);
 		}
-		dataSet.addRow(row++, buildColumn(" ","Number of adult and pediatric ART patients for whom viral load test result received in the reporting period" ,
+		dataSet.addRow(row++, buildColumn(" ",description ,
 				new QueryParameter(0D, 0D, "", NOT_APPLICABLE)));
 
 		dataSet.addRow(row++, buildColumn(".1", "< 1 year, Male",
@@ -190,6 +189,21 @@ public class HivPVLSEvaluator {
 		dataSet.addRow(row++, buildColumn(".36", ">=50 year, Female-non-pregnant",
 				new QueryParameter(50D, 200D, "F", NO)));
 
+		if(type == HivPvlsType.LOW_LEVEL_LIVERMIA)
+		{
+			dataSet.addRow(headerRowNumber,getHeaderDataSetRow(HMISUtilies.getPercentage(cohortLV+cohortUN,cohortAll)));
+		}
+	}
+
+	private @NotNull DataSetRow getHeaderDataSetRow(String percentage) {
+		DataSetRow headerDataSetRow = new DataSetRow();
+		headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+				"HIV_TX_PVLS");
+		headerDataSetRow.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class),
+				"Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)");
+		headerDataSetRow.addColumnValue(new DataSetColumn(column_3_name, column_3_name, String.class),
+				percentage );
+		return headerDataSetRow;
 	}
 
 	private DataSetRow buildColumn(String col_1_value, String col_2_value, QueryParameter parameter) {
@@ -211,8 +225,18 @@ public class HivPVLSEvaluator {
 
 			cohort = getAll(parameter);
 
+			followUpDate = hivPvlsQuery.getObValue(FOLLOW_UP_DATE, cohort,PatientQueryImpDao.ObsValueType.DATE_VALUE,encounter);
 			persons = hivPvlsQuery.getPersons(cohort);
-			return cohort.getMemberIds().size();
+
+			if(type==HivPvlsType.LOW_LEVEL_LIVERMIA)
+			{
+				cohortLV = persons.size();
+			}else if (type == HivPvlsType.SUPPRESSED){
+				cohortUN = persons.size();
+			}else {
+				cohortAll = persons.size();
+			}
+			return persons.size();
 		}
 
 		if (parameter.maxAge < 1) {
@@ -233,7 +257,13 @@ public class HivPVLSEvaluator {
 		else if (parameter.maxAge >= 200) {
 			List<Person> countPersons = new ArrayList<>();
 			for (Person person : persons) {
-				if (person.getAge() >= parameter.minAge && person.getGender().equals(parameter.gender)) {
+
+				Object follow =followUpDate.get(person.getPersonId());
+				int age  = person.getAge();
+				if(Objects.nonNull(follow) && follow instanceof Date) {
+					age = person.getAge((Date)follow);
+				}
+				if (age >= parameter.minAge && person.getGender().equals(parameter.gender)) {
 					countPersons.add(person);
 					cohort.addMembership(new CohortMembership(person.getPersonId()));
 				}
@@ -245,7 +275,14 @@ public class HivPVLSEvaluator {
 		// For Age Range
 		else {
 			for (Person person : persons) {
-				if (person.getAge() >= parameter.minAge && person.getAge() <= parameter.maxAge
+
+				Object follow =followUpDate.get(person.getPersonId());
+				int age  = person.getAge();
+				if(Objects.nonNull(follow) && follow instanceof Date) {
+					age = person.getAge((Date)follow);
+				}
+
+				if (age >= parameter.minAge && age <= parameter.maxAge
 						&& person.getGender().equals(parameter.gender)) {
 			
 					cohort.addMembership(new CohortMembership(person.getPersonId()));
@@ -276,16 +313,6 @@ public class HivPVLSEvaluator {
 		return cohort.getMemberIds().size();
 	}
 
-	private int calculatePercentage() {
-		if (cohortAll == 0)
-			return 0;
-		cohortUN = hivPvlsQuery.getPatientsWithViralLoadSuppressed("").size();
-		cohortLV = hivPvlsQuery.getPatientWithViralLoadCountLowLevelViremia("",
-				endDate).size();
-		int total = (cohortLV + cohortUN) / cohortAll;
-
-		return total / 100;
-	}
 
 	private Cohort getAll(QueryParameter parameter) {
 		Cohort cohort;
@@ -299,7 +326,6 @@ public class HivPVLSEvaluator {
 
 			default:
 				cohort = hivPvlsQuery.getPatientWithViralLoadCount(parameter.gender,endDate);
-				cohortAll = cohort.size();
 				break;
 		}
 		return cohort;

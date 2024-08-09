@@ -132,7 +132,7 @@ public class ARTQuery extends PatientQueryImpDao {
 	public Cohort getCohortByPMTCTEnrollmentStatus(String PMTCTEnrollmentType) {
 		if (pmtctARTCohort.getMemberIds().isEmpty())
 			return new Cohort();
-		String stringQuery = "select distinct person_id\\n\" + \"from obs\\n\" + \"where concept_id = "
+		String stringQuery = "select distinct person_id from obs where concept_id = "
 		        + conceptQuery(PMTCTConceptQuestions.PMTCT_STATUS_AT_ENROLLMENT) + " and value_coded = "
 		        + conceptQuery(PMTCTEnrollmentType);
 		if (!pmtctARTCohort.getMemberIds().isEmpty())

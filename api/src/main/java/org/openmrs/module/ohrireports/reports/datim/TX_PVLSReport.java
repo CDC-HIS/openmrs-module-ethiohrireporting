@@ -75,6 +75,7 @@ public class TX_PVLSReport implements ReportManager {
 		autoCalDataSetDefinition.setParameters(getParameters());
 		autoCalDataSetDefinition.setIncludeUnSuppressed(false);
 		autoCalDataSetDefinition.setEncounterType(followUpEncounter);
+		autoCalDataSetDefinition.setType("Numerator");
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Auto-Calculate Adult and Pediatric on ART with suppressed viral load"

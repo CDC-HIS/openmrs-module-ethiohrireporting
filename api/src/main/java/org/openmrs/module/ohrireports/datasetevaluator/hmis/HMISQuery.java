@@ -96,8 +96,9 @@ public class HMISQuery extends ColumnBuilder {
 	
     public void run(Date start, Date end, SimpleDataSet dataSet) {
 	    initialize(start, end);
-		
-	    hmistxCurrEvaluator.buildDataSet(dataSet, end, encounterQuery.getAliveFollowUpEncounters(null, end));
+
+		List<Integer> aliveFollowUpEncounters = encounterQuery.getAliveFollowUpEncounters(null, end);
+		hmistxCurrEvaluator.buildDataSet(dataSet, end, aliveFollowUpEncounters);
 		//TODO: encounter should be updated
 	    hmistxNewEvaluator.buildDataSet(dataSet, start, end,encounterAlive);
 
@@ -106,11 +107,11 @@ public class HMISQuery extends ColumnBuilder {
 
 	    hivLinkageNewCTEvaluator.buildDataset(start, end,dataSet);
 
-		hivpVLSEvaluator.buildDataset(start, end, dataSet, ".1", HivPvlsType.TESTED, "Viral load Suppression (Percentage of ART clients with a suppressed viral load among those with a viral load test at 12 month in the reporting period)");
-		hivpVLSEvaluator.buildDataset(start, end, dataSet, "_UN", HivPvlsType.SUPPRESSED, "Total number of adult and paediatric ART patients with an undetectable viral load(<50 copies/ml) in the reporting period ");
+		hivpVLSEvaluator.buildDataset(start, end, dataSet, ".1", HivPvlsType.TESTED, "Number of adult and pediatric ART patients for whom viral load test results received in the reporting period");
+		hivpVLSEvaluator.buildDataset(start, end, dataSet, "_UN", HivPvlsType.SUPPRESSED, "Total number of adult and paediatric ART patients with an undetectable viral load( <= 50 copies/ml) in the reporting period ");
 		hivpVLSEvaluator.buildDataset(start, end, dataSet, "_LV", HivPvlsType.LOW_LEVEL_LIVERMIA, "Total number of adult and paediatric ART patients with low level viremia (50 -1000 copies/ml) in the reporting period   ");
 
-	    hmistxdsdEvaluator.buildDataset(start,end,dataSet);
+	    hmistxdsdEvaluator.buildDataset(start,end,dataSet,aliveFollowUpEncounters);
 
 	    hivartIntrEvaluator.buildDataset(start,end,dataSet);
 

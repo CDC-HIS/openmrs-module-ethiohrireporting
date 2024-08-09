@@ -2,6 +2,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -16,8 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static org.openmrs.module.ohrireports.constants.ConceptAnswer.YES;
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FAMILY_PLANNING_METHODS;
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.PREGNANCY_STATUS;
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.*;
 
 @Component
 public class HivArtFpQuery extends PatientQueryImpDao {
@@ -30,6 +30,12 @@ public class HivArtFpQuery extends PatientQueryImpDao {
 	private Date startDate, endDate;
 	
 	private Cohort cohort = null;
+
+	public HashMap<Integer, Object> getFollowUpDateMap() {
+		return followUpDateMap;
+	}
+
+	private HashMap<Integer, Object> followUpDateMap = new HashMap<>();
 	
 	private List<Integer> baseEncounter;
 	
@@ -54,6 +60,8 @@ public class HivArtFpQuery extends PatientQueryImpDao {
 		baseEncounter = encounterQuery.getAliveFollowUpEncounters(null, end);
 		cohort = getActiveOnArtCohort("F", null, endDate, null, baseEncounter);
 		cohort = getPatientsOnFamilyPlanning();
+		followUpDateMap=getObValue(FOLLOW_UP_DATE,cohort,ObsValueType.DATE_VALUE,baseEncounter);
+
 	}
 	
 	private Cohort getPatientsOnFamilyPlanning() {
@@ -95,7 +103,8 @@ public class HivArtFpQuery extends PatientQueryImpDao {
 	private Integer getCount(List<Person> personList, int initialAge, int maxAge) {
 		List<Person> _personList = new ArrayList<>();
 		for (Person person : personList) {
-			if (person.getGender().equals("F") && person.getAge() >= initialAge && person.getAge() <= maxAge) {
+			int age = person.getAge(endDate);
+			if (person.getGender().equals("F") && age >= initialAge && age <= maxAge) {
 				_personList.add(person);
 			}
 		}

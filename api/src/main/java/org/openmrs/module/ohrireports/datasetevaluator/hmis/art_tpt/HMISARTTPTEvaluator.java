@@ -28,7 +28,7 @@ public class HMISARTTPTEvaluator {
 	
 	@Autowired
 	private TBQuery tbQuery;
-
+	private Date endDate;
 
 	@Autowired
 	private EncounterQuery encounterQuery;
@@ -38,7 +38,7 @@ public class HMISARTTPTEvaluator {
 
 	
 	public void buildDataset(Date start, Date end,SimpleDataSet dataset){
-		
+		endDate = end;
 	
 		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Arrays.asList(FollowUpConceptQuestions.TPT_START_DATE),
 				start, end);
@@ -104,7 +104,7 @@ public class HMISARTTPTEvaluator {
 		}
 
 		for (Person person : persons) {
-			_age = person.getAge();
+			_age = person.getAge(endDate);
 			if (!patients.contains(person.getPersonId())
 					&& (_age >= minAge && _age < maxAge)
 					&& (person.getGender().toLowerCase().equals(_gender))) {

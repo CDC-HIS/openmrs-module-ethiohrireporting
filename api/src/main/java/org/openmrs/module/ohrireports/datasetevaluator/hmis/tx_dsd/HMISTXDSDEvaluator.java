@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.tx_dsd;
 import org.openmrs.Cohort;
 import org.openmrs.module.ohrireports.api.impl.query.DSDQuery;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.List;
 
 @Component
 @Scope("prototype")
@@ -20,8 +22,10 @@ public class HMISTXDSDEvaluator {
 	@Autowired
 	DSDQuery dsdQuery;
 	
-	public void buildDataset(Date start, Date end, SimpleDataSet dataSet) {
-		
+	private int txCurrCount;
+	
+	public void buildDataset(Date start, Date end, SimpleDataSet dataSet, List<Integer> encounterIds) {
+		this.txCurrCount = dsdQuery.getActiveOnArtCohort("", null, end, null, encounterIds).size();
 		dsdQuery.generateBaseReport(start, end);
 		Cohort cohort;
 		RowBuilder rowBuilder;
@@ -108,16 +112,9 @@ public class HMISTXDSDEvaluator {
 		rowBuilder.updateDataset(dataSet);
 		total += rowBuilder.getTotalCount();
 		
-		headerRow.addColumnValue(new DataSetColumn("Number", "Number", String.class), getPercentage(total));
+		headerRow.addColumnValue(new DataSetColumn("Number", "Number", String.class),
+		    HMISUtilies.getPercentage(total, txCurrCount));
 		
 	}
 	
-	private String getPercentage(int total) {
-		if (dsdQuery.getBaseCohort().isEmpty())
-			return "0";
-		double value = (double) (total * 100) / dsdQuery.getBaseCohort().size();
-		DecimalFormat decimalFormat = new DecimalFormat("###.##");
-		String output = String.valueOf(Double.parseDouble(decimalFormat.format(value)));
-		return output + "%";
-	}
 }

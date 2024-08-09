@@ -67,7 +67,7 @@ public class PMTCTConceptQuestions {
 	public final static String PMTCT_POSITIVE_LINKED_WITHIN_FACILITY = "703AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	//TODO: This couldn't find the concept
-	public final static String PMTCT_POSITIVE_LINKED_UNKNOWN = "";
+	public final static String PMTCT_POSITIVE_LINKED_UNKNOWN = "1067AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 	
 	//TODO: This doesn't exist find replacement
 	public final static String PMTCT_TO = "80782b25-98a1-4920-a676-a039908f3ed1";

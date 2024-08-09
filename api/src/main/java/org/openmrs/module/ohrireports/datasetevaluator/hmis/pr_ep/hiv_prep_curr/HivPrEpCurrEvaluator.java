@@ -41,7 +41,7 @@ public class HivPrEpCurrEvaluator  {
         Cohort prepFollowupCohort = hivPrEPQuery.getAllPrEPCurr();
 
 
-        dataset.addRow(buildColumn("", "PrEP Curr (Number of individuals that received oral PrEP during the reporting period)", 0));
+        dataset.addRow(buildColumn("", "PrEP Curr (Number of individuals that received oral PrEP during the reporting period)", ""));
 
         personList = hivPrEPQuery.getPersons(prepFollowupCohort);
         dataset.addRow(buildColumn("", "By Age and Sex",prepFollowupCohort.size()));
@@ -109,6 +109,20 @@ public class HivPrEpCurrEvaluator  {
                 new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
 
         prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, Integer.class),
+                col_3_value);
+
+        return prepDataSetRow;
+    }
+    private DataSetRow buildColumn(String col_1_value, String col_2_value, String col_3_value) {
+        DataSetRow prepDataSetRow = new DataSetRow();
+        String baseName = "HIV_PrEP_CURR.1 ";
+        prepDataSetRow.addColumnValue(
+                new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
+                baseName + col_1_value);
+        prepDataSetRow.addColumnValue(
+                new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), col_2_value);
+
+        prepDataSetRow.addColumnValue(new DataSetColumn(COLUMN_3_NAME, COLUMN_3_NAME, String.class),
                 col_3_value);
 
         return prepDataSetRow;

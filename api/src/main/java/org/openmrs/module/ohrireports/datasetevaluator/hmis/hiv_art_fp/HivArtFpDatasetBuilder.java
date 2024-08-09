@@ -2,8 +2,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_art_fp;
 
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Person;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
@@ -23,11 +22,15 @@ public class HivArtFpDatasetBuilder {
 	
 	private String baseName;
 	
-	public HivArtFpDatasetBuilder(List<Person> personList, SimpleDataSet dataSet, String description, String baseName) {
+	private final HashMap<Integer, Object> followUpDateMap;
+	
+	public HivArtFpDatasetBuilder(List<Person> personList, SimpleDataSet dataSet, String description, String baseName,
+	    HashMap<Integer, Object> followUpDateMap) {
 		this.personList = personList;
 		this.dataSet = dataSet;
 		this.description = description;
 		this.baseName = baseName;
+		this.followUpDateMap = followUpDateMap;
 	}
 	
 	private String column_3_name = "Number";
@@ -36,7 +39,7 @@ public class HivArtFpDatasetBuilder {
 		DataSetRow row = new DataSetRow();
 		row.addColumnValue(new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class), baseName);
 		row.addColumnValue(new DataSetColumn(COLUMN_2_NAME, COLUMN_2_NAME, String.class), description);
-		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(10, 49));
+		row.addColumnValue(new DataSetColumn(column_3_name, column_3_name, Integer.class), getCount(15, 49));
 		dataSet.addRow(row);
 		buildRowByAge();
 	}
@@ -72,7 +75,13 @@ public class HivArtFpDatasetBuilder {
 	private Integer getCount(int initialAge, int maxAge) {
 		List<Person> _personList = new ArrayList<>();
 		for (Person person : personList) {
-			if (person.getGender().equals("F") && person.getAge() >= initialAge && person.getAge() <= maxAge) {
+			//Age calculation is as of the report end date
+			int age =person.getAge();
+			Object date = followUpDateMap.get(person.getPersonId());
+			if(Objects.nonNull(date)){
+					age = person.getAge((Date) date);
+			}
+			if (person.getGender().equals("F") && age>= initialAge && age <= maxAge) {
 				_personList.add(person);
 			}
 		}

@@ -69,7 +69,8 @@ public class DatimTxMlReport implements ReportManager {
 		dDefinition.setDescription("Disaggregated Outcome by Age/Sex");
 		dDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
-		reportDefinition.addDataSetDefinition("Required - Disaggregated Outcome by Age/Sex", EthiOhriUtil.map(dDefinition));
+		reportDefinition.addDataSetDefinition("Required - DIED - Disaggregated Outcome by Age/Sex",
+		    EthiOhriUtil.map(dDefinition));
 		
 		TxMlInterruptionlessthan3MonthsByAgeAndSexDataSetDefinition cDefinition = new TxMlInterruptionlessthan3MonthsByAgeAndSexDataSetDefinition();
 		cDefinition.addParameters(getParameters());

@@ -5,13 +5,9 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.constants.EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE;
 
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.*;
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.constants.ReportType;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorAutoCalculateDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorDiagnosticTestDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorPositiveResultReturnedDataSetDefinition;
-import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorSpecimenSentDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -73,6 +69,12 @@ public class DatimTxTbDenominatorReport implements ReportManager {
 		cDefinition.setDescription("Disaggregated by Start of ART Screen Result by Age/Sex");
 		reportDefinition.addDataSetDefinition("Required : Disaggregated by Start of ART Screen Result by Age/Sex",
 		    EthiOhriUtil.map(cDefinition));
+		
+		TxTbDenominatorSpecimenTypeDataSetDefinition typeDefinition = new TxTbDenominatorSpecimenTypeDataSetDefinition();
+		
+		typeDefinition.addParameters(getParameters());
+		typeDefinition.setDescription("Disaggregated by Screen Type");
+		reportDefinition.addDataSetDefinition("Required : Disaggregated by Screen Type", EthiOhriUtil.map(typeDefinition));
 		
 		TxTbDenominatorSpecimenSentDataSetDefinition sDefinition = new TxTbDenominatorSpecimenSentDataSetDefinition();
 		sDefinition.addParameters(getParameters());

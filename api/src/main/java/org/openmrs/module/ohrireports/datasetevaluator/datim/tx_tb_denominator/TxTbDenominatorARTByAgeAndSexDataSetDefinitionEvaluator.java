@@ -3,8 +3,10 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_tb_denominator;
 import org.openmrs.Cohort;
 import org.openmrs.CohortMembership;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorARTByAgeAndSexDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -16,6 +18,8 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
+
 @Handler(supports = { TxTbDenominatorARTByAgeAndSexDataSetDefinition.class })
 public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -24,6 +28,8 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 	
 	@Autowired
 	private AggregateBuilder _AggregateBuilder;
+	
+	private HashMap<Integer, Object> followUpdate;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -36,10 +42,17 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		
 		Cohort alreadyOnArtCohort = getAlreadyOnARTCohort(newOnArtCohort, tbQuery.getDenomiatorCohort());
 		
-		_AggregateBuilder.setCalculateAgeFrom(hdsd.getEndDate());
+		followUpdate = tbQuery.getObValue(FollowUpConceptQuestions.FOLLOW_UP_DATE, alreadyOnArtCohort,
+		    PatientQueryImpDao.ObsValueType.DATE_VALUE, tbQuery.getTbScreeningEncounter());
+		
+		followUpdate.putAll(tbQuery.getObValue(FollowUpConceptQuestions.FOLLOW_UP_DATE, newOnArtCohort,
+		    PatientQueryImpDao.ObsValueType.DATE_VALUE, tbQuery.getTbScreeningEncounter()));
+		
+		_AggregateBuilder.setFollowUpDate(followUpdate);
 		_AggregateBuilder.setLowerBoundAge(0);
 		_AggregateBuilder.setUpperBoundAge(65);
 		buildRowWithAggregate(set, newOnArtCohort, "New On ART");
+		
 		buildRowWithAggregate(set, alreadyOnArtCohort, "Already On ART");
 		
 		return set;
@@ -60,12 +73,12 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		
 		_AggregateBuilder.setPersonList(tbQuery.getPersons(femalePositiveCohort));
 		DataSetRow _femalePositive = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(_femalePositive, "F");
+		_AggregateBuilder.buildDataSetColumnWithFollowUpDate(_femalePositive, "F");
 		set.addRow(_femalePositive);
 		
 		_AggregateBuilder.setPersonList(tbQuery.getPersons(malePositiveCohort));
 		DataSetRow _malePositive = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(_malePositive, "M");
+		_AggregateBuilder.buildDataSetColumnWithFollowUpDate(_malePositive, "M");
 		set.addRow(_malePositive);
 		
 		DataSetRow negativeDescriptionDsRow = new DataSetRow();
@@ -74,12 +87,12 @@ public class TxTbDenominatorARTByAgeAndSexDataSetDefinitionEvaluator implements 
 		
 		_AggregateBuilder.setPersonList(tbQuery.getPersons(femaleNegativeCohort));
 		DataSetRow _femaleNegative = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(_femaleNegative, "F");
+		_AggregateBuilder.buildDataSetColumnWithFollowUpDate(_femaleNegative, "F");
 		set.addRow(_femaleNegative);
 		
 		_AggregateBuilder.setPersonList(tbQuery.getPersons(maleNegativeCohort));
 		DataSetRow _maleNegative = new DataSetRow();
-		_AggregateBuilder.buildDataSetColumn(_maleNegative, "M");
+		_AggregateBuilder.buildDataSetColumnWithFollowUpDate(_maleNegative, "M");
 		set.addRow(_maleNegative);
 	}
 	

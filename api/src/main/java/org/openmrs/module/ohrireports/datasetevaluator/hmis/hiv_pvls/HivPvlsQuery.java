@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_pvls;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,7 +53,7 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getPatientsWithViralLoadSuppressed(String gender) {
-		Cohort cohort = vlQuery.getViralLoadSuppressed();
+		Cohort cohort = vlQuery.getViralLoadSuppressed(Arrays.asList(ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED));
 		
 		if (Objects.isNull(gender) || gender.isEmpty())
 			return cohort;

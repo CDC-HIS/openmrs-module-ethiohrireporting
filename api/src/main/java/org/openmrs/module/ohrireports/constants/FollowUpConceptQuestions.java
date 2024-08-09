@@ -58,7 +58,7 @@ public class FollowUpConceptQuestions {
 	
 	public final static String HPV_DNA_SAMPLE_COLLECTION_DATE = "8b57d62c-c9a3-454a-b1af-929ca69603ce";
 	
-	public final static String HPV_DNA_SCREENING_RESULT = "159859AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String HPV_DNA_SCREENING_RESULT = "8ecc6d15-26dd-4840-8667-a517a93bea5f";
 	
 	public final static String HPV_DNA_RESULT_RECEIVED_DATE = "510f2a47-3761-4903-b7eb-8ea389cecfe9";
 	

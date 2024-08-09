@@ -125,6 +125,7 @@ public class AggregateByAgeGenderAndPregnancyStatus extends ColumnBuilder {
 			maleCount = maleCount + currentCount;
 			data.addRow(buildColumn(name + "." + count, regiment.getName() + ", Male", currentCount));
 			
+			//check if there is a pregnant women who take male regiments
 			for (Regiment pregnantRegiment : femalePregnantRegiments) {
 				if (pregnantRegiment.getConceptId() == regiment.getConceptId()) {
 					count++;

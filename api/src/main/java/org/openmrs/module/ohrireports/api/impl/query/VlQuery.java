@@ -78,9 +78,9 @@ public class VlQuery extends ObsElement {
 		
 	}
 	
-	public Cohort getViralLoadSuppressed() {
+	public Cohort getViralLoadSuppressed(List<String> concepts) {
 		Set<Integer> allPatients = new HashSet<>();
-		Query query = getByViralLoadStatus(Arrays.asList(ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED, ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA));
+		Query query = getByViralLoadStatus(concepts);
 		allPatients.addAll(query.list());
 
 		List<Integer> personIds = getSuppressedByVLCount(null,50);

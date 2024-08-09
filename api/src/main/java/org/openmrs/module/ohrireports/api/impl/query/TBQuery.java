@@ -19,6 +19,11 @@ public class TBQuery extends PatientQueryImpDao {
 
     private final DbSessionFactory sessionFactory;
     private List<Integer> tbTreatmentEncounter = new ArrayList<>();
+
+    public void setTbScreeningEncounter(List<Integer> tbScreeningEncounter) {
+        this.tbScreeningEncounter = tbScreeningEncounter;
+    }
+
     private List<Integer> tbScreeningEncounter = new ArrayList<>();
     private List<Integer> followUpEncounter = new ArrayList<>();
     private Cohort numeratorCohort;
@@ -145,8 +150,8 @@ public class TBQuery extends PatientQueryImpDao {
         return query;
     }
 
-    public Cohort getTBScreenedCohort(Cohort cohort,List<Integer> encounter) {
-        StringBuilder sql = baseQuery(TB_SCREENING_DATE);
+    public Cohort getTPTCohort(Cohort cohort,List<Integer> encounter,String concept) {
+        StringBuilder sql = baseQuery(concept);
         sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
         sql.append(" and  ").append(OBS_ALIAS).append("person_id in (:cohorts)");
 

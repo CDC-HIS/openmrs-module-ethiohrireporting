@@ -63,7 +63,7 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		Cohort baseCohort = cervicalCancerQuery.loadScreenedCohort();
 		List<Person> persons = LineListUtilities.sortPatientByName(cervicalCancerQuery.getPersons(baseCohort));
 		
-		List<Integer> latestFollowupEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
+		List<Integer> latestFollowupEncounter = encounterQuery.getLatestDateByFollowUpDate(null, endDate);
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = cervicalCancerLineListQuery.getIdentifier(baseCohort,
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);

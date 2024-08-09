@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,5 +96,15 @@ public class HMISUtilies {
 		}
 
 		return dictionary;
+	}
+	
+	public static String getPercentage(int above, int below) {
+		if (above <= 0 || below <= 0)
+			return "0";
+		Double value = (double) (above / Double.valueOf(below)) * 100;
+		
+		DecimalFormat decimalFormat = new DecimalFormat("###.##");
+		String output = String.valueOf(Double.parseDouble(decimalFormat.format(value)));
+		return output + "%";
 	}
 }

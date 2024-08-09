@@ -28,11 +28,10 @@ public class HMISARTEvaluator {
 		artQuery.setEndDate(end);
 		
 		RowBuilder rowBuilder = new RowBuilder();
-		
+		dataSet.addRow(rowBuilder.buildDatasetColumn("MTCT", "PMTCT", ""));
 		dataSet.addRow(rowBuilder.buildDatasetColumn("MTCT_ART",
 		    "Percentage of HIV-positive pregnant women who received ART to reduce the risk of mother-to "
-		            + "child-transmission (MTCT) during pregnancy, L and D and PNC",
-		    String.valueOf(artQuery.getPMTCTARTCohort().size())));
+		            + "child-transmission (MTCT) during pregnancy, L and D and PNC", ""));
 		
 		dataSet.addRow(buildColumn("MTCT_ART.1.", "Number of HIV positive women who received ART to "
 		        + "reduce the risk of mother to child transmission during ANC for the first time",

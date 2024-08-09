@@ -28,7 +28,7 @@ public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements D
 		if (!dsd.getHeader()) {
 			tbQuery.generateDenominatorReport(dsd.getStartDate(), dsd.getEndDate());
 			DataSetRow dataSet = new DataSetRow();
-			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), tbQuery
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Denominator", Integer.class), tbQuery
 			        .getDenomiatorCohort().size());
 			set.addRow(dataSet);
 		}

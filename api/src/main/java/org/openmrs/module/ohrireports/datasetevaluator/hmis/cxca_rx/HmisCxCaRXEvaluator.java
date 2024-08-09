@@ -27,8 +27,6 @@ public class HmisCxCaRXEvaluator  {
     @Autowired
     private CxCaTreatmentHMISQuery cxCaTreatmentHMISQuery;
 
-    @Autowired
-    private EvaluationService evaluationService;
     private Date end;
     
     public void buildDataset(Date start,Date end , SimpleDataSet dataset)  {

@@ -39,6 +39,7 @@ public class TPSCRNEvaluator {
         //List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null,end);
         // find list of encounter by TB screened date
         List<Integer> encounters = encounterQuery.getEncounters(Collections.singletonList(TB_SCREENING_DATE), start, end);
+        tbQuery.setTbScreeningEncounter(encounters);
         Cohort newOnARTCohort = tbQuery.getNewOnArtCohort("", start, end, null, encounters);
         Cohort existingOnARTCohort = new Cohort(tbQuery.getArtStartedCohort("", null, end,
                 null, newOnARTCohort, encounters));
@@ -132,7 +133,7 @@ public class TPSCRNEvaluator {
             maxAge = maxAge + 1;
         }
         for (Person person : persons) {
-            _age = person.getAge();
+            _age = person.getAge(end);
             if (!patients.contains(person.getPersonId())
                     && (_age >= minAge && _age < maxAge)
                     && (person.getGender().toLowerCase().equals(_gender))) {

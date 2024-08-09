@@ -23,7 +23,8 @@ public class HIVArtFpEvaluator {
 	public void buildDataset(Date start, Date end, String description, SimpleDataSet dataSet) {
 		fbQuery.generateReport(start, end);
 		List<Person> persons = fbQuery.getPersons(fbQuery.getCohort());
-		HivArtFpDatasetBuilder datasetBuilder = new HivArtFpDatasetBuilder(persons, dataSet, description, "HIV_ART_FP");
+		HivArtFpDatasetBuilder datasetBuilder = new HivArtFpDatasetBuilder(persons, dataSet, description, "HIV_ART_FP",
+		        fbQuery.getFollowUpDateMap());
 		datasetBuilder.buildDataset();
 	}
 }

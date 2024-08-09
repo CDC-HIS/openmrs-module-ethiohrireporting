@@ -9,6 +9,7 @@ import org.openmrs.Person;
 
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.*;
 
 @Component
-@Scope("prototype")
+//@Scope("prototype")
 public class HMISARTTPTCrOneEvaluator {
 
 
@@ -30,7 +31,17 @@ public class HMISARTTPTCrOneEvaluator {
 	@Autowired
 	private EncounterQuery encounterQuery;
 	List<Person> persons = new ArrayList<>();
+
+	public Cohort getBaseCohort() {
+		return baseCohort;
+	}
+
 	private Cohort baseCohort;
+
+	public List<Integer> getBaseEncounter() {
+		return baseEncounter;
+	}
+
 	private List<Integer> baseEncounter;
 	Date startDate = new Date();
 	Date endDate = new Date();
@@ -41,19 +52,17 @@ public class HMISARTTPTCrOneEvaluator {
 		startDate = getSubTwelveMonth(start);
 		endDate = getSubTwelveMonth(end);
 
-		List<Integer> tptEncounterEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE),
-				start, end);
 		baseEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null, end,
-				tptEncounterEncounter);
-
-		baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, end, null));
+				EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 
 		Cohort tptInitiatedCohort = tbQuery.getTPTCohort(baseEncounter, FollowUpConceptQuestions.TPT_START_DATE, startDate,
 				endDate);
-		baseCohort = new Cohort(
-				tbQuery.getArtStartedCohort(baseEncounter, null, end, tptInitiatedCohort));
-		
+
+
+		baseCohort = tbQuery.getActiveOnArtCohort("",null,end,tptInitiatedCohort,baseEncounter);
+
+
+
 		dataSet.addRow(buildColumn("1",
 				"Number of ART patients who were initiated on any course of TPT 12 months before the reporting period",
 				baseCohort.size()));
@@ -112,7 +121,7 @@ public class HMISARTTPTCrOneEvaluator {
 	private Integer gettbscrnByAgeAndGender(int minAge, int maxAge, Gender gender) {
 		int _age = 0;
 		List<Integer> patients = new ArrayList<>();
-		String _gender = gender.equals(Gender.Female) ? "f" : "m";
+		String _gender = gender.equals(org.openmrs.module.ohrireports.datasetevaluator.hmis.art_tpt_cr_1.Gender.Female) ? "f" : "m";
 		if (maxAge > 1) {
 			maxAge = maxAge + 1;
 		}
@@ -120,14 +129,21 @@ public class HMISARTTPTCrOneEvaluator {
 		for (Person person : persons) {
 			if (!(patients.contains(person.getPersonId())) && person.getGender().toLowerCase().equals(_gender)) {
 
-				_age = person.getAge();
-				if ((_age >= minAge && _age < maxAge)) {
+				_age = person.getAge(endDate);
+				if (_age >= minAge && _age < maxAge) {
+
+					patients.add(person.getPersonId());
 
 				}
-
-				patients.add(person.getPersonId());
-
 			}
+
+		}
+
+		for (Integer pa:patients){
+			persons.removeIf(p->
+					Objects.equals(p.getPersonId(), pa)
+			);
+
 		}
 		return patients.size();
 	}
