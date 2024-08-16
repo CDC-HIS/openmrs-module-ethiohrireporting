@@ -61,7 +61,7 @@ public class PMTCTHEIReport implements ReportManager {
 		HeiDatasetDefinition dataSetDefinition = new HeiDatasetDefinition();
 		dataSetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("PMTCT_HEI", EthiOhriUtil.map(dataSetDefinition));
+		reportDefinition.addDataSetDefinition("HEI Line List Report", EthiOhriUtil.map(dataSetDefinition));
 		return reportDefinition;
 	}
 	

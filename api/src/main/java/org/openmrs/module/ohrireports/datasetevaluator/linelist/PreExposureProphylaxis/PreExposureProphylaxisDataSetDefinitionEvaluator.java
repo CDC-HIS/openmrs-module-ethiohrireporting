@@ -60,10 +60,11 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		
 		preExposureProphylaxisQuery.setStartDate(_dataSetDefinition.getStartDate());
 		preExposureProphylaxisQuery.setEndDate(_dataSetDefinition.getEndDate());
+		Cohort baseCohort = preExposureProphylaxisQuery.loadPrepCohort();
+		
 		baseFollowUpEncounter = preExposureProphylaxisQuery.getBaseFollowupEncounter();
 		screeningEncounter = preExposureProphylaxisQuery.getBaseScreeningEncounter();
 		
-		Cohort baseCohort = preExposureProphylaxisQuery.loadPrepCohort();
 		List<Person> persons = LineListUtilities.sortPatientByName(preExposureProphylaxisQuery.getPersons(baseCohort));
 		
 		HashMap<Integer, Object> mrnIdentifierHashMap = preExposureProphylaxisLineListQuery.getIdentifier(baseCohort,

@@ -12,6 +12,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.api.impl.query.TXNewQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexAndCD4DataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -29,18 +30,9 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 	
 	private FineByAgeAndSexAndCD4DataSetDefinition hdsd;
 	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	private Cohort femaleCohort;
-	
-	private Cohort maleCohort;
-	
 	private int total = 0;
 	
-	private List<Integer> encounter;
-	
-	private List<Person> persons;
+	private List<Person> unkownPersons;
 	
 	public int getcD4Total() {
 		return cD4Total;
@@ -57,9 +49,7 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 	}
 	
 	@Autowired
-	private ConceptService conceptService;
-	
-	private PatientQueryService patientQuery;
+	TXNewQuery txNewQuery;
 	
 	private int minCount = 0;
 	
@@ -73,10 +63,10 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 		hdsd = (FineByAgeAndSexAndCD4DataSetDefinition) dataSetDefinition;
 		cd4Status = hdsd.getCountCD4GreaterThan200();
 		if (hdsd.getHeader()) {
-			patientQuery = Context.getService(PatientQueryService.class);
-			encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
-			femaleCohort = patientQuery.getNewOnArtCohort("F", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
-			maleCohort = patientQuery.getNewOnArtCohort("M", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter);
+
+			unkownPersons = new ArrayList<>();
+			unkownPersons.addAll(txNewQuery.getPersonList());
+
 		}
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
@@ -84,39 +74,33 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 			
 			clearTotal();
 			if (hdsd.getCountCD4GreaterThan200().equals(CD4Status.CD4Unknown)) {
-				persons = patientQuery.getPersons(femaleCohort);
+
 				DataSetRow femaleCD4StatusDataset = new DataSetRow();
-				buildDataSet(femaleCD4StatusDataset, "F", persons);
+				buildDataSet(femaleCD4StatusDataset, "F", unkownPersons);
 				set.addRow(femaleCD4StatusDataset);
 				
-				persons = patientQuery.getPersons(maleCohort);
 				DataSetRow maleCD4StatusDataset = new DataSetRow();
-				buildDataSet(maleCD4StatusDataset, "M", persons);
+				buildDataSet(maleCD4StatusDataset, "M", unkownPersons);
 				set.addRow(maleCD4StatusDataset);
 				
 				DataSetRow totalCD4Status = new DataSetRow();
 				buildDataSet(totalCD4Status, "T", null);
 				set.addRow(totalCD4Status);
 			} else {
-				Cohort femaleCD4Status = patientQuery.getCD4ByCohort(femaleCohort,
-				    hdsd.getCountCD4GreaterThan200() == CD4Status.CD4GreaterThan200, encounter);
-				persons = patientQuery.getPersons(femaleCD4Status);
-				
+
+				Cohort cd4ByCohort = txNewQuery.getCD4ByCohort(txNewQuery.getBaseCohort(),
+				    hdsd.getCountCD4GreaterThan200() == CD4Status.CD4GreaterThan200, txNewQuery.getBaseEncounter());
+				List<Person> list = txNewQuery.getPersons(cd4ByCohort);
+
 				DataSetRow femaleCD4StatusDataset = new DataSetRow();
-				buildDataSet(femaleCD4StatusDataset, "F", persons);
+				buildDataSet(femaleCD4StatusDataset, "F", list);
 				set.addRow(femaleCD4StatusDataset);
-				
-				removeCohort(femaleCohort, femaleCD4Status);
-				
-				Cohort maleCD4Status = patientQuery.getCD4ByCohort(maleCohort,
-				    hdsd.getCountCD4GreaterThan200() == CD4Status.CD4GreaterThan200, encounter);
-				persons = patientQuery.getPersons(maleCD4Status);
-				
+
+
 				DataSetRow maleCD4StatusDataset = new DataSetRow();
-				buildDataSet(maleCD4StatusDataset, "M", persons);
+				buildDataSet(maleCD4StatusDataset, "M", list);
 				set.addRow(maleCD4StatusDataset);
-				
-				removeCohort(maleCohort, maleCD4Status);
+
 				
 				DataSetRow totalCD4Status = new DataSetRow();
 				buildDataSet(totalCD4Status, "T", null);
@@ -128,14 +112,8 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 		return set;
 	}
 	
-	private void removeCohort(Cohort cohort, Cohort toBeRemoved) {
-		for (CohortMembership cohortMember : toBeRemoved.getMemberships()) {
-			cohort.removeMembership(cohortMember);
-		}
-	}
-	
 	private void buildDataSet(DataSetRow dataSet, String gender, List<Person> persons) {
-		if (gender == "F" || gender == "M") {
+		if (Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
 			total = 0;
 			minCount = cd4Status == CD4Status.CD4Unknown ? 1 : 5;
 			maxCount = cd4Status == CD4Status.CD4Unknown ? 4 : 9;
@@ -144,18 +122,19 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 			    gender.equals("F") ? "Female" : "Male");
 			
 			dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
-			    getEnrolledByUnknownAge(persons));
+			    getEnrolledByUnknownAge(persons, gender));
 			
 			if (cd4Status == CD4Status.CD4Unknown)
-				dataSet.addColumnValue(new DataSetColumn("<1", "<1", Integer.class), getEnrolledBelowOneYear(persons));
+				dataSet.addColumnValue(new DataSetColumn("<1", "<1", Integer.class),
+				    getEnrolledBelowOneYear(unkownPersons, gender));
 			
 			while (minCount <= 65) {
 				if (minCount == 65) {
 					dataSet.addColumnValue(new DataSetColumn("65+", "65+", Integer.class),
-					    getEnrolledByAgeAndGender(65, 200, persons));
+					    getEnrolledByAgeAndGender(65, 200, persons, gender));
 				} else {
 					dataSet.addColumnValue(new DataSetColumn(minCount + "-" + maxCount, minCount + "-" + maxCount,
-					        Integer.class), getEnrolledByAgeAndGender(minCount, maxCount, persons));
+					        Integer.class), getEnrolledByAgeAndGender(minCount, maxCount, persons, gender));
 				}
 				minCount = maxCount + 1;
 				maxCount = minCount + 4;
@@ -168,7 +147,7 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 		}
 	}
 	
-	private int getEnrolledByAgeAndGender(int min, int max, List<Person> persons) {
+	private int getEnrolledByAgeAndGender(int min, int max, List<Person> persons,String gender) {
         int count = 0;
         int _age = 0;
         List<Integer> personIds = new ArrayList<>();
@@ -177,17 +156,18 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
             if (personIds.contains(person.getPersonId()))
                 continue;
 
-            if (_age >= min && _age <= max) {
+            if (_age >= min && _age <= max && person.getGender().equals(gender)) {
                 personIds.add(person.getPersonId());
                 count++;
             }
         }
         incrementTotalCount(count);
         clearCountedPerson(personIds, persons);
+
         return count;
     }
 	
-	private int getEnrolledByUnknownAge(List<Person> persons) {
+	private int getEnrolledByUnknownAge(List<Person> persons,String gender) {
         int count = 0;
         int _age = 0;
 
@@ -198,8 +178,7 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
             if (personIds.contains(person.getPersonId()))
                 continue;
 
-            if (Objects.isNull(_age) ||
-                    _age <= 0) {
+            if (_age <= 0 && person.getGender().equals(gender)) {
                 count++;
                 personIds.add(person.getPersonId());
             }
@@ -210,7 +189,7 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
         return count;
     }
 	
-	private int getEnrolledBelowOneYear(List<Person> persons) {
+	private int getEnrolledBelowOneYear(List<Person> persons,String gender) {
         int count = 0;
         int _age = 0;
         List<Integer> personIds = new ArrayList<>();
@@ -220,7 +199,7 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
             if (personIds.contains(person.getPersonId()))
                 continue;
 
-            if (_age < 1) {
+            if (_age < 1 && person.getGender().equals(gender)) {
                 count++;
                 personIds.add(person.getPersonId());
             }
@@ -238,6 +217,8 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 	private void clearCountedPerson(List<Integer> personIds, List<Person> persons) {
         for (int pId : personIds) {
             persons.removeIf(p -> p.getPersonId() == pId);
+			unkownPersons.removeIf(p -> p.getPersonId() == pId);
+
         }
-    }
+	}
 }

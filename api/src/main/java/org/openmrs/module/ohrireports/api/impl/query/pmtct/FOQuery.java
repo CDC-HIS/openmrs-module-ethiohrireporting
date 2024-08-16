@@ -6,6 +6,7 @@ import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -68,8 +69,11 @@ public class FOQuery extends PatientQueryImpDao {
 		Date dateTo = Date.from(endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().minusMonths(24)
 		        .atStartOfDay(ZoneId.systemDefault()).toInstant());
 		String stringQuery = "select distinct ob.person_id\n" + "from obs ob "
-		        + " INNER JOIN person p where p.person_id = ob.person_id " + "and ob.concept_id = "
-		        + conceptQuery(ENROLLMENT_DATE) + " and value_datetime IS NOT NULL"
+		        + " INNER JOIN person p on  p.person_id = ob.person_id " + "and ob.concept_id = "
+		        + conceptQuery(ENROLLMENT_DATE)
+		        + " inner join encounter as e on e.encounter_id = ob.encounter_id inner join encounter_type as  et "
+		        + " on et.encounter_type_id = e.encounter_type and et.uuid='"
+		        + EncounterType.PMTCT_CHILD_ENROLLMENT_ENCOUNTER_TYPE + "' and value_datetime IS NOT NULL"
 		        + " and p.birthdate between :start and :end";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);

@@ -50,26 +50,23 @@ public class PMTCTIEDReport implements ReportManager {
 		EidNumeratorDatasetDefinition headerDefinition = new EidNumeratorDatasetDefinition();
 		headerDefinition.addParameters(getParameters());
 		headerDefinition.setHeader(true);
-		headerDefinition.setDescription("DSD: EID_NUM");
-		reportDefinition.addDataSetDefinition("DSD: EID_NUM", EthiOhriUtil.map(headerDefinition));
+		headerDefinition.setDescription("DSD: PMTCT_EID");
+		reportDefinition.addDataSetDefinition("DSD: PMTCT_EID", EthiOhriUtil.map(headerDefinition));
 		
 		EidNumeratorDatasetDefinition numeratorDatasetDefinition = new EidNumeratorDatasetDefinition();
 		numeratorDatasetDefinition
-		        .setDescription("Number of infants who had a virologic HIV test (sample collected) by 12 months of age during the reporting period");
+		        .setDescription("Number of HIV-exposed infants who had a virologic HIV test (sample collected) by 12 months of birth during the reporting period. Numerator will auto-calculate from infant age at first test.");
 		numeratorDatasetDefinition.setParameters(getParameters());
 		reportDefinition
 		        .addDataSetDefinition(
-		            "Number of infants who had a virologic HIV test (sample collected) by 12 months of age during the reporting period",
+		            "Number of HIV-exposed infants who had a virologic HIV test (sample collected) by 12 months of birth during the reporting period. Numerator will auto-calculate from infant age at first test.",
 		            EthiOhriUtil.map(numeratorDatasetDefinition));
 		
 		EidAgeAndTestDisAggregationDatasetDefinition ageAndTestDisAggregationDatasetDefinition = new EidAgeAndTestDisAggregationDatasetDefinition();
-		ageAndTestDisAggregationDatasetDefinition
-		        .setDescription("PMTCT STAT POS + HTS TST POS from the [PostANC1:Pregnancy/L&D] + [PostANC1:BF] MODALITIES (SEE PMTCT_STAT & HTS_TST reference sheets)");
+		ageAndTestDisAggregationDatasetDefinition.setDescription("Disaggregated by infant age at sample collection.");
 		ageAndTestDisAggregationDatasetDefinition.setParameters(getParameters());
-		reportDefinition
-		        .addDataSetDefinition(
-		            "PMTCT STAT POS + HTS TST POS from the [PostANC1:Pregnancy/L&D] + [PostANC1:BF] MODALITIES (SEE PMTCT_STAT & HTS_TST reference sheets)",
-		            EthiOhriUtil.map(ageAndTestDisAggregationDatasetDefinition));
+		reportDefinition.addDataSetDefinition("Disaggregated by infant age at sample collection.",
+		    EthiOhriUtil.map(ageAndTestDisAggregationDatasetDefinition));
 		
 		return reportDefinition;
 	}

@@ -87,8 +87,6 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 	
 	private TransferredInOutDataSetDefinition tDataSetDefinition;
 	
-	private PatientQueryService patientQuery;
-	
 	private EvaluationContext evalContext;
 	
 	@Autowired
@@ -123,11 +121,6 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 		transferInOutQuery.setStartDate(tDataSetDefinition.getStartDate());
 		transferInOutQuery.setEndDate(tDataSetDefinition.getEndDate());
 		transferInOutQuery.setStatus(tDataSetDefinition.getStatus());
-		
-		transferInOutQuery.setToCohort(transferInOutQuery.getTOCohort());
-		
-		patientQuery = Context.getService(PatientQueryService.class);
-		String status = transferInOutQuery.getStatus();
 		
 		if (transferInOutQuery.getStatus().equals(TransferInOutReport.to)) {
 			

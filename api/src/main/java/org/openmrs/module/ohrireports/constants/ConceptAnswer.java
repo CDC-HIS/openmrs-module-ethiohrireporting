@@ -14,6 +14,8 @@ public class ConceptAnswer {
 	
 	public final static String ARV_180_Day = "e5f7cc4d-922a-4838-8c75-af9bdbb59bc8";
 	
+	public final static String CHEST_X_RAY = "8ee98d84-2e50-4c11-9f20-185588f8b906";
+	
 	public final static String SMEAR_ONLY = "3a6f3d9d-623c-452b-8f96-bbdb8805aa97";
 	
 	public final static String NON_REACTIVE = "1229AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";

@@ -78,7 +78,7 @@ public abstract class BaseEthiOhriQuery {
 	protected StringBuilder basePersonIdQuery(String conceptQuestionUUid, String valueCoded) {
 		
 		StringBuilder sql = new StringBuilder();
-		sql.append("select " + PERSON_BASE_ALIAS_OBS + "person_id from obs as  obp");
+		sql.append("select distinct " + PERSON_BASE_ALIAS_OBS + "person_id from obs as  obp");
 		sql.append(" inner join patient as pa on pa.patient_id = " + PERSON_BASE_ALIAS_OBS + "person_id");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
 		sql.append(" inner join concept as c on c.concept_id = " + PERSON_BASE_ALIAS_OBS + "concept_id and c.retired = 0 ");
@@ -97,13 +97,13 @@ public abstract class BaseEthiOhriQuery {
 		sql.append("select " + PERSON_BASE_ALIAS_OBS + "person_id from obs as  obp");
 		sql.append(" inner join patient as pa on pa.patient_id = " + PERSON_BASE_ALIAS_OBS + "person_id");
 		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
-		sql.append(" inner join concept as c on c.concept_id = " + PERSON_BASE_ALIAS_OBS + "concept_id and c.retired = 0 ");
+		sql.append(" inner join concept as c on c.concept_id = " + PERSON_BASE_ALIAS_OBS + "concept_id  ");
 		sql.append(" and c.uuid= '" + conceptQuestionUUid + "' ");
 		sql.append(" and " + PERSON_BASE_ALIAS_OBS + "value_coded in (" + conceptQuery(answers) + ")");
 		sql.append(" inner join encounter as e on e.encounter_id = " + PERSON_BASE_ALIAS_OBS + "encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
-		sql.append(" where pa.voided = 0 and " + PERSON_BASE_ALIAS_OBS + "voided = 0 ");
+		sql.append(" where pa.voided = 0  ");
 		return sql;
 	}
 	
@@ -120,6 +120,22 @@ public abstract class BaseEthiOhriQuery {
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
 		sql.append(" where obc.voided =0 and obc.concept_id =" + conceptQuery(conceptQuestionUUid));
+		return sql;
+	}
+	
+	protected StringBuilder baseConceptQuery(List<String> conceptQuestionUUid) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select distinct " + CONCEPT_BASE_ALIAS_OBS + "person_id from obs as  obc");
+		sql.append(" inner join patient as pa on pa.patient_id = " + CONCEPT_BASE_ALIAS_OBS + "person_id ");
+		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
+		sql.append(" inner join concept as c on c.concept_id = " + CONCEPT_BASE_ALIAS_OBS + " concept_id  ");
+		sql.append(" inner join concept_name as cn on cn.concept_id = " + CONCEPT_BASE_ALIAS_OBS
+		        + " value_coded and cn.locale_preferred =1 and cn.locale='en' ");
+		sql.append(" inner join encounter as e on e.encounter_id = " + CONCEPT_BASE_ALIAS_OBS + "encounter_id ");
+		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append(" and et.uuid= '" + HTS_FOLLOW_UP_ENCOUNTER_TYPE + "' ");
+		sql.append(" where obc.voided =0 and obc.concept_id in" + conceptQuery(conceptQuestionUUid));
 		return sql;
 	}
 	

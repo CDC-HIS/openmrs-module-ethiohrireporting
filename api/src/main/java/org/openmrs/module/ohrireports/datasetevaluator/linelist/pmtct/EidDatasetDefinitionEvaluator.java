@@ -5,6 +5,7 @@ import org.openmrs.module.ohrireports.api.dao.PMTCTEncounter;
 import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.EidDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -32,10 +33,18 @@ public class EidDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		DataSetRow row = new DataSetRow();
 		
-		row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "Total");
 		if(Objects.equals(eidDatasetDefinition.getReportType(), "Test Indication")){
 			eidQuery.generateReport(eidDatasetDefinition.getStartDate(), eidDatasetDefinition.getEndDate());
-			
+
+			if (eidQuery.getPMTCTPatient().isEmpty()) {
+				dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList( "Name","Sex","Age", "MRN", "HEI Code", "Infant On BF?",
+						 "ARV Prophylaxis","Maternal ART Status","Test Indication","Specimen Type","Date of Sample Collection (E.C)",
+						 "DNA PCR Result","Date of Result Received by H.F (E.C)","Date of DBS referral to regional lab (E.C)","Name of Testing Lab.",
+						 "Reason for Sample rejection/test not done","Date test performed by Lab.","Date test performed by Lab."),
+						"Name","Sex"));
+				return  dataSet;
+			}
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "Total");
 			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), eidQuery.getPMTCTPatient().size());
 			dataSet.addRow(row);
 			buildColumn(dataSet);
@@ -43,8 +52,21 @@ public class EidDatasetDefinitionEvaluator implements DataSetEvaluator {
 			
 		}else {
 			pmtctPatientRapidAntiBodies = eidQuery.getRapidAntiBodyWithPatient(eidDatasetDefinition.getStartDate(),eidDatasetDefinition.getEndDate());
+
+			if (pmtctPatientRapidAntiBodies.isEmpty()) {
+				dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList( "Name","Sex","Age", "MRN", "HEI Code","followUpDate","RapidAntibodyTestResult", "Infant On BF?",
+						"ARV Prophylaxis","Maternal ART Status","Test Indication","Specimen Type","Date of Sample Collection (E.C)",
+						"DNA PCR Result","Date of Result Received by H.F (E.C)","Date of DBS referral to regional lab (E.C)","Name of Testing Lab.",
+						"Reason for Sample rejection/test not done","Date test performed by Lab.","Date test performed by Lab."),
+						"Name","Date test performed by Lab."));
+				return  dataSet;
+			}
+			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), "Total");
 			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class),pmtctPatientRapidAntiBodies.size());
 			dataSet.addRow(row);
+
+
+
 			buildColumnForRapidAntiBody(dataSet);
 			
 		}

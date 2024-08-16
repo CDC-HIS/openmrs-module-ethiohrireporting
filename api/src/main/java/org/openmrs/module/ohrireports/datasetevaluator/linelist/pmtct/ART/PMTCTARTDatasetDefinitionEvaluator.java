@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PMTCTARTClientDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -18,6 +19,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +56,7 @@ public class PMTCTARTDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		DataSetRow row;
 		
-		if (persons.size() > 0) {
+		if (!persons.isEmpty()) {
 			
 			row = new DataSetRow();
 			
@@ -62,6 +64,13 @@ public class PMTCTARTDatasetDefinitionEvaluator implements DataSetEvaluator {
 			row.addColumnValue(new DataSetColumn("Name", "Name", Integer.class), persons.size());
 			
 			dataSet.addRow(row);
+		} else {
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("Name", "Sex", "MRN", "UAN", "Age",
+			    "ArtStartDate Eth", "PMTCT Booking DateEth", "Status At Enrollment", "Is Pregnant", "Is BreastFeeding",
+			    "Reason For Discharge", "MaternalPMTCTFinalOutcome", "Date Of FinalOutcome ETH", "Latest FollowupDate ETH",
+			    "Regimen", "Dose", "NutritionalStatus", "Latest VL Status", "Adherence", "Next Visit DateETH"), "Name",
+			    "Sex"));
+			return dataSet;
 		}
 		for (Person person : persons) {
 			

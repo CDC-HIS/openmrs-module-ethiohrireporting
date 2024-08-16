@@ -5,6 +5,7 @@ import java.util.List;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
+import org.openmrs.module.ohrireports.api.impl.query.TXNewQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -22,12 +23,8 @@ public class AutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator
 	
 	private AutoCalculateDataSetDefinition hdsd;
 	
-	private String title = "Number of adults and children newly enrolled on antiretroviral therapy (ART)";
-	
-	private PatientQueryService patientQuery;
-	
 	@Autowired
-	private EncounterQuery encounterQuery;
+	TXNewQuery txNewQuery;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
@@ -36,12 +33,11 @@ public class AutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		if (!hdsd.getHeader()) {
-			patientQuery = Context.getService(PatientQueryService.class);
-			List<Integer> encounter = encounterQuery.getAliveFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
+			txNewQuery.generateReport(hdsd.getStartDate(), hdsd.getEndDate());
 			
 			DataSetRow dataSet = new DataSetRow();
-			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), patientQuery
-			        .getNewOnArtCohort("", hdsd.getStartDate(), hdsd.getEndDate(), null, encounter).size());
+			dataSet.addColumnValue(new DataSetColumn("adultAndChildrenEnrolled", "Numerator", Integer.class), txNewQuery
+			        .getBaseCohort().size());
 			
 			set.addRow(dataSet);
 		}

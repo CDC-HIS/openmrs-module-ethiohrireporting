@@ -24,7 +24,7 @@ public class DisaggregatedByPregnantDatasetDefinitionEvaluator implements DataSe
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		DisaggregatedByPregnantDatasetDefinition definition = (DisaggregatedByPregnantDatasetDefinition) dataSetDefinition;
-		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		SimpleDataSet set = new SimpleDataSet(definition, evalContext);
 		DataSetRow pRow = new DataSetRow();
 		Cohort baseCohort = preExposureProphylaxisQuery.getAllNewPrEP();
 		Cohort pregnantCohort = preExposureProphylaxisQuery.getAllPregnantPrep(baseCohort);

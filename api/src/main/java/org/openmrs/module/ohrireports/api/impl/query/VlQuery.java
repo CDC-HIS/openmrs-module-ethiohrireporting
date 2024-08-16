@@ -19,6 +19,16 @@ public class VlQuery extends ObsElement {
 	
 	public Cohort cohort;
 	
+	public Cohort getSupperessedCohort() {
+		return supperessedCohort;
+	}
+	
+	public void setSupperessedCohort(Cohort supperessedCohort) {
+		this.supperessedCohort = supperessedCohort;
+	}
+	
+	public Cohort supperessedCohort;
+	
 	private List<Integer> VlTakenEncounters;
 	
 	public List<Integer> getVlTakenEncounters() {
@@ -37,7 +47,8 @@ public class VlQuery extends ObsElement {
 		if ((start == null || !start.equals(_start)) || (end == null || !end.equals(_end))) {
 			start = _start;
 			end = _end;
-			VlTakenEncounters = getEncountersWithVLStatusOnly(vList);
+			VlTakenEncounters = vList;
+			//getEncountersWithVLStatusOnly(vList);
 			cohort = getViralLoadReceivedCohort();
 		}
 		
@@ -83,8 +94,8 @@ public class VlQuery extends ObsElement {
 		Query query = getByViralLoadStatus(concepts);
 		allPatients.addAll(query.list());
 
-		List<Integer> personIds = getSuppressedByVLCount(null,50);
-		allPatients.addAll(personIds);
+//		List<Integer> personIds = getSuppressedByVLCount(null,50);
+//		allPatients.addAll(personIds);
 		return new Cohort(allPatients);
 
 	}

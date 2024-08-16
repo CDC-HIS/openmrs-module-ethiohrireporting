@@ -21,10 +21,7 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Handler(supports = { TxCurrARVDataSetDefinition.class })
 public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
@@ -132,7 +129,7 @@ public class TxCurrARVDataSetDefinitionEvaluator implements DataSetEvaluator {
 
 			_age = person.getAge(hdsd.getEndDate());
 
-			if (_age == 0) {
+			if (_age < 0) {
 				dispenseValue = (String) patientWithDispenseDay.get(person.getPersonId());
 				if (dispenseDayInConceptUUId.contains(dispenseValue)) {
 					personIds.add(person.getPersonId());

@@ -58,9 +58,10 @@ public class DatimPMTCTARTReport implements ReportManager {
 		
 		PMTCTARTAutoCalculateDataSetDefinition pmtctDataSet = new PMTCTARTAutoCalculateDataSetDefinition();
 		pmtctDataSet.addParameters(getParameters());
-		reportDefinition.addDataSetDefinition(
-		    "During pregnancy.Numerator will auto-calculate from the Maternal Regimen Type Desegregates",
-		    EthiOhriUtil.map(pmtctDataSet));
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Number of HIV-positive pregnant women who received ART to reduce the risk of mother-to-child-transmission during pregnancy.",
+		            EthiOhriUtil.map(pmtctDataSet));
 		
 		PMTCTARTDataSetDefinition newlyEnrolledSetDefinition = new PMTCTARTDataSetDefinition();
 		newlyEnrolledSetDefinition.addParameters(getParameters());

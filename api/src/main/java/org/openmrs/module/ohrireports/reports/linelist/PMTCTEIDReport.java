@@ -67,7 +67,8 @@ public class PMTCTEIDReport implements ReportManager {
 		EidDatasetDefinition dataSetDefinition = new EidDatasetDefinition();
 		dataSetDefinition.addParameters(getParameters());
 		//
-		reportDefinition.addDataSetDefinition("PMTCT_EID", EthiOhriUtil.map(dataSetDefinition, "reportType=${reportType}"));
+		reportDefinition.addDataSetDefinition("EID Line List Report",
+		    EthiOhriUtil.map(dataSetDefinition, "reportType=${reportType}"));
 		return reportDefinition;
 	}
 	

@@ -126,31 +126,40 @@ public class CervicalCancerQuery extends PatientQueryImpDao {
 		return baseCohort;
 	}
 	
-	public Cohort getByScreeningType(String typConceptUUiD) {
-		String stringQuery = "SELECT distinct ps.person_id\n" + "FROM\n" + "  (SELECT DISTINCT ob.person_id\n"
-		        + "   FROM obs AS ob\n" + "     INNER JOIN\n"
-		        + "     (SELECT MAX(ib.value_datetime) AS value_datetime, ib.person_id\n" + "      FROM obs AS ib\n"
-		        + "      WHERE ib.concept_id in "
-		        + conceptQuery(Arrays.asList(VIA_SCREENING_DATE, HPV_DNA_RESULT_RECEIVED_DATE))
-		        + "        AND ib.value_datetime >= :joinEndDate1\n" + "        AND ib.value_datetime <= :joinEndDate2\n"
-		        + "      GROUP BY ib.person_id\n" + "     ) AS o\n" + "     ON o.person_id = ob.person_id\n"
-		        + "        AND ob.value_datetime = o.value_datetime\n" + "        AND ob.concept_id in "
-		        + conceptQuery(Arrays.asList(VIA_SCREENING_DATE, HPV_DNA_RESULT_RECEIVED_DATE)) + "INNER JOIN\n"
-		        + "    (select distinct person_id \n" + "		from obs \n" + "        where concept_id = "
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TYPE_OF_SCREENING) + "and value_coded = "
-		        + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id";
-		if (!countedCohort.isEmpty()) {
-			stringQuery = stringQuery + "  and tos.person_id NOT IN (:personIdList) ";
-		}
+	public Cohort getByScreeningType(String typConceptUUiD, List<Integer> encounter) {
+		String stringQuery = "SELECT distinct ob.person_id FROM obs as ob where ob.concept_id="
+		        + conceptQuery(FollowUpConceptQuestions.CXCA_TYPE_OF_SCREENING) + " and ob.value_coded="
+		        + conceptQuery(typConceptUUiD) + " and ob.encounter_id in (:encounter) ";
 		
-		stringQuery = stringQuery + ") AS ps";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
-		query.setDate("joinEndDate1", startDate);
-		query.setDate("joinEndDate2", endDate);
-		if (!countedCohort.getMemberIds().isEmpty()) {
-			query.setParameter("personIdList", countedCohort.getMemberIds());
-		}
+		
+		query.setParameterList("encounter", encounter);
 		return new Cohort(query.list());
+		
+		/*	String stringQuery = "SELECT distinct ps.person_id\n" + "FROM\n" + "  (SELECT DISTINCT ob.person_id\n"
+			        + "   FROM obs AS ob\n" + "     INNER JOIN\n"
+			        + "     (SELECT MAX(ib.value_datetime) AS value_datetime, ib.person_id\n" + "      FROM obs AS ib\n"
+			        + "      WHERE ib.concept_id in "
+			        + conceptQuery(Arrays.asList(VIA_SCREENING_DATE, HPV_DNA_RESULT_RECEIVED_DATE))
+			        + "        AND ib.value_datetime >= :joinEndDate1\n" + "        AND ib.value_datetime <= :joinEndDate2\n"
+			        + "      GROUP BY ib.person_id\n" + "     ) AS o\n" + "     ON o.person_id = ob.person_id\n"
+			        + "        AND ob.value_datetime = o.value_datetime\n" + "        AND ob.concept_id in "
+			        + conceptQuery(Arrays.asList(VIA_SCREENING_DATE, HPV_DNA_RESULT_RECEIVED_DATE)) + "INNER JOIN\n"
+			        + "    (select distinct person_id \n" + "		from obs \n" + "        where concept_id = "
+			        + conceptQuery(FollowUpConceptQuestions.CXCA_TYPE_OF_SCREENING) + "and value_coded = "
+			        + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id";
+			if (!countedCohort.isEmpty()) {
+				stringQuery = stringQuery + "  and tos.person_id NOT IN (:personIdList) ";
+			}
+			
+			stringQuery = stringQuery + ") AS ps";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
+			query.setDate("joinEndDate1", startDate);
+			query.setDate("joinEndDate2", endDate);
+			if (!countedCohort.getMemberIds().isEmpty()) {
+				query.setParameter("personIdList", countedCohort.getMemberIds());
+			}
+			return new Cohort(query.list());*/
 	}
 	
 	public Cohort getNegativeResult(Cohort cohort) {

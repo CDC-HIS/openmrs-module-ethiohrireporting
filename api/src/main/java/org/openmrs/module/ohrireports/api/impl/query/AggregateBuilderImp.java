@@ -63,6 +63,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
     public void setPersonList(List<Person> person) {
         countedPatientId.clear();
         persons = person;
+        subTotalCount = 0;
     }
 
     public int getTotal() {
@@ -80,9 +81,10 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
     @Override
     public void buildDataSetColumn(DataSetRow dataSet, String gender) {
         if (Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
-
+            int _lowerBoundAge = lowerBoundAge;
+            _lowerBoundAge++;
             subTotalCount = 0;
-            int minCount = lowerBoundAge + 1;
+            int minCount = _lowerBoundAge;
             int maxCount = lowerBoundAge + ageInterval;
 
             dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
@@ -92,7 +94,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                     getEnrolledByUnknownAge(gender));
             if (lowerBoundAge == 0) {
                 dataSet.addColumnValue(new DataSetColumn("below 1", "<1", Integer.class),
-                        getEnrolledByAgeAndGender(0, 1, gender));
+                        getCountOfBelowOneAge( gender));
             }
             while (minCount <= upperBoundAge) {
                 if (minCount == upperBoundAge) {
@@ -119,7 +121,9 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
         if (Objects.equals(gender, "F") || Objects.equals(gender, "M")) {
 
             subTotalCount = 0;
-            int minCount = lowerBoundAge + 1;
+            int _lowerBoundAge=0;
+            _lowerBoundAge++;
+            int minCount = _lowerBoundAge ;
             int maxCount = lowerBoundAge + ageInterval;
 
             dataSet.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
@@ -128,7 +132,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
             dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
                     getEnrolledByUnknownAge(gender));
             dataSet.addColumnValue(new DataSetColumn("below 1", "<1", Integer.class),
-                    getEnrolledByAgeAndGenderByFollowUpDate(0, 1, gender));
+                    getCountOfBelowOneAge( gender));
             while (minCount <= upperBoundAge) {
                 if (minCount == upperBoundAge) {
                     dataSet.addColumnValue(new DataSetColumn(upperBoundAge + "+", upperBoundAge + "+", Integer.class),
@@ -234,17 +238,42 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
 
             row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
                     getEnrolledByUnknownAge(gender));
+
             row.addColumnValue(new DataSetColumn(">" + middleAge, "<" + middleAge, Integer.class),
                     getCountByMiddleAge(gender, middleAge, _below));
 
             row.addColumnValue(new DataSetColumn(middleAge + "+", middleAge + "+", Integer.class),
                     getCountByMiddleAge(gender, middleAge, _above));
+
         } else if (Objects.equals(gender, "T")) {
             row.addColumnValue(new DataSetColumn("ByAgeAndSexData", "", String.class),
                     "Sub-Total");
-            row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), getTotal());
+            row.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class), subTotalCount);
         }
 
+    }
+
+    public int getCountOfBelowOneAge(String gender){
+        int count = 0;
+        int age = 0;
+        List<Person> countedPersons = new ArrayList<>();
+
+        for (Person person : persons) {
+
+            if (countedPatientId.contains(person.getPersonId()))
+                continue;
+
+            age = person.getAge(calculateAgeFrom);
+
+            if (person.getGender().equals(gender) && age == 0) {
+                countedPersons.add(person);
+                countedPatientId.add(person.getPersonId());
+                count++;
+            }
+        }
+        incrementTotalCount(count);
+        clearProcessedPersons(countedPersons);
+        return count;
     }
 
     protected int getEnrolledByAgeAndGender(int min, int max, String gender) {
@@ -258,11 +287,7 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                 continue;
 
             age = person.getAge(calculateAgeFrom);
-            if (person.getGender().equals(gender) && min == 0 && age < max) {
-                countedPersons.add(person);
-                countedPatientId.add(person.getPersonId());
-                count++;
-            } else if (person.getGender().equals(gender) && age >= min && age <= max) {
+            if (person.getGender().equals(gender) && age >= min && age <= max) {
                 countedPersons.add(person);
                 countedPatientId.add(person.getPersonId());
                 count++;
@@ -284,16 +309,12 @@ public class AggregateBuilderImp extends BaseOpenmrsService implements Aggregate
                 continue;
 
             age = person.getAge((java.sql.Timestamp) followUpDate.get(person.getPersonId()));
-            if (person.getGender().equals(gender) && min == 0 && age < max) {
-                countedPersons.add(person);
-                countedPatientId.add(person.getPersonId());
-                count++;
-            } else if (person.getGender().equals(gender) && age >= min && age <= max) {
-                countedPersons.add(person);
-                countedPatientId.add(person.getPersonId());
-                count++;
+             if (person.getGender().equals(gender) && age >= min && age <= max) {
+                    countedPersons.add(person);
+                    countedPatientId.add(person.getPersonId());
+                    count++;
+                }
             }
-        }
         incrementTotalCount(count);
         clearProcessedPersons(countedPersons);
         return count;

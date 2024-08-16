@@ -174,7 +174,7 @@ public class RTTQuery extends PatientQueryImpDao {
 		return HMISUtilies.getDictionaryWithBigDecimal (query);
 	}
 
-	public Cohort getInterrupationByMonth(int minMonth, int maxMonth){
+	public Cohort getInterruptionMonth(int minMonth, int maxMonth){
 		Cohort cohort = new Cohort();
 		for (Map.Entry<Integer, BigDecimal> entry : restartedMonthList.entrySet()) {
 			Integer k = entry.getKey();

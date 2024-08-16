@@ -69,7 +69,7 @@ public class DatimTxRttReport implements ReportManager {
 		txRTTCD4HeaderDefinition.addParameters(getParameters());
 		txRTTCD4HeaderDefinition.setHeader(true);
 		txRTTCD4HeaderDefinition.setDescription("Disaggregated by Age/Sex And CD4");
-		reportDefinition.addDataSetDefinition("Required Disaggregated by Age/Sex And CD4",
+		reportDefinition.addDataSetDefinition("Required - Disaggregated by Age/Sex And CD4",
 		    EthiOhriUtil.map(txRTTCD4HeaderDefinition));
 		
 		TxRttByAgeAndSexDataSetDefinition txRTTCD4L_200Definition = new TxRttByAgeAndSexDataSetDefinition();
@@ -109,15 +109,15 @@ public class DatimTxRttReport implements ReportManager {
 		tDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		tDefinition.setDescription("Disaggregated by IIT");
-		reportDefinition.addDataSetDefinition("Conditional Required - Disaggregated by IIT", EthiOhriUtil.map(tDefinition));
+		reportDefinition.addDataSetDefinition("Required - Disaggregated by IIT", EthiOhriUtil.map(tDefinition));
 		
 		TxRttKeyPopulationTypeDataSetDefinition oDefinition = new TxRttKeyPopulationTypeDataSetDefinition();
 		oDefinition.addParameters(getParameters());
 		oDefinition.setEncounterType(Context.getEncounterService().getEncounterTypeByUuid(
 		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE));
 		oDefinition.setDescription("Disaggregated by key population type");
-		reportDefinition
-		        .addDataSetDefinition("Required Disaggregated by key population type", EthiOhriUtil.map(oDefinition));
+		reportDefinition.addDataSetDefinition("Required - Disaggregated by key population type",
+		    EthiOhriUtil.map(oDefinition));
 		
 		return reportDefinition;
 	}

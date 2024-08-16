@@ -2,16 +2,15 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -50,14 +49,20 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 			start = calendar.getTime();
 			end = txDatasetDefinition.getEndDate();
 			
-			if (vlQuery.start != start || vlQuery.end != end || vlQuery.getVlTakenEncounters().isEmpty()) {
-				List<Integer> laIntegers = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED),
-				    start, end);
-				vlQuery.loadInitialCohort(start, end, laIntegers);
+			List<Integer> baseEncounters = encounterQuery.getEncounters(
+			    Collections.singletonList(FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED), start,
+			    txDatasetDefinition.getEndDate());
+			
+			vlQuery.loadInitialCohort(start, end, baseEncounters);
+			Cohort cohort;
+			if (txDatasetDefinition.getIncludeUnSuppressed()) {
+				cohort = vlQuery.cohort;
+			} else {
+				vlQuery.setSupperessedCohort(vlQuery.getViralLoadSuppressed(Arrays.asList(
+				    ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED, ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA)));
+				
+				cohort = vlQuery.supperessedCohort;
 			}
-			Cohort cohort = txDatasetDefinition.getIncludeUnSuppressed() ? vlQuery.cohort : vlQuery
-			        .getViralLoadSuppressed(Arrays.asList(ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED,
-			            ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA));
 			
 			DataSetRow setRow = new DataSetRow();
 			setRow.addColumnValue(new DataSetColumn(txDatasetDefinition.getType(), txDatasetDefinition.getType(),

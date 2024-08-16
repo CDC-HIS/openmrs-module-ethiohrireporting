@@ -50,23 +50,32 @@ public class PMTCTHEIDATIMReport implements ReportManager {
 		HeiTotalDatasetDefinition headerDefinition = new HeiTotalDatasetDefinition();
 		headerDefinition.addParameters(getParameters());
 		headerDefinition.setHeader(true);
-		headerDefinition.setDescription("DSD: HEI_TOTAL");
-		reportDefinition.addDataSetDefinition("DSD: HEI_TOTAL", EthiOhriUtil.map(headerDefinition));
+		headerDefinition.setDescription("DSD: PMTCT_HEI");
+		reportDefinition.addDataSetDefinition("DSD: PMTCT_HEI", EthiOhriUtil.map(headerDefinition));
 		
 		HeiTotalDatasetDefinition heiTotalDatasetDefinition = new HeiTotalDatasetDefinition();
-		heiTotalDatasetDefinition.setDescription("Sum Result");
+		heiTotalDatasetDefinition
+		        .setDescription("Number of HIV-infected infants identified in the reporting period, whose diagnostic sample was collected by 12 months of age. Numerator will auto-calculate from the HIV-infected infant age and result returned disaggregation.");
 		heiTotalDatasetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("Sum results", EthiOhriUtil.map(heiTotalDatasetDefinition));
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Number of HIV-infected infants identified in the reporting period, whose diagnostic sample was collected by 12 months of age. Numerator will auto-calculate from the HIV-infected infant age and result returned disaggregation.",
+		            EthiOhriUtil.map(heiTotalDatasetDefinition));
 		
 		HeiAgeAndResultDatasetDefinition ageAndTestDisAggregationDatasetDefinition = new HeiAgeAndResultDatasetDefinition();
-		ageAndTestDisAggregationDatasetDefinition.setDescription("-");
+		ageAndTestDisAggregationDatasetDefinition
+		        .setDescription("Disaggregated by infant age at virologic sample collection and result returned.");
 		ageAndTestDisAggregationDatasetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("PMTCT ", EthiOhriUtil.map(ageAndTestDisAggregationDatasetDefinition));
+		reportDefinition.addDataSetDefinition(
+		    "Disaggregated by infant age at virologic sample collection and result returned.",
+		    EthiOhriUtil.map(ageAndTestDisAggregationDatasetDefinition));
 		
 		HeiPositiveLinkedDatasetDefinition positiveLinkedDatasetDefinition = new HeiPositiveLinkedDatasetDefinition();
-		positiveLinkedDatasetDefinition.setDescription("-");
+		positiveLinkedDatasetDefinition
+		        .setDescription("Disaggregated by result returned, Positive, confirmed initiated ART by age at virologic sample collection");
 		positiveLinkedDatasetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("PMTCT- Positive,confirmed on ARt ",
+		reportDefinition.addDataSetDefinition(
+		    "Disaggregated by result returned, Positive, confirmed initiated ART by age at virologic sample collection ",
 		    EthiOhriUtil.map(positiveLinkedDatasetDefinition));
 		return reportDefinition;
 	}

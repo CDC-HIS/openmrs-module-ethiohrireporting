@@ -149,32 +149,18 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		}
 	}
 	
-	public List<Integer> getFirstEncounterByObsDate(Date start, Date end, String concept, List<Integer> encounters) {
-		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
-		builder.append("(select MIN(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+	public List<Integer> getEncountersByFollowUp(String encounterFollowUp, String conceptQuestion,
+	        List<String> conceptAnswers) {
 		
-		builder.append(" where obs_enc.concept_id =").append(conceptQuery(concept));
+		StringBuilder stringBuilder = new StringBuilder("select ob.encounter_id from obs as ob ");
+		stringBuilder.append(" inner join encounter as e on e.encounter_id = ob.encounter_id   ");
+		stringBuilder.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type and ");
+		stringBuilder.append(" et.uuid = '").append(encounterFollowUp).append("' ");
+		stringBuilder.append(" where ");
+		stringBuilder.append(" ob.concept_id = ").append(conceptQuery(conceptQuestion));
+		stringBuilder.append(" and  ob.value_coded in ").append(conceptQuery(conceptAnswers));
 		
-		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
-		
-		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
-		if (start != null)
-			builder.append(" and ob.value_datetime >= :start ");
-		if (end != null)
-			builder.append(" and ob.value_datetime <= :end ");
-		if (encounters != null)
-			builder.append(" and ob.encounter_id in (:encounters) ");
-		builder.append(" and ob.concept_id =").append(conceptQuery(concept));
-		
-		Query q = getCurrentSession().createSQLQuery(builder.toString());
-		
-		if (start != null)
-			q.setDate("start", start);
-		if (end != null)
-			q.setDate("end", end);
-		if (encounters != null)
-			q.setParameterList("encounters", encounters);
-		
+		Query q = getCurrentSession().createSQLQuery(stringBuilder.toString());
 		List list = q.list();
 		
 		if (list != null) {
@@ -561,6 +547,47 @@ public class EncounterQuery extends BaseEthiOhriQuery {
             return new ArrayList<Integer>();
         }
     }
+	
+	public List<Integer> getEncountersByExcludingCohort(List<String> questionConcept,List<Integer> encounters, Date start, Date endDate, Cohort cohort) {
+		if (questionConcept == null || questionConcept.isEmpty())
+			return new ArrayList<>();
+
+		StringBuilder builder = new StringBuilder("select distinct ob.encounter_id from obs as ob inner join ");
+		builder.append(
+				"(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc");
+
+		builder.append(" where obs_enc.concept_id in " + conceptQuery(questionConcept));
+
+		if (start != null)
+			builder.append(" and obs_enc.value_datetime >= :start ");
+
+		if (endDate != null)
+			builder.append(" and obs_enc.value_datetime <= :end ");
+
+		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
+		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
+		builder.append(" and ob.concept_id in " + conceptQuery(questionConcept));
+		builder.append(" and ob.voided =0 and ob.person_id not in (:cohort) ");
+		builder.append(" and ob.encounter_id in (:encounter_id)");
+
+		Query q = getCurrentSession().createSQLQuery(builder.toString());
+		q.setParameterList("cohort", cohort.getMemberIds());
+		q.setParameterList("encounter_id", encounters);
+
+		if (start != null)
+			q.setDate("start", start);
+
+		if (endDate != null)
+			q.setDate("end", endDate);
+
+		List list = q.list();
+
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
 	
 	public List<Integer> getEncounters(List<String> questionConcept, Date start, Date endDate, Cohort cohort) {
         if (questionConcept == null || questionConcept.isEmpty())

@@ -7,6 +7,7 @@ import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
@@ -95,7 +96,8 @@ public class ARTQuery extends PatientQueryImpDao {
 		latestFollowUpEncounter = encounterQuery.getAliveFollowUpEncounters(null, endDate);
 		baseEncounter = encounterQuery.getEncounters(
 		    Collections.singletonList(PMTCTConceptQuestions.PMTCT_OTZ_ENROLLMENT_DATE), startDate, endDate,
-		    latestFollowUpEncounter);
+		    EncounterType.PMTC_ENROLLMENT_ENCOUNTER_TYPE);
+		baseCohort = getCohort(baseEncounter);
 		baseCohort = getByPregnantStatus();
 		pmtctARTCohort = getPMTCTARTCohort();
 		newOnARTPMTCTARTCohort = getNewOnArtCohort("F", startDate, endDate, pmtctARTCohort, latestFollowUpEncounter);
@@ -103,20 +105,29 @@ public class ARTQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getByPregnantStatus() {
+		if (isCohortAndEncounterHasRecord())
+			return new Cohort();
+		
 		StringBuilder sql = baseConceptQuery(FollowUpConceptQuestions.PREGNANCY_STATUS);
 		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + " value_coded = " + conceptQuery(ConceptAnswer.YES));
-		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:latestEncounter) ");
+		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:latestEncounter) and " + CONCEPT_BASE_ALIAS_OBS
+		        + "person_id in (:persons)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setParameterList("latestEncounter", latestFollowUpEncounter);
 		
+		query.setParameterList("persons", baseCohort.getMemberIds());
 		return new Cohort(query.list());
 	}
 	
 	public Cohort getPMTCTARTCohort() {
+		
+		if (baseCohort.isEmpty() || baseEncounter.isEmpty())
+			return new Cohort();
+		
 		String stringQuery = "select distinct person_id\n" + "from obs\n" + "where concept_id = "
 		        + conceptQuery(PMTCTConceptQuestions.PMTCT_OTZ_ENROLLMENT_DATE) + "and value_datetime >= :start "
-		        + " and value_datetime <= :end ";
+		        + " and value_datetime <= :end and encounter_id in (:pmtctEncounter) ";
 		if (!baseCohort.getMemberIds().isEmpty())
 			stringQuery = stringQuery + " and person_id in (:personIdList)";
 		
@@ -125,24 +136,30 @@ public class ARTQuery extends PatientQueryImpDao {
 		query.setDate("end", endDate);
 		if (!baseCohort.getMemberIds().isEmpty())
 			query.setParameterList("personIdList", baseCohort.getMemberIds());
-		
+		query.setParameterList("pmtctEncounter", baseEncounter);
 		return new Cohort(query.list());
 	}
 	
 	public Cohort getCohortByPMTCTEnrollmentStatus(String PMTCTEnrollmentType) {
-		if (pmtctARTCohort.getMemberIds().isEmpty())
+		
+		if (isCohortAndEncounterHasRecord())
 			return new Cohort();
+		
 		String stringQuery = "select distinct person_id from obs where concept_id = "
 		        + conceptQuery(PMTCTConceptQuestions.PMTCT_STATUS_AT_ENROLLMENT) + " and value_coded = "
-		        + conceptQuery(PMTCTEnrollmentType);
-		if (!pmtctARTCohort.getMemberIds().isEmpty())
-			stringQuery = stringQuery + " and person_id in (:personIdList)";
+		        + conceptQuery(PMTCTEnrollmentType) + " and encounter_id in (:encounterIdList)";
+		
+		stringQuery = stringQuery + " and person_id in (:personIdList)";
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		
-		if (!pmtctARTCohort.getMemberIds().isEmpty())
-			query.setParameterList("personIdList", pmtctARTCohort.getMemberIds());
-		
+		query.setParameterList("personIdList", pmtctARTCohort.getMemberIds());
+		query.setParameterList("encounterIdList", baseEncounter);
 		return new Cohort(query.list());
 		
+	}
+	
+	private boolean isCohortAndEncounterHasRecord() {
+		return Objects.isNull(pmtctARTCohort) || Objects.isNull(baseEncounter) || pmtctARTCohort.isEmpty()
+		        || baseEncounter.isEmpty();
 	}
 }

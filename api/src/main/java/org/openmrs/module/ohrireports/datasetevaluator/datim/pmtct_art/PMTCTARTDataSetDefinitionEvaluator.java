@@ -73,8 +73,7 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		dataSet.addColumnValue(new DataSetColumn("unknownAge", "Unknown Age", Integer.class),
 		    getEnrolledByUnknownAge(pmtctARTPersonList));
 		
-		dataSet.addColumnValue(new DataSetColumn("<1", "Below One (<1)", Integer.class),
-		    getEnrolledBelowOneYear(pmtctARTPersonList));
+		dataSet.addColumnValue(new DataSetColumn("<1", "<1", Integer.class), getEnrolledBelowOneYear(pmtctARTPersonList));
 		
 		while (minCount <= 65) {
 			if (minCount == 65) {

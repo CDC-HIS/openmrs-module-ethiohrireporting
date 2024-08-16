@@ -13,9 +13,6 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
 @Handler(supports = { TxRttIITDataSetDefinition.class })
 public class TxRttIITDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
@@ -31,22 +28,22 @@ public class TxRttIITDataSetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow belowThreeDateSet = new DataSetRow();
 		belowThreeDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "", String.class),
 		    "Experienced treatment interruption of <3 months before returning to treatment ");
-		belowThreeDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class), rttQuery
-		        .getInterrupationByMonth(0, 3).size());
+		belowThreeDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class),
+		    rttQuery.getInterruptionMonth(0, 3).size());
 		set.addRow(belowThreeDateSet);
 		
 		DataSetRow betweenThreeandFiveDateSet = new DataSetRow();
 		betweenThreeandFiveDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "", String.class),
 		    "Experienced treatment interruption of 3-5 months before returning to treatment");
 		betweenThreeandFiveDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class), rttQuery
-		        .getInterrupationByMonth(3, 6).size());
+		        .getInterruptionMonth(3, 6).size());
 		set.addRow(betweenThreeandFiveDateSet);
 		
 		DataSetRow abovesixDateSet = new DataSetRow();
 		abovesixDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "", String.class),
 		    "Experienced treatment interruption of 6+ months before returning to treatment");
 		abovesixDateSet.addColumnValue(new DataSetColumn("countedIIT", "", Integer.class),
-		    rttQuery.getInterrupationByMonth(6, Integer.MAX_VALUE).size());
+		    rttQuery.getInterruptionMonth(6, Integer.MAX_VALUE).size());
 		set.addRow(abovesixDateSet);
 		
 		return set;

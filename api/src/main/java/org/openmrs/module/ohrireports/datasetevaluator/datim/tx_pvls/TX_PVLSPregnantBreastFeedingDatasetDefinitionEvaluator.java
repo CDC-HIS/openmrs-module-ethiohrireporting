@@ -2,15 +2,14 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSPregnantBreastfeedingDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -46,25 +45,32 @@ public class TX_PVLSPregnantBreastFeedingDatasetDefinitionEvaluator implements D
 		calendar.add(Calendar.MONTH, -_VALID_MONTHS_OF_VIRAL_LOAD_TEST);
 		start = calendar.getTime();
 		end = txDatasetDefinition.getEndDate();
-		
-		if (vlQuery.start != start || vlQuery.end != end || vlQuery.getVlTakenEncounters().isEmpty()) {
-			List<Integer> laIntegers = encounterQuery.getEncounters(Arrays.asList(DATE_VIRAL_TEST_RESULT_RECEIVED), start,
-			    end);
-			vlQuery.loadInitialCohort(start, end, laIntegers);
+		Cohort cohort;
+		if(txDatasetDefinition.getIncludeUnSuppressed()){
+			cohort = vlQuery.cohort;
+		}else{
+			cohort = vlQuery.supperessedCohort;
 		}
-		
+
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		Cohort pregnantCohort = vlQuery.getPregnantCohort(vlQuery.cohort);
-		Cohort breatFeedingCohort = vlQuery.getBreastFeedingCohort(vlQuery.cohort);
+		Cohort pregnantCohort = vlQuery.getPregnantCohort(cohort);
+		int breastFeedingCohort =
+                (int) vlQuery.getByResult(
+                                FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, cohort, vlQuery.getVlTakenEncounters())
+                        .entrySet().stream().
+                        filter(integerObjectEntry -> {
+                            return Objects.nonNull(integerObjectEntry.getValue()) &&
+									integerObjectEntry.getValue().toString().equalsIgnoreCase("yes");
+                        }).count();
+
 		
 		DataSetRow typeRow = new DataSetRow();
 		typeRow.addColumnValue(new DataSetColumn("type", "", String.class), "Viral load count");
 		typeRow.addColumnValue(new DataSetColumn("pregnant", "Pregnant", Integer.class), pregnantCohort.size());
-		typeRow.addColumnValue(new DataSetColumn("breastFeeding", "Breast  Feeding Cohort", Integer.class),
-		    breatFeedingCohort.size());
+		typeRow.addColumnValue(new DataSetColumn("breastFeeding", "Breast  Feeding", Integer.class),
+		    breastFeedingCohort);
 		dataSet.addRow(typeRow);
 		
 		return dataSet;
 	}
-	
 }

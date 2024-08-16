@@ -9,8 +9,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FOLLOW_UP_DATE;
 
@@ -87,10 +86,8 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
-		beforeLastEncounter = encounterQuery.getSecondLatestFollowUp(endDate);
 		LastEncounter = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
-		firstEncounter = encounterQuery.getFirstEncounterByObsDate(startDate, endDate, FOLLOW_UP_DATE);
+		
 	}
 	
 	public List<Integer> getBaseEncounter() {
@@ -114,6 +111,9 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getTOCohort() {
+		baseEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
+		beforeLastEncounter = encounterQuery.getSecondLatestFollowUp(endDate);
+		
 		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS);
 		
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ")
@@ -127,10 +127,15 @@ public class TransferInOutQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getTICohort() {
-		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
+		//fetch minimum followup date or first follow update
+		firstEncounter = encounterQuery.getFirstEncounterByObsDate(null, endDate, FOLLOW_UP_DATE);
+		//filter out encounter whose fall in the reporting period.
+		firstEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), startDate, endDate,
+		    firstEncounter);
 		
-		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ")
-		        .append(conceptQuery(ConceptAnswer.TRANSFERRED_IN));
+		StringBuilder stringBuilder = baseQuery(ConceptAnswer.TRANSFERRED_IN);
+		
+		stringBuilder.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(ConceptAnswer.YES));
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());

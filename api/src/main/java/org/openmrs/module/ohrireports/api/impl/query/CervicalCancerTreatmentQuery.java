@@ -6,15 +6,16 @@ import org.openmrs.CohortMembership;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.datim.cxca_treatment.CxCaTreatment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS;
 
 @Component
 public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
@@ -91,109 +92,89 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getEncounters(
-		    Arrays.asList(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE, FollowUpConceptQuestions.FOLLOW_UP_DATE),
-		    startDate, endDate);
-		baseEncounter = refineBaseEncounter();
 	}
 	
-	private List<Integer> refineBaseEncounter() {
-		List<String> conceptUUIDs = Arrays.asList(ConceptAnswer.CXCA_TREATMENT_TYPE_THERMOCOAGULATION,
-		    ConceptAnswer.CXCA_TREATMENT_TYPE_LEEP, FollowUpConceptQuestions.CXCA_TREATMENT_TYPE_CRYOTHERAPY);
-		StringBuilder stringQuery = new StringBuilder("select distinct ob.encounter_id from obs as ob ");
-		stringQuery.append(" where ob.encounter_id in (:baseEncounter) ");
-		stringQuery.append(" and ob.concept_id = ").append(
-		    conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS));
-		stringQuery.append(" and ob.value_coded in ").append(conceptQuery(conceptUUIDs));
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery.toString());
-		
-		query.setParameterList("baseEncounter", baseEncounter);
-		List<Integer> response = (List<Integer>) query.list();
-		return response;
+	public void generateBaseReport() {
+		//reset already counted cohort
+		alreadyCountedCohort = new Cohort();
+
+		baseEncounter = encounterQuery.getEncountersByFollowUp(EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE,
+				CXCA_TREATMENT_PRECANCEROUS_LESIONS, Arrays.asList(ConceptAnswer.CXCA_TREATMENT_TYPE_THERMOCOAGULATION,
+						ConceptAnswer.CXCA_TREATMENT_TYPE_LEEP,FollowUpConceptQuestions.CXCA_TREATMENT_TYPE_CRYOTHERAPY,
+						ConceptAnswer.OTHER));
+
+		List<Integer> treatmentEncounter = encounterQuery.getEncounters(
+		Arrays.asList(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE),startDate, endDate,baseEncounter);
+		baseCohort = getCohort(treatmentEncounter);
+
+		List<Integer> treatmentEncounterFollowup =encounterQuery.getEncountersByExcludingCohort(Arrays.asList(FollowUpConceptQuestions.FOLLOW_UP_DATE),
+				baseEncounter,startDate, endDate,baseCohort);
+		baseEncounter.addAll(treatmentEncounterFollowup);
+
+
+		//removing duplicates
+		baseEncounter = new ArrayList<>(new HashSet<>(treatmentEncounter));
+
+		baseCohort = getCohort(baseEncounter);
+
 	}
 	
-	public Cohort getByScreeningType(String typConceptUUiD) {
-		String stringQuery = "SELECT distinct ps.person_id FROM (SELECT DISTINCT ob.person_id\n" + "   FROM obs AS ob\n"
-		        + "     INNER JOIN\n" + "     (SELECT MAX(ib.value_datetime) AS value_datetime, ib.person_id\n"
-		        + "      FROM obs AS ib\n" + "      WHERE (\n" + "			CASE \n" + " 			WHEN (ib.concept_id ="
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE)
-		        + " AND\n"
-		        + "				ib.value_datetime IS NOT NULL) THEN\n"
-		        + "                            ib.concept_id ="
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE)
-		        + " AND\n"
-		        + "                            ib.value_datetime >= :joinStartDate1 AND ib.value_datetime <= :joinEndDate1\n"
-		        + "			WHEN (ib.concept_id ="
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE)
-		        + " AND\n"
-		        + "				ib.value_datetime IS NULL) THEN\n"
-		        + "                            ib.concept_id ="
-		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_DATE)
-		        + " AND\n"
-		        + "                            ib.value_datetime >= :joinStartDate2 AND ib.value_datetime <= :joinEndDate2\n"
-		        + "			END\n"
-		        + "            )\n"
-		        + "      GROUP BY ib.person_id\n"
-		        + "     ) AS o\n"
-		        + "     ON o.person_id = ob.person_id\n"
-		        + "              \n"
-		        + "        INNER JOIN\n"
-		        + "    (select distinct person_id \n"
-		        + "\t\tfrom obs \n"
-		        + "        where concept_id ="
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TYPE_OF_SCREENING)
-		        + "        and value_coded = "
-		        + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id ";
-		
-		if (Objects.nonNull(alreadyCountedCohort) && !alreadyCountedCohort.isEmpty()) {
-			stringQuery = stringQuery + " and ob.person_id not in (:alreadyCounted) ";
+	/*
+		public Cohort getByScreeningType(String typConceptUUiD) {
+			String stringQuery = "SELECT distinct ps.person_id FROM (SELECT DISTINCT ob.person_id\n" + "   FROM obs AS ob\n"
+			        + "     INNER JOIN\n" + "     (SELECT MAX(ib.value_datetime) AS value_datetime, ib.person_id\n"
+			        + "      FROM obs AS ib\n" + "      WHERE (\n" + "			CASE \n" + " 			WHEN (ib.concept_id ="
+			        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE)
+			        + " AND\n"
+			        + "				ib.value_datetime IS NOT NULL) THEN\n"
+			        + "                            ib.concept_id ="
+			        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE)
+			        + " AND\n"
+			        + "                            ib.value_datetime >= :joinStartDate1 AND ib.value_datetime <= :joinEndDate1\n"
+			        + "			WHEN (ib.concept_id ="
+			        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_STARTING_DATE)
+			        + " AND\n"
+			        + "				ib.value_datetime IS NULL) THEN\n"
+			        + "                            ib.concept_id ="
+			        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_DATE)
+			        + " AND\n"
+			        + "                            ib.value_datetime >= :joinStartDate2 AND ib.value_datetime <= :joinEndDate2\n"
+			        + "			END\n"
+			        + "            )\n"
+			        + "      GROUP BY ib.person_id\n"
+			        + "     ) AS o\n"
+			        + "     ON o.person_id = ob.person_id\n"
+			        + "              \n"
+			        + "        INNER JOIN\n"
+			        + "    (select distinct person_id \n"
+			        + "\t\tfrom obs \n"
+			        + "        where concept_id ="
+			        + conceptQuery(FollowUpConceptQuestions.CXCA_TYPE_OF_SCREENING)
+			        + "        and value_coded = "
+			        + conceptQuery(typConceptUUiD) + ") AS tos\n" + "ON tos.person_id = ob.person_id ";
+			
+			if (Objects.nonNull(alreadyCountedCohort) && !alreadyCountedCohort.isEmpty()) {
+				stringQuery = stringQuery + " and ob.person_id not in (:alreadyCounted) ";
+			}
+			stringQuery = stringQuery + " ) AS ps ";
+			Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
+			query.setDate("joinStartDate1", startDate);
+			query.setDate("joinStartDate2", startDate);
+			query.setDate("joinEndDate1", endDate);
+			query.setDate("joinEndDate2", endDate);
+			
+			if (Objects.nonNull(alreadyCountedCohort) && !alreadyCountedCohort.isEmpty()) {
+				query.setParameterList("alreadyCounted", alreadyCountedCohort.getMemberIds());
+			}
+			
+			return new Cohort(query.list());
 		}
-		stringQuery = stringQuery + " ) AS ps ";
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
-		query.setDate("joinStartDate1", startDate);
-		query.setDate("joinStartDate2", startDate);
-		query.setDate("joinEndDate1", endDate);
-		query.setDate("joinEndDate2", endDate);
-		
-		if (Objects.nonNull(alreadyCountedCohort) && !alreadyCountedCohort.isEmpty()) {
-			query.setParameterList("alreadyCounted", alreadyCountedCohort.getMemberIds());
-		}
-		
-		return new Cohort(query.list());
-	}
+	*/
 	
-	public Cohort getTreatmentByCryotherapy(Cohort cohort) {
+	public Cohort getCohortByTreatmentType(String typConceptUUiD, Cohort cohort) {
 		String stringQuery = "select distinct  person_id\n" + "from obs\n" + "where concept_id = "
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS) + "and value_coded = "
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_TYPE_CRYOTHERAPY)
+		        + conceptQuery(CXCA_TREATMENT_PRECANCEROUS_LESIONS) + "and value_coded = " + conceptQuery(typConceptUUiD)
 		        + "and encounter_id in (:baseEncounter)" + "and person_id in (:personIdList)";
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
-		query.setParameterList("baseEncounter", baseEncounter);
-		query.setParameterList("personIdList", cohort.getMemberIds());
-		
-		return new Cohort(query.list());
-	}
-	
-	public Cohort getTreatmentByLEEP(Cohort cohort) {
-		String stringQuery = "select distinct person_id\n" + "from obs\n" + "where concept_id = "
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS) + "and value_coded = "
-		        + conceptQuery(ConceptAnswer.CXCA_TREATMENT_TYPE_LEEP) + "and encounter_id in (:baseEncounter)"
-		        + "and person_id in (:personIdList)";
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
-		query.setParameterList("baseEncounter", baseEncounter);
-		query.setParameterList("personIdList", cohort.getMemberIds());
-		
-		return new Cohort(query.list());
-	}
-	
-	public Cohort getTreatmentByThermocoagulation(Cohort cohort) {
-		String stringQuery = "select distinct person_id\n" + "from obs\n" + "where concept_id = "
-		        + conceptQuery(FollowUpConceptQuestions.CXCA_TREATMENT_PRECANCEROUS_LESIONS) + "and value_coded = "
-		        + conceptQuery(ConceptAnswer.CXCA_TREATMENT_TYPE_THERMOCOAGULATION) + "and encounter_id in (:baseEncounter)"
-		        + "and person_id in (:personIdList)";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		query.setParameterList("baseEncounter", baseEncounter);
@@ -214,5 +195,18 @@ public class CervicalCancerTreatmentQuery extends PatientQueryImpDao {
 		for (CohortMembership cohortMembership : countedCohort.getMemberships()) {
 			alreadyCountedCohort.addMembership(cohortMembership);
 		}
+	}
+	
+	public Cohort getByScreeningType(String conceptUuId) {
+		String stringQuery = "SELECT distinct ob.person_id FROM obs as ob where ob.concept_id="
+		        + conceptQuery(FollowUpConceptQuestions.CXCA_TYPE_OF_SCREENING) + " and ob.value_coded="
+		        + conceptQuery(conceptUuId) + " and ob.encounter_id in (:encounter)  and  ob.person_id in (:personIdList)";
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
+		
+		query.setParameterList("encounter", baseEncounter);
+		query.setParameterList("personIdList", baseCohort.getMemberIds());
+		
+		return new Cohort(query.list());
 	}
 }

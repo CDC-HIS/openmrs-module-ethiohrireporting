@@ -19,6 +19,17 @@ public class PMTCTFOAutoCalculateDataSetDefinition extends BaseDataSetDefinition
 	@ConfigurationProperty
 	private EncounterType encounterType;
 	
+	public Boolean getDenominator() {
+		return denominator;
+	}
+	
+	public void setDenominator(Boolean denominator) {
+		this.denominator = denominator;
+	}
+	
+	@ConfigurationProperty
+	private Boolean denominator = false;
+	
 	@ConfigurationProperty
 	private Boolean header = false;
 	

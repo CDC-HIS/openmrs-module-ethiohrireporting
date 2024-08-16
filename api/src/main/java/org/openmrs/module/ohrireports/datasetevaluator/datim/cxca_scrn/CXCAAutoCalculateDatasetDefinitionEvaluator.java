@@ -60,7 +60,7 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
 	}
 	
 	private void loadGetScreening(String conceptUuId) {
-		Cohort cohort = cervicalCancerQuery.getByScreeningType(conceptUuId);
+		Cohort cohort = cervicalCancerQuery.getByScreeningType(conceptUuId, cervicalCancerQuery.getCurrentEncounter());
 		cervicalCancerQuery.setCountedCohort(cohort);
 		Cohort negativeCohort = cervicalCancerQuery.getNegativeResult(cohort);
 		Cohort positiveCohort = cervicalCancerQuery.getPositiveResult(cohort);
@@ -68,16 +68,16 @@ public class CXCAAutoCalculateDatasetDefinitionEvaluator implements DataSetEvalu
 		
 		switch (conceptUuId) {
 			case ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE:
-				cervicalCancerQuery.setFirstScreening(new CxcaScreening(conceptUuId, negativeCohort, positiveCohort,
-				        suspectedCohort));
-				break;
-			case ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
-				cervicalCancerQuery.setReScreening(new CxcaScreening(conceptUuId, negativeCohort, positiveCohort,
-				        suspectedCohort));
+				cervicalCancerQuery.setFirstScreening(new CxcaScreening(ConceptAnswer.CXCA_FIRST_TIME_SCREENING_TYPE,
+				        negativeCohort, positiveCohort, suspectedCohort));
 				break;
 			case ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN:
-				cervicalCancerQuery.setPostScreening(new CxcaScreening(conceptUuId, negativeCohort, positiveCohort,
-				        suspectedCohort));
+				cervicalCancerQuery.setReScreening(new CxcaScreening(ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT,
+				        negativeCohort, positiveCohort, suspectedCohort));
+				break;
+			case ConceptAnswer.CXCA_TYPE_OF_SCREENING_POST_TREATMENT:
+				cervicalCancerQuery.setPostScreening(new CxcaScreening(ConceptAnswer.CXCA_TYPE_OF_SCREENING_RESCREEN,
+				        negativeCohort, positiveCohort, suspectedCohort));
 				break;
 			default:
 				break;

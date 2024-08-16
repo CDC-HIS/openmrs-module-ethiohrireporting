@@ -31,7 +31,7 @@ public class PMTCTFOReport implements ReportManager {
 	
 	@Override
 	public String getDescription() {
-		return "Number of HIV-exposed infants who were born 24 months prior to the reporting period and registered in the birth cohort.";
+		return "";
 	}
 	
 	@Override
@@ -58,10 +58,20 @@ public class PMTCTFOReport implements ReportManager {
 		pmtctfoAutoCalculateDataSetDefinition
 		        .setDescription("Number of HIV-exposed infants who were born 24 months prior to the reporting period and registered in the birth cohort.");
 		pmtctfoAutoCalculateDataSetDefinition.setParameters(getParameters());
+		pmtctfoAutoCalculateDataSetDefinition.setDenominator(true);
 		reportDefinition
 		        .addDataSetDefinition(
 		            "Number of HIV-exposed infants who were born 24 months prior to the reporting period and registered in the birth cohort.",
 		            EthiOhriUtil.map(pmtctfoAutoCalculateDataSetDefinition));
+		
+		PMTCTFOAutoCalculateDataSetDefinition pmtctfoNumeratorAutoCalculateDataSetDefinition = new PMTCTFOAutoCalculateDataSetDefinition();
+		pmtctfoNumeratorAutoCalculateDataSetDefinition
+		        .setDescription("Number of HIV-exposed infants with a documented outcome by 18 months of age disaggregated by outcome type. Numerator will auto-calculate from the Outcome Type Disaggregate.");
+		pmtctfoNumeratorAutoCalculateDataSetDefinition.setParameters(getParameters());
+		reportDefinition
+		        .addDataSetDefinition(
+		            "Number of HIV-exposed infants with a documented outcome by 18 months of age disaggregated by outcome type. Numerator will auto-calculate from the Outcome Type Disaggregate.",
+		            EthiOhriUtil.map(pmtctfoNumeratorAutoCalculateDataSetDefinition));
 		
 		PMTCTFODataSetDefinition pmtctfoDataSetDefinition = new PMTCTFODataSetDefinition();
 		pmtctfoDataSetDefinition.setDescription("Numerator: Disaggregated by Outcome Type");

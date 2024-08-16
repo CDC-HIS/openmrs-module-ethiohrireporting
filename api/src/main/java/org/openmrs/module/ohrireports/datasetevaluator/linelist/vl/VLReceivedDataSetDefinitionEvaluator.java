@@ -58,6 +58,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		List<Integer> baseEncounters = encounterQuery.getEncounters(
 		    Collections.singletonList(FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED),
 		    _DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate());
+		
 		vlQuery.loadInitialCohort(_DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate(), baseEncounters);
 		
 		List<Person> persons = LineListUtilities.sortPatientByName(patientQueryService.getPersons(vlQuery.cohort));
@@ -94,7 +95,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> pregnancyStatus = vlQuery.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS,
 		    vlQuery.cohort, baseEncounters);
 		HashMap<Integer, Object> breastfeedingStatus = vlQuery.getByResult(
-		    FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, vlQuery.cohort, baseEncounters);
+		    FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, vlQuery.cohort, vlQuery.getVlTakenEncounters());
 		
 		// fields from latest encounter
 		HashMap<Integer, Object> latestFollowupDateHashMap = vlQuery.getObsValueDate(latestFollowupEncounter,

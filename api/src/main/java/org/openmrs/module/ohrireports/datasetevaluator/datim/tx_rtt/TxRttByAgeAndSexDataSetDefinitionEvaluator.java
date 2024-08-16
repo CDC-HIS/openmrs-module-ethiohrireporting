@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_rtt;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openmrs.Cohort;
@@ -7,7 +8,6 @@ import org.openmrs.CohortMembership;
 
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.RTTQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_rtt.TxRttByAgeAndSexDataSetDefinition;
@@ -34,6 +34,8 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 	
 	private Cohort notEligibleCohort;
 	
+	private List<Integer> lessThanFive = new ArrayList<Integer>();
+	
 	TxRttByAgeAndSexDataSetDefinition _datasetDefinition;
 	
 	@Override
@@ -43,10 +45,10 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		if (_datasetDefinition.getHeader()) {
-			CD4Status cd4Status = _datasetDefinition.getCountCD4GreaterThan200();
+			//CD4Status cd4Status = _datasetDefinition.getCountCD4GreaterThan200();
 			rttQuery.getInterruptionMonth(_datasetDefinition.getEndDate());
 			//A cohort of interrupted less than six months
-			notEligibleCohort = rttQuery.getInterrupationByMonth(0, 6);
+			notEligibleCohort = rttQuery.getInterruptionMonth(0, 6);
 			//remove cohort of interrupted less than age 5
 			removeCohortAgeLessThan5(notEligibleCohort);
 			remainingCohort = rttQuery.getBaseCohort();
@@ -57,16 +59,19 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 			if (_datasetDefinition.getCountCD4GreaterThan200().equals(CD4Status.CD4Unknown)) {
 				// remove notEligible cd4 Cohort from remainingCohort
 				removeCohort(remainingCohort, notEligibleCohort);
-				buildDataset(set, remainingCohort);
+				//add less than five year age to unknown
+				lessThanFive.forEach(r->remainingCohort.addMember(r));
+				buildDataset(set, remainingCohort, 0, 65);
 				
 			} else if (_datasetDefinition.getCountCD4GreaterThan200().equals(CD4Status.CD4NotEligible)) {
-				buildDataset(set, notEligibleCohort);
+				removeCohort(remainingCohort, notEligibleCohort);
+				buildDataset(set, notEligibleCohort, 4, 65);
 			} else {
 				Cohort cd4CohortWithStatus = rttQuery.getCD4ByCohort(rttQuery.getBaseCohort(),
 				    _datasetDefinition.getCountCD4GreaterThan200() == CD4Status.CD4GreaterThan200,
 				    rttQuery.getBaseEncounter());
 				
-				buildDataset(set, cd4CohortWithStatus);
+				buildDataset(set, cd4CohortWithStatus, 4, 65);
 				removeCohort(remainingCohort, cd4CohortWithStatus);
 				removeCohort(notEligibleCohort, cd4CohortWithStatus);
 			}
@@ -79,18 +84,19 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
         List<Person> personList = rttQuery.getPersons(notEligibleCohort);
 
         for (Person person : personList) {
-            if (person.getAge() < 5) {
+            if (person.getAge(_datasetDefinition.getEndDate()) < 5) {
                 notEligibleCohort.getMemberships().removeIf(c->c.getPatientId().equals(person.getPersonId()));
+				lessThanFive.add(person.getPersonId() );
             }
         }
     }
 	
-	private void buildDataset(SimpleDataSet set, Cohort cd4CohortWithStatus) {
+	private void buildDataset(SimpleDataSet set, Cohort cd4CohortWithStatus, int min, int max) {
 		List<Person> personList = rttQuery.getPersons(cd4CohortWithStatus);
 		
 		aggregateBuilder.setCalculateAgeFrom(_datasetDefinition.getEndDate());
-		aggregateBuilder.setLowerBoundAge(0);
-		aggregateBuilder.setUpperBoundAge(65);
+		aggregateBuilder.setLowerBoundAge(min);
+		aggregateBuilder.setUpperBoundAge(max);
 		aggregateBuilder.setPersonList(personList);
 		
 		DataSetRow femaleDateSet = new DataSetRow();
@@ -108,8 +114,7 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 	
 	private void removeCohort(Cohort cohort, Cohort toBeRemoved) {
 		for (CohortMembership cohortMember : toBeRemoved.getMemberships()) {
-			cohort.removeMembership(cohortMember);
+			cohort.getMemberships().removeIf(c->c.getPatientId().equals(cohortMember.getPatientId()));
 		}
 	}
-	
 }

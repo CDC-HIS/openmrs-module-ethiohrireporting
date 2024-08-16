@@ -49,7 +49,8 @@ public class PMTCTARTReport implements ReportManager {
 		
 		PMTCTARTClientDataSetDefinition pmtctartClientDataSetDefinition = new PMTCTARTClientDataSetDefinition();
 		pmtctartClientDataSetDefinition.setParameters(getParameters());
-		reportDefinition.addDataSetDefinition("PMTCT_EID ", EthiOhriUtil.map(pmtctartClientDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Line List of ART Client on PMTCT ",
+		    EthiOhriUtil.map(pmtctartClientDataSetDefinition));
 		return reportDefinition;
 	}
 	

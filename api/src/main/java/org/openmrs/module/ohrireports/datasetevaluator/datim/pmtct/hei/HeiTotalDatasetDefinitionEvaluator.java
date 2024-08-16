@@ -40,8 +40,7 @@ public class HeiTotalDatasetDefinitionEvaluator implements DataSetEvaluator {
                 });
             });
             DataSetRow headerRow = new DataSetRow();
-            headerRow.addColumnValue(new DataSetColumn("sum", " ", String.class), "Sum result ");
-            headerRow.addColumnValue(new DataSetColumn("count", " ", Integer.class), count.intValue());
+            headerRow.addColumnValue(new DataSetColumn("Numerator", "Numerator", String.class), count.intValue());
 
             data.addRow(headerRow);
         }

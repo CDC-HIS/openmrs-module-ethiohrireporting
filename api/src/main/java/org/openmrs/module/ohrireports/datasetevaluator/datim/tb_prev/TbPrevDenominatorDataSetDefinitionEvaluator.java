@@ -173,21 +173,27 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
     }
 
     private int getUnknownAgeByGender(List<Person> persons, String gender) {
-        int count = 0;
+
+        List<Integer> personIds = new ArrayList<>();
         int age = 0;
         for (Person person : persons) {
             age = person.getAge(hdsd.getEndDate());
             if (person.getGender().equals(gender) && (age <= 0)) {
-                count++;
+                        personIds.add(person.getPersonId());
             }
 
         }
+        personIds.stream().forEach(personId -> {
+            persons.removeIf(p->p.getPersonId().equals(personId));
+
+        });
+
         if (gender.equals("M")) {
-            femaleTotal = femaleTotal + count;
+            femaleTotal = femaleTotal + personIds.size();
         } else {
-            maleTotal = maleTotal + count;
+            maleTotal = maleTotal + personIds.size();
         }
-        return count;
+        return personIds.size();
     }
 
     private int getEnrolledByAgeAndGender(int min, int max, List<Person> persons, String gender) {
@@ -201,7 +207,7 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
         }
 
-        if (gender.equals("M")) {
+        if (gender.equals("F")) {
             femaleTotal = femaleTotal + count;
         } else {
             maleTotal = maleTotal + count;

@@ -27,6 +27,17 @@ public class LineListUtilities {
 		return row;
 	}
 	
+	public static DataSetRow buildEmptyRow(List<String> columns, String totalColumn, String totalValueColumn) {
+		DataSetRow row = new DataSetRow();
+		
+		for (String column : columns) {
+			row.addColumnValue(new DataSetColumn(column, column, String.class), "");
+		}
+		row.addColumnValue(new DataSetColumn(totalColumn, totalColumn, String.class), "TOTAL");
+		row.addColumnValue(new DataSetColumn(totalValueColumn, totalValueColumn, String.class), "0");
+		return row;
+	}
+	
 	public static PersonAddress getPersonAddress(Set<PersonAddress> personAddresses) {
 		Optional<PersonAddress> personAddress = Optional
 				.ofNullable(personAddresses.stream().filter(PersonAddress::getPreferred).findFirst().orElse(null));

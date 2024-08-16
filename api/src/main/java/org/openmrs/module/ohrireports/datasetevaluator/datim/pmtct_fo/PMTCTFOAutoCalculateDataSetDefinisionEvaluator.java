@@ -34,22 +34,28 @@ public class PMTCTFOAutoCalculateDataSetDefinisionEvaluator implements DataSetEv
 		if (!_dataSetDefinition.getHeader()) {
 			context = evalContext;
 			
-			foQuery.setStartDate(_dataSetDefinition.getStartDate());
-			foQuery.setEndDate(_dataSetDefinition.getEndDate());
-			
-			pmtctfo = new PMTCTFO(foQuery.getPMTCTByHivInfectedStatus(), foQuery.getPMTCTByHivUninfectedStatus(),
-			        foQuery.getPMTCTByHivStatusUnknown(), foQuery.getPMTCTDiedWithoutStatusKnown());
-			
 			DataSetRow dataSet = new DataSetRow();
-			dataSet.addColumnValue(new DataSetColumn("Denominator", "Denominator", Integer.class), foQuery.getBaseCohort()
-			        .size());
-			dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), pmtctfo.getTotal());
+			
+			if (_dataSetDefinition.getDenominator()) {
+				init();
+				
+				dataSet.addColumnValue(new DataSetColumn("Denominator", "Denominator", Integer.class), foQuery
+				        .getBaseCohort().size());
+			} else {
+				dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), pmtctfo.getTotal());
+			}
 			set.addRow(dataSet);
+			
 		}
 		return set;
 	}
 	
-	private void loadPMTCTByHivStatus(String status) {
+	private void init() {
+		foQuery.setStartDate(_dataSetDefinition.getStartDate());
+		foQuery.setEndDate(_dataSetDefinition.getEndDate());
 		
+		pmtctfo = new PMTCTFO(foQuery.getPMTCTByHivInfectedStatus(), foQuery.getPMTCTByHivUninfectedStatus(),
+		        foQuery.getPMTCTByHivStatusUnknown(), foQuery.getPMTCTDiedWithoutStatusKnown());
 	}
+	
 }

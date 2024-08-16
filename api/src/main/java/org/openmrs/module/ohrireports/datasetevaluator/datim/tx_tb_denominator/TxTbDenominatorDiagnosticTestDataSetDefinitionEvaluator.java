@@ -28,8 +28,7 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 		hdsd = (TxTbDenominatorDiagnosticTestDataSetDefinition) dataSetDefinition;
 		
 		int smearOnly = tbQuery.getSmearOnly(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(), hdsd.getEndDate()).size();
-		int molecularWRD = tbQuery.getLFMResult(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(), hdsd.getEndDate())
-		        .size();
+		int molecularWRD = tbQuery.getLFMResult(tbQuery.getDenomiatorCohort()).size();
 		int additionalmWRD = tbQuery.getOtherThanLFMResult(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(),
 		    hdsd.getEndDate()).size();
 		

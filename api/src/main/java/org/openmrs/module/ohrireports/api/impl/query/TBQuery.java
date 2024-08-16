@@ -105,8 +105,8 @@ public class TBQuery extends PatientQueryImpDao {
 
     }
 
-    public Cohort getLFMResult(Cohort cohort, Date startDate, Date endDate) {
-        Query query = getByResultTypeQuery(cohort, startDate, endDate, FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST, Arrays.asList(FollowUpConceptQuestions.LF_LAM_RESULT, FollowUpConceptQuestions.GENE_XPERT_RESULT));
+    public Cohort getLFMResult(Cohort cohort) {
+        Query query = getByResultTypeQuestionQuery(cohort,  Arrays.asList(FollowUpConceptQuestions.LF_LAM_RESULT, FollowUpConceptQuestions.GENE_XPERT_RESULT));
         return new Cohort(query.list());
 
     }
@@ -118,9 +118,8 @@ public class TBQuery extends PatientQueryImpDao {
     }
 
     public Cohort getTBDiagnosticPositiveResult(Cohort cohort, Date startDate, Date endDate) {
-        Query query = getByResultTypeQuery(cohort, startDate, endDate, FollowUpConceptQuestions.TB_DIAGNOSTIC_TEST_RESULT, ConceptAnswer.POSITIVE);
-
-        return new Cohort(query.list());
+       List<Integer> encounters = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_ACTIVE_DATE), startDate, endDate,cohort);
+        return  getCohort(encounters);
 
     }
 
@@ -137,10 +136,22 @@ public class TBQuery extends PatientQueryImpDao {
         return query;
     }
 
-    private Query getByResultTypeQuery(Cohort cohort, Date startDate, Date endDate, String ConceptQuestionUUId, List<String> answerUUId) {
+    private Query getByResultTypeQuery(Cohort cohort, String ConceptQuestionUUId, List<String> answerUUId) {
         StringBuilder sqBuilder = basePersonIdQuery(ConceptQuestionUUId, answerUUId);
         sqBuilder.append(" and " + PERSON_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
         sqBuilder.append(" and  " + PERSON_BASE_ALIAS_OBS + "person_id in (:cohorts)");
+
+        Query query = sessionFactory.getCurrentSession().createSQLQuery(sqBuilder.toString());
+
+        query.setParameterList("encounters", tbScreeningEncounter);
+        query.setParameterList("cohorts", cohort.getMemberIds());
+
+        return query;
+    }
+    private Query getByResultTypeQuestionQuery(Cohort cohort, List<String> conceptQuestion) {
+        StringBuilder sqBuilder = baseConceptQuery(conceptQuestion);
+        sqBuilder.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
+        sqBuilder.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:cohorts)");
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sqBuilder.toString());
 
@@ -263,7 +274,7 @@ public class TBQuery extends PatientQueryImpDao {
         return new Cohort(query.list());
     }
     
-    
+
     public Cohort getDenomiatorCohort() {
         return denomiatorCohort;
     }
