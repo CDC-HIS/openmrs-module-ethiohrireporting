@@ -7,13 +7,21 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class TBPrevSamiAnnualDatasetDefinition extends BaseDataSetDefinition {
-	
-	@ConfigurationProperty
-	private Date startDate;
+public class TBPrevSemiAnnualDatasetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date endDate;
+	
+	@ConfigurationProperty
+	private Date startDateGC;
+	
+	public Date getStartDateGC() {
+		return startDateGC;
+	}
+	
+	public void setStartDateGC(Date startDateGC) {
+		this.startDateGC = startDateGC;
+	}
 	
 	@ConfigurationProperty
 	private String tptStatus;
@@ -24,14 +32,6 @@ public class TBPrevSamiAnnualDatasetDefinition extends BaseDataSetDefinition {
 	
 	public void setTptStatus(String tptStatus) {
 		this.tptStatus = tptStatus;
-	}
-	
-	public Date getStartDate() {
-		return startDate;
-	}
-	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
 	}
 	
 	public Date getEndDate() {

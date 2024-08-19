@@ -146,7 +146,7 @@ public class RegimentCategory {
                     R3d_OTHER_ADULT_3RD_LINE_REGIMEN, R3e_DRVr_TDF_3TC_EFV, R3f_DRVr_AZT_3TC_EFV);
 
             // adult and include others
-        } else if (isChildren == false) {
+        } else if (!isChildren) {
             return Arrays.asList(R3a_DRVr_DTG_AZT_3TC, R3b_DRVr_DTG_TDF_3TC, R3c_DRVr_ABC_3TC_DTG,
                     R3e_DRVr_TDF_3TC_EFV, R3f_DRVr_AZT_3TC_EFV, R3d_OTHER_ADULT_3RD_LINE_REGIMEN, R6a_DRVr_RAL_AZT_3TC,
                     R6b_DRVr_RAL_TDF_3TC, R6c_DRVr_DTG_AZT_3TC, R6d_DRVr_DTG_TDF_3TC,

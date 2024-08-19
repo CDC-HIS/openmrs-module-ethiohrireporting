@@ -1,6 +1,7 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevSemiAnnualDatasetDefinition;
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
@@ -11,6 +12,7 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +20,7 @@ import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.
 import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
 
 @Component
-public class TPTPrevSamiAnnualReport implements ReportManager {
+public class TPTPrevSemiAnnualReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
@@ -27,7 +29,7 @@ public class TPTPrevSamiAnnualReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- TPT Prev Sami";
+		return LINE_LIST_REPORT + "- TB_Prev ";
 	}
 	
 	@Override
@@ -37,13 +39,15 @@ public class TPTPrevSamiAnnualReport implements ReportManager {
 	
 	@Override
 	public List<Parameter> getParameters() {
-		Parameter tptStatus = new Parameter("tptStatus", "TPT Status", String.class);
-		tptStatus.addToWidgetConfiguration("codedOptions", "start,end");
-			Parameter endDate = new Parameter("endDate", "End Date", Date.class);
+		Parameter tptStatus = new Parameter("tptStatus", "Report Type", String.class);
+		tptStatus.addToWidgetConfiguration("codedOptions", "Denominator,Numerator");
+		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
 		endDate.setRequired(false);
+		Parameter startDate = new Parameter("startDateGC", "StartDateGC", Date.class);
+		startDate.setRequired(false);
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
-		return Arrays.asList(endDate, endDateGC, tptStatus);
+		return Arrays.asList(startDate, endDate, endDateGC, tptStatus);
 	}
 	
 	@Override
@@ -54,11 +58,11 @@ public class TPTPrevSamiAnnualReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		TBPrevDatasetDefinition tbPrevDataSetDefinition = new TBPrevDatasetDefinition();
-		tbPrevDataSetDefinition.addParameters(getParameters());
+		TBPrevSemiAnnualDatasetDefinition tbPrevSemiAnnualDatasetDefinition = new TBPrevSemiAnnualDatasetDefinition();
+		tbPrevSemiAnnualDatasetDefinition.addParameters(getParameters());
 		
 		reportDefinition.addDataSetDefinition("TPT Line List Report",
-		    EthiOhriUtil.map(tbPrevDataSetDefinition, "tptStatus=${tptStatus}"));
+		    EthiOhriUtil.mapEndDate(tbPrevSemiAnnualDatasetDefinition, "tptStatus=${tptStatus},startDateGC=${startDateGC}"));
 		return reportDefinition;
 	}
 	
@@ -67,7 +71,7 @@ public class TPTPrevSamiAnnualReport implements ReportManager {
 		
 		ReportDesign design = ReportManagerUtil.createExcelDesign("ea38de54-f0c4-44f4-80f3-29850dad5d6a", reportDefinition);
 		
-		return Arrays.asList(design);
+		return Collections.singletonList(design);
 	}
 	
 	@Override

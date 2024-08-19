@@ -2,11 +2,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tb_prev;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.TPT_START_DATE;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -58,7 +54,7 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
             Date prevSixMonth = getPrevSixMonth();
 
             //if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-            baseEncounters = encounterQuery.getEncountersByMaxObsDate(Arrays.asList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
+            baseEncounters = encounterQuery.getEncountersByMaxObsDate(Collections.singletonList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
 
             endDate = hdsd.getEndDate();
             Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_START_DATE, prevSixMonth,
@@ -85,7 +81,7 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
     private Date getPrevSixMonth() {
         Calendar subSixMonth = Calendar.getInstance();
-        subSixMonth.setTime(hdsd.getStartDate());
+        subSixMonth.setTime(hdsd.getEndDate());
         subSixMonth.add(Calendar.MONTH, -6);
         return subSixMonth.getTime();
     }

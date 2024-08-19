@@ -11,7 +11,7 @@ import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevSemiAnnualDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-@Handler(supports = { TBPrevDatasetDefinition.class })
+@Handler(supports = { TBPrevSemiAnnualDatasetDefinition.class })
 public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvaluator {
 	
 	private PatientQueryService patientQuery;
@@ -39,7 +39,7 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 	@Autowired
 	private TbQueryLineList tbQueryLineList;
 	
-	private TBPrevDatasetDefinition hdsd;
+	private TBPrevSemiAnnualDatasetDefinition hdsd;
 	
 	HashMap<Integer, Object> mrnIdentifierHashMap;
 	
@@ -56,7 +56,7 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		hdsd = (TBPrevDatasetDefinition) dataSetDefinition;
+		hdsd = (TBPrevSemiAnnualDatasetDefinition) dataSetDefinition;
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
@@ -66,7 +66,7 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 		
 		// Check start date and end date are valid
 		// If start date is greater than end date
-		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
+		if (hdsd.getEndDate() == null) {
 			//throw new EvaluationException("Start date cannot be greater than end date");
 			DataSetRow row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
@@ -77,16 +77,16 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 		
 		patientQuery = Context.getService(PatientQueryService.class);
 		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
-		
+		Date startDate = getPrevSixMonth();
+		hdsd.setStartDateGC(startDate);
 		if (hdsd.getTptStatus().equals("start")) {
 			baseTPTEncounters = encounterQuery.getEncounters(
-			    Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE), hdsd.getStartDate(), hdsd.getEndDate(),
+			    Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE), startDate, hdsd.getEndDate(),
 			    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 			
 		} else {
 			baseTPTEncounters = encounterQuery.getEncountersByMaxObsDate(
-			    Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE), hdsd.getStartDate(),
-			    hdsd.getEndDate());
+			    Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE), startDate, hdsd.getEndDate());
 			
 		}
 		
@@ -173,6 +173,13 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 		}
 		return data;
 		
+	}
+	
+	private Date getPrevSixMonth() {
+		Calendar subSixMonth = Calendar.getInstance();
+		subSixMonth.setTime(hdsd.getEndDate());
+		subSixMonth.add(Calendar.MONTH, -6);
+		return subSixMonth.getTime();
 	}
 	
 	private void loadColumnDictionary(Cohort cohort) {

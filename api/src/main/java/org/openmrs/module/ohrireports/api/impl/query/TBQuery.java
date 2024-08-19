@@ -117,10 +117,12 @@ public class TBQuery extends PatientQueryImpDao {
 
     }
 
-    public Cohort getTBDiagnosticPositiveResult(Cohort cohort, Date startDate, Date endDate) {
-       List<Integer> encounters = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_ACTIVE_DATE), startDate, endDate,cohort);
-        return  getCohort(encounters);
-
+    public Cohort getTBDiagnosticPositiveResult(Cohort cohort) {
+       return  new Cohort(getByResultTypeQuery(cohort,Arrays.asList(
+                FollowUpConceptQuestions.LF_LAM_RESULT,
+                FollowUpConceptQuestions.GENE_XPERT_RESULT,
+                FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST,
+                ConceptAnswer.SMEAR_ONLY),ConceptAnswer.POSITIVE).list());
     }
 
     private Query getByResultTypeQuery(Cohort cohort, Date startDate, Date endDate, String ConceptQuestionUUId, String answerUUId) {
@@ -136,10 +138,11 @@ public class TBQuery extends PatientQueryImpDao {
         return query;
     }
 
-    private Query getByResultTypeQuery(Cohort cohort, String ConceptQuestionUUId, List<String> answerUUId) {
-        StringBuilder sqBuilder = basePersonIdQuery(ConceptQuestionUUId, answerUUId);
-        sqBuilder.append(" and " + PERSON_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
-        sqBuilder.append(" and  " + PERSON_BASE_ALIAS_OBS + "person_id in (:cohorts)");
+    private Query getByResultTypeQuery(Cohort cohort, List<String> ConceptQuestionUUId, String conceptUUIDAnswer) {
+        StringBuilder sqBuilder = baseConceptQuery(ConceptQuestionUUId);
+        sqBuilder.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:encounters)");
+        sqBuilder.append(" and  " + CONCEPT_BASE_ALIAS_OBS + "person_id in (:cohorts)");
+        sqBuilder.append(" and "+CONCEPT_BASE_ALIAS_OBS+" value_coded = ").append(conceptQuery(conceptUUIDAnswer));
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sqBuilder.toString());
 

@@ -29,8 +29,7 @@ public class TxTbDenominatorPositiveResultReturnedDataSetDefinitionEvaluator imp
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
 		    "Number of ART patients who had a positive result returned for bacteriological diagnosis of active TB disease");
 		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class),
-		    tbQuery.getTBDiagnosticPositiveResult(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(), hdsd.getEndDate())
-		            .size());
+		    tbQuery.getTBDiagnosticPositiveResult(tbQuery.getDenomiatorCohort()).size());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		set.addRow(dataSet);
 		return set;
