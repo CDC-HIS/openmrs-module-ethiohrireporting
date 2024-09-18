@@ -29,7 +29,7 @@ public class TPTPrevSemiAnnualReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- TB_Prev ";
+		return LINE_LIST_REPORT + "- TB_PREV(DATIM)  ";
 	}
 	
 	@Override
@@ -43,11 +43,13 @@ public class TPTPrevSemiAnnualReport implements ReportManager {
 		tptStatus.addToWidgetConfiguration("codedOptions", "Denominator,Numerator");
 		Parameter endDate = new Parameter("endDate", "End Date", Date.class);
 		endDate.setRequired(false);
-		Parameter startDate = new Parameter("startDateGC", "StartDateGC", Date.class);
+		Parameter startDateGC = new Parameter("startDateGC", " ", Date.class);
+		startDateGC.setRequired(false);
+		Parameter startDate = new Parameter("startDate", "Start Date", Date.class);
 		startDate.setRequired(false);
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
-		return Arrays.asList(startDate, endDate, endDateGC, tptStatus);
+		return Arrays.asList(startDate, startDateGC, endDate, endDateGC, tptStatus);
 	}
 	
 	@Override
@@ -62,7 +64,7 @@ public class TPTPrevSemiAnnualReport implements ReportManager {
 		tbPrevSemiAnnualDatasetDefinition.addParameters(getParameters());
 		
 		reportDefinition.addDataSetDefinition("TPT Line List Report",
-		    EthiOhriUtil.mapEndDate(tbPrevSemiAnnualDatasetDefinition, "tptStatus=${tptStatus},startDateGC=${startDateGC}"));
+		    EthiOhriUtil.map(tbPrevSemiAnnualDatasetDefinition, "tptStatus=${tptStatus}"));
 		return reportDefinition;
 	}
 	

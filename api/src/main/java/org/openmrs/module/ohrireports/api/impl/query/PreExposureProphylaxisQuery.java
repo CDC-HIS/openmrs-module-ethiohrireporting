@@ -109,6 +109,12 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getAllNewPrEP() {
+		baseScreeningEncounter = encounterQuery.getEncounters(
+		    Collections.singletonList(PrepConceptQuestions.PREP_STARTED_DATE), null, endDate,
+		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
+		if (baseScreeningEncounter == null || baseScreeningEncounter.isEmpty()) {
+			return new Cohort();
+		}
 		StringBuilder stringBuilder = baseQuery(PrepConceptQuestions.PREP_TYPE_OF_CLIENT,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
@@ -122,6 +128,9 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getAllPregnantPrep(Cohort cohort) {
+		if (baseScreeningEncounter == null || baseScreeningEncounter.isEmpty()) {
+			return new Cohort();
+		}
 		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.PREGNANCY_STATUS,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");
@@ -134,6 +143,9 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 	}
 	
 	public Cohort getAllBreastFeedingPrep(Cohort cohort) {
+		if (baseScreeningEncounter == null || baseScreeningEncounter.isEmpty()) {
+			return new Cohort();
+		}
 		StringBuilder stringBuilder = baseQuery(FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		stringBuilder.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters)");

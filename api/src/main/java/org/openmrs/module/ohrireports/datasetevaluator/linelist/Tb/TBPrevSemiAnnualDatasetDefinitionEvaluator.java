@@ -78,21 +78,19 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 		patientQuery = Context.getService(PatientQueryService.class);
 		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
 		Date startDate = getPrevSixMonth();
-		hdsd.setStartDateGC(startDate);
-		if (hdsd.getTptStatus().equals("start")) {
+		baseTPTEncounters = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE),
+		    startDate, hdsd.getStartDate(), EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		Cohort baseCohort = tbQuery.getCohort(baseTPTEncounters);
+		
+		if (hdsd.getTptStatus().equalsIgnoreCase("Numerator")) {
 			baseTPTEncounters = encounterQuery.getEncounters(
-			    Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE), startDate, hdsd.getEndDate(),
-			    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
-			
-		} else {
-			baseTPTEncounters = encounterQuery.getEncountersByMaxObsDate(
-			    Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE), startDate, hdsd.getEndDate());
-			
+			    Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE), startDate, hdsd.getEndDate(),
+			    baseCohort, EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+			baseCohort = tbQuery.getCohort(baseTPTEncounters);
 		}
 		
-		Cohort cohort = tbQuery.getTPTStartedCohort(null, baseTPTEncounters, "");
-		loadColumnDictionary(cohort);
-		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
+		loadColumnDictionary(baseCohort);
+		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(baseCohort));
 		
 		DataSetRow row;
 		
@@ -177,7 +175,7 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 	
 	private Date getPrevSixMonth() {
 		Calendar subSixMonth = Calendar.getInstance();
-		subSixMonth.setTime(hdsd.getEndDate());
+		subSixMonth.setTime(hdsd.getStartDate());
 		subSixMonth.add(Calendar.MONTH, -6);
 		return subSixMonth.getTime();
 	}

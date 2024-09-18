@@ -297,9 +297,9 @@ public class PatientQueryImpDao extends BaseEthiOhriQuery implements PatientQuer
 	@NotNull
 	@Contract("_ -> new")
 	private Cohort transferredInFacility(List<Integer> encounters) {
-		StringBuilder sql = baseQuery(FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
+		StringBuilder sql = baseQuery(ConceptAnswer.TRANSFERRED_IN);
 		
-		sql.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(ConceptAnswer.TRANSFERRED_IN));
+		sql.append(" and ").append(OBS_ALIAS).append("value_coded = ").append(conceptQuery(ConceptAnswer.YES));
 		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounter) ");
 		
 		Query q = getSession().createSQLQuery(sql.toString());

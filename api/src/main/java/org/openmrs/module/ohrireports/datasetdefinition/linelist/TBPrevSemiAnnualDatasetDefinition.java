@@ -13,14 +13,14 @@ public class TBPrevSemiAnnualDatasetDefinition extends BaseDataSetDefinition {
 	private Date endDate;
 	
 	@ConfigurationProperty
-	private Date startDateGC;
+	private Date startDate;
 	
-	public Date getStartDateGC() {
-		return startDateGC;
+	public Date getStartDate() {
+		return startDate;
 	}
 	
-	public void setStartDateGC(Date startDateGC) {
-		this.startDateGC = startDateGC;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 	
 	@ConfigurationProperty

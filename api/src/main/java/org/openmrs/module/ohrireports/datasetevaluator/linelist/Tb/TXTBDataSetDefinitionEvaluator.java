@@ -12,6 +12,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBARTQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TXTBDataSetDefinition;
@@ -90,7 +91,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			List<Integer> baseEncountersOfTreatmentStartDate = encounterQuery.getEncountersByMaxObsDate(
 			    Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_START_DATE), hdsd.getStartDate(),
-			    hdsd.getEndDate());
+			    hdsd.getEndDate(), EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 			cohort = tbQuery.getCohort(baseEncountersOfTreatmentStartDate);
 			
 			getTXTbTreatmentAndTBArtDictionary(baseEncountersOfTreatmentStartDate, cohort);

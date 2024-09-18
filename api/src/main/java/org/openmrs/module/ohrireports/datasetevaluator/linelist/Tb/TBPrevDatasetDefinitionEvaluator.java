@@ -83,13 +83,15 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		} else {
 			baseTPTEncounters = encounterQuery.getEncountersByMaxObsDate(
 			    Collections.singletonList(FollowUpConceptQuestions.TPT_COMPLETED_DATE), hdsd.getStartDate(),
-			    hdsd.getEndDate());
+			    hdsd.getEndDate(), EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 			
 		}
 		
 		Cohort cohort = tbQuery.getTPTStartedCohort(null, baseTPTEncounters, "");
 		loadColumnDictionary(cohort);
 		List<Person> persons = LineListUtilities.sortPatientByName(patientQuery.getPersons(cohort));
+		if (!persons.isEmpty())
+			lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
 		
 		DataSetRow row;
 		

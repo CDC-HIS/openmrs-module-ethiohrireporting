@@ -10,6 +10,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
+import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev.TbPrevNumeratorDataSetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -50,8 +51,8 @@ public class TbPrevNumeratorDataSetDefinitionEvaluator implements DataSetEvaluat
 		if (!hdsd.getHeader()) {
 			//if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate())) {
 			// If there is TPT Start Date BETWEEN the Previous reporting period Start and End Date for the patient
-			baseEncounters = encounterQuery.getEncountersByMaxObsDate(Collections.singletonList(TPT_START_DATE),
-			    prevSixMonth, hdsd.getStartDate());
+			baseEncounters = encounterQuery.getEncounters(Collections.singletonList(TPT_START_DATE), prevSixMonth,
+			    hdsd.getStartDate(), EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 			//}
 			endDate = hdsd.getEndDate();
 			

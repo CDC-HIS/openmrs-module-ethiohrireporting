@@ -10,6 +10,8 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
+import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev.TbPrevDominatorDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -54,11 +56,12 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
             Date prevSixMonth = getPrevSixMonth();
 
             //if (Objects.isNull(endDate) || !endDate.equals(hdsd.getEndDate()))
-            baseEncounters = encounterQuery.getEncountersByMaxObsDate(Collections.singletonList(TPT_START_DATE), prevSixMonth, hdsd.getStartDate());
-
+            baseEncounters = encounterQuery.getEncounters(
+                    Collections.singletonList(FollowUpConceptQuestions.TPT_START_DATE), prevSixMonth, hdsd.getStartDate(),
+                    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
             endDate = hdsd.getEndDate();
-            Cohort tptCohort = tbQuery.getTPTCohort(baseEncounters, TPT_START_DATE, prevSixMonth,
-                    hdsd.getStartDate());
+            Cohort tptCohort = tbQuery.getCohort(baseEncounters);
+
             Cohort onArtCorCohort = new Cohort(
                     tbQuery.getArtStartedCohort(baseEncounters, null, hdsd.getEndDate(), tptCohort));
 
@@ -81,7 +84,7 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
     private Date getPrevSixMonth() {
         Calendar subSixMonth = Calendar.getInstance();
-        subSixMonth.setTime(hdsd.getEndDate());
+        subSixMonth.setTime(hdsd.getStartDate());
         subSixMonth.add(Calendar.MONTH, -6);
         return subSixMonth.getTime();
     }
