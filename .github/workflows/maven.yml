@@ -25,10 +25,8 @@ jobs:
     - name: Build and install with Maven
       run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
     - name: List files in target directory
-      run: ls -al openmrs-module-ethiohrireporting/openmrs-module-ethiohrireporting/omod/target/
-    - run: |
-        sudo mkdir -p /home/ubuntu/ethiohri-modules
-        mv openmrs-module-ethiohrireporting/openmrs-module-ethiohrireporting/omod/target/*.omod /home/ubuntu/ethiohri-modules
+      run: ls -al  /home/ubuntu/actions-runner-group/_work/openmrs-module-ethiohrireporting/openmrs-module-ethiohrireporting/omod/target
+   
   publish:
     runs-on: ethiohri-dev  
     needs: build
@@ -42,6 +40,6 @@ jobs:
         distribution: 'temurin'
     - name: Updating module
       run: |
-        sudo mv /home/ubuntu/ethiohri-modules/*.omod /usr/share/tomcat/tomcat8/.OpenMRS/modules/
+        sudo mv  /home/ubuntu/actions-runner-group/_work/openmrs-module-ethiohrireporting/openmrs-module-ethiohrireporting/omod/target/*.omod /usr/share/tomcat/tomcat8/.OpenMRS/modules/
     - name: Restarting server
       run: sudo systemctl restart tomcat8
