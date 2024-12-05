@@ -17,9 +17,8 @@ on:
 jobs:
   build:
 
-    runs-on: 
-      - self-hosted
-      - Default
+    runs-on: ethiohri-dev
+    
       
     steps:
     - uses: actions/checkout@v4
@@ -39,9 +38,7 @@ jobs:
 
   publish:
 
-    runs-on: 
-      - self-hosted
-      - Default
+    runs-on:  ethiohri-dev
       
     needs: build
     
@@ -52,9 +49,6 @@ jobs:
       with:
         java-version: '8'
         distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
     - name: Updating module
       run: sudo mv target/*.omod  /usr/share/tomcat/tomcat8/.OpenMRS/modules/
     - name: Restarting server
