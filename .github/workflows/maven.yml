@@ -17,7 +17,7 @@ on:
 jobs:
   build:
 
-    runs-on: ethiohri-dev
+    runs-on: ip-172-25-98-48
 
     steps:
     - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
 
   publish:
 
-    runs-on: ethiohri-dev
+    runs-on: ip-172-25-98-48
     needs: build
     
     steps:
