@@ -28,8 +28,8 @@ jobs:
       run: ls -al  /home/ubuntu/actions-runner-group/_work/openmrs-module-ethiohrireporting/openmrs-module-ethiohrireporting/omod/target
     - name: Moving omod file to shared folder for publish
       run: |
-        sudo mkdir -p ~/ethiohri-modules
-        mv  /home/ubuntu/actions-runner-group/_work/openmrs-module-ethiohrireporting/openmrs-module-ethiohrireporting/omod/target/*.omod ~/ethiohri-modules
+        sudo mkdir -p ~/ethiohri-modules && \
+        sudo mv  /home/ubuntu/actions-runner-group/_work/openmrs-module-ethiohrireporting/openmrs-module-ethiohrireporting/omod/target/*.omod ~/ethiohri-modules
    
   publish:
     runs-on: ethiohri-dev  
@@ -44,6 +44,8 @@ jobs:
         distribution: 'temurin'
     - name: Updating module
       run: |
-        sudo mv ~/ethiohri-modules/*.omod /usr/share/tomcat/tomcat8/.OpenMRS/modules/
+        sudo mv ~/ethiohri-modules/*.omod  /usr/share/tomcat/tomcat8/.OpenMRS/modules/ && \
+        sudo chown tomcat8:tomcat8 /user/share/tomcat/tomcat8/.OpenMRS/modules/ -R && \
+        sudo chmod 777 /user/share/tomcat/tomcat8/.OpenMRS/modules/ -R 
     - name: Restarting server
       run: sudo systemctl restart tomcat8
