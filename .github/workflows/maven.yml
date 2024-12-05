@@ -45,7 +45,7 @@ jobs:
     - name: Updating module
       run: |
         sudo mv ~/ethiohri-modules/*.omod  /usr/share/tomcat/tomcat8/.OpenMRS/modules/ && \
-        sudo chown tomcat8:tomcat8 /user/share/tomcat/tomcat8/.OpenMRS/modules/ -R && \
-        sudo chmod 777 /user/share/tomcat/tomcat8/.OpenMRS/modules/ -R 
+        sudo chown tomcat8:tomcat8 /usr/share/tomcat/tomcat8/.OpenMRS/modules/ -R && \
+        sudo chmod 777 /usr/share/tomcat/tomcat8/.OpenMRS/modules/ -R 
     - name: Restarting server
       run: sudo systemctl restart tomcat8

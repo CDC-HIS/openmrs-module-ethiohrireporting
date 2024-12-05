@@ -182,7 +182,7 @@
 							<goal>parse-version</goal>
 						</goals>
 						<configuration>
-							<propertyPrefix>omrsVersion</propertyPrefix>
+							<propertyPrefix>openmrsVersion</propertyPrefix>
 							<versionString>${openMRSVersion}</versionString>
 						</configuration>
 					</execution>
