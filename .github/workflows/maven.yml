@@ -24,7 +24,9 @@ jobs:
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}  # Cache key to invalidate when dependencies change
     - name: Build and install with Maven
       run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
-
+    - run: |
+        sudo mkdir -p /home/ubuntu/ethiohri-modules
+        mv target/*.omod /home/ubuntu/ethiohri-modules
   publish:
     runs-on: ethiohri-dev  
     needs: build
@@ -38,6 +40,6 @@ jobs:
         distribution: 'temurin'
     - name: Updating module
       run: |
-        sudo mv target/*.omod /usr/share/tomcat/tomcat8/.OpenMRS/modules/
+        sudo mv /home/ubuntu/ethiohri-modules/*.omod /usr/share/tomcat/tomcat8/.OpenMRS/modules/
     - name: Restarting server
       run: sudo systemctl restart tomcat8
