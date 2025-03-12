@@ -1,15 +1,11 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED;
-
-import java.util.*;
 
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
-import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_pvls.TX_PVLSAutoCalcDatasetDefinition;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -21,6 +17,8 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.*;
 
 @Handler(supports = { TX_PVLSAutoCalcDatasetDefinition.class })
 public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluator {
@@ -58,10 +56,10 @@ public class TX_PVLSAutoCalDatasetDefinitionEvaluator implements DataSetEvaluato
 			if (txDatasetDefinition.getIncludeUnSuppressed()) {
 				cohort = vlQuery.cohort;
 			} else {
-				vlQuery.setSupperessedCohort(vlQuery.getViralLoadSuppressed(Arrays.asList(
+				vlQuery.setSuppressedCohort(vlQuery.getViralLoadSuppressed(Arrays.asList(
 				    ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED, ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA)));
 				
-				cohort = vlQuery.supperessedCohort;
+				cohort = vlQuery.suppressedCohort;
 			}
 			
 			DataSetRow setRow = new DataSetRow();

@@ -1,9 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_pvls;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.VIRAL_LOAD_STATUS;
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.HIV_VIRAL_LOAD_COUNT;
@@ -18,6 +14,11 @@ import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
 /*
 * List of patient with viral load suppressed
 * 
@@ -25,11 +26,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class HivPvlsQuery extends PatientQueryImpDao {
 	
-	private DbSessionFactory sessionFactory;
-	
-	private Date startDate, endDate = new Date();
-	
-	@Autowired
+	private final DbSessionFactory sessionFactory;
+
+    @Autowired
 	private VlQuery vlQuery;
 	
 	private List<Integer> lastEncounterIds;
@@ -45,15 +44,13 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	}
 	
 	public void setData(Date start, Date end, List<Integer> encounters) {
-		
-		startDate = start;
-		endDate = end;
-		lastEncounterIds = encounters;
-		vlQuery.loadInitialCohort(startDate, endDate, lastEncounterIds);
+
+        lastEncounterIds = encounters;
+		vlQuery.loadInitialCohort(start, end, lastEncounterIds);
 	}
 	
 	public Cohort getPatientsWithViralLoadSuppressed(String gender) {
-		Cohort cohort = vlQuery.getViralLoadSuppressed(Arrays.asList(ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED));
+		Cohort cohort = vlQuery.getViralLoadSuppressed(Collections.singletonList(ConceptAnswer.HIV_VIRAL_LOAD_SUPPRESSED));
 		
 		if (Objects.isNull(gender) || gender.isEmpty())
 			return cohort;

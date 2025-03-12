@@ -19,15 +19,15 @@ public class VlQuery extends ObsElement {
 	
 	public Cohort cohort;
 	
-	public Cohort getSupperessedCohort() {
-		return supperessedCohort;
+	public Cohort getSuppressedCohort() {
+		return suppressedCohort;
 	}
 	
-	public void setSupperessedCohort(Cohort supperessedCohort) {
-		this.supperessedCohort = supperessedCohort;
+	public void setSuppressedCohort(Cohort supperessedCohort) {
+		this.suppressedCohort = supperessedCohort;
 	}
 	
-	public Cohort supperessedCohort;
+	public Cohort suppressedCohort;
 	
 	private List<Integer> VlTakenEncounters;
 	

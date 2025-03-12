@@ -1,9 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED;
-
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
@@ -49,7 +46,7 @@ public class TX_PVLSPregnantBreastFeedingDatasetDefinitionEvaluator implements D
 		if(txDatasetDefinition.getIncludeUnSuppressed()){
 			cohort = vlQuery.cohort;
 		}else{
-			cohort = vlQuery.supperessedCohort;
+			cohort = vlQuery.suppressedCohort;
 		}
 
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
