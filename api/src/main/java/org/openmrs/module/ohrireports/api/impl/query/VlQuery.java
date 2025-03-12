@@ -1,7 +1,5 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import java.util.*;
-
 import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
@@ -9,6 +7,8 @@ import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.HIV_VIRAL_LOAD_COUNT;
 
@@ -19,6 +19,18 @@ public class VlQuery extends ObsElement {
 	
 	public Cohort cohort;
 	
+	public Cohort suppressedCohort;
+	
+	public Date start, end = null;
+	
+	private List<Integer> VlTakenEncounters;
+	
+	@Autowired
+	public VlQuery(DbSessionFactory _SessionFactory) {
+		super(_SessionFactory);
+		sessionFactory = _SessionFactory;
+	}
+	
 	public Cohort getSuppressedCohort() {
 		return suppressedCohort;
 	}
@@ -27,49 +39,33 @@ public class VlQuery extends ObsElement {
 		this.suppressedCohort = supperessedCohort;
 	}
 	
-	public Cohort suppressedCohort;
-	
-	private List<Integer> VlTakenEncounters;
-	
 	public List<Integer> getVlTakenEncounters() {
 		return VlTakenEncounters;
 	}
 	
-	public Date start, end = null;
-	
-	@Autowired
-	public VlQuery(DbSessionFactory _SessionFactory) {
-		super(_SessionFactory);
-		sessionFactory = _SessionFactory;
-	}
-	
 	public void loadInitialCohort(Date _start, Date _end, List<Integer> vList) {
-		if ((start == null || !start.equals(_start)) || (end == null || !end.equals(_end))) {
-			start = _start;
-			end = _end;
-			VlTakenEncounters = vList;
-			//getEncountersWithVLStatusOnly(vList);
-			cohort = getViralLoadReceivedCohort();
-		}
-		
+		start = _start;
+		end = _end;
+		VlTakenEncounters = vList;
+		cohort = getViralLoadReceivedCohort();
 	}
 	
 	private List<Integer> getEncountersWithVLStatusOnly(List<Integer> vList) {
-		List<Integer> encounterIdList = new ArrayList<>();
-		 if(vList==null || vList.isEmpty())
-		  return encounterIdList;
-		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(" select encounter_id from obs where concept_id =" + conceptQuery(FollowUpConceptQuestions.VIRAL_LOAD_STATUS) + " " + " and value_coded is not null and encounter_id in (:latestEncounterIds)");
+        List<Integer> encounterIdList = new ArrayList<>();
+        if (vList == null || vList.isEmpty())
+            return encounterIdList;
 
-		query.setParameterList("latestEncounterIds", vList);
-	
-			List list =  query.list();
-		if (list != null) {
-			encounterIdList = query.list();
-		}
-		return encounterIdList;
-		
-	}
+        Query query = sessionFactory.getCurrentSession().createSQLQuery(" select encounter_id from obs where concept_id =" + conceptQuery(FollowUpConceptQuestions.VIRAL_LOAD_STATUS) + " " + " and value_coded is not null and encounter_id in (:latestEncounterIds)");
+
+        query.setParameterList("latestEncounterIds", vList);
+
+        List list = query.list();
+        if (list != null) {
+            encounterIdList = query.list();
+        }
+        return encounterIdList;
+
+    }
 	
 	public Cohort getViralLoadReceivedCohort() {
 		
@@ -90,15 +86,15 @@ public class VlQuery extends ObsElement {
 	}
 	
 	public Cohort getViralLoadSuppressed(List<String> concepts) {
-		Set<Integer> allPatients = new HashSet<>();
-		Query query = getByViralLoadStatus(concepts);
-		allPatients.addAll(query.list());
+        Set<Integer> allPatients = new HashSet<>();
+        Query query = getByViralLoadStatus(concepts);
+        allPatients.addAll(query.list());
 
 //		List<Integer> personIds = getSuppressedByVLCount(null,50);
 //		allPatients.addAll(personIds);
-		return new Cohort(allPatients);
+        return new Cohort(allPatients);
 
-	}
+    }
 	
 	public Cohort getViralLoadUnSuppressed() {
 		
@@ -130,23 +126,23 @@ public class VlQuery extends ObsElement {
 		return getByVLTestIndication(_cohort, ConceptAnswer.TARGET_VIRAL_LOAD);
 	}
 	
-	public List<Integer> getSuppressedByVLCount(Integer minVlCount,Integer maxVlCount) {
-		StringBuilder sql = baseQuery(HIV_VIRAL_LOAD_COUNT);
-		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:baseEncounterId) ");
-		if (!Objects.isNull(minVlCount))
-			sql.append(" and ").append(OBS_ALIAS).append("value_numeric > ").append(minVlCount);
-		if (!Objects.isNull(maxVlCount))
-			sql.append(" and ").append(OBS_ALIAS).append("value_numeric <= ").append(maxVlCount);
+	public List<Integer> getSuppressedByVLCount(Integer minVlCount, Integer maxVlCount) {
+        StringBuilder sql = baseQuery(HIV_VIRAL_LOAD_COUNT);
+        sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:baseEncounterId) ");
+        if (!Objects.isNull(minVlCount))
+            sql.append(" and ").append(OBS_ALIAS).append("value_numeric > ").append(minVlCount);
+        if (!Objects.isNull(maxVlCount))
+            sql.append(" and ").append(OBS_ALIAS).append("value_numeric <= ").append(maxVlCount);
 
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
+        Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-		query.setParameterList("baseEncounterId", VlTakenEncounters);
+        query.setParameterList("baseEncounterId", VlTakenEncounters);
 
-		List list = query.list();
-		if (list == null)
-			return new ArrayList<>();
-		return (ArrayList<Integer>) list;
-	}
+        List list = query.list();
+        if (list == null)
+            return new ArrayList<>();
+        return (ArrayList<Integer>) list;
+    }
 	
 	private Cohort getByVLTestIndication(Cohort _cohort, String answer) {
 		StringBuilder sql = basePersonIdQuery(FollowUpConceptQuestions.REASON_VIRAL_LOAD_TEST, answer);

@@ -1,6 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_pvls;
 
-
 import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;

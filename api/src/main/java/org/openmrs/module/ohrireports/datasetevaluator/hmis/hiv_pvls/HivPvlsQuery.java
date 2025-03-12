@@ -1,6 +1,5 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_pvls;
 
-
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.VIRAL_LOAD_STATUS;
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.HIV_VIRAL_LOAD_COUNT;
 import static org.openmrs.module.ohrireports.constants.ConceptAnswer.HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA;
@@ -27,8 +26,8 @@ import java.util.Objects;
 public class HivPvlsQuery extends PatientQueryImpDao {
 	
 	private final DbSessionFactory sessionFactory;
-
-    @Autowired
+	
+	@Autowired
 	private VlQuery vlQuery;
 	
 	private List<Integer> lastEncounterIds;
@@ -44,8 +43,8 @@ public class HivPvlsQuery extends PatientQueryImpDao {
 	}
 	
 	public void setData(Date start, Date end, List<Integer> encounters) {
-
-        lastEncounterIds = encounters;
+		
+		lastEncounterIds = encounters;
 		vlQuery.loadInitialCohort(start, end, lastEncounterIds);
 	}
 	
