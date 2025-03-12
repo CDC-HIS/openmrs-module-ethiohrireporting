@@ -23,14 +23,12 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	private Date endDate;
 	
-	private List<Integer> baseEncounter;
-	
 	private Cohort baseCohort;
 	
 	@Autowired
 	private EncounterQuery encounterQuery;
 	
-	private List<Integer> currentEncounter;
+	//private List<Integer> currentEncounter;
 	
 	public Date getStartDate() {
 		return startDate;
@@ -46,23 +44,27 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate, String filteringConcept, String encounterTypeUUid) {
 		this.endDate = endDate;
-		baseEncounter = encounterQuery.getEncounters(Arrays.asList(filteringConcept), startDate, endDate);
-		currentEncounter = baseEncounter = refineBaseEncounter(encounterTypeUUid);
+		/*
+		baseEncounter = encounterQuery.getEncountersByMaxObsDate(Collections.singletonList(filteringConcept), startDate,
+		    endDate, encounterTypeUUid);
+
+		 encounterQuery.getEncounters(Collections.singletonList(filteringConcept), startDate, endDate);
+		 currentEncounter = baseEncounter = refineBaseEncounter(encounterTypeUUid);
+		*/
 	}
 	
-	private List<Integer> refineBaseEncounter(String encounterTypeUUid) {
-		StringBuilder stringQuery = new StringBuilder("select distinct ob.encounter_id from obs as ob ");
-		stringQuery.append("Inner join encounter enc on ob.encounter_id = enc.encounter_id ");
-		stringQuery.append("Inner join encounter_type et on  et.encounter_type_id = enc.encounter_type ");
-		stringQuery.append(" where ob.encounter_id in (:baseEncounter) ");
-		stringQuery.append(" and et.uuid = '").append(encounterTypeUUid).append("'");
+	/*private List<Integer> refineBaseEncounter(String encounterTypeUUid) {
+		String stringQuery = "select distinct ob.encounter_id from obs as ob "
+		        + "Inner join encounter enc on ob.encounter_id = enc.encounter_id "
+		        + "Inner join encounter_type et on  et.encounter_type_id = enc.encounter_type "
+		        + " where ob.encounter_id in (:baseEncounter) " + " and et.uuid = '" + encounterTypeUUid + "'";
 		
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery.toString());
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
 		
 		query.setParameterList("baseEncounter", baseEncounter);
 		List<Integer> response = (List<Integer>) query.list();
 		return response;
-	}
+	}*/
 	
 	@Autowired
 	public HivPrEpQuery(DbSessionFactory sessionFactory) {
@@ -155,7 +157,7 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		
 		String condition = " and " + PERSON_ID_ALIAS_OBS + "concept_id ="
 		        + conceptQuery(PostExposureConceptQuestions.PEP_EXPOSURE_TYPE) + " and " + PERSON_ID_ALIAS_OBS
-		        + "value_coded = " + conceptQuery(uuid) + "";
+		        + "value_coded = " + conceptQuery(uuid);
 		StringBuilder sql = personIdQuery(getCurrQueryClauses(), condition);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
@@ -168,27 +170,44 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		
 	}
 	
-	public Cohort getCohortByConceptAndBaseEncounter(String questionConcept) {
-		String stringQuery = "SELECT distinct person_id\n" + "FROM obs\n" + "WHERE concept_id = "
-		        + conceptQuery(questionConcept) + "and encounter_id in ( :baseEncounter)";
+	public Cohort getNewOnPrep() {
+		List<Integer> screenedEncounter = encounterQuery.getEncounters(
+		    Collections.singletonList(PrepConceptQuestions.PREP_STARTED_DATE), startDate, endDate,
+		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
+		
+		String stringQuery = "SELECT distinct person_id FROM obs WHERE concept_id = "
+		        + conceptQuery(PrepConceptQuestions.PREP_TYPE_OF_CLIENT) + " and value_coded ="
+		        + conceptQuery(PrepConceptQuestions.PREP_NEW_CLIENT) + " and voided=0 and encounter_id in ( :baseEncounter)";
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery);
-		query.setParameterList("baseEncounter", baseEncounter);
-		return new Cohort(query.list());
+		query.setParameterList("baseEncounter", screenedEncounter);
+		Cohort cohort = new Cohort(query.list());
+		
+		return removePrepDroppedOut(cohort);
+	}
+	
+	public Cohort removePrepDroppedOut(Cohort _newPrepCohort) {
+		List<Integer> beforeStartDatePrepEncounter = encounterQuery
+		        .getEncounters(Collections.singletonList(PEPReport.PR_EP_STARTED), null, startDate,
+		            EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
+		
+		Cohort cohort = getCohort(beforeStartDatePrepEncounter);
+		
+		return Cohort.subtract(_newPrepCohort, cohort);
 	}
 	
 	public Cohort getAllPrEPCurr() {
-		List<Integer> basePrEPCTEncounter = encounterQuery.getEncounters(Arrays.asList(FOLLOW_UP_DATE), null, endDate,
-		    EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		List<Integer> basePrEPCTEncounter = encounterQuery.getEncounters(Collections.singletonList(FOLLOW_UP_DATE), null,
+		    endDate, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		List<Integer> filteredEncounterForPrepCT = filterEncounterByPrePStatusForPrepCT(
-		    Arrays.asList(PrepConceptQuestions.PREP_DOSE_END_DATE), null, endDate, basePrEPCTEncounter);
+		    Collections.singletonList(PrepConceptQuestions.PREP_DOSE_END_DATE), endDate, basePrEPCTEncounter);
 		
 		baseCohort = getCohort(filteredEncounterForPrepCT);
 		
 		return baseCohort;
 	}
 	
-	private List<Integer> filterEncounterByPrePStatusForPrepCT(List<String> questionConcept, Date startDate, Date endDate, List<Integer> encounters) {
+	private List<Integer> filterEncounterByPrePStatusForPrepCT(List<String> questionConcept, Date endDate, List<Integer> encounters) {
 
 		if (encounters.isEmpty())
 			return encounters;
@@ -202,8 +221,6 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		builder.append(" where obs_enc.concept_id in ")
 				.append(conceptQuery(questionConcept));
 
-		if (startDate != null)
-			builder.append(" and obs_enc.value_datetime <= :start ");
 
 		if (endDate != null)
 			builder.append(" and obs_enc.value_datetime >= :end ");
@@ -213,12 +230,10 @@ public class HivPrEpQuery extends PatientQueryImpDao {
 		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
 
 		builder.append(" and ob.concept_id in ").append(conceptQuery(questionConcept));
-		builder.append(" and ob.encounter_id in (:latestFollowUpDates)");
+		builder.append(" and ob.voided=0 and ob.encounter_id in (:latestFollowUpDates)");
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(builder.toString());
 
-		if (startDate != null)
-			q.setDate("start", startDate);
 
 		if (endDate != null)
 			q.setDate("end", endDate);

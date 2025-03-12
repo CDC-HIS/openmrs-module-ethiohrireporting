@@ -9,6 +9,8 @@ public class PrepConceptQuestions {
 	
 	public final static String PREP_FOLLOWUP_STATUS = "222f64a8-a603-4d2e-b70e-2d90b622bb04";
 	
+	public final static String PREP_NEW_CLIENT = "164144AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
 	public final static String PREP_NEXT_VISIT_DATE = "c596f199-4d76-4eca-b3c4-ffa631c0aee9";
 	
 	public final static String PREP_REGIMEN = "722ff3de-e2d1-4df4-8d05-ca881dc7073b";
@@ -21,7 +23,7 @@ public class PrepConceptQuestions {
 	
 	public final static String PREP_MISSED_TABLETS = "a10bb1c2-64a5-4f62-9d2f-05ef1b261fb8";
 	
-	public final static String PREP_TYPE_OF_CLIENT = "da8c5265-2ab4-43f8-af66-ec1c9c8e9d4f ";
+	public final static String PREP_TYPE_OF_CLIENT = "da8c5265-2ab4-43f8-af66-ec1c9c8e9d4f";
 	
 	public final static String REASON_FOR_STOPPING_PREP = "4bf84596-dd44-4b81-a638-4617e189a89d";
 	

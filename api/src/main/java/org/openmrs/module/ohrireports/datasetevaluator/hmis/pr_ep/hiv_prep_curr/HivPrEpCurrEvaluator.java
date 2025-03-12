@@ -1,12 +1,7 @@
 package org.openmrs.module.ohrireports.datasetevaluator.hmis.pr_ep.hiv_prep_curr;
 
-import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
-import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
-import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
-
-import java.util.*;
-
 import org.openmrs.Cohort;
+import org.openmrs.CohortMembership;
 import org.openmrs.Person;
 import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
@@ -20,31 +15,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
+
+import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.DISCORDANT_COUPLE;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_1_NAME;
+import static org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISConstant.COLUMN_2_NAME;
+
 @Component
 @Scope("prototype")
-public class HivPrEpCurrEvaluator  {
-    
+public class HivPrEpCurrEvaluator {
+
+    private final String COLUMN_3_NAME = "Number";
+    List<Person> personList = new ArrayList<>();
     @Autowired
     private HivPrEpQuery hivPrEPQuery;
-    
-	private final String COLUMN_3_NAME = "Number";
-    List<Person> personList = new ArrayList<>();
-	private Date end;
-    
-    public void buildDataset(Date start,Date end, SimpleDataSet dataset) {
-	    
-	    this.end = end;
+    private Date end;
+    private Set<Person> personSet;
+
+    public void buildDataset(Date start, Date end, SimpleDataSet dataset) {
+
+        this.end = end;
 
         hivPrEPQuery.setStartDate(start);
         hivPrEPQuery.setEndDate(end, FollowUpConceptQuestions.FOLLOW_UP_DATE, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 
         Cohort prepFollowupCohort = hivPrEPQuery.getAllPrEPCurr();
-
-
+        Cohort prepNewCohort = hivPrEPQuery.getNewOnPrep();
+        Cohort cohort = Cohort.union(prepFollowupCohort, prepNewCohort);
         dataset.addRow(buildColumn("", "PrEP Curr (Number of individuals that received oral PrEP during the reporting period)", ""));
 
-        personList = hivPrEPQuery.getPersons(prepFollowupCohort);
-        dataset.addRow(buildColumn("", "By Age and Sex",prepFollowupCohort.size()));
+        personList = hivPrEPQuery.getPersons(cohort);
+        personSet = new HashSet<>(personList);
+        removeAllBelowAge();
+
+        dataset.addRow(buildColumn("", "By Age and Sex", personSet.size()));
         dataset.addRow(buildColumn(".1", "15 - 19 years, Male", getCohortSizeByAgeAndGender(15, 19, Gender.Male)));
         dataset.addRow(buildColumn(".2", "15 - 19 years, Female", getCohortSizeByAgeAndGender(15, 19, Gender.Female)));
         dataset.addRow(buildColumn(".3", "20 - 24 years, Male", getCohortSizeByAgeAndGender(20, 24, Gender.Male)));
@@ -63,8 +67,11 @@ public class HivPrEpCurrEvaluator  {
         dataset.addRow(buildColumn(".16", ">=50 years, Female", getCohortSizeByAgeAndGender(50, 150, Gender.Female)));
 
         int total = 0;
-        Cohort fsw = hivPrEPQuery.getCategoryOnPrep(PrepConceptQuestions.SELF_IDENTIFYING_FSW, prepFollowupCohort);
-        Cohort discordantCouple = hivPrEPQuery.getCategoryOnPrep(DISCORDANT_COUPLE, prepFollowupCohort);
+        Cohort finalCohort =new Cohort();
+        personSet.forEach(p->{finalCohort.addMembership(new CohortMembership(p.getPersonId()));});
+
+        Cohort fsw = hivPrEPQuery.getCategoryOnPrep(PrepConceptQuestions.SELF_IDENTIFYING_FSW, finalCohort);
+        Cohort discordantCouple = hivPrEPQuery.getCategoryOnPrep(DISCORDANT_COUPLE, finalCohort);
         total = fsw.size() + discordantCouple.size();
 
         DataSetRow clientCategoryRow = new DataSetRow();
@@ -101,8 +108,8 @@ public class HivPrEpCurrEvaluator  {
 
     private DataSetRow buildColumn(String col_1_value, String col_2_value, Integer col_3_value) {
         DataSetRow prepDataSetRow = new DataSetRow();
-	    String baseName = "HIV_PrEP_CURR.1 ";
-	    prepDataSetRow.addColumnValue(
+        String baseName = "HIV_PrEP_CURR.1 ";
+        prepDataSetRow.addColumnValue(
                 new DataSetColumn(COLUMN_1_NAME, COLUMN_1_NAME, String.class),
                 baseName + col_1_value);
         prepDataSetRow.addColumnValue(
@@ -113,6 +120,7 @@ public class HivPrEpCurrEvaluator  {
 
         return prepDataSetRow;
     }
+
     private DataSetRow buildColumn(String col_1_value, String col_2_value, String col_3_value) {
         DataSetRow prepDataSetRow = new DataSetRow();
         String baseName = "HIV_PrEP_CURR.1 ";
@@ -128,26 +136,24 @@ public class HivPrEpCurrEvaluator  {
         return prepDataSetRow;
     }
 
+    private void removeAllBelowAge() {
+        personSet.removeIf(person -> person.getAge(end) < 15);
+    }
+
     private Integer getCohortSizeByAgeAndGender(int minAge, int maxAge, Gender gender) {
-        int _age = 0;
-        List<Integer> patients = new ArrayList<>();
-        String _gender = gender.equals(Gender.Female) ? "f" : "m";
+        int _age;
+        int count = 0;
         if (maxAge > 1) {
             maxAge = maxAge + 1;
         }
-        for (Person person : personList) {
-
+        for (Person person : personSet) {
             _age = person.getAge(end);
-
-            if (!patients.contains(person.getPersonId())
-                    && (_age >= minAge && _age < maxAge)
-                    && (person.getGender().toLowerCase().equals(_gender))) {
-
-                patients.add(person.getPersonId());
-
+            if ((_age >= minAge && _age < maxAge)
+                    && (person.getGender().equalsIgnoreCase(gender.getValue()))) {
+                count++;
             }
         }
-        return patients.size();
+        return count;
     }
 
 }
