@@ -90,7 +90,7 @@ public class LineListUtilities {
 		LocalDateTime end = LocalDateTime.ofInstant(instantTo, ZoneId.systemDefault());
 		
 		// Calculate the difference in days
-		return ChronoUnit.DAYS.between(start, end);
+		return ChronoUnit.DAYS.between(end, start);
 	}
 	
 	public static String getPhone(List<PersonAttribute> activeAttributes) {
