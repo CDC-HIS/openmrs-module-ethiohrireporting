@@ -229,7 +229,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 	public List<Integer> getAliveFirstFollowUpEncounters(Date start, Date end) {
 		List<Integer> allEncounters = getFirstEncounterByObsDate(start, end, FOLLOW_UP_DATE);
 		
-		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id ="
+		String builder = "select ob.encounter_id from obs as ob where ob.concept_id ="
 		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS) + " and ob.value_coded in "
 		        + conceptQuery(Arrays.asList(ConceptAnswer.ALIVE, ConceptAnswer.RESTART))
 		        + " and ob.encounter_id in (:encounters)";

@@ -170,7 +170,7 @@ public class FollowUpConceptQuestions {
 	public final static String DSD_CATGORIES = "defeb4ff-d07b-4e4a-bbd6-d4281c1384a2";
 	
 	//TODO: find out what concept is should be.
-	public final static String FINAL_OUTCOME_DATE = "413b265c-87ef-4988-a7bc-1bfc6b5e5528";
+	public final static String FINAL_OUTCOME_DATE = "e83fbaa5-073b-4a6d-b8ba-23f41d0c7302";
 	
 	public final static String BIOPSY_RESULT = "df94b4c4-8a3a-46b2-be5b-e948403081a0";
 	

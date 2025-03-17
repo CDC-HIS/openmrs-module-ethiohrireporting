@@ -1,7 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.hivPositiveTracking;
 
 import org.openmrs.Cohort;
-import org.openmrs.Encounter;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.constants.EncounterType;
@@ -23,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ART_START_DATE;
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FINAL_OUTCOME_DATE;
 import static org.openmrs.module.ohrireports.constants.Identifiers.MRN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.constants.Identifiers.UAN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions.ENTRE_POINT;
@@ -75,8 +73,9 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> hivConfirmedDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
 		    HIV_CONFIRMED_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		
-		HashMap<Integer, Object> artStartDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    ART_START_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> artStartDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(
+		    hivPositiveTrackingLineListQuery.getFollowUpEncounter(), ART_START_DATE, cohort,
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		HashMap<Integer, Object> linkedToCareAndTreatmentHashMap = hivPositiveTrackingLineListQuery.getByResult(
 		    LINKED_TO_CARE_TREATMENT, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
@@ -90,7 +89,7 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> planForNextStepHashMap = hivPositiveTrackingLineListQuery.getByResult(
 		    PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    FINAL_OUTCOME_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		    FINAL_OUT_COME_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownHashMap = hivPositiveTrackingLineListQuery.getByResult(FINAL_OUT_COME,
 		    cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		
@@ -125,7 +124,7 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 			        .get(person.getPersonId()));
 			Date finalOutcomeKnownDate = hivPositiveTrackingLineListQuery.getDate(finalOutcomeKnownDateHashMap.get(person
 			        .getPersonId()));
-			long daysDifference = getDayDifference(hivConfirmedDate, artStartDate);
+			long daysDifference = getDayDifference(artStartDate, hivConfirmedDate);
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			

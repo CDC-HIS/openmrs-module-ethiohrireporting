@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.ObsElement;
 import org.openmrs.module.ohrireports.constants.EncounterType;
+import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,11 +22,17 @@ public class HIVPositiveTrackingLineListQuery extends ObsElement {
 	
 	private List<Integer> baseEncounter;
 	
+	private List<Integer> followUpEncounter;
+	
 	@Autowired
 	EncounterQuery encounterQuery;
 	
 	public List<Integer> getBaseEncounter() {
 		return baseEncounter;
+	}
+	
+	public List<Integer> getFollowUpEncounter() {
+		return followUpEncounter;
 	}
 	
 	@Autowired
@@ -47,7 +54,12 @@ public class HIVPositiveTrackingLineListQuery extends ObsElement {
 		    Collections.singletonList(PositiveCaseTrackingConceptQuestions.POSITIVE_TRACKING_REGISTRATION_DATE), start, end,
 		    EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		baseCohort = getCohort(baseEncounter);
-		
+		followUpEncounter = getFollowUpEncounter(baseCohort, end);
+	}
+	
+	private List<Integer> getFollowUpEncounter(Cohort cohort, Date endDate) {
+		return encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null,
+		    endDate, cohort);
 	}
 	
 	public Cohort getCohort(List<Integer> encounterIds) {
