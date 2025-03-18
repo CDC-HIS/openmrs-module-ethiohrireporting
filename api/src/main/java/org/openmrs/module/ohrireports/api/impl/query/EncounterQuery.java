@@ -325,7 +325,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
         builder.append(" GROUP BY obs_enc.person_id ) as sub ");
         builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
         builder.append(" and ob.concept_id in ").append(conceptQuery(questionConcept));
-        builder.append(" and ob.encounter_id in (:latestFollowUpDates)");
+        builder.append(" and ob.voided=0 and ob.encounter_id in (:latestFollowUpDates)");
 
         Query q = getCurrentSession().createSQLQuery(builder.toString());
 
@@ -366,7 +366,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 
         builder.append(" GROUP BY obs_enc.person_id ) as sub ");
         builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
-        builder.append(" and ob.concept_id in " + conceptQuery(questionConcept));
+        builder.append(" and ob.voided=0 and ob.concept_id in " + conceptQuery(questionConcept));
 
         Query q = getCurrentSession().createSQLQuery(builder.toString());
 

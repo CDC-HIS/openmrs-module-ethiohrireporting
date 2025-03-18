@@ -47,6 +47,14 @@
 	</globalProperty>
 	/Required Global Properties -->
 
+	<globalProperty>
+		<property>_viralLoad12MSetting</property>
+		<defaultValue>NO</defaultValue>
+		<description>
+			For south-east Ethiopia viral load report indicating 12 month range for HMIS.
+		</description>
+	</globalProperty>
+
 	
 	<!-- Internationalization -->
 	<!-- All message codes should start with @MODULE_ID@.* -->
