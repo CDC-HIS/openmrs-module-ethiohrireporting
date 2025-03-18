@@ -211,7 +211,7 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id ="
 		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS) + " and ob.value_coded in "
 		        + conceptQuery(Arrays.asList(ConceptAnswer.ALIVE, ConceptAnswer.RESTART))
-		        + " and ob.encounter_id in (:encounters)";
+		        + " and ob.voided=0 and ob.encounter_id in (:encounters)";
 		
 		Query q = getCurrentSession().createSQLQuery(builder);
 		q.setParameterList("encounters", allEncounters);
