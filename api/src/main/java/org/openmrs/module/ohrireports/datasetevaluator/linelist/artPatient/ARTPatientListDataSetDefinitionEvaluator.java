@@ -4,11 +4,10 @@ import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.ARTPatientListQuery;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.constants.*;
-import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ARTPatientListDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -30,13 +29,6 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	@Autowired
 	private ARTPatientListLineListQuery artPatientListLineListQuery;
 	
-	private ARTPatientListDatasetDefinition _dataSetDefinition;
-	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	private List<Integer> latestFollowup;
-	
 	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, registrationDateDictionary,
 	        hivConfirmedDateDictionary, artStartDateDictionary, latestFollowupDateDictionary, latestFollowupStatus, regimen,
 	        arvDoseDays, adherence, nextVisitDateDictionary, tiHashMap;
@@ -44,7 +36,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		_dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
+		ARTPatientListDatasetDefinition _dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_dataSetDefinition, evalContext);
 		
 		// Check start date and end date are valid
@@ -59,8 +51,15 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			return dataSet;
 		}
 		
-		if (_dataSetDefinition.getEndDate() == null) {
+		if (_dataSetDefinition.getStartDate() == null || _dataSetDefinition.getEndDate() == null) {
 			_dataSetDefinition.setEndDate(new Date());
+			artPatientListQuery.generateReport();
+			
+		} else if (FollowUpConstant.getUuidRepresentation(_dataSetDefinition.getFollowupStatus()).equalsIgnoreCase("all")) {
+			artPatientListQuery.generateReport(_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate());
+		} else {
+			artPatientListQuery.generateReport(_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate(),
+			    FollowUpConstant.getUuidRepresentation(_dataSetDefinition.getFollowupStatus()));
 		}
 		
 		// Here is the sudo code for getting the encounter for the ART patient list
@@ -71,20 +70,20 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		// If Patient has at least 1 ART follow-up record
 		// ONLY THEN
 		// count the record
-		artPatientListQuery.setEndDate(_dataSetDefinition.getEndDate());
 		
 		// remove cohort with no MRN
 		Cohort baseCohort = getCohortOnlyHaveMRN(artPatientListQuery.getCohort(artPatientListQuery.getBaseEncounter()));
 		
-		List<Integer> encounterWithLeastOneFollow = encounterQuery.getEncounters(
+		/*List<Integer> encounterWithLeastOneFollow = encounterQuery.getEncounters(
 		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null, new Date(), baseCohort);
 		
 		Cohort cohortWithLeastOneFollow = artPatientListQuery.getCohort(encounterWithLeastOneFollow);
 		latestFollowup = encounterQuery.getLatestDateByFollowUpDate(cohortWithLeastOneFollow, null, new Date());
+		*/
+		List<Person> persons = LineListUtilities.sortPatientByName(artPatientListQuery.getPersons(artPatientListQuery
+		        .getBaseCohort()));
 		
-		List<Person> persons = LineListUtilities.sortPatientByName(artPatientListQuery.getPersons(cohortWithLeastOneFollow));
-		
-		loadColumnDictionary(latestFollowup, cohortWithLeastOneFollow);
+		loadColumnDictionary(artPatientListQuery.getFollowupEncounter(), artPatientListQuery.getBaseCohort());
 		
 		DataSetRow row;
 		

@@ -1,9 +1,6 @@
 package org.openmrs.module.ohrireports.api.impl.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import org.hibernate.Query;
 import org.openmrs.Cohort;
@@ -13,6 +10,7 @@ import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -61,8 +59,6 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 			q.setDate("end", end);
 		List list = q.list();
 		
-		boolean checkINc = list.contains(1692);
-		
 		return (List<Integer>) list;
 	}
 	
@@ -92,27 +88,26 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		}
 	}
 	
-	public List<Integer> getLatestDateByEnrollmentDate(Date start, Date end, String encounterTypeUUID) {
+	public List<Integer> getLatestDateByEnrollmentDate(Set<Integer> patientIds, String encounterTypeUUID) {
 		StringBuilder builder = new StringBuilder("select ob.encounter_id from obs as ob inner join ");
-		builder.append("(select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as obs_enc ");
-		builder.append("inner join encounter as e on e.encounter_id = obs_enc.encounter_id ");
-		builder.append("inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
-		builder.append("and et.uuid= '").append(encounterTypeUUID).append("' ");
-		builder.append(" where obs_enc.concept_id =").append(conceptQuery(FollowUpConceptQuestions.ENROLLMENT_DATE_IN_CARE));
-		if (start != null)
-			builder.append(" and obs_enc.value_datetime >= :start ");
-		if (end != null)
-			builder.append(" and obs_enc.value_datetime <= :end ");
+		builder.append(" (select Max(obs_enc.value_datetime) as value_datetime, person_id as person_id from obs as "
+		        + "obs_enc ");
+		builder.append(" inner join encounter as e on e.encounter_id = obs_enc.encounter_id ");
+		builder.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		builder.append(" and et.uuid= '").append(encounterTypeUUID).append("' ");
+		builder.append(" where obs_enc.concept_id =").append(conceptQuery(IntakeAConceptQuestions.HIV_CONFIRMED_DATE));
+		builder.append(" and obs_enc.person_id in (:personIds)");
+		
 		builder.append(" GROUP BY obs_enc.person_id ) as sub ");
 		builder.append(" on ob.value_datetime = sub.value_datetime and ob.person_id = sub.person_id ");
-		builder.append(" and ob.concept_id =").append(conceptQuery(FollowUpConceptQuestions.ENROLLMENT_DATE_IN_CARE));
+		builder.append(" and ob.person_id in (:persondIds) ");
+		builder.append(" and ob.concept_id = ").append(conceptQuery(IntakeAConceptQuestions.HIV_CONFIRMED_DATE));
 		
 		Query q = getCurrentSession().createSQLQuery(builder.toString());
 		
-		if (start != null)
-			q.setDate("start", start);
-		if (end != null)
-			q.setDate("end", end);
+		q.setParameterList("personIds", patientIds);
+		q.setParameterList("persondIds", patientIds);
+		
 		List list = q.list();
 		
 		if (list != null) {
@@ -165,6 +160,26 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 		stringBuilder.append(" and  ob.value_coded in ").append(conceptQuery(conceptAnswers));
 		
 		Query q = getCurrentSession().createSQLQuery(stringBuilder.toString());
+		List list = q.list();
+		
+		if (list != null) {
+			return (List<Integer>) list;
+		} else {
+			return new ArrayList<Integer>();
+		}
+	}
+	
+	public List<Integer> getEncounters(List<Integer> encounterIds, String conceptQuestion, List<String> conceptAnswers) {
+		
+		StringBuilder stringBuilder = new StringBuilder("select ob.encounter_id from obs as ob ");
+		stringBuilder.append(" where ob.voided =0 and ");
+		stringBuilder.append(" ob.encounter_id in (:encounterIds) and ob.concept_id = ").append(
+		    conceptQuery(conceptQuestion));
+		stringBuilder.append(" and  ob.value_coded in ").append(conceptQuery(conceptAnswers));
+		
+		Query q = getCurrentSession().createSQLQuery(stringBuilder.toString());
+		q.setParameterList("encounterIds", encounterIds);
+		
 		List list = q.list();
 		
 		if (list != null) {
