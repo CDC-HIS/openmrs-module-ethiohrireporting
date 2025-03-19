@@ -61,8 +61,6 @@ public class EncounterQuery extends BaseEthiOhriQuery {
 			q.setDate("end", end);
 		List list = q.list();
 		
-		boolean checkINc = list.contains(1692);
-		
 		return (List<Integer>) list;
 	}
 	
