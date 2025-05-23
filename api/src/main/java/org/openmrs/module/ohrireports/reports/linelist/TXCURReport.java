@@ -27,7 +27,7 @@ import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
 
-@Component
+//@Component
 public class TXCURReport implements ReportManager {
 	
 	@Override
