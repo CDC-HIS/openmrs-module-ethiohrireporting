@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
-@Component
+//@Component
 public class CXCATreatmentReport implements ReportManager {
 	
 	@Override
