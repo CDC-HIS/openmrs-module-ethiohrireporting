@@ -95,11 +95,11 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (!persons.isEmpty()) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Weight", "ART Start Date in E.C", "Date Returned Treatment E.C.", "Follow-up Status", "Regimen",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "Weight", "ART Start Date in E.C", "Date Returned Treatment E.C.", "Follow-up Status", "Regimen",
 			    "ARV Dose Days", "Adherence", "Next Visit Date in E.C", "Treatment End Date in E.C",
 			    "Last Follow-up Date in E.C.", "Last Follow-up Status", "Last Regimen", "Last ARV Dose Days",
 			    "Last Adherence", "Date Excluded from TX_CURR in E.C")));
@@ -117,6 +117,7 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));

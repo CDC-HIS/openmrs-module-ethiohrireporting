@@ -150,12 +150,12 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Follow-Up Date E.C", "Art Start Date E.C", "Date Counseled For CCA E.C",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "Follow-Up Date E.C", "Art Start Date E.C", "Date Counseled For CCA E.C",
 			    "Date Accepted CxCa Screening in E.C.", "Date Linked to CxCa Screening Unit in E.C.", "Type of Screening",
 			    "Screening Strategy", "VIA Screening Result", "VIA Screening Date E.C", "HPV Sub Type",
 			    "HPV DNA Screening Result", "HPV DNA Sample Collection Date E.C", "HPV Subtype",
@@ -208,6 +208,7 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 			addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);

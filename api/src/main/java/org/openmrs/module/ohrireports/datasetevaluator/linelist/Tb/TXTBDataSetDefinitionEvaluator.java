@@ -120,7 +120,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (!persons.isEmpty()) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", String.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			data.addRow(row);
 		}
 		if (hdsd.getType().equals(TXTBReport.numerator)) {
@@ -200,7 +200,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private void getRowForActiveTB(SimpleDataSet data, List<Person> persons) {
 		DataSetRow row;
 		if (persons.isEmpty()) {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#","GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
 			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
@@ -220,7 +220,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private void getRowForNumerator(SimpleDataSet data, List<Person> persons) {
 		DataSetRow row;
 		if (persons.isEmpty()) {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
 			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
@@ -240,7 +240,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private void getRowForDenominator(SimpleDataSet data, List<Person> persons) {
 		DataSetRow row;
 		if (persons.isEmpty()) {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
 			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
@@ -265,6 +265,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		String followUpEthiopianDate = tbQueryLineList.getEthiopianDate(_followUpDate);
 		
 		row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i);
+		row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 		row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 		row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class), mrnIdentifierHashMap.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uanIdentifierHashMap.get(person.getPersonId()));
@@ -374,7 +375,7 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private List<String> arrayListOfBaseEmptyColumn() {
-		return Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex", "ART Start Date in E.C", "FollowUp Date E.C",
+		return Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex", "ART Start Date in E.C", "FollowUp Date E.C",
 		    "Regimen", "FollowUp Status");
 	}
 	

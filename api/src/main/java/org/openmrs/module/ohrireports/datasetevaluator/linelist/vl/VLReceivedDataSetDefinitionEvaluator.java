@@ -118,12 +118,12 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Weight", "CD4", "ART Start Date in E.C", "Follow-up Date in E.C", "Follow-up Status", "Regimen",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "Weight", "CD4", "ART Start Date in E.C", "Follow-up Date in E.C", "Follow-up Status", "Regimen",
 			    "ARV Dose Days", "Adherence", "PregnancyStatus", "BreastfeedingStatus", "On PMTCT?", "Viral Load Sent Date",
 			    "VL Received Date", "TAT (in days)", "Routine Test type", "Targeted Test Type", "viral_load_status",
 			    "viral_load_count", "Latest Follow-up Date", "Latest Follow-up Status", "Latest Regimen",
@@ -144,6 +144,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 			Date treatmentEndDate = vlQuery.getDate(treatmentEndDateHashMap.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));

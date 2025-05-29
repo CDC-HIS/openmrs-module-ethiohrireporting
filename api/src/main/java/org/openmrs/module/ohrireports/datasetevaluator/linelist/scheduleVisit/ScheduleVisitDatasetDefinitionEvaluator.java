@@ -87,8 +87,8 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Appointment Date", "Patient Name", "MRN",
-			    "UAN", "Age", "Sex", "ART Start Date E.C.", "Latest Follow-up Date E.C.", "Last Follow-up Status",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Appointment Date", "GUID", "Patient Name",
+			    "MRN", "UAN", "Age", "Sex", "ART Start Date E.C.", "Latest Follow-up Date E.C.", "Last Follow-up Status",
 			    "Last Regimen", "Last ARV Dose", "Adherence", "Weight", "Mobile No.")));
 		}
 		int i = 1;
@@ -98,7 +98,7 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			row.addColumnValue(new DataSetColumn("Appointment Date", "Appointment Date E.C.", String.class),
 			    scheduleVisitQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
-			
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));

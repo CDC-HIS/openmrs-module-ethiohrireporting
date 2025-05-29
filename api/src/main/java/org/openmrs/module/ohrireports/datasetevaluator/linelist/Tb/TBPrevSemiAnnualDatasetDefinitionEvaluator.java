@@ -99,11 +99,11 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C", "TPT Start Date in E.C.",
 			    "TPT Completed Date in E.C.", "TPT Discontinued Date in E.C.", "TPT Type", "TPT Follow-up Status",
 			    "TPT Dispensed Dose", "TPT Adherence", "Latest Follow-up Date in E.C", "Latest Follow-up Status",
@@ -125,6 +125,7 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 			Date visitDate = tbQueryLineList.getDate(nextVisitDate.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));
