@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ART_START_DATE;
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ARV_ADHERENCE;
 
 @Handler(supports = { MissedAppointmentDatasetDefinition.class })
@@ -42,8 +43,8 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uaIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
 		    Identifiers.UAN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> artStartDictionary = appointmentQuery.getArtStartDate(appointmentQuery.getBaseCohort(),
-		    null, _datasetDefinition.getEndDate());
+		HashMap<Integer, Object> artStartDictionary = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
+		    ART_START_DATE, appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> adherenceHashmap = appointmentQuery.getByResult(ARV_ADHERENCE,
 		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
 		HashMap<Integer, Object> regimentHashmap = appointmentQuery.getByResult(FollowUpConceptQuestions.REGIMEN,

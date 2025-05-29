@@ -82,27 +82,6 @@ public class DSDLineListQuery extends ObsElement {
 		return new Cohort(query.list());
 
 	}
-	
-//	public List<Integer> getBaseEncounter() {
-//		return dsdQuery.getBaseEncounter();
-//	}
-//
-//	public List<Integer> getLatestEncounter() {
-//		return dsdQuery.getLatestEncounter();
-//	}
-//
-//	public List<Integer> getLatestDSDAssessmentEncounter() {
-//		return dsdQuery.getLatestDSDAssessmentEncounter();
-//	}
-//
-//	public List<Integer> getInitialDSDAssessmentEncounter() {
-//		return dsdQuery.getInitialDSDAssessmentEncounter();
-//	}
-//
-//	public Cohort getBaseCohort() {
-//		return dsdQuery.getBaseCohort();
-//	}
-//
 	public List<Person> getPersons(Cohort cohort) {
 		return dsdQuery.getPersonList(cohort);
 	}

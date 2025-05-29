@@ -124,7 +124,7 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 			        .get(person.getPersonId()));
 			Date finalOutcomeKnownDate = hivPositiveTrackingLineListQuery.getDate(finalOutcomeKnownDateHashMap.get(person
 			        .getPersonId()));
-			long daysDifference = getDayDifference(artStartDate, hivConfirmedDate);
+			String daysDifference = getDayDifference(artStartDate, hivConfirmedDate);
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			

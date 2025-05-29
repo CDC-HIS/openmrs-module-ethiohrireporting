@@ -12,6 +12,12 @@ public class FollowUpConceptQuestions {
 	
 	public final static String BMI = "e3c2efba-3ec9-4029-9bd9-716948995433";
 	
+	public final static String DSD_CATEGORY_CHANGED = "eae5830f-ac48-48f0-bebd-35c500de8ff9";
+	
+	public final static String REASON_FOR_DSD_CATEGORY_CHANGE = "2780c548-5118-4ae4-99da-c8557cb55f28";
+	
+	public final static String ASSESSMENT_STATUS = "e6e24c87-d3a0-4a38-bd04-560b13f92298";
+	
 	public final static String TPT_FOLLOW_UP_STATUS = "0166677a-5a8e-45fa-b3f6-3c5aa9f13d00";
 	
 	public final static String REASON_FOR_ART_ELIGIBILITY = "613718f1-ecf2-4228-b9c2-6157d574bd0b";

@@ -29,7 +29,7 @@ public class ARTPatientListReport implements ReportManager {
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- ART Patient List";
+		return LINE_LIST_REPORT + "- Chronic Care Enrollment Line List";
 	}
 	
 	@Override

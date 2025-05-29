@@ -71,7 +71,7 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> treatmentDateHashMap = dsdLineListQuery.getObsValueDate(
 		    dsdLineListQuery.getLatestEncounter(), TREATMENT_END_DATE, cohort);
 		HashMap<Integer, Object> categoryInitialAssesumentDateHashMap = dsdLineListQuery.getObsValueDate(
-		    dsdLineListQuery.getBaseEncounter(), DSD_ASSESSMENT_DATE, cohort);
+		    dsdLineListQuery.getInitialDSDAssessmentEncounter(), DSD_ASSESSMENT_DATE, cohort);
 		HashMap<Integer, Object> latestCategoryAssesumentDateHashMap = dsdLineListQuery.getObsValueDate(
 		    dsdLineListQuery.getLatestDSDAssessmentEncounter(), DSD_ASSESSMENT_DATE, cohort);
 		HashMap<Integer, Object> transferedHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
@@ -89,14 +89,24 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 		    cohort);
 		HashMap<Integer, Object> adherenceHashMap = dsdLineListQuery.getConceptName(dsdLineListQuery.getBaseEncounter(),
 		    cohort, ARV_ADHERENCE);
+		HashMap<Integer, Object> dsdCategoryChangedHashMap = dsdLineListQuery.getConceptName(
+		    dsdLineListQuery.getLatestEncounter(), cohort, DSD_CATEGORY_CHANGED);
+		HashMap<Integer, Object> reasonForCategoryChangeHashMap = dsdLineListQuery.getConceptName(
+		    dsdLineListQuery.getLatestEncounter(), cohort, REASON_FOR_DSD_CATEGORY_CHANGE);
 		HashMap<Integer, Object> latestAdherenceHashMap = dsdLineListQuery.getConceptName(
 		    dsdLineListQuery.getLatestEncounter(), cohort, ARV_ADHERENCE);
+		HashMap<Integer, Object> assessmentStatusHashMap = dsdLineListQuery.getConceptName(
+		    dsdLineListQuery.getLatestEncounter(), cohort, ASSESSMENT_STATUS);
+		
 		HashMap<Integer, Object> followUpStatusHashMap = dsdLineListQuery.getConceptName(
 		    dsdLineListQuery.getBaseEncounter(), cohort, FOLLOW_UP_STATUS);
+		
 		HashMap<Integer, Object> latestFollowUpStatusHashMap = dsdLineListQuery.getConceptName(
 		    dsdLineListQuery.getLatestEncounter(), cohort, FOLLOW_UP_STATUS);
+		
 		HashMap<Integer, Object> mrnIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort,
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);
+		
 		HashMap<Integer, Object> uanIdentifierHashMap = dsdLineListQuery.getIdentifier(cohort,
 		    Identifiers.UAN_PATIENT_IDENTIFIERS);
 		
@@ -113,8 +123,9 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
 			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "Mobile No.", "Latest Follow-up Date in E.C.",
 			    "Latest Follow-up Status", "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence",
-			    "Next Visit Date in E.C.", "Treatment End Date in E.C.", "Initial DSD Enrollment Date in E.C.",
-			    "DSD Category at Enrollment", "Current DSD Category Entry Date in E.C.", "Current DSD Category",
+			    "Assessment status", "Next Visit Date in E.C.", "Treatment End Date in E.C.",
+			    "Initial DSD Enrollment Date in E.C.", "DSD Category at Enrollment",
+			    "Current DSD Category Entry Date in E.C.", "Current DSD Category", "DSD " + "category changed",
 			    "Reason for Category change")));
 		}
 		
@@ -157,6 +168,8 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 			    latestDoseDisPenseHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Latest Adherence", "Latest Adherence", String.class),
 			    latestAdherenceHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("Assessment status", "Assessment status", String.class),
+			    assessmentStatusHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Next Visit Date in E.C.", "Next Visit Date in E.C.", String.class),
 			    dsdLineListQuery.getEthiopianDate(nextVisitDate));
 			row.addColumnValue(new DataSetColumn("Treatment End Date in E.C.", "Treatment End Date in E.C.", String.class),
@@ -171,6 +184,13 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 			        .getEthiopianDate(latestAssesementDate));
 			row.addColumnValue(new DataSetColumn("Current DSD Category", "Current DSD Category", String.class),
 			    currentDSDCategoryHashMap.get(person.getPersonId()));
+			
+			row.addColumnValue(new DataSetColumn("DSD category changed", "DSD category changed", String.class),
+			    dsdCategoryChangedHashMap.get(person.getPersonId()));
+			
+			row.addColumnValue(new DataSetColumn("Reason for Category change", "Reason for Category change", String.class),
+			    reasonForCategoryChangeHashMap.get(person.getPersonId()));
+			
 			dataSet.addRow(row);
 			
 		}
