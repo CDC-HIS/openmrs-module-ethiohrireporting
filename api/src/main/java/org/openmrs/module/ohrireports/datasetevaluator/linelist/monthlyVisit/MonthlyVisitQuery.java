@@ -72,7 +72,7 @@ public class MonthlyVisitQuery extends ObsElement {
 		
 		String builder = "select ob.encounter_id from obs as ob" + " where ob.concept_id ="
 		        + conceptQuery(FollowUpConceptQuestions.FOLLOW_UP_STATUS) + " and ob.value_coded in "
-		        + conceptQuery(Arrays.asList(ConceptAnswer.RESTART, ConceptAnswer.ALIVE, ConceptAnswer.STOP))
+		        + conceptQuery(Arrays.asList(ConceptAnswer.RESTART, ConceptAnswer.ALIVE))
 		        + " and ob.encounter_id in (:encounters)";
 		
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(builder);
