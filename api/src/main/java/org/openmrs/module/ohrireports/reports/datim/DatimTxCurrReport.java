@@ -21,7 +21,7 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class DatimTxCurrReport implements ReportManager {
 	
 	@Override

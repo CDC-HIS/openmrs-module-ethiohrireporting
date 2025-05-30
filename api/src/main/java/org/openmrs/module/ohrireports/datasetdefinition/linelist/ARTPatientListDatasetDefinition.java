@@ -15,6 +15,17 @@ public class ARTPatientListDatasetDefinition extends BaseDataSetDefinition {
 	@ConfigurationProperty
 	private Date endDate;
 	
+	@ConfigurationProperty
+	private String followupStatus;
+	
+	public String getFollowupStatus() {
+		return followupStatus;
+	}
+	
+	public void setFollowupStatus(String followupStatus) {
+		this.followupStatus = followupStatus;
+	}
+	
 	public Date getStartDate() {
 		return startDate;
 	}

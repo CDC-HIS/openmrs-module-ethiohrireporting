@@ -9,7 +9,9 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class ARTPatientListQuery extends PatientQueryImpDao {
@@ -27,51 +29,62 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 	
 	private List<Integer> baseEncounter;
 	
-	@Autowired
-	public ARTPatientListQuery(DbSessionFactory _SessionFactory) {
-		sessionFactory = _SessionFactory;
-		setSessionFactory(sessionFactory);
-	}
+	private List<Integer> followupEncounter;
 	
 	public Cohort getBaseCohort() {
 		return baseCohort;
 	}
 	
-	public void setBaseCohort(Cohort baseCohort) {
-		this.baseCohort = baseCohort;
-	}
-	
-	public Date getStartDate() {
-		return startDate;
-	}
-	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-	
-	public Date getEndDate() {
-		return endDate;
-	}
-	
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(null, endDate, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+	public List<Integer> getFollowupEncounter() {
+		return followupEncounter;
 	}
 	
 	public List<Integer> getBaseEncounter() {
 		return baseEncounter;
 	}
 	
-	public Cohort getEverEnrolledCohort(Date endOrBefore) {
-		StringBuilder sql = baseQuery(FollowUpConceptQuestions.ART_REGISTRATION_DATE, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
-		if (endOrBefore != null)
-			sql.append("and ").append(OBS_ALIAS).append("value_datetime <= :end ");
-		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		if (endOrBefore != null)
-			query.setTimestamp("end", endOrBefore);
+	@Autowired
+	public ARTPatientListQuery(DbSessionFactory _SessionFactory) {
+		sessionFactory = _SessionFactory;
+		setSessionFactory(sessionFactory);
+	}
+	
+	public void generateReport(Date startDate, Date endDate) {
+		followupEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
 		
-		baseCohort = new Cohort(query.list());
-		return baseCohort;
+		Cohort followupCohort = getCohort(followupEncounter);
+		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(followupCohort.getMemberIds(),
+		    EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		
+		baseCohort = getCohort(baseEncounter);
+		baseCohort = Cohort.union(baseCohort, followupCohort);
+		
+	}
+	
+	public void generateReport(Date startDate, Date endDate, String followupStatusUUID) {
+		followupEncounter = encounterQuery.getLatestDateByFollowUpDate(startDate, endDate);
+		followupEncounter = encounterQuery.getEncounters(followupEncounter, FollowUpConceptQuestions.FOLLOW_UP_STATUS,
+		    Collections.singletonList(followupStatusUUID));
+		
+		Cohort followupCohort = getCohort(followupEncounter);
+		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(followupCohort.getMemberIds(),
+		    EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		
+		baseCohort = getCohort(baseEncounter);
+		baseCohort = Cohort.union(baseCohort, followupCohort);
+		
+	}
+	
+	public void generateReport() {
+		this.endDate = new Date();
+		followupEncounter = encounterQuery.getLatestDateByFollowUpDate(null, endDate);
+		
+		Cohort followupCohort = getCohort(followupEncounter);
+		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(followupCohort.getMemberIds(),
+		    EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		
+		baseCohort = getCohort(baseEncounter);
+		baseCohort = Cohort.union(baseCohort, followupCohort);
 	}
 	
 }

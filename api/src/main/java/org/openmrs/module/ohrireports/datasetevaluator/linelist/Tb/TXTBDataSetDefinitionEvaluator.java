@@ -200,8 +200,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private void getRowForActiveTB(SimpleDataSet data, List<Person> persons) {
 		DataSetRow row;
 		if (persons.isEmpty()) {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#","GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
 			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
 			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
@@ -220,8 +220,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private void getRowForNumerator(SimpleDataSet data, List<Person> persons) {
 		DataSetRow row;
 		if (persons.isEmpty()) {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
 			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
 			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
@@ -240,8 +240,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	private void getRowForDenominator(SimpleDataSet data, List<Person> persons) {
 		DataSetRow row;
 		if (persons.isEmpty()) {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
 			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
 			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
 			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
@@ -375,8 +375,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private List<String> arrayListOfBaseEmptyColumn() {
-		return Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex", "ART Start Date in E.C", "FollowUp Date E.C",
-		    "Regimen", "FollowUp Status");
+		return Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex", "ART Start Date in E.C",
+		    "FollowUp Date E.C", "Regimen", "FollowUp Status");
 	}
 	
 }

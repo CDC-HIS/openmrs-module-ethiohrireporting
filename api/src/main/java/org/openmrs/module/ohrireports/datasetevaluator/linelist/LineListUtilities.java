@@ -72,10 +72,10 @@ public class LineListUtilities {
 		return persons;
 	}
 	
-	public static long getDayDifference(Date from, Date to) {
+	public static String getDayDifference(Date from, Date to) {
 		
 		if (from == null || to == null) {
-			return 0;
+			return "";
 		}
 		
 		// Convert java.util.Date to Instant
@@ -90,7 +90,7 @@ public class LineListUtilities {
 		LocalDateTime end = LocalDateTime.ofInstant(instantTo, ZoneId.systemDefault());
 		
 		// Calculate the difference in days
-		return ChronoUnit.DAYS.between(end, start);
+		return String.valueOf(ChronoUnit.DAYS.between(end, start));
 	}
 	
 	public static String getPhone(List<PersonAttribute> activeAttributes) {

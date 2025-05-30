@@ -103,8 +103,8 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C", "TPT Start Date in E.C.",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "HIV Confirmed Date in E.C.", "ART Start Date in E.C", "TPT Start Date in E.C.",
 			    "TPT Completed Date in E.C.", "TPT Discontinued Date in E.C.", "TPT Type", "TPT Follow-up Status",
 			    "TPT Dispensed Dose", "TPT Adherence", "Latest Follow-up Date in E.C", "Latest Follow-up Status",
 			    "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence", "Next Visit Date in E.C.",

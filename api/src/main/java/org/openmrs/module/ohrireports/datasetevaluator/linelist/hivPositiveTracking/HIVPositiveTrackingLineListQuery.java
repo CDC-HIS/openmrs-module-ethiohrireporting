@@ -51,7 +51,7 @@ public class HIVPositiveTrackingLineListQuery extends ObsElement {
 	
 	public void generateReport(Date start, Date end) {
 		baseEncounter = encounterQuery.getAllEncounters(
-		    Collections.singletonList(PositiveCaseTrackingConceptQuestions.POSITIVE_TRACKING_REGISTRATION_DATE), start, end,
+		    Collections.singletonList(PositiveCaseTrackingConceptQuestions.HIV_CONFIRMED_DATE), start, end,
 		    EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		baseCohort = getCohort(baseEncounter);
 		followUpEncounter = getFollowUpEncounter(baseCohort, end);
