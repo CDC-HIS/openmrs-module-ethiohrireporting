@@ -168,11 +168,11 @@ public class PEPDatasetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			dataset.addRow(row);
 		} else {
-			dataset.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Occupation", "Department", "Reporting Date in E.C.", "Exposure Duration (in hrs)", "Exposure Type",
+			dataset.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "Occupation", "Department", "Reporting Date in E.C.", "Exposure Duration (in hrs)", "Exposure Type",
 			    "Exposure Code", "Source Person HIV Status", "Exposed Person HIV Status", "Source of Exposure", "Eligible",
 			    "ARV (PEP) Regimen", "Time between exposure and PEP (in hrs)", "Follow-Up Visit Date in E.C.",
 			    "Adherence (at 2WK)", "Side Effect (at 2WK)", "Exposed client HIV Status", "Follow-Up Visit Date in E.C.",
@@ -195,6 +195,7 @@ public class PEPDatasetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));

@@ -90,12 +90,12 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "TI?", "Latest Follow-up Date in E.C.",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "TI?", "Latest Follow-up Date in E.C.",
 			    "Latest Follow-up status", "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence", "Pregnant",
 			    "Next Visit date in E.C.", "Treatment End Date in E.C.")));
 		}
@@ -111,6 +111,7 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class),

@@ -100,11 +100,11 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 
             row = new DataSetRow();
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-            row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 
             data.addRow(row);
         } else {
-            data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN",
+            data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN",
                     "Age at Enrollment", "Current Age", "Sex", "Weight", "CD4", "HIV Confirmed Date in E.C",
                     "ART Start Date in E.C", "TB Screening Result", "Follow-up Date in E.C", "Follow-up Status", "Regimen",
                     "ARV Dose Days", "Adherence", "DSD Category", "Nutritional Status","Therapeutic/ Supplementary Food",
@@ -126,6 +126,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
             // row should be filled with only patient data
             row = new DataSetRow();
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
             row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
             row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
                     getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));

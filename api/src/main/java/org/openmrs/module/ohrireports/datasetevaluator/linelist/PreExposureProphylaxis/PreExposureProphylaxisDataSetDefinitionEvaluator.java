@@ -165,11 +165,11 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "UIC", "PrEP Screening Date in E.C.", "PrEP Started?", "PrEP Start Date in E.C", "Type of Client",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "UIC", "PrEP Screening Date in E.C.", "PrEP Started?", "PrEP Start Date in E.C", "Type of Client",
 			    "PrEP Follow-up Date in E.C.", "PrEP Follow-up Status", "PrEP Regimen", "PrEP Dose", "Missed Tablets",
 			    "Next Visit Date in E.C.", "Dose End Date in E.C.", "HIV Test Final Result", "Pregnant?", "Breast Feeding?",
 			    "Family Planning Method", "TB Screening Result", "STI Screening Result", "eGFR Estimate", "Side Effects",
@@ -204,6 +204,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 			

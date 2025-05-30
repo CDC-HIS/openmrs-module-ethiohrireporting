@@ -86,11 +86,11 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
 
             row = new DataSetRow();
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-            row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), personList.size());
 
             dataSet.addRow(row);
         } else {
-            dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+            dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
                     "Mobile No.", "Registration Date in E.C.", "Date Tested HIV +ve in E.C.", "Entry Point",
                     "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "Days Difference", "Linked to Care & Treatment?",
                     "Date Linked to Care & Treatment in E.C.", "Reason for not Starting ART the same day", "Plan for next Step",
@@ -113,6 +113,7 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
             row = new DataSetRow();
 
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
             row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
             row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
             row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uanIdentifierHashMap.get(person.getPersonId()));
