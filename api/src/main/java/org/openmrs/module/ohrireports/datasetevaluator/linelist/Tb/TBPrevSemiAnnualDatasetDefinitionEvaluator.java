@@ -204,7 +204,7 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 		nextVisitDate = tbQueryLineList.getObsValueDate(baseTPTEncounters, FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
 		eligibleStatus = tbQueryLineList.getByResult(FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY, cohort,
 		    baseTPTEncounters);
-		finalFollowUPStatus = tbQueryLineList.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort, lastFollowUp);
+		finalFollowUPStatus = tbQueryLineList.getFollowUpStatus(lastFollowUp, cohort);
 		latestFollowUpDate = tbQueryLineList.getObsValueDate(lastFollowUp, FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		latestRegimen = tbQueryLineList.getByResult(FollowUpConceptQuestions.REGIMEN, cohort, lastFollowUp);
 		latestArvDoseDay = tbQueryLineList.getByResult(FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS, cohort, lastFollowUp);

@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.linelist.monthlyVisit;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.annotation.Handler;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MonthlyVisitDatasetDefinition;
@@ -58,8 +59,8 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> followUpStatus = monthlyVisitQuery.getFollowUpStatus(monthlyVisitQuery.getEncounter(),
 		    monthlyVisitQuery.getBaseCohort());
-		HashMap<Integer, Object> viralLoadStatus = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.VIRAL_LOAD_STATUS,
-		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> viralLoadStatus = monthlyVisitQuery.getConceptLabel(monthlyVisitQuery.getEncounter(),
+		    monthlyVisitQuery.getBaseCohort(), FollowUpConceptQuestions.VIRAL_LOAD_STATUS);
 		HashMap<Integer, Object> pregnantHashMap = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> dose = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS,
@@ -71,7 +72,6 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> nutritionalStatusHashMap = monthlyVisitQuery.getConceptName(
 		    monthlyVisitQuery.getEncounter(), monthlyVisitQuery.getBaseCohort(),
 		    FollowUpConceptQuestions.NUTRITIONAL_SCREENING_RESULT);
-		
 		HashMap<Integer, Object> adherence = monthlyVisitQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE,
 		    monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
 		HashMap<Integer, Object> nextVisitDate = monthlyVisitQuery.getObsValueDate(monthlyVisitQuery.getEncounter(),
@@ -82,9 +82,9 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		    FollowUpConceptQuestions.VL_RECEIVED_DATE, monthlyVisitQuery.getBaseCohort());
 		HashMap<Integer, Object> cd4CatagoriesHashMap = monthlyVisitQuery.getByResult(
 		    FollowUpConceptQuestions.ADULT_CD4_COUNT, monthlyVisitQuery.getBaseCohort(), monthlyVisitQuery.getEncounter());
-		HashMap<Integer, Object> nutirationStatusHashMap = monthlyVisitQuery.getByResult(
-		    FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT, monthlyVisitQuery.getBaseCohort(),
-		    monthlyVisitQuery.getEncounter());
+		HashMap<Integer, Object> nutirationStatusHashMap = monthlyVisitQuery.getConceptLabel(
+		    monthlyVisitQuery.getEncounter(), monthlyVisitQuery.getBaseCohort(),
+		    FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT);
 		HashMap<Integer, Object> tptStatusCatagoriesHashmap = monthlyVisitQuery.getByResult(
 		    FollowUpConceptQuestions.TPT_FOLLOW_UP_STATUS, monthlyVisitQuery.getBaseCohort(),
 		    monthlyVisitQuery.getEncounter());

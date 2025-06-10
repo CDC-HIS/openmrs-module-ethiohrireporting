@@ -258,8 +258,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 		        .getArtStartDate(baseCohort, null, transferInOutQuery.getEndDate());
 		followUpDate = transferredInOutLineListQuery.getObsValueDate(followUpEncounters,
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, baseCohort);
-		followUpStatus = transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, baseCohort,
-		    followUpEncounters);
+		followUpStatus = transferredInOutLineListQuery.getFollowUpStatus(followUpEncounters, baseCohort);
 		regimen = transferredInOutLineListQuery
 		        .getByResult(FollowUpConceptQuestions.REGIMEN, baseCohort, followUpEncounters);
 		arvDose = transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, baseCohort,

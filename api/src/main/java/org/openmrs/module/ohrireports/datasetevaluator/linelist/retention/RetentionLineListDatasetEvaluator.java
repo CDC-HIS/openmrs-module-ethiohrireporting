@@ -74,8 +74,8 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		    retentionLineListQuery.getBaseEncounter(), cohort, PREGNANCY_STATUS);
 		HashMap<Integer, Object> adherenceHashMap = retentionLineListQuery.getConceptName(
 		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.ARV_ADHERENCE);
-		HashMap<Integer, Object> followUpStatusHashMap = retentionLineListQuery.getConceptName(
-		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.FOLLOW_UP_STATUS);
+		HashMap<Integer, Object> followUpStatusHashMap = retentionLineListQuery.getFollowUpStatus(
+		    retentionLineListQuery.getBaseEncounter(), cohort);
 		HashMap<Integer, Object> mrnIdentifierHashMap = retentionLineListQuery.getIdentifier(cohort,
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = retentionLineListQuery.getIdentifier(cohort,
