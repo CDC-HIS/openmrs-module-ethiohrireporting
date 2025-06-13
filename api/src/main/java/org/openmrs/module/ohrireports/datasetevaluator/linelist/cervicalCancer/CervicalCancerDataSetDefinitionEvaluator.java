@@ -9,6 +9,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.CervicalCancerDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.*;
 import org.openmrs.module.reporting.dataset.definition.DataSetDefinition;
 import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluator;
@@ -42,21 +43,14 @@ public class CervicalCancerDataSetDefinitionEvaluator implements DataSetEvaluato
 		
 		Date startDate = _dataSetDefinition.getStartDate();
 		Date endDate = _dataSetDefinition.getEndDate();
-		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (startDate != null && endDate != null && startDate.compareTo(endDate) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
-		
 		if (endDate == null) {
 			_dataSetDefinition.setEndDate(new Date());
 		}
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		cervicalCancerQuery.setStartDate(_dataSetDefinition.getStartDate());
 		cervicalCancerQuery.setEndDate(_dataSetDefinition.getEndDate());

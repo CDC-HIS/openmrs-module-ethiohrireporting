@@ -5,6 +5,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBARTQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_art.TBARTAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -28,9 +29,14 @@ public class TBARTAutoCalculateDataSetDefinitionEvaluator implements DataSetEval
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		TBARTAutoCalculateDataSetDefinition _datasetDefinition = (TBARTAutoCalculateDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
+		
 		if (!_datasetDefinition.getHeader()) {
-			Cohort activeTbCohort = tbQuery.getCohortByTBTreatmentStartDate(_datasetDefinition.getStartDate(),
-			    _datasetDefinition.getEndDate());
+			Cohort activeTbCohort = tbQuery.getCohortByTBTreatmentStartDate(_datasetDefinition.getEndDate());
 			DataSetRow dataSet = new DataSetRow();
 			dataSet.addColumnValue(new DataSetColumn("auto-calculate", "Numerator", Integer.class), activeTbCohort.size());
 			set.addRow(dataSet);

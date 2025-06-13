@@ -6,6 +6,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.HIVPositiveDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -39,20 +40,14 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HIVPositiveDatasetDefinition _datasetDefinition = (HIVPositiveDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
-		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
-		
 		if (_datasetDefinition.getEndDate() == null) {
 			_datasetDefinition.setEndDate(new Date());
 		}
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		hivPositiveTrackingLineListQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		

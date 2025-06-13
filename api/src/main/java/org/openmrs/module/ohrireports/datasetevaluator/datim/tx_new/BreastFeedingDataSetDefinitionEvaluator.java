@@ -14,6 +14,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.BreastFeedingStatusDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -58,6 +59,11 @@ public class BreastFeedingDataSetDefinitionEvaluator implements DataSetEvaluator
 		dataSet.addColumnValue(new DataSetColumn("breastFeeding", "BreastFeeding", Integer.class),
 		    getNumberOfEnrolledBreastFeeding());
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
+		
 		set.addRow(dataSet);
 		return set;
 	}

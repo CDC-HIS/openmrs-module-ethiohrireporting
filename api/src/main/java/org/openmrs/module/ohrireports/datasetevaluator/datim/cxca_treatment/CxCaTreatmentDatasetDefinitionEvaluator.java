@@ -6,6 +6,7 @@ import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerTreatmentQuer
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -38,6 +39,11 @@ public class CxCaTreatmentDatasetDefinitionEvaluator implements DataSetEvaluator
 
 
         SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+
+        SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(cxCaTreatmentDatasetDefinition.getStartDate(),
+                cxCaTreatmentDatasetDefinition.getEndDate(), dataSet);
+        if (_dataSet != null) return _dataSet;
+
         aggregateBuilder.setCalculateAgeFrom(cxCaTreatmentDatasetDefinition.getEndDate());
 
         CxCaTreatment cxCaTreatment = getCxCaScreeningType(cxCaTreatmentDatasetDefinition.getScreeningType());

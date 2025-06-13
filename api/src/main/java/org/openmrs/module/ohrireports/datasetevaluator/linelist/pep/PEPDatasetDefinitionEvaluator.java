@@ -5,6 +5,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.constants.*;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PEPDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -37,21 +38,14 @@ public class PEPDatasetDefinitionEvaluator implements DataSetEvaluator {
 		PEPDataSetDefinition _dataSetDefinition = (PEPDataSetDefinition) dataSetDefinition;
 		SimpleDataSet dataset = new SimpleDataSet(_dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_dataSetDefinition.getStartDate() != null && _dataSetDefinition.getEndDate() != null
-		        && _dataSetDefinition.getStartDate().compareTo(_dataSetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataset.addRow(row);
-			return dataset;
-		}
-		
 		if (_dataSetDefinition.getEndDate() == null) {
 			_dataSetDefinition.setEndDate(new Date());
 		}
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), dataset);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		pepQueryLineList.generateReport(_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate());
 		twoWksFollowUp = pepQueryLineList.getEncounterBaseOnPeriod(PostExposureConceptQuestions.PEP_TWO_WEEK_FOLLOW_UP);

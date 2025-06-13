@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.artPatient;
 
+import org.jetbrains.annotations.Nullable;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -18,6 +19,7 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.security.pkcs11.wrapper.CK_DATE;
 
 import java.util.*;
 
@@ -41,17 +43,10 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		ARTPatientListDatasetDefinition _dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_dataSetDefinition.getStartDate() != null && _dataSetDefinition.getEndDate() != null
-		        && _dataSetDefinition.getStartDate().compareTo(_dataSetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), dataSet);
+		if (dataSet1 != null)
+			return dataSet1;
 		
 		if (_dataSetDefinition.getStartDate() == null || _dataSetDefinition.getEndDate() == null) {
 			_dataSetDefinition.setEndDate(new Date());
@@ -154,7 +149,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		
 		uanIdentifierHashMap = artPatientLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
 		registrationDateDictionary = artPatientLineListQuery.getObsValueDate(null,
-		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
+		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.REGISTRATION_ENCOUNTER_TYPE);
 		hivConfirmedDateDictionary = artPatientLineListQuery.getObsValueDate(null,
 		    IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		lastCurrDateHashMap = artPatientLineListQuery.getObsValueDate(encounters,

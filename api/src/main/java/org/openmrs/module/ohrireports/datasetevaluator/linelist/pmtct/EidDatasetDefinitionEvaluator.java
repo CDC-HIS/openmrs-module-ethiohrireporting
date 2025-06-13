@@ -6,6 +6,7 @@ import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.EidDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -30,7 +31,11 @@ public class EidDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		EidDatasetDefinition eidDatasetDefinition = (EidDatasetDefinition) dataSetDefinition;
-		
+
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(eidDatasetDefinition.getStartDate(),
+				eidDatasetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null) return _dataSet;
+
 		DataSetRow row = new DataSetRow();
 		
 		if(Objects.equals(eidDatasetDefinition.getReportType(), "Test Indication")){

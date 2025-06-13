@@ -10,6 +10,7 @@ import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.constants.PrepConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PreExposureProphylaxisDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.reports.linelist.PEPReport;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -43,20 +44,13 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		_dataSetDefinition = (PreExposureProphylaxisDataSetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_dataSetDefinition.getStartDate() != null && _dataSetDefinition.getEndDate() != null
-		        && _dataSetDefinition.getStartDate().compareTo(_dataSetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
-		
 		if (Objects.isNull(_dataSetDefinition.getEndDate()))
 			_dataSetDefinition.setEndDate(Calendar.getInstance().getTime());
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		preExposureProphylaxisQuery.setStartDate(_dataSetDefinition.getStartDate());
 		preExposureProphylaxisQuery.setEndDate(_dataSetDefinition.getEndDate());

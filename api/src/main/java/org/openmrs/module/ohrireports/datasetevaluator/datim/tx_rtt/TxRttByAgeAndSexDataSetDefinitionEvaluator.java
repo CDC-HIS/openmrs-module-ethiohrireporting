@@ -12,6 +12,7 @@ import org.openmrs.module.ohrireports.api.impl.query.RTTQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_rtt.TxRttByAgeAndSexDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.datim.tx_new.CD4Status;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -42,8 +43,12 @@ public class TxRttByAgeAndSexDataSetDefinitionEvaluator implements DataSetEvalua
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		_datasetDefinition = (TxRttByAgeAndSexDataSetDefinition) dataSetDefinition;
-		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+				_datasetDefinition.getEndDate(), set);
+		if (dataSet1 != null) return dataSet1;
+
 		if (_datasetDefinition.getHeader()) {
 			//CD4Status cd4Status = _datasetDefinition.getCountCD4GreaterThan200();
 			rttQuery.getInterruptionMonth(_datasetDefinition.getEndDate());

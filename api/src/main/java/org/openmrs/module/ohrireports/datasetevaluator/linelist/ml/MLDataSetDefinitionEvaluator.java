@@ -10,6 +10,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MLDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -34,16 +35,10 @@ public class MLDataSetDefinitionEvaluator implements DataSetEvaluator {
 		MLDataSetDefinition _datasetDefinition = (MLDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
-		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			data.addRow(row);
-			return data;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), data);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		Cohort cohort = mlQueryLineList.getMLQuery(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		

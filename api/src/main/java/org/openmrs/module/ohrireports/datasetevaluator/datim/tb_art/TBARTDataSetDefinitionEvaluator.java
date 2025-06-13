@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TBARTQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_art.TBARTDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -36,8 +37,12 @@ public class TBARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		TBARTDataSetDefinition _datasetDefinition = (TBARTDataSetDefinition) dataSetDefinition;
 		simpleDataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		Cohort activeTBCohort = tbQuery.getCohortByTBTreatmentStartDate(_datasetDefinition.getStartDate(),
-		    _datasetDefinition.getEndDate());
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), simpleDataSet);
+		if (dataSet1 != null)
+			return dataSet1;
+		
+		Cohort activeTBCohort = tbQuery.getCohortByTBTreatmentStartDate(_datasetDefinition.getEndDate());
 		Cohort newOnARTCohort = tbQuery.getNewOnArtCohort(activeTBCohort, _datasetDefinition.getStartDate(),
 		    _datasetDefinition.getEndDate());
 		Cohort alreadyOnARTCohort = getAlreadyOnARTCohort(newOnARTCohort, activeTBCohort);

@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_rtt;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.RTTQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_rtt.TxRttAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -24,6 +25,11 @@ public class TxRttAutoCalculateDataSetDefinitionEvaluator implements DataSetEval
 		
 		TxRttAutoCalculateDataSetDefinition _datasetDefinition = (TxRttAutoCalculateDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
 		
 		if (!_datasetDefinition.getHeader()) {
 			rttQuery.getRttCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());

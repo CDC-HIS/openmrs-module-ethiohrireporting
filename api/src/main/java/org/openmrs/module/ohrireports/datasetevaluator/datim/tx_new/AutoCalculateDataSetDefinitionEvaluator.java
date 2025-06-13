@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TXNewQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.AutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -31,6 +32,10 @@ public class AutoCalculateDataSetDefinitionEvaluator implements DataSetEvaluator
 		
 		hdsd = (AutoCalculateDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
 		
 		if (!hdsd.getHeader()) {
 			txNewQuery.generateReport(hdsd.getStartDate(), hdsd.getEndDate());

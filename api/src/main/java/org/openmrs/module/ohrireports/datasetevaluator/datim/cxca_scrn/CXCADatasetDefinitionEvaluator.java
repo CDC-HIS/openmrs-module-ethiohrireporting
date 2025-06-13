@@ -10,6 +10,7 @@ import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_scrn.CXCADatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -40,6 +41,9 @@ public class CXCADatasetDefinitionEvaluator implements DataSetEvaluator {
         context = evalContext;
         SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 
+        SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(cxcaDatasetDefinition.getStartDate(),
+                cxcaDatasetDefinition.getEndDate(), dataSet);
+        if (_dataSet != null) return _dataSet;
 
         aggregateBuilder.setCalculateAgeFrom(cxcaDatasetDefinition.getEndDate());
 

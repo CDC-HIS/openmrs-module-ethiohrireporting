@@ -6,6 +6,7 @@ import org.openmrs.module.ohrireports.api.impl.query.CervicalCancerTreatmentQuer
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.cxca_treatment.CxCaTreatmentAutoCalculateDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -28,6 +29,12 @@ public class CxCaTreatmentAutoCalculateDatasetDefinitionEvaluator implements Dat
 		
 		CxCaTreatmentAutoCalculateDatasetDefinition cxCaTreatmentAutoCalculateDatasetDefinition = (CxCaTreatmentAutoCalculateDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(
+		    cxCaTreatmentAutoCalculateDatasetDefinition.getStartDate(),
+		    cxCaTreatmentAutoCalculateDatasetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		if (!cxCaTreatmentAutoCalculateDatasetDefinition.getHeader()) {
 			

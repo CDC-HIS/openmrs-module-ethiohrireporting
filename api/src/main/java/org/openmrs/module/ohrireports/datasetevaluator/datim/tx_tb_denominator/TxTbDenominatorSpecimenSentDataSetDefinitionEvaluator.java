@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorSpecimenSentDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -25,6 +26,12 @@ public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements Da
 		
 		TxTbDenominatorSpecimenSentDataSetDefinition hdsd = (TxTbDenominatorSpecimenSentDataSetDefinition) dataSetDefinition;
 		
+		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
+		
 		DataSetRow dataSet = new DataSetRow();
 		
 		dataSet.addColumnValue(new DataSetColumn("", "", String.class),
@@ -32,8 +39,6 @@ public class TxTbDenominatorSpecimenSentDataSetDefinitionEvaluator implements Da
 		
 		dataSet.addColumnValue(new DataSetColumn("num", "Num", Integer.class),
 		    tbQuery.getSpecimenSent(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(), hdsd.getEndDate()).size());
-		
-		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		set.addRow(dataSet);
 		return set;

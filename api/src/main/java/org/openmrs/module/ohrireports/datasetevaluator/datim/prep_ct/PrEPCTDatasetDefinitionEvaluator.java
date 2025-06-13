@@ -20,6 +20,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.PrEPCTDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -63,6 +64,11 @@ public class PrEPCTDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		context = evalContext;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(auCDataSetDefinition.getStartDate(),
+		    auCDataSetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		aggregateBuilder.setCalculateAgeFrom(auCDataSetDefinition.getEndDate());
 		Cohort cohort = preExposureProphylaxisQuery.getAllPrEPCT();

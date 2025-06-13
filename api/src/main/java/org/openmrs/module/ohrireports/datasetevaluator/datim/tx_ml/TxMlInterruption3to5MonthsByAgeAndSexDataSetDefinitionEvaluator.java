@@ -10,6 +10,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.MLQuery;
 import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_ml.TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetRow;
 import org.openmrs.module.reporting.dataset.SimpleDataSet;
@@ -35,6 +36,11 @@ public class TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinitionEvaluator imp
 		TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition _datasetDefinition = (TxMlInterruption3to5MonthsByAgeAndSexDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
 		
 		Cohort cohort = getBetweenThreeToFiveInterruption(mlQuery.getInterruptionMonthList());
 		aggregateBuilder.setFollowUpDate(mlQuery.getLastFollowUpDate(cohort));
