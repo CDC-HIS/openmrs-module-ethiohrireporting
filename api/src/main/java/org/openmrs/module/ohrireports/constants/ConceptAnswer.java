@@ -8,6 +8,8 @@ public class ConceptAnswer {
 	
 	public static final Map<String, String> CONCEPT_LABELS;
 	
+	public static final Map<String, String> PREP_STATUS_CONCEPT_LABELS;
+	
 	public final static String ARV_30_Day = "fba421cf-a483-4329-b8b1-6a3ef16081bc";
 	
 	public final static String ARV_60_Day = "75d94023-7804-44f8-9998-9d678488af3e";
@@ -179,6 +181,7 @@ public class ConceptAnswer {
 	
 	static {
 		HashMap<String, String> map = new HashMap<>();
+		HashMap<String, String> map2 = new HashMap<>();
 		
 		// Nutritional Screening Result
 		map.put(MILD_MAL_NUTRITION, "Mild Malnutrition");
@@ -204,6 +207,18 @@ public class ConceptAnswer {
 		map.put(DROP, "Drop");
 		map.put(DEAD, "Dead");
 		
+		// PrEP Follow-up status
+		map2.put(NEWLY_STARTED, "Newly Started");
+		map2.put("488236af-a2fe-4b04-b62c-eabd27b05ea4", "Newly Started");
+		map2.put(ON_PREP, "On PrEP");
+		map2.put(LOST_TO_FOLLOW_UP, "Loss to Follow-up");
+		map2.put(STOP, "Discontinued/Stop");
+		map2.put(DEAD, "Dead");
+		map2.put((RESTART), "Restart");
+		map2.put(TRANSFERRED_OUT_UUID, "TO");
+		map2.put(TRANSFERRED_IN, "TI");
+		
 		CONCEPT_LABELS = Collections.unmodifiableMap(map);
+		PREP_STATUS_CONCEPT_LABELS = Collections.unmodifiableMap(map2);
 	}
 }

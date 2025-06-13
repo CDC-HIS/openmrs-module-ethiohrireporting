@@ -215,11 +215,27 @@ public class ObsElement extends BaseEthiOhriQuery {
 		int personId = 0;
 		Object[] objects;
 		for (Object object : list) {
-
 			objects = (Object[]) object;
 			personId = (Integer) objects[0];
 			if (dictionary.get((Integer) personId) == null) {
 				dictionary.put(personId, ConceptAnswer.CONCEPT_LABELS.get(objects[1]));
+			}
+
+		}
+
+		return dictionary;
+	}
+	
+	protected HashMap<Integer, Object> getPrepLabelDictionary(Query query) {
+		List list = query.list();
+		HashMap<Integer, Object> dictionary = new HashMap<>();
+		int personId = 0;
+		Object[] objects;
+		for (Object object : list) {
+			objects = (Object[]) object;
+			personId = (Integer) objects[0];
+			if (dictionary.get((Integer) personId) == null) {
+				dictionary.put(personId, ConceptAnswer.PREP_STATUS_CONCEPT_LABELS.get(objects[1]));
 			}
 
 		}

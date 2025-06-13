@@ -83,7 +83,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		
 		HashMap<Integer, Object> followUpDateHashMapFromScreening = preExposureProphylaxisLineListQuery
 		        .getScreeningObsValueDate(PrepConceptQuestions.PREP_SCREENED_DATE, baseCohort, screeningEncounter);
-		HashMap<Integer, Object> statusFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		HashMap<Integer, Object> statusFromScreening = preExposureProphylaxisLineListQuery.getConceptLabel(
 		    screeningEncounter, PrepConceptQuestions.PREP_TYPE_OF_CLIENT, baseCohort,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepRegimenFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
@@ -110,7 +110,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		HashMap<Integer, Object> followUpDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
 		    baseFollowUpEncounter, FollowUpConceptQuestions.FOLLOW_UP_DATE, baseCohort,
 		    EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> status = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		HashMap<Integer, Object> status = preExposureProphylaxisLineListQuery.getConceptLabel(baseFollowUpEncounter,
 		    PrepConceptQuestions.PREP_FOLLOWUP_STATUS, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepRegimen = preExposureProphylaxisLineListQuery.getConceptName(
 		    PrepConceptQuestions.PREP_REGIMEN, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);

@@ -124,6 +124,23 @@ public class PreExposureProphylaxisLineListQuery extends ObsElement {
 		return getDictionary(getObs(baseEncounters, concept, cohort, encounterTypeUUid));
 	}
 	
+	public HashMap<Integer, Object> getConceptLabel(List<Integer> baseEncounters, String concept, Cohort cohort,
+	        String encounterTypeUUid) {
+		return getPrepLabelDictionary(getObsWithUuid(baseEncounters, concept, cohort, encounterTypeUUid));
+	}
+	
+	public Query getObsWithUuid(List<Integer> baseEncounters, String concept, Cohort cohort, String encounterTypeUUid) {
+		StringBuilder stringQuery = baseConceptUUIDQuery(concept, encounterTypeUUid);
+		stringQuery.append(" and ");
+		stringQuery.append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id in (:encounter) ");
+		stringQuery.append(" and ");
+		stringQuery.append(CONCEPT_BASE_ALIAS_OBS).append("person_id in (:personIds) ");
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringQuery.toString());
+		query.setParameterList("encounter", baseEncounters);
+		query.setParameterList("personIds", cohort.getMemberIds());
+		return query;
+	}
+	
 	public Query getObs(List<Integer> baseEncounters, String concept, Cohort cohort, String encounterTypeUUid) {
 		StringBuilder stringQuery = baseConceptQuery(concept, encounterTypeUUid);
 		stringQuery.append(" and ");
@@ -145,6 +162,20 @@ public class PreExposureProphylaxisLineListQuery extends ObsElement {
 		sql.append(" inner join concept as c on c.concept_id = ").append(CONCEPT_BASE_ALIAS_OBS).append(" concept_id  ");
 		sql.append(" inner join concept_name as cn on cn.concept_id = ").append(CONCEPT_BASE_ALIAS_OBS)
 		        .append(" value_coded and cn.locale_preferred =1 and cn.locale='en' ");
+		sql.append(" inner join encounter as e on e.encounter_id = ").append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id ");
+		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
+		sql.append(" and et.uuid= '").append(encounterTypeUUid).append("' ");
+		sql.append(" where obc.concept_id =").append(conceptQuery(conceptQuestionUUid)).append(" and obc.voided = false ");
+		return sql;
+	}
+	
+	protected StringBuilder baseConceptUUIDQuery(String conceptQuestionUUid, String encounterTypeUUid) {
+		
+		StringBuilder sql = new StringBuilder();
+		sql.append("select ").append(CONCEPT_BASE_ALIAS_OBS).append("person_id,c.uuid from obs as  obc");
+		sql.append(" inner join patient as pa on pa.patient_id = ").append(CONCEPT_BASE_ALIAS_OBS).append("person_id ");
+		sql.append(" inner join person as p on pa.patient_id = p.person_id ");
+		sql.append(" inner join concept as c on c.concept_id = ").append(CONCEPT_BASE_ALIAS_OBS).append(" value_coded  ");
 		sql.append(" inner join encounter as e on e.encounter_id = ").append(CONCEPT_BASE_ALIAS_OBS).append("encounter_id ");
 		sql.append(" inner join encounter_type as et on et.encounter_type_id = e.encounter_type ");
 		sql.append(" and et.uuid= '").append(encounterTypeUUid).append("' ");
