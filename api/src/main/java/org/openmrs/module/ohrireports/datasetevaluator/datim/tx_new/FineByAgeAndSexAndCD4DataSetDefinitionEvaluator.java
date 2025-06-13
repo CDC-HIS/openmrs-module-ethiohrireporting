@@ -15,6 +15,7 @@ import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.TXNewQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_new.FineByAgeAndSexAndCD4DataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -61,6 +62,12 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		total = 0;
 		hdsd = (FineByAgeAndSexAndCD4DataSetDefinition) dataSetDefinition;
+		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(),
+				hdsd.getEndDate(), set);
+		if (dataSet1 != null) return dataSet1;
+
 		cd4Status = hdsd.getCountCD4GreaterThan200();
 		if (hdsd.getHeader()) {
 
@@ -68,8 +75,7 @@ public class FineByAgeAndSexAndCD4DataSetDefinitionEvaluator implements DataSetE
 			unkownPersons.addAll(txNewQuery.getPersonList());
 
 		}
-		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
-		
+
 		if (!hdsd.getHeader()) {
 			
 			clearTotal();

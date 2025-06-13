@@ -9,6 +9,7 @@ import org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions;
 import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.DSDDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -40,21 +41,15 @@ public class DSDLineListDatasetEvaluator implements DataSetEvaluator {
 		DSDDataSetDefinition dsdDataset = (DSDDataSetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dsdDataset, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (dsdDataset.getStartDate() != null && dsdDataset.getEndDate() != null
-		        && dsdDataset.getStartDate().compareTo(dsdDataset.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
-		
 		if (dsdDataset.getEndDate() == null) {
 			dsdDataset.setEndDate(new Date());
 		}
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(dsdDataset.getStartDate(), dsdDataset.getEndDate(),
+		    dataSet);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		dsdLineListQuery.generateReport(dsdDataset.getStartDate(), dsdDataset.getEndDate());
 		Cohort cohort = dsdLineListQuery.getBaseCohort();
 		

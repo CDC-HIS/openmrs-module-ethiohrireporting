@@ -6,6 +6,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.api.ConceptService;
 import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_ct.AutoCalculatePrEPCTDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -38,6 +39,11 @@ public class AutoCalculatePrEPCTDatasetDefinitionEvaluator implements DataSetEva
 		
 		AutoCalculatePrEPCTDatasetDefinition aucDataset = (AutoCalculatePrEPCTDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(aucDataset.getStartDate(), aucDataset.getEndDate(),
+		    dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		if (!aucDataset.getHeader()) {
 			

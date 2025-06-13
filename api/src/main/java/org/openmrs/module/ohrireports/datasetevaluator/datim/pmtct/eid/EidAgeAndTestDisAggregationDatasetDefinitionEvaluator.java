@@ -6,6 +6,7 @@ import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.EidAgeAndTestDisAggregationDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -31,6 +32,12 @@ public class EidAgeAndTestDisAggregationDatasetDefinitionEvaluator implements Da
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		EidAgeAndTestDisAggregationDatasetDefinition _datasetDefinition = (EidAgeAndTestDisAggregationDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		DataSetRow firstTestRow = new DataSetRow();
 		String COLUMN_ONE = "Test Type";
 		firstTestRow.addColumnValue(new DataSetColumn(COLUMN_ONE, COLUMN_ONE, String.class), "First Test");

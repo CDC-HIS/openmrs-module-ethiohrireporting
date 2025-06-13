@@ -5,6 +5,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.PreExposureProphylaxisQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.DisaggregatedByPregnantDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pr_ep_new.DisaggregatedByPrepDistributionDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -24,6 +25,12 @@ public class DisaggregatedByPrepDistributionDatasetDefinitionEvaluator implement
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(preExposureProphylaxisQuery.getStartDate(),
+		    preExposureProphylaxisQuery.getEndDate(), set);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		Cohort cohort = preExposureProphylaxisQuery.getAllNewPrEP();
 		DataSetRow fRow = new DataSetRow();
 		fRow.addColumnValue(new DataSetColumn("Name", "", String.class), "Facility");

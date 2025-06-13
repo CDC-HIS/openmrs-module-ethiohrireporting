@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.pmtct_fo;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.FOQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_fo.PMTCTFOAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -30,6 +31,11 @@ public class PMTCTFOAutoCalculateDataSetDefinisionEvaluator implements DataSetEv
 		
 		_dataSetDefinition = (PMTCTFOAutoCalculateDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), set);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		if (!_dataSetDefinition.getHeader()) {
 			context = evalContext;

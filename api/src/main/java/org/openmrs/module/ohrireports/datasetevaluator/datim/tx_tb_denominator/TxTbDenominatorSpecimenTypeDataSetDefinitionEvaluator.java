@@ -31,6 +31,11 @@ public class TxTbDenominatorSpecimenTypeDataSetDefinitionEvaluator implements Da
 		
 		TxTbDenominatorSpecimenTypeDataSetDefinition hdsd = (TxTbDenominatorSpecimenTypeDataSetDefinition) dataSetDefinition;
 		
+		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
+		
 		Cohort xrayCohort = tbQuery.getTPTByConceptCohort(tbQuery.getTbScreeningEncounter(), tbQuery.getDenomiatorCohort(),
 		    FollowUpConceptQuestions.OTHER_TB_DIAGNOSTIC_TEST, Arrays.asList(ConceptAnswer.CHEST_X_RAY));
 		int screenOnlyCount = tbQuery.getDenomiatorCohort().size() - xrayCohort.size();
@@ -53,8 +58,6 @@ public class TxTbDenominatorSpecimenTypeDataSetDefinitionEvaluator implements Da
 		//TODO: calculate value
 		subTotal += screenOnlyCount + xrayCohort.size() + molecularWRD;
 		row.addColumnValue(new DataSetColumn("Sub total ", "Subtotal ", Integer.class), subTotal);
-		
-		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		set.addRow(row);
 		return set;

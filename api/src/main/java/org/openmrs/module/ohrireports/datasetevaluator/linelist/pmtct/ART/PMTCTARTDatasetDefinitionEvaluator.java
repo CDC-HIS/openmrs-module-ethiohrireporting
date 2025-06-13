@@ -9,6 +9,7 @@ import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PMTCTARTClientDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -45,6 +46,11 @@ public class PMTCTARTDatasetDefinitionEvaluator implements DataSetEvaluator {
 		_dataSetDefinition = (PMTCTARTClientDataSetDefinition) dataSetDefinition;
 		
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		artQuery.setStartDate(_dataSetDefinition.getStartDate());
 		artQuery.setEndDate(_dataSetDefinition.getEndDate());

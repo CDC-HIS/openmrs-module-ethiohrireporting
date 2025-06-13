@@ -4,6 +4,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.cohort.PMTCTCalculationType;
 import org.openmrs.module.ohrireports.api.impl.query.cohort.PMTCTCohort;
 import org.openmrs.module.ohrireports.datasetdefinition.pmtct_cohort.MotherDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -48,6 +49,12 @@ public class MotherDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		MotherDatasetDefinition motherDatasetDefinition = (MotherDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(motherDatasetDefinition.getStartDate(),
+		    motherDatasetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		String TITLE = "title";
 		dataASetRow.addColumnValue(new DataSetColumn(TITLE, "#", String.class), "A");
 		dataASetRow.addColumnValue(new DataSetColumn(DESCRIPTION, DESCRIPTION, String.class),

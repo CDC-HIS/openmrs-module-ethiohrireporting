@@ -13,6 +13,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -38,20 +39,14 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		VLReceivedDataSetDefinition _DataSetDefinition = (VLReceivedDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_DataSetDefinition.getStartDate() != null && _DataSetDefinition.getEndDate() != null
-		        && _DataSetDefinition.getStartDate().compareTo(_DataSetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			data.addRow(row);
-			return data;
-		}
 		if (_DataSetDefinition.getEndDate() == null) {
 			_DataSetDefinition.setEndDate(new Date());
 		}
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_DataSetDefinition.getStartDate(),
+		    _DataSetDefinition.getEndDate(), data);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 		

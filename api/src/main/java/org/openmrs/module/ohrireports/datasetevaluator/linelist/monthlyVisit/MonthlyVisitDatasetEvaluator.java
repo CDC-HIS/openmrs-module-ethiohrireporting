@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MonthlyVisitDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -34,16 +35,9 @@ public class MonthlyVisitDatasetEvaluator implements DataSetEvaluator {
 		MonthlyVisitDatasetDefinition dsd = (MonthlyVisitDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dsd, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (dsd.getStartDate() != null && dsd.getEndDate() != null && dsd.getStartDate().compareTo(dsd.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(dsd.getStartDate(), dsd.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		monthlyVisitQuery.generateReport(dsd.getStartDate(), dsd.getEndDate());
 		

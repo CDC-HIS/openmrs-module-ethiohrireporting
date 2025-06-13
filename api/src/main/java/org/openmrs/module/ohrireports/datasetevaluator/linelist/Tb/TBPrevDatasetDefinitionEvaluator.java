@@ -12,6 +12,7 @@ import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.constants.*;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -61,16 +62,9 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 			hdsd.setEndDate(new Date());
 		}
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			data.addRow(row);
-			return data;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), data);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		patientQuery = Context.getService(PatientQueryService.class);
 		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(null, new Date());

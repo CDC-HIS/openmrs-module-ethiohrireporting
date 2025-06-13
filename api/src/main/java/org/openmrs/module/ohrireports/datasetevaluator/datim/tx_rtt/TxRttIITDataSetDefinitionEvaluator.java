@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.tx_rtt;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.RTTQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_rtt.TxRttIITDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -24,6 +25,11 @@ public class TxRttIITDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		TxRttIITDataSetDefinition _datasetDefinition = (TxRttIITDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
 		
 		DataSetRow belowThreeDateSet = new DataSetRow();
 		belowThreeDateSet.addColumnValue(new DataSetColumn("aggByIITrange", "", String.class),

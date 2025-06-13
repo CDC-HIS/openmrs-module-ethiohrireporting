@@ -18,6 +18,7 @@ public class DisaggregatedByPopulationTypDatasetDefinitionEvaluator implements D
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
 		DataSetRow dRow = new DataSetRow();
 		dRow.addColumnValue(new DataSetColumn("Name", "", String.class), "PWID");
 		dRow.addColumnValue(new DataSetColumn("-", "", Integer.class), 0);

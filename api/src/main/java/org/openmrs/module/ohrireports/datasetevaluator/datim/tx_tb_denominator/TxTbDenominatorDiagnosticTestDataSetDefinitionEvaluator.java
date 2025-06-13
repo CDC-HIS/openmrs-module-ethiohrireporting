@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorDiagnosticTestDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -27,6 +28,12 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 		
 		hdsd = (TxTbDenominatorDiagnosticTestDataSetDefinition) dataSetDefinition;
 		
+		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
+		
 		int smearOnly = tbQuery.getSmearOnly(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(), hdsd.getEndDate()).size();
 		int molecularWRD = tbQuery.getLFMResult(tbQuery.getDenomiatorCohort()).size();
 		int additionalmWRD = tbQuery.getOtherThanLFMResult(tbQuery.getDenomiatorCohort(), hdsd.getStartDate(),
@@ -47,8 +54,6 @@ public class TxTbDenominatorDiagnosticTestDataSetDefinitionEvaluator implements 
 		
 		dataSet.addColumnValue(new DataSetColumn("Subtotal", "Subtotal ", Integer.class), additionalmWRD + molecularWRD
 		        + smearOnly);
-		
-		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		set.addRow(dataSet);
 		return set;
