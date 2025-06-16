@@ -80,7 +80,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			    "Age at Enrollment", "Current Age", "Sex", "Mobile No.", "Enrollment Date", "HIV Confirmed Date",
 			    "ART Start Date", "Time to ART Initiation (in days)", "Latest Follow-up Date", "Latest Follow-up Status",
 			    "Latest Regimen", "Latest ARV Dose Days", "Adherence", "Next Visit Date", "Last TX_CURR Date E.C", "TI?",
-			    "Regions", "Zone", "Woreda", "Kebele", "House #", "Mobile #")));
+			    "TI Date", "Regions", "Zone", "Woreda", "Kebele", "House #", "Mobile #")));
 		}
 		int rowNumber = 1;
 		for (Person person : persons) {
@@ -92,6 +92,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			        .getDate(latestFollowupDateDictionary.get(person.getPersonId()));
 			Date nextVisitDate = artPatientLineListQuery.getDate(nextVisitDateDictionary.get(person.getPersonId()));
 			Date lastCurrDate = artPatientLineListQuery.getDate(lastCurrDateHashMap.get(person.getPersonId()));
+			Date tiDate = artPatientLineListQuery.getDate(tiDateHashMap.get(person.getPersonId()));
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), rowNumber++);
@@ -126,9 +127,11 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			    adherence.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Next Visit Date", "Next Visit Date", Integer.class),
 			    artPatientLineListQuery.getEthiopianDate(nextVisitDate));
-			row.addColumnValue(new DataSetColumn("Last TX_CURR Date E.C", "Last TX_CURR Date E.C", Integer.class),
+			row.addColumnValue(new DataSetColumn("Last TX_CURR Date E.C", "Last TX_CURR Date E.C", String.class),
 			    artPatientLineListQuery.getEthiopianDate(lastCurrDate));
 			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class), tiHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("TI Date", "TI Date", String.class),
+			    artPatientLineListQuery.getEthiopianDate(tiDate));
 			
 			row.addColumnValue(new DataSetColumn("Regions", "Regions", String.class),
 			    getStateProvince(person.getPersonAddress()));
@@ -165,8 +168,10 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		adherence = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort, encounters);
 		nextVisitDateDictionary = artPatientLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
-		tiHashMap = artPatientLineListQuery.getConceptName(encounters, cohort,
-		    FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
+		tiHashMap = artPatientLineListQuery.getConceptName(artPatientListQuery.getFirstFollowUp(), cohort,
+		    ConceptAnswer.TRANSFERRED_IN);
+		tiDateHashMap = artPatientLineListQuery.getConceptName(artPatientListQuery.getFirstFollowUp(), cohort,
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE);
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
@@ -196,7 +201,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	
 	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, registrationDateDictionary,
 	        hivConfirmedDateDictionary, artStartDateDictionary, latestFollowupDateDictionary, latestFollowupStatus, regimen,
-	        arvDoseDays, adherence, nextVisitDateDictionary, tiHashMap, lastCurrDateHashMap;
+	        arvDoseDays, adherence, nextVisitDateDictionary, tiHashMap, tiDateHashMap, lastCurrDateHashMap;
 	
 	private static String getCityVillage(PersonAddress address) {
 		return Objects.isNull(address) ? "--" : address.getStateProvince() == null ? "--" : address.getCityVillage();

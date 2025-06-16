@@ -19,11 +19,11 @@ public class PopulationTypeDataSetDefinitionEvaluator implements DataSetEvaluato
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		PopulationTypeDataSetDefinition _dataSetDefinition1 = (PopulationTypeDataSetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
-		SimpleDataSet dataSet1 = EthiOhriUtil
-				.isValidReportDateRange(_dataSetDefinition1.getStartDate(), _dataSetDefinition1.getEndDate(), dataSet);
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition1.getStartDate(),
+		    _dataSetDefinition1.getEndDate(), dataSet);
 		if (dataSet1 != null)
 			return dataSet1;
-
+		
 		DataSetRow PWIDRow = new DataSetRow();
 		PWIDRow.addColumnValue(new DataSetColumn("PopulationType", "Population Type", String.class), "PWID");
 		PWIDRow.addColumnValue(new DataSetColumn("total", "Total", Integer.class), 0);

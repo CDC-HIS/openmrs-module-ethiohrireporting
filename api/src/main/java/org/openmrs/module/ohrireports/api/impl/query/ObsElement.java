@@ -12,6 +12,7 @@ import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.helper.EthiopianDate;
 import org.openmrs.module.ohrireports.helper.EthiopianDateConverter;
 
@@ -327,20 +328,7 @@ public class ObsElement extends BaseEthiOhriQuery {
 	}
 	
 	public String getEthiopianDate(Date date) {
-		if (date == null) {
-			return "--";
-		}
-		LocalDate lDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		EthiopianDate ethiopianDate = null;
-		try {
-			ethiopianDate = EthiopianDateConverter.ToEthiopianDate(lDate);
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return ethiopianDate == null ? "" : ethiopianDate.getDay() + "/" + ethiopianDate.getMonth() + "/"
-		        + ethiopianDate.getYear();
+		return EthiOhriUtil.getEthiopianDate(date);
 	}
 	
 	/**

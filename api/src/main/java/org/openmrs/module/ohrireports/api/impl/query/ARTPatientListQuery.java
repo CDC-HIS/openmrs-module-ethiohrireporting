@@ -31,6 +31,12 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 	
 	private List<Integer> followupEncounter;
 	
+	private List<Integer> firstFollowUp;
+	
+	public List<Integer> getFirstFollowUp() {
+		return firstFollowUp;
+	}
+	
 	public Cohort getBaseCohort() {
 		return baseCohort;
 	}
@@ -58,6 +64,9 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 		
 		baseCohort = getCohort(baseEncounter);
 		baseCohort = Cohort.union(baseCohort, followupCohort);
+		
+		firstFollowUp = encounterQuery.getFirstEncounterByObsDate(null, endDate, FollowUpConceptQuestions.FOLLOW_UP_DATE,
+		    baseCohort);
 		
 	}
 	
