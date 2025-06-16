@@ -1,6 +1,14 @@
 package org.openmrs.module.ohrireports.constants;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ConceptAnswer {
+	
+	public static final Map<String, String> CONCEPT_LABELS;
+	
+	public static final Map<String, String> PREP_STATUS_CONCEPT_LABELS;
 	
 	public final static String ARV_30_Day = "fba421cf-a483-4329-b8b1-6a3ef16081bc";
 	
@@ -170,4 +178,47 @@ public class ConceptAnswer {
 	public final static String DSD_AHDCM = "69e20fac-25ff-46c5-8681-756ba0078c80";
 	
 	public final static String THERAPEUTIC_SUPPLEMENTARY_FOOD = "161005AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	
+	static {
+		HashMap<String, String> map = new HashMap<>();
+		HashMap<String, String> map2 = new HashMap<>();
+		
+		// Nutritional Screening Result
+		map.put(MILD_MAL_NUTRITION, "Mild Malnutrition");
+		map.put(MODERATE_MAL_NUTRITION, "Moderate Malnutrition");
+		map.put(SEVERE_MAL_NUTRITION, "Severe Malnutrition");
+		map.put("132626AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Obese");
+		map.put(NORMAL, "Normal");
+		map.put(UNDERNOURISHED, "Undernourished");
+		map.put("114413AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "Overweight");
+		
+		// VL Status
+		map.put(HIV_HIGH_VIRAL_LOAD, "High Viral Load");
+		map.put(HIV_VIRAL_LOAD_UNSUPPRESSED, "Unsuppressed");
+		map.put(HIV_VIRAL_LOAD_SUPPRESSED, "Suppressed");
+		map.put(HIV_VIRAL_LOAD_LOW_LEVEL_VIREMIA, "Low-level viremia");
+		
+		// Follow-up Status
+		map.put(ALIVE, "Alive");
+		map.put(RESTART, "Restart");
+		map.put(TRANSFERRED_OUT_UUID, "TO");
+		map.put(STOP, "Stop");
+		map.put(LOST_TO_FOLLOW_UP, "Lost");
+		map.put(DROP, "Drop");
+		map.put(DEAD, "Dead");
+		
+		// PrEP Follow-up status
+		map2.put(NEWLY_STARTED, "Newly Started");
+		map2.put("488236af-a2fe-4b04-b62c-eabd27b05ea4", "Newly Started");
+		map2.put(ON_PREP, "On PrEP");
+		map2.put(LOST_TO_FOLLOW_UP, "Loss to Follow-up");
+		map2.put(STOP, "Discontinued/Stop");
+		map2.put(DEAD, "Dead");
+		map2.put((RESTART), "Restart");
+		map2.put(TRANSFERRED_OUT_UUID, "TO");
+		map2.put(TRANSFERRED_IN, "TI");
+		
+		CONCEPT_LABELS = Collections.unmodifiableMap(map);
+		PREP_STATUS_CONCEPT_LABELS = Collections.unmodifiableMap(map2);
+	}
 }

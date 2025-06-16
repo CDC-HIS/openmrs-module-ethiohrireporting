@@ -154,10 +154,10 @@ public class PMTCTARTDatasetDefinitionEvaluator implements DataSetEvaluator {
 		regimen = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, baseCohort,
 		    artQuery.getBaseEncounter());
 		dose = pmtctARTLineListQuery.getByResult(PMTCTConceptQuestions.PMTCT_DOSE, baseCohort, artQuery.getBaseEncounter());
-		nutritionalStatus = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT, baseCohort,
-		    artQuery.getBaseEncounter());
-		latestVLStatus = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.LATEST_VL_STATUS, baseCohort,
-		    artQuery.getBaseEncounter());
+		nutritionalStatus = pmtctARTLineListQuery.getConceptLabel(artQuery.getBaseEncounter(), baseCohort,
+		    FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT);
+		latestVLStatus = pmtctARTLineListQuery.getConceptLabel(artQuery.getBaseEncounter(), baseCohort,
+		    FollowUpConceptQuestions.LATEST_VL_STATUS);
 		adherence = pmtctARTLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, baseCohort,
 		    artQuery.getBaseEncounter());
 		nextVisitDate = pmtctARTLineListQuery.getObsValueDate(artQuery.getBaseEncounter(),

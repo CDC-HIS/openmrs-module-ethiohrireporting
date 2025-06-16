@@ -11,6 +11,7 @@ import org.hibernate.Query;
 import org.openmrs.Cohort;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.ohrireports.api.impl.BaseEthiOhriQuery;
+import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.helper.EthiopianDate;
@@ -111,7 +112,7 @@ public class ObsElement extends BaseEthiOhriQuery {
 	 * @return
 	 */
 	public HashMap<Integer, Object> getFollowUpStatus(List<Integer> baseEncounters, Cohort cohort) {
-		return getDictionary(getObs(baseEncounters, FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort));
+		return getLabelDictionary(getObsWithUuid(baseEncounters, FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort));
 	}
 	
 	public HashMap<Integer, Object> getNutritionalStatus(List<Integer> baseEncounters, Cohort cohort) {
@@ -209,6 +210,40 @@ public class ObsElement extends BaseEthiOhriQuery {
         return dictionary;
     }
 	
+	protected HashMap<Integer, Object> getLabelDictionary(Query query) {
+		List list = query.list();
+		HashMap<Integer, Object> dictionary = new HashMap<>();
+		int personId = 0;
+		Object[] objects;
+		for (Object object : list) {
+			objects = (Object[]) object;
+			personId = (Integer) objects[0];
+			if (dictionary.get((Integer) personId) == null) {
+				dictionary.put(personId, ConceptAnswer.CONCEPT_LABELS.get(objects[1]));
+			}
+
+		}
+
+		return dictionary;
+	}
+	
+	protected HashMap<Integer, Object> getPrepLabelDictionary(Query query) {
+		List list = query.list();
+		HashMap<Integer, Object> dictionary = new HashMap<>();
+		int personId = 0;
+		Object[] objects;
+		for (Object object : list) {
+			objects = (Object[]) object;
+			personId = (Integer) objects[0];
+			if (dictionary.get((Integer) personId) == null) {
+				dictionary.put(personId, ConceptAnswer.PREP_STATUS_CONCEPT_LABELS.get(objects[1]));
+			}
+
+		}
+
+		return dictionary;
+	}
+	
 	protected Query getObs(List<Integer> baseEncounters, String concept, Cohort cohort) {
 		StringBuilder sql = baseConceptQuery(concept);
 		
@@ -227,6 +262,19 @@ public class ObsElement extends BaseEthiOhriQuery {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
 		    baseConceptQuery(concept, encounterType).append(" and  ").append(CONCEPT_BASE_ALIAS_OBS)
+		            .append("encounter_id in (:encounters) ").append(" and  ").append(CONCEPT_BASE_ALIAS_OBS)
+		            .append("person_id in (:cohorts) ").toString());
+		
+		query.setParameterList("encounters", baseEncounters);
+		query.setParameterList("cohorts", cohort.getMemberIds());
+		
+		return query;
+	}
+	
+	protected Query getObsWithUuid(List<Integer> baseEncounters, String concept, Cohort cohort) {
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(
+		    baseConceptUUIDQuery(concept).append(" and  ").append(CONCEPT_BASE_ALIAS_OBS)
 		            .append("encounter_id in (:encounters) ").append(" and  ").append(CONCEPT_BASE_ALIAS_OBS)
 		            .append("person_id in (:cohorts) ").toString());
 		
@@ -344,5 +392,9 @@ public class ObsElement extends BaseEthiOhriQuery {
 	public HashMap<Integer, Object> getConceptName(List<Integer> encounters, Cohort cohort, String conceptUUId,
 	        String encounterType) {
 		return getDictionary(getObs(encounters, conceptUUId, cohort, encounterType));
+	}
+	
+	public HashMap<Integer, Object> getConceptLabel(List<Integer> encounters, Cohort cohort, String conceptUUId) {
+		return getLabelDictionary(getObsWithUuid(encounters, conceptUUId, cohort));
 	}
 }
