@@ -79,8 +79,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
         HashMap<Integer, Object> pregnancyStatus = artQuery.getByResult(PREGNANCY_STATUS, cohort, latestEncounters);
         HashMap<Integer, Object> breastfeedingStatus = artQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort,
                 latestEncounters);
-        HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getByResult(NUTRITIONAL_STATUS_ADULT, cohort,
-                latestEncounters);
+        HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getConceptLabel(latestEncounters, cohort, NUTRITIONAL_STATUS_ADULT);
         HashMap<Integer, Object> therapeuticSupplementaryHashMap = artQuery.getByResult(ConceptAnswer.THERAPEUTIC_SUPPLEMENTARY_FOOD,
                 cohort, latestEncounters);
         HashMap<Integer, Object> dispensDayHashMap = artQuery
@@ -93,7 +92,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
         HashMap<Integer, Object> tbTreatmentCompletedDateHashMap = artQuery.getObsValueDate(latestEncounters,
                 TB_TREATMENT_COMPLETED_DATE, cohort);
         HashMap<Integer, Object> vlSentDateHashMap = artQuery.getObsValueDate(latestEncounters, DATE_VL_REQUESTED, cohort);
-        HashMap<Integer, Object> vlStatusHashMap = artQuery.getByResult(VIRAL_LOAD_STATUS, cohort, latestEncounters);
+        HashMap<Integer, Object> vlStatusHashMap = artQuery.getConceptLabel(latestEncounters, cohort, VIRAL_LOAD_STATUS);
         HashMap<Integer, Object> nextVisitDateHashMap = artQuery.getObsValueDate(latestEncounters, NEXT_VISIT_DATE, cohort);
         HashMap<Integer, Object> treatmentEndDateHashMap = artQuery.getObsValueDate(latestEncounters, TREATMENT_END_DATE,
                 cohort);

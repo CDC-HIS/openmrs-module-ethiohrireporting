@@ -61,8 +61,8 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(FollowUpConceptQuestions.ADULT_CD4_COUNT, cohort,
 		    encounters);
 		HashMap<Integer, Object> whoStage = artQuery.getByResult(FollowUpConceptQuestions.WHO_STAGE, cohort, encounters);
-		HashMap<Integer, Object> nutritionalStatus = artQuery.getByResult(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT,
-		    cohort, encounters);
+		HashMap<Integer, Object> nutritionalStatus = artQuery.getConceptLabel(encounters, cohort,
+		    FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT);
 		HashMap<Integer, Object> tbScreeningResult = artQuery.getByResult(FollowUpConceptQuestions.TB_SCREENED_RESULT,
 		    cohort, encounters);
 		
@@ -81,7 +81,8 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, cohort, encounters);
 		HashMap<Integer, Object> followUpDate = artQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
-		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(encounters, cohort);
+		HashMap<Integer, Object> statusHashMap = artQuery.getConceptLabel(encounters, cohort,
+		    FollowUpConceptQuestions.FOLLOW_UP_STATUS);
 		
 		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(encounters, cohort);
 		

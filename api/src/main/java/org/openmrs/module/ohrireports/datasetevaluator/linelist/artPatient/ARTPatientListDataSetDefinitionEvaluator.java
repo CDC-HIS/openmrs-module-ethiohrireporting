@@ -161,8 +161,8 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		    FollowUpConceptQuestions.ART_START_DATE, cohort);
 		latestFollowupDateDictionary = artPatientLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
-		latestFollowupStatus = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort,
-		    encounters);
+		latestFollowupStatus = artPatientLineListQuery.getConceptLabel(encounters, cohort,
+		    FollowUpConceptQuestions.FOLLOW_UP_STATUS);
 		regimen = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, cohort, encounters);
 		arvDoseDays = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort, encounters);
 		adherence = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort, encounters);
@@ -170,8 +170,9 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		    FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
 		tiHashMap = artPatientLineListQuery.getConceptName(artPatientListQuery.getFirstFollowUp(), cohort,
 		    ConceptAnswer.TRANSFERRED_IN);
-		tiDateHashMap = artPatientLineListQuery.getConceptName(artPatientListQuery.getFirstFollowUp(), cohort,
-		    FollowUpConceptQuestions.FOLLOW_UP_DATE);
+		tiDateHashMap = artPatientLineListQuery.getObsValueDate(artPatientListQuery.getFirstFollowUp(),
+				FollowUpConceptQuestions.FOLLOW_UP_DATE,cohort
+		   );
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
