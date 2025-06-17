@@ -31,7 +31,8 @@ import java.util.*;
  */
 @Handler(supports = { ARTPatientListDatasetDefinition.class })
 public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluator {
-	
+
+	public static final String REGISTRATION_DATE_UUID = "dadc86a8-1e44-4a6d-91c2-e3b54089b54c";
 	@Autowired
 	private ARTPatientListQuery artPatientListQuery;
 	
@@ -133,7 +134,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class),
 					getTIValue(person));
 			row.addColumnValue(new DataSetColumn("TI Date", "TI Date", String.class),
-			    artPatientLineListQuery.getEthiopianDate(tiDate));
+			  getTIValue(person).equalsIgnoreCase("yes")?  artPatientLineListQuery.getEthiopianDate(tiDate):"--");
 			
 			row.addColumnValue(new DataSetColumn("Regions", "Regions", String.class),
 			    getStateProvince(person.getPersonAddress()));
@@ -162,7 +163,7 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		
 		uanIdentifierHashMap = artPatientLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
 		registrationDateDictionary = artPatientLineListQuery.getObsValueDate(null,
-		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.REGISTRATION_ENCOUNTER_TYPE);
+				REGISTRATION_DATE_UUID, cohort, EncounterType.REGISTRATION_ENCOUNTER_TYPE);
 		hivConfirmedDateDictionary = artPatientLineListQuery.getObsValueDate(null,
 		    IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		lastCurrDateHashMap = artPatientLineListQuery.getObsValueDate(encounters,
