@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.artPatient;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
@@ -129,7 +130,8 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			    artPatientLineListQuery.getEthiopianDate(nextVisitDate));
 			row.addColumnValue(new DataSetColumn("Last TX_CURR Date E.C", "Last TX_CURR Date E.C", String.class),
 			    artPatientLineListQuery.getEthiopianDate(lastCurrDate));
-			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class), tiHashMap.get(person.getPersonId()));
+			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class),
+					getTIValue(person));
 			row.addColumnValue(new DataSetColumn("TI Date", "TI Date", String.class),
 			    artPatientLineListQuery.getEthiopianDate(tiDate));
 			
@@ -147,7 +149,15 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 		
 		return dataSet;
 	}
-	
+
+	@NotNull
+	private String getTIValue(Person person) {
+		if(tiHashMap == null || tiHashMap.isEmpty() || !tiHashMap.containsKey(person.getPersonId())) {
+			return "--";
+		}
+		return tiHashMap.get(person.getPersonId()).equals("Yes") ? "Yes" : "--";
+	}
+
 	private void loadColumnDictionary(List<Integer> encounters, Cohort cohort) {
 		
 		uanIdentifierHashMap = artPatientLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
