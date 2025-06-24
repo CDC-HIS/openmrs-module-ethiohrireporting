@@ -62,8 +62,8 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(followupCohort.getMemberIds(),
 		    EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		
-		baseCohort = getCohort(baseEncounter);
-		baseCohort = Cohort.union(baseCohort, followupCohort);
+		Cohort entakeCohort = getCohort(baseEncounter);
+		baseCohort = Cohort.union(entakeCohort, followupCohort);
 		
 		firstFollowUp = encounterQuery.getFirstEncounterByObsDate(null, endDate, FollowUpConceptQuestions.FOLLOW_UP_DATE,
 		    baseCohort);
@@ -79,10 +79,10 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 		baseEncounter = encounterQuery.getLatestDateByEnrollmentDate(followupCohort.getMemberIds(),
 		    EncounterType.INTAKE_A_ENCOUNTER_TYPE);
 		
-		baseCohort = getCohort(baseEncounter);
-		baseCohort = Cohort.union(baseCohort, followupCohort);
+		Cohort intakeCohort = getCohort(baseEncounter);
+		baseCohort = Cohort.union(intakeCohort, followupCohort);
 		firstFollowUp = encounterQuery.getFirstEncounterByObsDate(null, endDate, FollowUpConceptQuestions.FOLLOW_UP_DATE,
-				baseCohort);
+		    baseCohort);
 	}
 	
 	public void generateReport() {
@@ -96,7 +96,7 @@ public class ARTPatientListQuery extends PatientQueryImpDao {
 		baseCohort = getCohort(baseEncounter);
 		baseCohort = Cohort.union(baseCohort, followupCohort);
 		firstFollowUp = encounterQuery.getFirstEncounterByObsDate(null, endDate, FollowUpConceptQuestions.FOLLOW_UP_DATE,
-				baseCohort);
+		    baseCohort);
 	}
 	
 }
