@@ -13,6 +13,7 @@ import org.openmrs.module.ohrireports.api.query.AggregateBuilder;
 import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tb_prev.TbPrevDominatorDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -49,6 +50,10 @@ public class TbPrevDenominatorDataSetDefinitionEvaluator implements DataSetEvalu
 
         hdsd = (TbPrevDominatorDatasetDefinition) dataSetDefinition;
         SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+
+        SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(),
+                hdsd.getEndDate(), set);
+        if (dataSet1 != null) return dataSet1;
 
         if (!hdsd.getHeader()) {
 

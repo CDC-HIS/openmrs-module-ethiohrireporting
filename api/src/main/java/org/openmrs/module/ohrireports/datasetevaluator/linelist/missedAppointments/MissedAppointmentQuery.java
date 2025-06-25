@@ -45,9 +45,15 @@ public class MissedAppointmentQuery extends ObsElement {
 	}
 	
 	public void generateReport(Date reportEnd) {
+		// Fetch list of patient who has a followup after the report end date
 		Cohort hasFollowupAfterEndCohort = getCohortHasFollowUpAfterDate(reportEnd);
+		// Fetch encounter id of a patient who has a followup before the reporting end date, and they are ALIVE AND
+		// RESTART followup status
 		encounter = encounterQuery.getAliveFollowUpEncounters(null, reportEnd);
+		// load patient cohort who base on their latest encounter id of the 'encounter'
 		Cohort visitedCohort = getCohort(encounter);
+		// filters out the patient who have a followup after the report end date because they aren't be considered as
+		// they missed there visit because their status have been known
 		baseCohort = HMISUtilies.getLeftOuterUnion(visitedCohort, hasFollowupAfterEndCohort);
 		baseCohort = getMissideCohort(reportEnd);
 	}
@@ -57,7 +63,7 @@ public class MissedAppointmentQuery extends ObsElement {
 		sqlBuilder.append(" where ob.encounter_id in (:encounter) ");
 		sqlBuilder.append(" and ob.concept_id= ").append(conceptQuery(FollowUpConceptQuestions.NEXT_VISIT_DATE));
 		sqlBuilder.append(" and ob.person_id in (:personId) ");
-		sqlBuilder.append(" and DATEDIFF(:endDate, ob.value_datetime)>0");
+		sqlBuilder.append(" and DATEDIFF(:endDate,ob.value_datetime)>0");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
 		query.setParameterList("personId", baseCohort.getMemberIds());
@@ -68,9 +74,7 @@ public class MissedAppointmentQuery extends ObsElement {
 	}
 	
 	private Cohort getCohortHasFollowUpAfterDate(Date reportEnd) {
-		List<Integer> afterDateEncounter = encounterQuery.getEncounters(
-		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), reportEnd, null,
-		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
+		List<Integer> afterDateEncounter = encounterQuery.getAliveFirstFollowUpEncounters(reportEnd, null);
 		return getCohort(afterDateEncounter);
 	}
 	

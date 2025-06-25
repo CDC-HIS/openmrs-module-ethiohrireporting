@@ -4,6 +4,7 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.cohort.PMTCTCalculationType;
 import org.openmrs.module.ohrireports.api.impl.query.cohort.PMTCTCohort;
 import org.openmrs.module.ohrireports.datasetdefinition.pmtct_cohort.ChildDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -52,8 +53,14 @@ public class ChildDatasetDefinitionEvaluator implements DataSetEvaluator {
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		ChildDatasetDefinition motherDatasetDefinition = (ChildDatasetDefinition) dataSetDefinition;
+		ChildDatasetDefinition definition = (ChildDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(definition.getStartDate(), definition.getEndDate(),
+		    dataSet);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		String TITLE = "title";
 		dataASetRow.addColumnValue(new DataSetColumn(TITLE, "#", String.class), "A");
 		dataASetRow.addColumnValue(new DataSetColumn(DESCRIPTION, DESCRIPTION, String.class),
@@ -92,25 +99,21 @@ public class ChildDatasetDefinitionEvaluator implements DataSetEvaluator {
 		dataLSetRow.addColumnValue(new DataSetColumn(DESCRIPTION, DESCRIPTION, String.class),
 		    "HEI transferred out (TO to another facility -- NOT to ART clinic)");
 		
-		pmtctCohort.generateBaseReport(motherDatasetDefinition.getStartDate(), motherDatasetDefinition.getEndDate());
+		pmtctCohort.generateBaseReport(definition.getStartDate(), definition.getEndDate());
 		
-		pmtctCohort.generateMonthlyRangeReport(motherDatasetDefinition.getStartDate(),
-		    addMonth(motherDatasetDefinition.getStartDate(), 12));
+		pmtctCohort.generateMonthlyRangeReport(definition.getStartDate(), addMonth(definition.getStartDate(), 12));
 		String MONTH_TWELVE = "Maternal Cohort Month 12 [mm/yy]";
 		buildRow(MONTH_TWELVE);
 		
-		pmtctCohort.generateMonthlyRangeReport(motherDatasetDefinition.getStartDate(),
-		    addMonth(motherDatasetDefinition.getStartDate(), 18));
+		pmtctCohort.generateMonthlyRangeReport(definition.getStartDate(), addMonth(definition.getStartDate(), 18));
 		String MONTH_EIGHTEEN = "Maternal Cohort Month 18 [mm/yy]";
 		buildRow(MONTH_EIGHTEEN);
 		
-		pmtctCohort.generateMonthlyRangeReport(motherDatasetDefinition.getStartDate(),
-		    addMonth(motherDatasetDefinition.getStartDate(), 24));
+		pmtctCohort.generateMonthlyRangeReport(definition.getStartDate(), addMonth(definition.getStartDate(), 24));
 		String MONTH_TWENTY_FOUR = "Maternal Cohort Month 24 [mm/yy]";
 		buildRow(MONTH_TWENTY_FOUR);
 		
-		pmtctCohort.generateMonthlyRangeReport(motherDatasetDefinition.getStartDate(),
-		    addMonth(motherDatasetDefinition.getStartDate(), 30));
+		pmtctCohort.generateMonthlyRangeReport(definition.getStartDate(), addMonth(definition.getStartDate(), 30));
 		String MONTH_THIRTY = "Maternal Cohort Month 30 [mm/yy]";
 		buildRow(MONTH_THIRTY);
 		

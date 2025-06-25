@@ -8,6 +8,7 @@ import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.ARTQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct_art.PMTCTARTDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -45,6 +46,11 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		artQuery.setEndDate(hdsd.getEndDate());
 		
 		SimpleDataSet simpleDataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), simpleDataSet);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		if (hdsd.getPmtctType().equals("NEW_ON_ART")) {
 			pmtctARTPersonList = artQuery.getPersons(artQuery.getNewOnARTPMTCTARTCohort());
 		} else {

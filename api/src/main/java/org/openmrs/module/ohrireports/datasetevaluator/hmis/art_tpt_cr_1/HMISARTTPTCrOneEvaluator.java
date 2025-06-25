@@ -62,10 +62,8 @@ public class HMISARTTPTCrOneEvaluator {
 		baseCohort = tbQuery.getActiveOnArtCohort("",null,end,tptInitiatedCohort,baseEncounter);
 
 
-
-		dataSet.addRow(buildColumn("1",
-				"Number of ART patients who were initiated on any course of TPT 12 months before the reporting period",
-				baseCohort.size()));
+		int headerIndex = dataSet.getRows().size();
+		int total;
 
 		Cohort tempCohort = getTPTTreatmentBYType(TB_PROPHYLAXIS_TYPE, TB_PROPHYLAXIS_TYPE_INH);
 		persons = tbQuery.getPersons(tempCohort);
@@ -77,7 +75,8 @@ public class HMISARTTPTCrOneEvaluator {
 
 		tempCohort = getTPTTreatmentBYType(TB_PROPHYLAXIS_TYPE_ALTERNATE, TB_PROPHYLAXIS_TYPE_ALTERNATE_3HP);
 		persons = tbQuery.getPersons(tempCohort);
-		
+		total = persons.size();
+
 		dataSet.addRow(buildColumn("1.2", "Patients on 3HP 12 months prior to the reporting period", tempCohort.size()));
 		dataSet.addRow(buildColumn("1.2. 1", "< 15 years, Male", gettbscrnByAgeAndGender(0, 15, Gender.Male)));
 		dataSet.addRow(buildColumn("1.2 2", "< 15 years, female", gettbscrnByAgeAndGender(0, 15, Gender.Female)));
@@ -86,13 +85,17 @@ public class HMISARTTPTCrOneEvaluator {
 
 		tempCohort = getTPTTreatmentBYType(TB_PROPHYLAXIS_TYPE_ALTERNATE, TB_PROPHYLAXIS_TYPE_ALTERNATE_3HR);
 		persons = tbQuery.getPersons(tempCohort);
-		
+		total+=persons.size();
+
 		dataSet.addRow(buildColumn("1.3", "Patients on 3HR 12 months prior to the reporting period", tempCohort.size()));
 		dataSet.addRow(buildColumn("1.3. 1", "< 15 years, Male", gettbscrnByAgeAndGender(0, 15, Gender.Male)));
 		dataSet.addRow(buildColumn("1.3. 2", "< 15 years, female", gettbscrnByAgeAndGender(0, 15, Gender.Female)));
 		dataSet.addRow(buildColumn("1.3. 3", ">= 15 years, Male", gettbscrnByAgeAndGender(15, 150, Gender.Male)));
 		dataSet.addRow(buildColumn("1.3. 4", ">= 15 years, female", gettbscrnByAgeAndGender(15, 150, Gender.Female)));
 
+		dataSet.addRow(headerIndex,buildColumn("1",
+				"Number of ART patients who were initiated on any course of TPT 12 months before the reporting period",
+				total));
 	}
 
 	private Date getSubTwelveMonth(Date date) {

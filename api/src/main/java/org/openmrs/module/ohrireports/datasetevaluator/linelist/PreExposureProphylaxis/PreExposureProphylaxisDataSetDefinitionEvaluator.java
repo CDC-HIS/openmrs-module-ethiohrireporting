@@ -10,6 +10,7 @@ import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.constants.PrepConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.PreExposureProphylaxisDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.reports.linelist.PEPReport;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -43,20 +44,13 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		_dataSetDefinition = (PreExposureProphylaxisDataSetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_dataSetDefinition.getStartDate() != null && _dataSetDefinition.getEndDate() != null
-		        && _dataSetDefinition.getStartDate().compareTo(_dataSetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
-		
 		if (Objects.isNull(_dataSetDefinition.getEndDate()))
 			_dataSetDefinition.setEndDate(Calendar.getInstance().getTime());
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		preExposureProphylaxisQuery.setStartDate(_dataSetDefinition.getStartDate());
 		preExposureProphylaxisQuery.setEndDate(_dataSetDefinition.getEndDate());
@@ -83,7 +77,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		
 		HashMap<Integer, Object> followUpDateHashMapFromScreening = preExposureProphylaxisLineListQuery
 		        .getScreeningObsValueDate(PrepConceptQuestions.PREP_SCREENED_DATE, baseCohort, screeningEncounter);
-		HashMap<Integer, Object> statusFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
+		HashMap<Integer, Object> statusFromScreening = preExposureProphylaxisLineListQuery.getConceptLabel(
 		    screeningEncounter, PrepConceptQuestions.PREP_TYPE_OF_CLIENT, baseCohort,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepRegimenFromScreening = preExposureProphylaxisLineListQuery.getConceptName(
@@ -110,7 +104,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		HashMap<Integer, Object> followUpDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
 		    baseFollowUpEncounter, FollowUpConceptQuestions.FOLLOW_UP_DATE, baseCohort,
 		    EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> status = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
+		HashMap<Integer, Object> status = preExposureProphylaxisLineListQuery.getConceptLabel(baseFollowUpEncounter,
 		    PrepConceptQuestions.PREP_FOLLOWUP_STATUS, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> prepRegimen = preExposureProphylaxisLineListQuery.getConceptName(
 		    PrepConceptQuestions.PREP_REGIMEN, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
@@ -165,11 +159,11 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "UIC", "PrEP Screening Date in E.C.", "PrEP Started?", "PrEP Start Date in E.C", "Type of Client",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "UIC", "PrEP Screening Date in E.C.", "PrEP Started?", "PrEP Start Date in E.C", "Type of Client",
 			    "PrEP Follow-up Date in E.C.", "PrEP Follow-up Status", "PrEP Regimen", "PrEP Dose", "Missed Tablets",
 			    "Next Visit Date in E.C.", "Dose End Date in E.C.", "HIV Test Final Result", "Pregnant?", "Breast Feeding?",
 			    "Family Planning Method", "TB Screening Result", "STI Screening Result", "eGFR Estimate", "Side Effects",
@@ -204,6 +198,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 			

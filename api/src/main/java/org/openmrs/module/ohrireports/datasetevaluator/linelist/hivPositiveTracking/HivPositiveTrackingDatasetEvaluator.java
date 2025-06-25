@@ -1,12 +1,12 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.hivPositiveTracking;
 
 import org.openmrs.Cohort;
-import org.openmrs.Encounter;
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.HIVPositiveDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ART_START_DATE;
-import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.FINAL_OUTCOME_DATE;
 import static org.openmrs.module.ohrireports.constants.Identifiers.MRN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.constants.Identifiers.UAN_PATIENT_IDENTIFIERS;
 import static org.openmrs.module.ohrireports.constants.IntakeAConceptQuestions.ENTRE_POINT;
@@ -41,20 +40,14 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HIVPositiveDatasetDefinition _datasetDefinition = (HIVPositiveDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
-		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
-		
 		if (_datasetDefinition.getEndDate() == null) {
 			_datasetDefinition.setEndDate(new Date());
 		}
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		hivPositiveTrackingLineListQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
@@ -75,8 +68,9 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> hivConfirmedDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
 		    HIV_CONFIRMED_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		
-		HashMap<Integer, Object> artStartDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    ART_START_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		HashMap<Integer, Object> artStartDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(
+		    hivPositiveTrackingLineListQuery.getFollowUpEncounter(), ART_START_DATE, cohort,
+		    EncounterType.HTS_FOLLOW_UP_ENCOUNTER_TYPE);
 		
 		HashMap<Integer, Object> linkedToCareAndTreatmentHashMap = hivPositiveTrackingLineListQuery.getByResult(
 		    LINKED_TO_CARE_TREATMENT, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
@@ -90,7 +84,7 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> planForNextStepHashMap = hivPositiveTrackingLineListQuery.getByResult(
 		    PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
-		    FINAL_OUTCOME_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+		    FINAL_OUT_COME_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownHashMap = hivPositiveTrackingLineListQuery.getByResult(FINAL_OUT_COME,
 		    cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		
@@ -100,12 +94,12 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), personList.size());
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Mobile No.", "Registration Date in E.C.", "Date Tested HIV +ve in E.C.", "Entry Point",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "Mobile No.", "Registration Date in E.C.", "Date Tested HIV +ve in E.C.", "Entry Point",
 			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "Days Difference", "Linked to Care & Treatment?",
 			    "Date Linked to Care & Treatment in E.C.", "Reason for not Starting ART the same day", "Plan for next Step",
 			    "Final Outcome Known Date", "Final Outcome")));
@@ -125,10 +119,10 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 			        .get(person.getPersonId()));
 			Date finalOutcomeKnownDate = hivPositiveTrackingLineListQuery.getDate(finalOutcomeKnownDateHashMap.get(person
 			        .getPersonId()));
-			long daysDifference = getDayDifference(hivConfirmedDate, artStartDate);
+			String daysDifference = getDayDifference(artStartDate, hivConfirmedDate);
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
-			
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));

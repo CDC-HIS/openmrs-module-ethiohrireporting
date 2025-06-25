@@ -69,6 +69,7 @@ public class DSDQuery extends PatientQueryImpDao {
         String sqlBuilder = "SELECT ob.person_id FROM obs as ob WHERE " + " ob.concept_id ="
                 + conceptQuery(DSD_CATEGORY) +
                 " and ob.value_coded=" + conceptQuery(dsdCategoriesUUI) +
+                " and ob.voided=0 " +
                 " and ob.person_id in (:cohorts) " +
                 " and ob.encounter_id in (:encounters) ";
 

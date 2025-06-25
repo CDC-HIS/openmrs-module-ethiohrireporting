@@ -7,6 +7,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.MissedAppointmentDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ART_START_DATE;
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ARV_ADHERENCE;
 
 @Handler(supports = { MissedAppointmentDatasetDefinition.class })
@@ -42,8 +44,8 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uaIdentifierHashMap = appointmentQuery.getIdentifier(appointmentQuery.getBaseCohort(),
 		    Identifiers.UAN_PATIENT_IDENTIFIERS);
-		HashMap<Integer, Object> artStartDictionary = appointmentQuery.getArtStartDate(appointmentQuery.getBaseCohort(),
-		    null, _datasetDefinition.getEndDate());
+		HashMap<Integer, Object> artStartDictionary = appointmentQuery.getObsValueDate(appointmentQuery.getEncounter(),
+		    ART_START_DATE, appointmentQuery.getBaseCohort());
 		HashMap<Integer, Object> adherenceHashmap = appointmentQuery.getByResult(ARV_ADHERENCE,
 		    appointmentQuery.getBaseCohort(), appointmentQuery.getEncounter());
 		HashMap<Integer, Object> regimentHashmap = appointmentQuery.getByResult(FollowUpConceptQuestions.REGIMEN,
@@ -68,12 +70,12 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), personList.size());
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "ART Start Date", "Last Follow-up Date E.C", "Last Appointment Date E.C", "No. of Missed Days",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "ART Start Date", "Last Follow-up Date E.C", "Last Appointment Date E.C", "No. of Missed Days",
 			    "Tracing Status", "Last Follow-up Status", "Last Regimen", "Last ARV Dose", "Adherence",
 			    "Last TX_CURR Date E.C", "Mobile#", "Zone", "Woreda")));
 		}
@@ -83,6 +85,7 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		for (Person person : personList) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));

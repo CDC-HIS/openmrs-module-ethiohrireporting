@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
-@Component
+//@Component
 public class TX_PVLSDenominatorReport implements ReportManager {
 	
 	@Autowired

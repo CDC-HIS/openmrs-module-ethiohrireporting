@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.pmtct.eid;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.EidNumeratorDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -25,6 +26,12 @@ public class EidNumeratorDatasetDefinitionEvaluator implements DataSetEvaluator 
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		EidNumeratorDatasetDefinition _datasetDefinition = (EidNumeratorDatasetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), data);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		if (!_datasetDefinition.getHeader()) {
 			eidQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate(),
 			    PMTCT_SAMPLE_COLLECTION_DATE);

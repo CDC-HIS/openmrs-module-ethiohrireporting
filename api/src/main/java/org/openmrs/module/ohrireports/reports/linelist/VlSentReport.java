@@ -1,7 +1,8 @@
 package org.openmrs.module.ohrireports.reports.linelist;
 
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLSentDataSetDefinition;
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
-import org.openmrs.module.ohrireports.datasetdefinition.linelist.RTTDataSetDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.ReportRequest;
@@ -13,19 +14,20 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
+import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
 
-public class RTTReport implements ReportManager {
+@Component
+public class VlSentReport implements ReportManager {
 	
 	@Override
 	public String getUuid() {
-		return "e7190bdd-e40a-4e52-becf-d78828ea27d0";
+		return "b858371b-925c-48a1-b390-8440628d5583";
 	}
 	
 	@Override
 	public String getName() {
-		return LINE_LIST_REPORT + "- TX_RTT";
+		return LINE_LIST_REPORT + "- VL Sent";
 	}
 	
 	@Override
@@ -46,16 +48,19 @@ public class RTTReport implements ReportManager {
 		reportDefinition.setDescription(getDescription());
 		reportDefinition.setParameters(getParameters());
 		
-		RTTDataSetDefinition rttDataSetDefinition = new RTTDataSetDefinition();
-		rttDataSetDefinition.addParameters(getParameters());
+		VLSentDataSetDefinition vlDatasetDefinition = new VLSentDataSetDefinition();
+		vlDatasetDefinition.addParameters(getParameters());
 		
-		reportDefinition.addDataSetDefinition("TX_RTT", EthiOhriUtil.map(rttDataSetDefinition));
+		reportDefinition.addDataSetDefinition("Viral Load Sent Report", EthiOhriUtil.map(vlDatasetDefinition));
+		
 		return reportDefinition;
 	}
 	
 	@Override
 	public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
-		ReportDesign design = ReportManagerUtil.createExcelDesign("608ae68c-8ca7-41c7-bc4f-0d2f943f18f7", reportDefinition);
+		
+		ReportDesign design = ReportManagerUtil.createExcelDesign("57f1826d-18dc-4132-af5e-fc2afac2340b", reportDefinition);
+		
 		return Arrays.asList(design);
 	}
 	

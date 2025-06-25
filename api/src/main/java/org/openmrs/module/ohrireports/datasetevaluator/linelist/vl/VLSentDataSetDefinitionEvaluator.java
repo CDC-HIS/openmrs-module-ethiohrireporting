@@ -1,17 +1,17 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.vl;
 
-import java.util.*;
-
 import org.openmrs.Person;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.impl.query.VlQuery;
+import org.openmrs.module.ohrireports.api.impl.query.VlSentQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLReceivedDataSetDefinition;
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.VLSentDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
 import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
@@ -24,11 +24,13 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Handler(supports = { VLReceivedDataSetDefinition.class })
-public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
+import java.util.*;
+
+@Handler(supports = { VLSentDataSetDefinition.class })
+public class VLSentDataSetDefinitionEvaluator implements DataSetEvaluator {
 	
 	@Autowired
-	private VlQuery vlQuery;
+	private VlSentQuery vlQuery;
 	
 	@Autowired
 	private EncounterQuery encounterQuery;
@@ -36,7 +38,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		VLReceivedDataSetDefinition _DataSetDefinition = (VLReceivedDataSetDefinition) dataSetDefinition;
+		VLSentDataSetDefinition _DataSetDefinition = (VLSentDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
 		if (_DataSetDefinition.getEndDate() == null) {
@@ -51,8 +53,8 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 		
 		List<Integer> baseEncounters = encounterQuery.getEncounters(
-		    Collections.singletonList(FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED),
-		    _DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate());
+		    Collections.singletonList(FollowUpConceptQuestions.DATE_VL_REQUESTED), _DataSetDefinition.getStartDate(),
+		    _DataSetDefinition.getEndDate());
 		
 		vlQuery.loadInitialCohort(_DataSetDefinition.getStartDate(), _DataSetDefinition.getEndDate(), baseEncounters);
 		
@@ -73,7 +75,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> followUpDateHashMap = vlQuery.getObsValueDate(baseEncounters,
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, vlQuery.cohort);
 		HashMap<Integer, Object> statusHashMap = vlQuery.getFollowUpStatus(baseEncounters, vlQuery.cohort);
-		HashMap<Integer, Object> regimentDictionary = vlQuery.getRegiment(vlQuery.getVlTakenEncounters(), vlQuery.cohort);
+		HashMap<Integer, Object> regimentDictionary = vlQuery.getRegiment(vlQuery.getVlSentEncounters(), vlQuery.cohort);
 		HashMap<Integer, Object> viralLoadReceivedDateHashMap = vlQuery.getObsValueDate(baseEncounters,
 		    FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED, vlQuery.cohort);
 		HashMap<Integer, Object> routineTestTypeHashMap = vlQuery.getByResult(ConceptAnswer.ROUTINE_VIRAL_LOAD,
@@ -90,7 +92,7 @@ public class VLReceivedDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> pregnancyStatus = vlQuery.getByResult(FollowUpConceptQuestions.PREGNANCY_STATUS,
 		    vlQuery.cohort, baseEncounters);
 		HashMap<Integer, Object> breastfeedingStatus = vlQuery.getByResult(
-		    FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, vlQuery.cohort, vlQuery.getVlTakenEncounters());
+		    FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, vlQuery.cohort, vlQuery.getVlSentEncounters());
 		
 		// fields from latest encounter
 		HashMap<Integer, Object> latestFollowupDateHashMap = vlQuery.getObsValueDate(latestFollowupEncounter,

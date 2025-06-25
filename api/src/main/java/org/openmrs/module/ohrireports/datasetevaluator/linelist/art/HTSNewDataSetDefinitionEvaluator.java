@@ -17,6 +17,7 @@ import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilitie
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.HTSNewDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -45,16 +46,9 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			data.addRow(row);
-			return data;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), data);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		patientQuery = Context.getService(PatientQueryService.class);
 		List<Integer> encounters = encounterQuery.getAliveFirstFollowUpEncounters(hdsd.getStartDate(), hdsd.getEndDate());
@@ -67,8 +61,8 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		HashMap<Integer, Object> cd4Count = artQuery.getByValueNumeric(FollowUpConceptQuestions.ADULT_CD4_COUNT, cohort,
 		    encounters);
 		HashMap<Integer, Object> whoStage = artQuery.getByResult(FollowUpConceptQuestions.WHO_STAGE, cohort, encounters);
-		HashMap<Integer, Object> nutritionalStatus = artQuery.getByResult(FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT,
-		    cohort, encounters);
+		HashMap<Integer, Object> nutritionalStatus = artQuery.getConceptLabel(encounters, cohort,
+		    FollowUpConceptQuestions.NUTRITIONAL_STATUS_ADULT);
 		HashMap<Integer, Object> tbScreeningResult = artQuery.getByResult(FollowUpConceptQuestions.TB_SCREENED_RESULT,
 		    cohort, encounters);
 		
@@ -87,7 +81,8 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, cohort, encounters);
 		HashMap<Integer, Object> followUpDate = artQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
-		HashMap<Integer, Object> statusHashMap = artQuery.getFollowUpStatus(encounters, cohort);
+		HashMap<Integer, Object> statusHashMap = artQuery.getConceptLabel(encounters, cohort,
+		    FollowUpConceptQuestions.FOLLOW_UP_STATUS);
 		
 		HashMap<Integer, Object> regimentDictionary = artQuery.getRegiment(encounters, cohort);
 		
@@ -108,12 +103,12 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Weight", "CD4", "WHO Stage", "Nutritional Status", "TB Screening Result", "Enrollment Date in E.C",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "Weight", "CD4", "WHO Stage", "Nutritional Status", "TB Screening Result", "Enrollment Date in E.C",
 			    "HIV Confirmed Date in E.C", "ART Start Date in E.C", "Days Difference", "Pregnant?", "Breastfeeding?",
 			    "Regimen", "ARV Dose Days", "Next Visit Date in E.C", "Treatment End Date in E.C", "Mobile No.")));
 		}
@@ -131,6 +126,7 @@ public class HTSNewDataSetDefinitionEvaluator implements DataSetEvaluator {
 			Date date = artQuery.getDate(artStartDate.get(person.getPersonId()));
 			String ethiopianDate = artQuery.getEthiopianDate(date);
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));

@@ -12,6 +12,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TransferredInOutDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.reports.linelist.TransferInOutReport;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
@@ -103,20 +104,13 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 		tDataSetDefinition = (TransferredInOutDataSetDefinition) _dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(tDataSetDefinition, this.evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (tDataSetDefinition.getStartDate() != null && tDataSetDefinition.getEndDate() != null
-		        && tDataSetDefinition.getStartDate().compareTo(tDataSetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
-		
 		if (Objects.isNull(tDataSetDefinition.getEndDate()))
 			tDataSetDefinition.setEndDate(Calendar.getInstance().getTime());
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(tDataSetDefinition.getStartDate(),
+		    tDataSetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		transferInOutQuery.setStartDate(tDataSetDefinition.getStartDate());
 		transferInOutQuery.setEndDate(tDataSetDefinition.getEndDate());
@@ -135,12 +129,12 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				row = new DataSetRow();
 				
 				row.addColumnValue(new DataSetColumn("#", "#", String.class), "TOTAL");
-				row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+				row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 				
 				dataSet.addRow(row);
 			} else {
-				dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age",
-				    "Sex", "ART Start Date", "Follow-up Date (Date of TO)", "Follow-up Status", "Last Regimen",
+				dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN",
+				    "Age", "Sex", "ART Start Date", "Follow-up Date (Date of TO)", "Follow-up Status", "Last Regimen",
 				    "Last ARV Dose", "Last Adherence")));
 			}
 			int i = 1;
@@ -152,6 +146,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				
 				row = new DataSetRow();
 				row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+				row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 				row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 				addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 				addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
@@ -195,13 +190,13 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				row = new DataSetRow();
 				
 				row.addColumnValue(new DataSetColumn("#", "#", String.class), "TOTAL");
-				row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+				row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 				
 				dataSet.addRow(row);
 			} else {
-				dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age",
-				    "Sex", "ART Start Date", "Follow-up Date (Date of TI)", "Latest Follow-up Status", "Last Regimen",
-				    "Last ARV Dose", "Last Adherence", "Next Visit Date")));
+				dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN",
+				    "Age", "Sex", "ART Start Date", "Follow-up Date (Date of TI)", "Latest Follow-up Status",
+				    "Last Regimen", "Last ARV Dose", "Last Adherence", "Next Visit Date")));
 			}
 			int i = 1;
 			for (Person person : persons) {
@@ -213,6 +208,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 				
 				row = new DataSetRow();
 				row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+				row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 				row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 				addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 				addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
@@ -256,8 +252,7 @@ public class TransferredInOutDataSetDefinitionEvaluator implements DataSetEvalua
 		        .getArtStartDate(baseCohort, null, transferInOutQuery.getEndDate());
 		followUpDate = transferredInOutLineListQuery.getObsValueDate(followUpEncounters,
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, baseCohort);
-		followUpStatus = transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, baseCohort,
-		    followUpEncounters);
+		followUpStatus = transferredInOutLineListQuery.getFollowUpStatus(followUpEncounters, baseCohort);
 		regimen = transferredInOutLineListQuery
 		        .getByResult(FollowUpConceptQuestions.REGIMEN, baseCohort, followUpEncounters);
 		arvDose = transferredInOutLineListQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, baseCohort,

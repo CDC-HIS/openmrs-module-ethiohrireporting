@@ -6,6 +6,7 @@ import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.HeiPositiveLinkedDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -30,6 +31,10 @@ public class HeiPositiveLinkedDatasetDefinitionEvaluator implements DataSetEvalu
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		HeiPositiveLinkedDatasetDefinition dsd = (HeiPositiveLinkedDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(dsd.getStartDate(), dsd.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		String COLUMN_ONE = "Result - Type";
 		String COLUMN_TWO = "Age 0 <=  2";

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.*;
 
-@Component
+//@Component
 public class CXCASCRNReport implements ReportManager {
 	
 	@Override

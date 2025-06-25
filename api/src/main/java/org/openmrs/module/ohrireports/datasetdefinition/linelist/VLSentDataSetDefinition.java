@@ -1,5 +1,6 @@
 package org.openmrs.module.ohrireports.datasetdefinition.linelist;
 
+import org.openmrs.EncounterType;
 import org.openmrs.module.reporting.dataset.definition.BaseDataSetDefinition;
 import org.openmrs.module.reporting.definition.configuration.ConfigurationProperty;
 import org.springframework.stereotype.Component;
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component
-public class ARTPatientListDatasetDefinition extends BaseDataSetDefinition {
+public class VLSentDataSetDefinition extends BaseDataSetDefinition {
 	
 	@ConfigurationProperty
 	private Date startDate;
@@ -16,15 +17,18 @@ public class ARTPatientListDatasetDefinition extends BaseDataSetDefinition {
 	private Date endDate;
 	
 	@ConfigurationProperty
-	private String followupStatus;
+	private String type;
 	
-	public String getFollowupStatus() {
-		return followupStatus;
+	public String getType() {
+		return type;
 	}
 	
-	public void setFollowupStatus(String followupStatus) {
-		this.followupStatus = followupStatus;
+	public void setType(String type) {
+		this.type = type;
 	}
+	
+	@ConfigurationProperty
+	private EncounterType encounterType;
 	
 	public Date getStartDate() {
 		return startDate;
@@ -35,10 +39,21 @@ public class ARTPatientListDatasetDefinition extends BaseDataSetDefinition {
 	}
 	
 	public Date getEndDate() {
+		
 		return endDate;
+		
 	}
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+	
+	public EncounterType getEncounterType() {
+		return encounterType;
+	}
+	
+	public void setEncounterType(EncounterType encounterType) {
+		this.encounterType = encounterType;
+	}
+	
 }

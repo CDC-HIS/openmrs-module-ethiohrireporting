@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.TBQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_tb_denominator.TxTbDenominatorAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -25,6 +26,11 @@ public class TxTbDenominatorAutoCalculateDataSetDefinitionEvaluator implements D
 		
 		TxTbDenominatorAutoCalculateDataSetDefinition dsd = (TxTbDenominatorAutoCalculateDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(dsd.getStartDate(), dsd.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
+		
 		if (!dsd.getHeader()) {
 			tbQuery.generateDenominatorReport(dsd.getStartDate(), dsd.getEndDate());
 			DataSetRow dataSet = new DataSetRow();

@@ -7,6 +7,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ScheduleVisitDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -36,16 +37,9 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 		ScheduleVisitDatasetDefinition dsd = (ScheduleVisitDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dsd, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (dsd.getStartDate() != null && dsd.getEndDate() != null && dsd.getStartDate().compareTo(dsd.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(dsd.getStartDate(), dsd.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		scheduleVisitQuery.generateReport(dsd.getStartDate(), dsd.getEndDate());
 		HashMap<Integer, Object> mrnIdentifierHashMap = scheduleVisitQuery.getIdentifier(scheduleVisitQuery.getBaseCohort(),
@@ -87,8 +81,8 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Appointment Date", "Patient Name", "MRN",
-			    "UAN", "Age", "Sex", "ART Start Date E.C.", "Latest Follow-up Date E.C.", "Last Follow-up Status",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Appointment Date", "GUID", "Patient Name",
+			    "MRN", "UAN", "Age", "Sex", "ART Start Date E.C.", "Latest Follow-up Date E.C.", "Last Follow-up Status",
 			    "Last Regimen", "Last ARV Dose", "Adherence", "Weight", "Mobile No.")));
 		}
 		int i = 1;
@@ -98,7 +92,7 @@ public class ScheduleVisitDatasetDefinitionEvaluator implements DataSetEvaluator
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
 			row.addColumnValue(new DataSetColumn("Appointment Date", "Appointment Date E.C.", String.class),
 			    scheduleVisitQuery.getEthiopianDate((Date) nextVisitDate.get(person.getPersonId())));
-			
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uaIdentifierHashMap.get(person.getPersonId()));

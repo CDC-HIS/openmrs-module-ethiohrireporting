@@ -38,17 +38,10 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		RetentionLineListDataSetDefinition _datasetDefinition = (RetentionLineListDataSetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
-		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		retentionLineListQuery.generateRetentionReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		Cohort cohort = retentionLineListQuery.getBaseCohort();
@@ -74,8 +67,8 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 		    retentionLineListQuery.getBaseEncounter(), cohort, PREGNANCY_STATUS);
 		HashMap<Integer, Object> adherenceHashMap = retentionLineListQuery.getConceptName(
 		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.ARV_ADHERENCE);
-		HashMap<Integer, Object> followUpStatusHashMap = retentionLineListQuery.getConceptName(
-		    retentionLineListQuery.getBaseEncounter(), cohort, FollowUpConceptQuestions.FOLLOW_UP_STATUS);
+		HashMap<Integer, Object> followUpStatusHashMap = retentionLineListQuery.getFollowUpStatus(
+		    retentionLineListQuery.getBaseEncounter(), cohort);
 		HashMap<Integer, Object> mrnIdentifierHashMap = retentionLineListQuery.getIdentifier(cohort,
 		    Identifiers.MRN_PATIENT_IDENTIFIERS);
 		HashMap<Integer, Object> uanIdentifierHashMap = retentionLineListQuery.getIdentifier(cohort,
@@ -90,12 +83,12 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "TI?", "Latest Follow-up Date in E.C.",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "TI?", "Latest Follow-up Date in E.C.",
 			    "Latest Follow-up status", "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence", "Pregnant",
 			    "Next Visit date in E.C.", "Treatment End Date in E.C.")));
 		}
@@ -111,6 +104,7 @@ public class RetentionLineListDatasetEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class),

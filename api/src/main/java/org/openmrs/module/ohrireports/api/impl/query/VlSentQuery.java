@@ -13,7 +13,7 @@ import java.util.*;
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.HIV_VIRAL_LOAD_COUNT;
 
 @Component
-public class VlQuery extends ObsElement {
+public class VlSentQuery extends ObsElement {
 	
 	private final DbSessionFactory sessionFactory;
 	
@@ -23,10 +23,10 @@ public class VlQuery extends ObsElement {
 	
 	public Date start, end = null;
 	
-	private List<Integer> VlTakenEncounters;
+	private List<Integer> VlSentEncounters;
 	
 	@Autowired
-	public VlQuery(DbSessionFactory _SessionFactory) {
+	public VlSentQuery(DbSessionFactory _SessionFactory) {
 		super(_SessionFactory);
 		sessionFactory = _SessionFactory;
 	}
@@ -39,15 +39,15 @@ public class VlQuery extends ObsElement {
 		this.suppressedCohort = supperessedCohort;
 	}
 	
-	public List<Integer> getVlTakenEncounters() {
-		return VlTakenEncounters;
+	public List<Integer> getVlSentEncounters() {
+		return VlSentEncounters;
 	}
 	
 	public void loadInitialCohort(Date _start, Date _end, List<Integer> vList) {
 		start = _start;
 		end = _end;
-		VlTakenEncounters = vList;
-		cohort = getViralLoadReceivedCohort();
+		VlSentEncounters = vList;
+		cohort = getCohort(vList);
 	}
 	
 	private List<Integer> getEncountersWithVLStatusOnly(List<Integer> vList) {
@@ -67,6 +67,19 @@ public class VlQuery extends ObsElement {
 
     }
 	
+	private Cohort getCohort(List<Integer> encounterIds) {
+		if (Objects.isNull(encounterIds) || encounterIds.isEmpty()) {
+			return new Cohort();
+		}
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(
+		    "select distinct (person_id) from obs where encounter_id in (:encounterIds) ");
+		query.setParameterList("encounterIds", encounterIds);
+		
+		return new Cohort(query.list());
+		
+	}
+	
 	public Cohort getViralLoadReceivedCohort() {
 		
 		StringBuilder sql = baseQuery(FollowUpConceptQuestions.DATE_VIRAL_TEST_RESULT_RECEIVED);
@@ -79,7 +92,7 @@ public class VlQuery extends ObsElement {
 		
 		query.setParameter("start", start);
 		query.setParameter("end", end);
-		query.setParameterList("latestEncounterId", VlTakenEncounters);
+		query.setParameterList("latestEncounterId", VlSentEncounters);
 		
 		return new Cohort(query.list());
 		
@@ -96,25 +109,12 @@ public class VlQuery extends ObsElement {
 
     }
 	
-	public Cohort getViralLoadUnSuppressed() {
-		
-		Query query = getByViralLoadStatus(Arrays.asList(ConceptAnswer.HIV_HIGH_VIRAL_LOAD,
-		    ConceptAnswer.HIV_VIRAL_LOAD_UNSUPPRESSED));
-		return new Cohort(query.list());
-	}
-	
-	public Cohort getHighViralLoad() {
-		Query query = getByViralLoadStatus(Arrays.asList(ConceptAnswer.HIV_HIGH_VIRAL_LOAD,
-		    ConceptAnswer.HIV_VIRAL_LOAD_UNSUPPRESSED));
-		return new Cohort(query.list());
-	}
-	
 	private Query getByViralLoadStatus(List<String> statusConceptUUID) {
 		StringBuilder sql = baseQuery(FollowUpConceptQuestions.VIRAL_LOAD_STATUS);
 		sql.append(" and ").append(OBS_ALIAS).append("encounter_id in (:encounters) ");
 		sql.append(" and ").append(OBS_ALIAS).append("value_coded in ").append(conceptQuery(statusConceptUUID));
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
-		query.setParameterList("encounters", VlTakenEncounters);
+		query.setParameterList("encounters", VlSentEncounters);
 		return query;
 	}
 	
@@ -136,7 +136,7 @@ public class VlQuery extends ObsElement {
 
         Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 
-        query.setParameterList("baseEncounterId", VlTakenEncounters);
+        query.setParameterList("baseEncounterId", VlSentEncounters);
 
         List list = query.list();
         if (list == null)
@@ -151,7 +151,7 @@ public class VlQuery extends ObsElement {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
 		query.setParameterList("cohorts", _cohort.getMemberIds());
-		query.setParameterList("baseEncounterId", VlTakenEncounters);
+		query.setParameterList("baseEncounterId", VlSentEncounters);
 		
 		return new Cohort(query.list());
 	}
@@ -163,7 +163,7 @@ public class VlQuery extends ObsElement {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
 		query.setParameterList("cohorts", _cohort.getMemberIds());
-		query.setParameterList("baseEncounterId", VlTakenEncounters);
+		query.setParameterList("baseEncounterId", VlSentEncounters);
 		
 		return new Cohort(query.list());
 	}
@@ -175,7 +175,7 @@ public class VlQuery extends ObsElement {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
 		query.setParameterList("cohorts", _cohort.getMemberIds());
-		query.setParameterList("baseEncounterId", VlTakenEncounters);
+		query.setParameterList("baseEncounterId", VlSentEncounters);
 		
 		return new Cohort(query.list());
 	}
@@ -187,7 +187,7 @@ public class VlQuery extends ObsElement {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		
-		query.setParameterList("encounters", VlTakenEncounters);
+		query.setParameterList("encounters", VlSentEncounters);
 		query.setParameterList("cohorts", cohort.getMemberIds());
 		
 		return getDictionary(query);
@@ -195,40 +195,40 @@ public class VlQuery extends ObsElement {
 	}
 	
 	public HashMap<Integer, Object> getRoutineViralLoad() {
-		Query query = getObs(VlTakenEncounters, ConceptAnswer.ROUTINE_VIRAL_LOAD, cohort);
+		Query query = getObs(VlSentEncounters, ConceptAnswer.ROUTINE_VIRAL_LOAD, cohort);
 		
 		return getDictionary(query);
 	}
 	
 	public HashMap<Integer, Object> getPregnantStatus() {
-		Query query = getObs(VlTakenEncounters, FollowUpConceptQuestions.PREGNANCY_STATUS, cohort);
+		Query query = getObs(VlSentEncounters, FollowUpConceptQuestions.PREGNANCY_STATUS, cohort);
 		
 		return getDictionary(query);
 	}
 	
 	public HashMap<Integer, Object> getBreastFeedingStatus() {
-		Query query = getObs(VlTakenEncounters, FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, cohort);
+		Query query = getObs(VlSentEncounters, FollowUpConceptQuestions.CURRENTLY_BREAST_FEEDING_CHILD, cohort);
 		
 		return getDictionary(query);
 	}
 	
 	public HashMap<Integer, Object> getTargetViralLoad() {
-		Query query = getObs(VlTakenEncounters, ConceptAnswer.TARGET_VIRAL_LOAD, cohort);
+		Query query = getObs(VlSentEncounters, ConceptAnswer.TARGET_VIRAL_LOAD, cohort);
 		return getDictionary(query);
 	}
 	
 	public HashMap<Integer, Object> getStatusViralLoad() {
-		Query query = getObs(VlTakenEncounters, FollowUpConceptQuestions.VIRAL_LOAD_STATUS, cohort);
+		Query query = getObs(VlSentEncounters, FollowUpConceptQuestions.VIRAL_LOAD_STATUS, cohort);
 		return getDictionary(query);
 	}
 	
 	public HashMap<Integer, Object> getArtDose() {
-		Query query = getObs(VlTakenEncounters, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS, cohort);
+		Query query = getObs(VlSentEncounters, FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS, cohort);
 		return getDictionary(query);
 	}
 	
 	public HashMap<Integer, Object> getViralLoadCount() {
-		Query query = getObsNumber(VlTakenEncounters, HIV_VIRAL_LOAD_COUNT, cohort);
+		Query query = getObsNumber(VlSentEncounters, HIV_VIRAL_LOAD_COUNT, cohort);
 		return getDictionary(query);
 	}
 }

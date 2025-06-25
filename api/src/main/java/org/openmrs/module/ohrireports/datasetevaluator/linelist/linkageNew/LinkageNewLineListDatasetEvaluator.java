@@ -9,6 +9,7 @@ import org.openmrs.module.ohrireports.constants.PositiveCaseTrackingConceptQuest
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.LinkageNewLineListDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.hiv_linkage_new_ct.Linkage;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -46,17 +47,9 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
         LinkageNewLineListDataSetDefinition linkageDataset = (LinkageNewLineListDataSetDefinition) dataSetDefinition;
         SimpleDataSet dataSet = new SimpleDataSet(linkageDataset, evalContext);
 
-        // Check start date and end date are valid
-        // If start date is greater than end date
-        if (linkageDataset.getStartDate() != null && linkageDataset.getEndDate() != null
-                && linkageDataset.getStartDate().compareTo(linkageDataset.getEndDate()) > 0) {
-            //throw new EvaluationException("Start date cannot be greater than end date");
-            DataSetRow row = new DataSetRow();
-            row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-                    "Report start date cannot be after report end date");
-            dataSet.addRow(row);
-            return dataSet;
-        }
+        SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(linkageDataset.getStartDate(),
+                linkageDataset.getEndDate(), dataSet);
+        if (_dataSet != null) return _dataSet;
 
         linkageNewLineListQuery.initializeLinkage(linkageDataset.getStartDate(), linkageDataset.getEndDate());
         Cohort cohort = linkageNewLineListQuery.getBaseCohort();
@@ -86,11 +79,11 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
 
             row = new DataSetRow();
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-            row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), personList.size());
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), personList.size());
 
             dataSet.addRow(row);
         } else {
-            dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
+            dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex",
                     "Mobile No.", "Registration Date in E.C.", "Date Tested HIV +ve in E.C.", "Entry Point",
                     "HIV Confirmed Date in E.C.", "ART Start Date in E.C.", "Days Difference", "Linked to Care & Treatment?",
                     "Date Linked to Care & Treatment in E.C.", "Reason for not Starting ART the same day", "Plan for next Step",
@@ -113,6 +106,7 @@ public class LinkageNewLineListDatasetEvaluator implements DataSetEvaluator {
             row = new DataSetRow();
 
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
             row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
             row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class), mrnIdentifierHashMap.get(person.getPersonId()));
             row.addColumnValue(new DataSetColumn("UAN", "UAN", String.class), uanIdentifierHashMap.get(person.getPersonId()));

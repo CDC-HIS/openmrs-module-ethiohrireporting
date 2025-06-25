@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 
+import org.openmrs.module.ohrireports.datasetdefinition.linelist.ARTPatientListDatasetDefinition;
+import org.openmrs.module.reporting.dataset.DataSetColumn;
+import org.openmrs.module.reporting.dataset.DataSetRow;
+import org.openmrs.module.reporting.dataset.SimpleDataSet;
 import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.evaluation.parameter.Parameterizable;
@@ -125,6 +129,20 @@ public class EthiOhriUtil {
 			e.printStackTrace();
 		}
 		return ethiopianDate;
+	}
+	
+	public static SimpleDataSet isValidReportDateRange(Date start, Date end, SimpleDataSet dataSet) {
+		// Check start date and end date are valid
+		// If start date is greater than end date
+		if (start != null && end != null && start.compareTo(end) > 0) {
+			
+			DataSetRow row = new DataSetRow();
+			row.addColumnValue(new DataSetColumn("Error", "Error", String.class),
+			    "Invalid date range: End date precedes start date.");
+			dataSet.addRow(row);
+			return dataSet;
+		}
+		return null;
 	}
 	
 }

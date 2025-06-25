@@ -12,6 +12,7 @@ import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.constants.*;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.TBPrevDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -61,16 +62,9 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 			hdsd.setEndDate(new Date());
 		}
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (hdsd.getStartDate() != null && hdsd.getEndDate() != null && hdsd.getStartDate().compareTo(hdsd.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			data.addRow(row);
-			return data;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), data);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		patientQuery = Context.getService(PatientQueryService.class);
 		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
@@ -100,12 +94,12 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "HIV Confirmed Date in E.C.", "ART Start Date in E.C", "TPT Start Date in E.C.",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "HIV Confirmed Date in E.C.", "ART Start Date in E.C", "TPT Start Date in E.C.",
 			    "TPT Completed Date in E.C.", "TPT Discontinued Date in E.C.", "TPT Type", "TPT Follow-up Status",
 			    "TPT Dispensed Dose", "TPT Adherence", "Latest Follow-up Date in E.C", "Latest Follow-up Status",
 			    "Latest Regimen", "Latest ARV Dose Days", "Latest Adherence", "Next Visit Date in E.C.",
@@ -126,6 +120,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 			Date visitDate = tbQueryLineList.getDate(nextVisitDate.get(person.getPersonId()));
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", Integer.class),
 			    mrnIdentifierHashMap.get(person.getPersonId()));
@@ -197,7 +192,7 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		nextVisitDate = tbQueryLineList.getObsValueDate(baseTPTEncounters, FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
 		eligibleStatus = tbQueryLineList.getByResult(FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY, cohort,
 		    baseTPTEncounters);
-		finalFollowUPStatus = tbQueryLineList.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort, lastFollowUp);
+		finalFollowUPStatus = tbQueryLineList.getFollowUpStatus(lastFollowUp, cohort);
 		latestFollowUpDate = tbQueryLineList.getObsValueDate(lastFollowUp, FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 		latestRegimen = tbQueryLineList.getByResult(FollowUpConceptQuestions.REGIMEN, cohort, lastFollowUp);
 		latestArvDoseDay = tbQueryLineList.getByResult(FollowUpConceptQuestions.ARV_DISPENSED_IN_DAYS, cohort, lastFollowUp);

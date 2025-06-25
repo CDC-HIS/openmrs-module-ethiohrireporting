@@ -7,6 +7,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.api.query.PatientQueryService;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_curr.TxCurrAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -32,6 +33,7 @@ public class TxCurrAutoCalculateDataSetDefinitionEvaluator implements DataSetEva
 		
 		hdsd = (TxCurrAutoCalculateDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
 		if (!hdsd.getHeader()) {
 			PatientQueryService patientQueryService = Context.getService(PatientQueryService.class);
 			List<Integer> encounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());

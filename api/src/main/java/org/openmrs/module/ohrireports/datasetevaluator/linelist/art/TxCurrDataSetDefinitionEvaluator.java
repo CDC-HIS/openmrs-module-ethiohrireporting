@@ -49,6 +49,10 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
             hdsd.setEndDate(new Date());
         }
 
+        SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(),
+                hdsd.getEndDate(), data);
+        if (_dataSet != null) return _dataSet;
+
         PatientQueryService patientQuery = Context.getService(PatientQueryService.class);
         List<Integer> latestEncounters = encounterQuery.getAliveFollowUpEncounters(null, hdsd.getEndDate());
         Cohort cohort = patientQuery.getActiveOnArtCohort("", null, hdsd.getEndDate(), null, latestEncounters);
@@ -75,8 +79,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
         HashMap<Integer, Object> pregnancyStatus = artQuery.getByResult(PREGNANCY_STATUS, cohort, latestEncounters);
         HashMap<Integer, Object> breastfeedingStatus = artQuery.getByResult(CURRENTLY_BREAST_FEEDING_CHILD, cohort,
                 latestEncounters);
-        HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getByResult(NUTRITIONAL_STATUS_ADULT, cohort,
-                latestEncounters);
+        HashMap<Integer, Object> nutritionalStatusHashMap = artQuery.getConceptLabel(latestEncounters, cohort, NUTRITIONAL_STATUS_ADULT);
         HashMap<Integer, Object> therapeuticSupplementaryHashMap = artQuery.getByResult(ConceptAnswer.THERAPEUTIC_SUPPLEMENTARY_FOOD,
                 cohort, latestEncounters);
         HashMap<Integer, Object> dispensDayHashMap = artQuery
@@ -89,7 +92,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
         HashMap<Integer, Object> tbTreatmentCompletedDateHashMap = artQuery.getObsValueDate(latestEncounters,
                 TB_TREATMENT_COMPLETED_DATE, cohort);
         HashMap<Integer, Object> vlSentDateHashMap = artQuery.getObsValueDate(latestEncounters, DATE_VL_REQUESTED, cohort);
-        HashMap<Integer, Object> vlStatusHashMap = artQuery.getByResult(VIRAL_LOAD_STATUS, cohort, latestEncounters);
+        HashMap<Integer, Object> vlStatusHashMap = artQuery.getConceptLabel(latestEncounters, cohort, VIRAL_LOAD_STATUS);
         HashMap<Integer, Object> nextVisitDateHashMap = artQuery.getObsValueDate(latestEncounters, NEXT_VISIT_DATE, cohort);
         HashMap<Integer, Object> treatmentEndDateHashMap = artQuery.getObsValueDate(latestEncounters, TREATMENT_END_DATE,
                 cohort);
@@ -100,11 +103,11 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
 
             row = new DataSetRow();
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-            row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 
             data.addRow(row);
         } else {
-            data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN",
+            data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN",
                     "Age at Enrollment", "Current Age", "Sex", "Weight", "CD4", "HIV Confirmed Date in E.C",
                     "ART Start Date in E.C", "TB Screening Result", "Follow-up Date in E.C", "Follow-up Status", "Regimen",
                     "ARV Dose Days", "Adherence", "DSD Category", "Nutritional Status","Therapeutic/ Supplementary Food",
@@ -126,6 +129,7 @@ public class TxCurrDataSetDefinitionEvaluator implements DataSetEvaluator {
             // row should be filled with only patient data
             row = new DataSetRow();
             row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+            row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getUuid());
             row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
             row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
                     getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));

@@ -29,6 +29,11 @@ public class HeiDatasetDefinitionEvaluator implements DataSetEvaluator {
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		HeiDatasetDefinition dsd = (HeiDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(dsd.getStartDate(), dsd.getEndDate(), dataSet);
+		if (_dataSet != null)
+			return _dataSet;
+		
 		List list = eidQuery.getHeiListObjects(dsd.getStartDate(), dsd.getEndDate());
 		DataSetRow row = new DataSetRow();
 		int rowNumber = 0;

@@ -15,7 +15,7 @@ import java.util.*;
 @Component
 public class TBARTQuery extends PatientQueryImpDao {
 
-    private DbSessionFactory sessionFactory;
+    private final DbSessionFactory sessionFactory;
     private List<Integer> baseEncounter = new ArrayList<>();
 
     public List<Integer> getTbTreatmentStartDateEncounter() {
@@ -23,8 +23,6 @@ public class TBARTQuery extends PatientQueryImpDao {
     }
 
     private List<Integer> tbTreatmentStartDateEncounter = new ArrayList<>();
-    private List<Integer> tbTreatmentCompletedDateEncounter = new ArrayList<>();
-    private List<Integer> tbTreatmentDiscontinuedDateEncounter = new ArrayList<>();
 
     private List<Integer> activeDiagnosticStartDateEncounter = new ArrayList<>();
     @Autowired
@@ -48,30 +46,15 @@ public class TBARTQuery extends PatientQueryImpDao {
 
     }
 
-    public Cohort getCohortByTBTreatmentStartDate(Date start, Date end) {
+    public Cohort getCohortByTBTreatmentStartDate(Date end) {
         //Retrieve latest followup according end date
         List<Integer> latestFollowUp = encounterQuery.getAliveFollowUpEncounters(null, end);
         baseEncounter = latestFollowUp;
-        // Check and fetch patient that they are on ART from the latest follow up
-        Cohort cohort = getActiveOnArtCohort("", null, end, null, latestFollowUp);
         // Retrieve all patient from active on art of started TB treatment
-        cohort = getCurrentOnActiveTB(start, end, latestFollowUp);
-        return cohort;
+        return getCurrentOnActiveTB(end, latestFollowUp);
     }
 
-    public Cohort getAlreadyOnArtCohort(Cohort cohort, Date beforeDate) {
-        StringBuilder sqlBuilder = getQuery();
 
-        sqlBuilder.append("  and value_datetime < :start");
-
-        Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
-
-        query.setParameterList("encounterIds", baseEncounter);
-        query.setParameterList("personId", cohort.getMemberIds());
-        query.setDate("start", beforeDate);
-
-        return new Cohort(query.list());
-    }
 
     public Cohort getNewOnArtCohort(Cohort cohort, Date onOrAfter, Date beforeOrOn) {
         StringBuilder sqlBuilder = getQuery();
@@ -97,16 +80,16 @@ public class TBARTQuery extends PatientQueryImpDao {
         return sqlBuilder;
     }
 
-    private Cohort getCurrentOnActiveTB(Date start, Date end, List<Integer> encounters) {
+    private Cohort getCurrentOnActiveTB(Date end, List<Integer> encounters) {
 
         Date startDate = getOneYearBackFromEndDate(end);
         tbTreatmentStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_START_DATE), startDate, end,encounters);
         activeDiagnosticStartDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_ACTIVE_DATE), startDate, end, encounters);
 
         // to be excluded encounters from TX_TB counting
-        tbTreatmentCompletedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_COMPLETED_DATE), null, end, encounters);
-        tbTreatmentDiscontinuedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_DISCONTINUED_DATE), null,end, encounters);
-        List<Integer> toBeExcludedEncounters = unionTwoMembership(tbTreatmentCompletedDateEncounter, tbTreatmentCompletedDateEncounter);
+        List<Integer> tbTreatmentCompletedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_COMPLETED_DATE), null, end, encounters);
+        List<Integer> tbTreatmentDiscontinuedDateEncounter = encounterQuery.getEncounters(Collections.singletonList(FollowUpConceptQuestions.TB_TREATMENT_DISCONTINUED_DATE), null, end, encounters);
+        List<Integer> toBeExcludedEncounters = unionTwoMembership(tbTreatmentDiscontinuedDateEncounter, tbTreatmentCompletedDateEncounter);
 
 
         List<Integer> tbTreatmentAndDiagnosticStartDateEncounter = unionTwoMembership(tbTreatmentStartDateEncounter, activeDiagnosticStartDateEncounter);
@@ -160,8 +143,8 @@ public class TBARTQuery extends PatientQueryImpDao {
         Set<Integer> secondSet = new HashSet<>(secondMembership);
 
         // Find intersection
-        Set<Integer> intersection = new HashSet<>(firstSet);
-        intersection.retainAll(secondSet);
+        /*Set<Integer> intersection = new HashSet<>(firstSet);
+        intersection.retainAll(secondSet);*/
 
         // Merge unique elements from both lists and the intersection
         Set<Integer> mergedSet = new HashSet<>(firstSet);

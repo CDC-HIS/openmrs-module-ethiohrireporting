@@ -3,6 +3,7 @@ package org.openmrs.module.ohrireports.datasetevaluator.datim.pmtct.hei;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.pmtct.EIDQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.pmtct.HeiTotalDatasetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -28,6 +29,10 @@ public class HeiTotalDatasetDefinitionEvaluator implements DataSetEvaluator {
     public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
         HeiTotalDatasetDefinition dsd = (HeiTotalDatasetDefinition) dataSetDefinition;
         SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
+
+        SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(dsd.getStartDate(),
+                dsd.getEndDate(), data);
+        if (_dataSet != null) return _dataSet;
 
         if (!dsd.getHeader()) {
             AtomicInteger count = new AtomicInteger(0);

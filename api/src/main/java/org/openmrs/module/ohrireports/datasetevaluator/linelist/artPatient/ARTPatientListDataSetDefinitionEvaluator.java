@@ -1,14 +1,16 @@
 package org.openmrs.module.ohrireports.datasetevaluator.linelist.artPatient;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.openmrs.Cohort;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.ARTPatientListQuery;
-import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.constants.*;
-import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.ARTPatientListDatasetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -18,73 +20,54 @@ import org.openmrs.module.reporting.dataset.definition.evaluator.DataSetEvaluato
 import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.security.pkcs11.wrapper.CK_DATE;
 
 import java.util.*;
 
+/**
+ * Here is the sudo code for getting the encounter for the ART patient list If Patient Enrollment
+ * Date is <= Report Date AND If Patient has MRN AND If Patient has at least 1 ART follow-up record
+ * ONLY THEN count the record
+ */
 @Handler(supports = { ARTPatientListDatasetDefinition.class })
 public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluator {
+	
+	public static final String REGISTRATION_DATE_UUID = "dadc86a8-1e44-4a6d-91c2-e3b54089b54c";
 	
 	@Autowired
 	private ARTPatientListQuery artPatientListQuery;
 	
 	@Autowired
-	private ARTPatientListLineListQuery artPatientListLineListQuery;
-	
-	private ARTPatientListDatasetDefinition _dataSetDefinition;
-	
-	@Autowired
-	private EncounterQuery encounterQuery;
-	
-	private List<Integer> latestFollowup;
-	
-	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, registrationDateDictionary,
-	        hivConfirmedDateDictionary, artStartDateDictionary, latestFollowupDateDictionary, latestFollowupStatus, regimen,
-	        arvDoseDays, adherence, nextVisitDateDictionary, tiHashMap;
+	private ARTPatientListLineListQuery artPatientLineListQuery;
 	
 	@Override
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, EvaluationContext evalContext) throws EvaluationException {
 		
-		_dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
+		ARTPatientListDatasetDefinition _dataSetDefinition = (ARTPatientListDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_dataSetDefinition.getStartDate() != null && _dataSetDefinition.getEndDate() != null
-		        && _dataSetDefinition.getStartDate().compareTo(_dataSetDefinition.getEndDate()) > 0) {
-			//throw new EvaluationException("Start date cannot be greater than end date");
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			dataSet.addRow(row);
-			return dataSet;
-		}
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(_dataSetDefinition.getStartDate(),
+		    _dataSetDefinition.getEndDate(), dataSet);
+		if (dataSet1 != null)
+			return dataSet1;
 		
-		if (_dataSetDefinition.getEndDate() == null) {
+		if (_dataSetDefinition.getStartDate() == null || _dataSetDefinition.getEndDate() == null) {
 			_dataSetDefinition.setEndDate(new Date());
+			
 		}
 		
-		// Here is the sudo code for getting the encounter for the ART patient list
-		// If Patient Enrollment Date is <= Report Date
-		//        AND
-		// If Patient has MRN
-		// AND
-		// If Patient has at least 1 ART follow-up record
-		// ONLY THEN
-		// count the record
-		artPatientListQuery.setEndDate(_dataSetDefinition.getEndDate());
+		if (FollowUpConstant.getUuidRepresentation(_dataSetDefinition.getFollowupStatus()).equalsIgnoreCase("all")) {
+			artPatientListQuery.generateReport(_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate());
+		} else {
+			artPatientListQuery.generateReport(_dataSetDefinition.getStartDate(), _dataSetDefinition.getEndDate(),
+			    FollowUpConstant.getUuidRepresentation(_dataSetDefinition.getFollowupStatus()));
+		}
 		
-		// remove cohort with no MRN
-		Cohort baseCohort = getCohortOnlyHaveMRN(artPatientListQuery.getCohort(artPatientListQuery.getBaseEncounter()));
+		List<Person> persons = LineListUtilities.sortPatientByName(artPatientListQuery.getPersons(artPatientListQuery
+		        .getBaseCohort()));
 		
-		List<Integer> encounterWithLeastOneFollow = encounterQuery.getEncounters(
-		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), null, new Date(), baseCohort);
-		
-		Cohort cohortWithLeastOneFollow = artPatientListQuery.getCohort(encounterWithLeastOneFollow);
-		latestFollowup = encounterQuery.getLatestDateByFollowUpDate(cohortWithLeastOneFollow, null, new Date());
-		
-		List<Person> persons = LineListUtilities.sortPatientByName(artPatientListQuery.getPersons(cohortWithLeastOneFollow));
-		
-		loadColumnDictionary(latestFollowup, cohortWithLeastOneFollow);
+		getCohortOnlyHaveMRN(artPatientListQuery.getBaseCohort());
+		loadColumnDictionary(artPatientListQuery.getFollowupEncounter(), artPatientListQuery.getBaseCohort());
 		
 		DataSetRow row;
 		
@@ -92,29 +75,33 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
+			row.addColumnValue(new DataSetColumn("Patient UUID", "Patient UUID", String.class), "");
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
 			
 			dataSet.addRow(row);
 		} else {
-			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN",
+			dataSet.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient UUID", "Patient Name", "MRN", "UAN",
 			    "Age at Enrollment", "Current Age", "Sex", "Mobile No.", "Enrollment Date", "HIV Confirmed Date",
-			    "ART Start Date", "Days Difference", "Latest Follow-up Date", "Latest Follow-up Status", "Latest Regimen",
-			    "Latest ARV Dose Days", "Latest Adherence", "Next Visit Date", "TI?")));
+			    "ART Start Date", "Time to ART Initiation (in days)", "Latest Follow-up Date", "Latest Follow-up Status",
+			    "Latest Regimen", "Latest ARV Dose Days", "Adherence", "Next Visit Date", "Last TX_CURR Date E.C", "TI?",
+			    "TI Date", "Regions", "Zone", "Woreda", "Kebele", "House #", "Mobile #")));
 		}
-		int i = 1;
+		int rowNumber = 1;
 		for (Person person : persons) {
 			
-			Date registrationDate = artPatientListLineListQuery
-			        .getDate(registrationDateDictionary.get(person.getPersonId()));
-			Date hivConfirmedDate = artPatientListLineListQuery
-			        .getDate(hivConfirmedDateDictionary.get(person.getPersonId()));
-			Date artStartDate = artPatientListLineListQuery.getDate(artStartDateDictionary.get(person.getPersonId()));
-			Date latestFollowupDate = artPatientListLineListQuery.getDate(latestFollowupDateDictionary.get(person
-			        .getPersonId()));
-			Date nextVisitDate = artPatientListLineListQuery.getDate(nextVisitDateDictionary.get(person.getPersonId()));
+			Date registrationDate = artPatientLineListQuery.getDate(registrationDateDictionary.get(person.getPersonId()));
+			Date hivConfirmedDate = artPatientLineListQuery.getDate(hivConfirmedDateDictionary.get(person.getPersonId()));
+			Date artStartDate = artPatientLineListQuery.getDate(artStartDateDictionary.get(person.getPersonId()));
+			Date latestFollowupDate = artPatientLineListQuery
+			        .getDate(latestFollowupDateDictionary.get(person.getPersonId()));
+			Date nextVisitDate = artPatientLineListQuery.getDate(nextVisitDateDictionary.get(person.getPersonId()));
+			Date lastCurrDate = artPatientLineListQuery.getDate(lastCurrDateHashMap.get(person.getPersonId()));
+			Date tiDate = artPatientLineListQuery.getDate(tiDateHashMap.get(person.getPersonId()));
 			row = new DataSetRow();
 			
-			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), rowNumber++);
+			row.addColumnValue(new DataSetColumn("Patient UUID", "Patient UUID", String.class), person.getUuid());
+			
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			addColumnValue("MRN", "MRN", mrnIdentifierHashMap, row, person);
 			addColumnValue("UAN", "UAN", uanIdentifierHashMap, row, person);
@@ -125,54 +112,78 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 			row.addColumnValue(new DataSetColumn("Mobile No.", "Mobile No.", String.class),
 			    LineListUtilities.getPhone(person.getActiveAttributes()));
 			row.addColumnValue(new DataSetColumn("enrollmentDate", "Enrollment Date", Integer.class),
-			    artPatientListLineListQuery.getEthiopianDate(registrationDate));
+			    artPatientLineListQuery.getEthiopianDate(registrationDate));
 			row.addColumnValue(new DataSetColumn("HIV Confirmed Date", "HIV Confirmed Date", Integer.class),
-			    artPatientListLineListQuery.getEthiopianDate(hivConfirmedDate));
+			    artPatientLineListQuery.getEthiopianDate(hivConfirmedDate));
 			row.addColumnValue(new DataSetColumn("ART Start Date", "ART Start Date", Integer.class),
-			    artPatientListLineListQuery.getEthiopianDate(artStartDate));
-			row.addColumnValue(new DataSetColumn("Days Difference", "Days Difference", Integer.class),
+			    artPatientLineListQuery.getEthiopianDate(artStartDate));
+			row.addColumnValue(new DataSetColumn("Days Difference", "Time to ART Initiation (in days)", Integer.class),
 			    LineListUtilities.getDayDifference(artStartDate, hivConfirmedDate));
 			row.addColumnValue(new DataSetColumn("Latest Follow-up Date", "Latest Follow-up Date", Integer.class),
-			    artPatientListLineListQuery.getEthiopianDate(latestFollowupDate));
+			    artPatientLineListQuery.getEthiopianDate(latestFollowupDate));
 			row.addColumnValue(new DataSetColumn("Latest Follow-up Status", "Latest Follow-up Status", Integer.class),
 			    latestFollowupStatus.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Latest Regimen", "Latest Regimen", Integer.class),
 			    regimen.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Latest ARV Dose Days", "Latest ARV Dose Days", Integer.class),
+			row.addColumnValue(new DataSetColumn("Regimen Dose Days", "Regimen Dose Days", Integer.class),
 			    arvDoseDays.get(person.getPersonId()));
-			row.addColumnValue(new DataSetColumn("Latest Adherence", "Latest Adherence", Integer.class),
+			row.addColumnValue(new DataSetColumn("Adherence", "Adherence", Integer.class),
 			    adherence.get(person.getPersonId()));
 			row.addColumnValue(new DataSetColumn("Next Visit Date", "Next Visit Date", Integer.class),
-			    artPatientListLineListQuery.getEthiopianDate(nextVisitDate));
-			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class), tiHashMap.get(person.getPersonId()));
+			    artPatientLineListQuery.getEthiopianDate(nextVisitDate));
+			row.addColumnValue(new DataSetColumn("Last TX_CURR Date E.C", "Last TX_CURR Date E.C", String.class),
+			    artPatientLineListQuery.getEthiopianDate(lastCurrDate));
+			row.addColumnValue(new DataSetColumn("TI?", "TI?", Integer.class), getTIValue(person));
+			row.addColumnValue(new DataSetColumn("TI Date", "TI Date", String.class),
+			    getTIValue(person).equalsIgnoreCase("yes") ? artPatientLineListQuery.getEthiopianDate(tiDate) : "--");
 			
+			row.addColumnValue(new DataSetColumn("Regions", "Regions", String.class),
+			    getStateProvince(person.getPersonAddress()));
+			row.addColumnValue(new DataSetColumn("Zone", "Zone", String.class), getCountyDistrict(person.getPersonAddress()));
+			row.addColumnValue(new DataSetColumn("Woreda", "Woreda", String.class),
+			    getCityVillage(person.getPersonAddress()));
+			row.addColumnValue(new DataSetColumn("Kebele", "Kebele", String.class), person.getAttribute("kebele"));
+			row.addColumnValue(new DataSetColumn("House #", "House #", String.class), person.getAttribute("House Number"));
+			row.addColumnValue(new DataSetColumn("Mobile #", "Mobile #", String.class),
+			    LineListUtilities.getPhone(person.getActiveAttributes()));
 			dataSet.addRow(row);
 		}
 		
 		return dataSet;
 	}
 	
+	@NotNull
+	private String getTIValue(Person person) {
+		if (tiHashMap == null || tiHashMap.isEmpty() || !tiHashMap.containsKey(person.getPersonId())) {
+			return "--";
+		}
+		return tiHashMap.get(person.getPersonId()).equals("Yes") ? "Yes" : "--";
+	}
+	
 	private void loadColumnDictionary(List<Integer> encounters, Cohort cohort) {
-		uanIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
-		registrationDateDictionary = artPatientListLineListQuery.getObsValueDate(null,
-		    FollowUpConceptQuestions.ART_REGISTRATION_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
-		hivConfirmedDateDictionary = artPatientListLineListQuery.getObsValueDate(null,
+		
+		uanIdentifierHashMap = artPatientLineListQuery.getIdentifier(cohort, Identifiers.UAN_PATIENT_IDENTIFIERS);
+		registrationDateDictionary = artPatientLineListQuery.getObsValueDate(null, REGISTRATION_DATE_UUID, cohort,
+		    EncounterType.REGISTRATION_ENCOUNTER_TYPE);
+		hivConfirmedDateDictionary = artPatientLineListQuery.getObsValueDate(null,
 		    IntakeAConceptQuestions.HIV_CONFIRMED_DATE, cohort, EncounterType.INTAKE_A_ENCOUNTER_TYPE);
-		;
-		artStartDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		lastCurrDateHashMap = artPatientLineListQuery.getObsValueDate(encounters,
+		    FollowUpConceptQuestions.TREATMENT_END_DATE, cohort);
+		artStartDateDictionary = artPatientLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.ART_START_DATE, cohort);
-		latestFollowupDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		latestFollowupDateDictionary = artPatientLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
-		latestFollowupStatus = artPatientListLineListQuery.getByResult(FollowUpConceptQuestions.FOLLOW_UP_STATUS, cohort,
-		    encounters);
-		regimen = artPatientListLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, cohort, encounters);
-		arvDoseDays = artPatientListLineListQuery
-		        .getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort, encounters);
-		adherence = artPatientListLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort, encounters);
-		nextVisitDateDictionary = artPatientListLineListQuery.getObsValueDate(encounters,
+		latestFollowupStatus = artPatientLineListQuery.getConceptLabel(encounters, cohort,
+		    FollowUpConceptQuestions.FOLLOW_UP_STATUS);
+		regimen = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.REGIMEN, cohort, encounters);
+		arvDoseDays = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.ART_DISPENSE_DOSE, cohort, encounters);
+		adherence = artPatientLineListQuery.getByResult(FollowUpConceptQuestions.ARV_ADHERENCE, cohort, encounters);
+		nextVisitDateDictionary = artPatientLineListQuery.getObsValueDate(encounters,
 		    FollowUpConceptQuestions.NEXT_VISIT_DATE, cohort);
-		tiHashMap = artPatientListLineListQuery.getConceptName(encounters, cohort,
-		    FollowUpConceptQuestions.REASON_FOR_ART_ELIGIBILITY);
+		tiHashMap = artPatientLineListQuery.getConceptName(artPatientListQuery.getFirstFollowUp(), cohort,
+		    ConceptAnswer.TRANSFERRED_IN);
+		tiDateHashMap = artPatientLineListQuery.getObsValueDate(artPatientListQuery.getFirstFollowUp(),
+		    FollowUpConceptQuestions.FOLLOW_UP_DATE, cohort);
 	}
 	
 	private void addColumnValue(String name, String label, HashMap<Integer, Object> object, DataSetRow row, Person person) {
@@ -180,25 +191,39 @@ public class ARTPatientListDataSetDefinitionEvaluator implements DataSetEvaluato
 	}
 	
 	private String getAgeByEnrollmentDate(Object dateOfBirth, Object enrollmentDate) {
-		if (Objects.isNull(dateOfBirth)) {
-			return "";
+		if (Objects.isNull(dateOfBirth) || Objects.isNull(enrollmentDate)) {
+			return "--";
 		}
+		
 		Date birthDate = (Date) dateOfBirth;
-		if (Objects.isNull(enrollmentDate)) {
-			return birthDate.toString();
-		}
 		Date enrDate = (Date) enrollmentDate;
+		
 		return String.valueOf(EthiOhriUtil.getAgeInYear(birthDate, enrDate));
 		
 	}
 	
-	public Cohort getCohortOnlyHaveMRN(Cohort cohort) {
-        mrnIdentifierHashMap = artPatientListLineListQuery.getIdentifier(cohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
+	public void getCohortOnlyHaveMRN(Cohort cohort) {
+        mrnIdentifierHashMap = artPatientLineListQuery.getIdentifier(cohort, Identifiers.MRN_PATIENT_IDENTIFIERS);
         for (Map.Entry<Integer, Object> entry : mrnIdentifierHashMap.entrySet()) {
             if (Objects.isNull(entry.getValue())) {
                 cohort.getMemberships().removeIf(c -> c.getPatientId().equals(entry.getKey()));
             }
         }
-        return cohort;
     }
+	
+	private HashMap<Integer, Object> mrnIdentifierHashMap, uanIdentifierHashMap, registrationDateDictionary,
+	        hivConfirmedDateDictionary, artStartDateDictionary, latestFollowupDateDictionary, latestFollowupStatus, regimen,
+	        arvDoseDays, adherence, nextVisitDateDictionary, tiHashMap, tiDateHashMap, lastCurrDateHashMap;
+	
+	private static String getCityVillage(PersonAddress address) {
+		return Objects.isNull(address) ? "--" : address.getStateProvince() == null ? "--" : address.getCityVillage();
+	}
+	
+	private static String getCountyDistrict(PersonAddress address) {
+		return Objects.isNull(address) ? "--" : address.getStateProvince() == null ? "--" : address.getCountyDistrict();
+	}
+	
+	private static String getStateProvince(PersonAddress address) {
+		return Objects.isNull(address) ? "--" : address.getStateProvince() == null ? "--" : address.getStateProvince();
+	}
 }

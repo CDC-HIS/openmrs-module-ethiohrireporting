@@ -8,6 +8,7 @@ import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.Identifiers;
 import org.openmrs.module.ohrireports.datasetdefinition.linelist.RTTDataSetDefinition;
 import org.openmrs.module.ohrireports.datasetevaluator.linelist.LineListUtilities;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -32,16 +33,10 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		RTTDataSetDefinition _datasetDefinition = (RTTDataSetDefinition) dataSetDefinition;
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		// Check start date and end date are valid
-		// If start date is greater than end date
-		if (_datasetDefinition.getStartDate() != null && _datasetDefinition.getEndDate() != null
-		        && _datasetDefinition.getStartDate().compareTo(_datasetDefinition.getEndDate()) > 0) {
-			DataSetRow row = new DataSetRow();
-			row.addColumnValue(new DataSetColumn("Error", "Error", Integer.class),
-			    "Report start date cannot be after report end date");
-			data.addRow(row);
-			return data;
-		}
+		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
+		    _datasetDefinition.getEndDate(), data);
+		if (_dataSet != null)
+			return _dataSet;
 		
 		Cohort cohort = rttLineListQuery.getRTTCohort(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
@@ -95,11 +90,11 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		if (!persons.isEmpty()) {
 			row = new DataSetRow();
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), "TOTAL");
-			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", Integer.class), persons.size());
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", Integer.class), persons.size());
 			data.addRow(row);
 		} else {
-			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "Patient Name", "MRN", "UAN", "Age", "Sex",
-			    "Weight", "ART Start Date in E.C", "Date Returned Treatment E.C.", "Follow-up Status", "Regimen",
+			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
+			    "Sex", "Weight", "ART Start Date in E.C", "Date Returned Treatment E.C.", "Follow-up Status", "Regimen",
 			    "ARV Dose Days", "Adherence", "Next Visit Date in E.C", "Treatment End Date in E.C",
 			    "Last Follow-up Date in E.C.", "Last Follow-up Status", "Last Regimen", "Last ARV Dose Days",
 			    "Last Adherence", "Date Excluded from TX_CURR in E.C")));
@@ -117,6 +112,7 @@ public class RTTDataSetDefinitionEvaluator implements DataSetEvaluator {
 			row = new DataSetRow();
 			
 			row.addColumnValue(new DataSetColumn("#", "#", Integer.class), i++);
+			row.addColumnValue(new DataSetColumn("GUID", "GUID", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("Patient Name", "Patient Name", String.class), person.getNames());
 			row.addColumnValue(new DataSetColumn("MRN", "MRN", String.class),
 			    getStringIdentifier(mrnIdentifierHashMap.get(person.getPersonId())));

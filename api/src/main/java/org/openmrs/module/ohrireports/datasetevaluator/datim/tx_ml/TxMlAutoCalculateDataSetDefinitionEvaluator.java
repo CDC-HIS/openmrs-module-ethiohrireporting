@@ -4,6 +4,7 @@ import org.openmrs.Cohort;
 import org.openmrs.annotation.Handler;
 import org.openmrs.module.ohrireports.api.impl.query.MLQuery;
 import org.openmrs.module.ohrireports.datasetdefinition.datim.tx_ml.TxMlAutoCalculateDataSetDefinition;
+import org.openmrs.module.ohrireports.helper.EthiOhriUtil;
 import org.openmrs.module.reporting.dataset.DataSet;
 import org.openmrs.module.reporting.dataset.DataSetColumn;
 import org.openmrs.module.reporting.dataset.DataSetRow;
@@ -25,6 +26,10 @@ public class TxMlAutoCalculateDataSetDefinitionEvaluator implements DataSetEvalu
 		
 		TxMlAutoCalculateDataSetDefinition hdsd = (TxMlAutoCalculateDataSetDefinition) dataSetDefinition;
 		SimpleDataSet set = new SimpleDataSet(dataSetDefinition, evalContext);
+		
+		SimpleDataSet dataSet1 = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), set);
+		if (dataSet1 != null)
+			return dataSet1;
 		
 		if (!hdsd.getHeader()) {
 			Cohort cohort = mlQuery.getCohortML(hdsd.getStartDate(), hdsd.getEndDate());
