@@ -90,9 +90,11 @@ public class PreExposureProphylaxisQuery extends PatientQueryImpDao {
 		baseFollowupEncounter = encounterQuery.getEncounters(
 		    Collections.singletonList(FollowUpConceptQuestions.FOLLOW_UP_DATE), startDate, endDate,
 		    EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		
 		baseScreeningEncounter = encounterQuery.getEncounters(
 		    Collections.singletonList(PrepConceptQuestions.PREP_STARTED_DATE), null, endDate,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);
+		
 		List<Integer> screenedOnEncounter = encounterQuery.getEncounters(
 		    Collections.singletonList(PrepConceptQuestions.PREP_STARTED_DATE), startDate, endDate,
 		    EncounterType.PREP_SCREENING_ENCOUNTER_TYPE);

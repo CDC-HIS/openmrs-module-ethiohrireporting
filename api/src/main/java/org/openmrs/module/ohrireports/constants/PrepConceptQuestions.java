@@ -39,7 +39,7 @@ public class PrepConceptQuestions {
 	
 	public final static String CONTRADICTION_TO_PREP_MEDICINE = "d8831943-7b41-405a-ac65-2ae11c8ede42";
 	
-	public final static String HAVE_HIV_POSITIVE_PARTNER = "1436AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+	public final static String HAVE_HIV_POSITIVE_PARTNER = "f15222fd-c4dd-44e0-b7f4-407599596998";
 	
 	public final static String STI_SCREENING_RESULT = "7a643a93-3f11-4ad0-acfa-b15f2d7c8ddc";
 	

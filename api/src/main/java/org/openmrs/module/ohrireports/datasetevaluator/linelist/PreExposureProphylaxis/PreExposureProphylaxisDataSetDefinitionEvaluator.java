@@ -104,12 +104,16 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 		HashMap<Integer, Object> followUpDateHashMap = preExposureProphylaxisLineListQuery.getObsValueDate(
 		    baseFollowUpEncounter, FollowUpConceptQuestions.FOLLOW_UP_DATE, baseCohort,
 		    EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> status = preExposureProphylaxisLineListQuery.getConceptLabel(baseFollowUpEncounter,
 		    PrepConceptQuestions.PREP_FOLLOWUP_STATUS, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
-		HashMap<Integer, Object> prepRegimen = preExposureProphylaxisLineListQuery.getConceptName(
+		
+		HashMap<Integer, Object> prepRegimen = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
 		    PrepConceptQuestions.PREP_REGIMEN, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> prepDose = preExposureProphylaxisLineListQuery.getConceptName(baseFollowUpEncounter,
 		    PrepConceptQuestions.PREP_DOSE_DAY, baseCohort, EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
+		
 		HashMap<Integer, Object> hivTestFinalResult = preExposureProphylaxisLineListQuery.getConceptName(
 		    baseFollowUpEncounter, PrepConceptQuestions.HIV_TEST_FINAL_RESULT, baseCohort,
 		    EncounterType.PREP_FOLLOW_UP_ENCOUNTER_TYPE);
@@ -218,6 +222,7 @@ public class PreExposureProphylaxisDataSetDefinitionEvaluator implements DataSet
 			addColumnValue("PrEP Follow-up Status", "PrEP Follow-up Status", status, row, person);
 			addColumnValue("PrEP Regimen", "PrEP Regimen", prepRegimen, row, person);
 			addColumnValue("PrEP Dose", "PrEP Dose", prepDose, row, person);
+			
 			addColumnValue("Missed Tablets", "Missed Tablets", missedTablets, row, person);
 			row.addColumnValue(new DataSetColumn("Next Visit Date in E.C.", "Next Visit Date in E.C.", String.class),
 			    preExposureProphylaxisLineListQuery.getEthiopianDate(nextVisitDate));

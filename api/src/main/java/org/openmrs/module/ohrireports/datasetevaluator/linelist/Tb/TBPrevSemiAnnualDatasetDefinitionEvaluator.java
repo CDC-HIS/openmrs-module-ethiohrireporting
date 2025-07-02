@@ -61,10 +61,6 @@ public class TBPrevSemiAnnualDatasetDefinitionEvaluator implements DataSetEvalua
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		if (hdsd.getEndDate() == null) {
-			hdsd.setEndDate(new Date());
-		}
-		
 		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), data);
 		if (_dataSet != null)
 			return _dataSet;

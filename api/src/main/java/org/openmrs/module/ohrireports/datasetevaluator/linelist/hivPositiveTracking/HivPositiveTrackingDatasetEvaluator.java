@@ -40,15 +40,14 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		HIVPositiveDatasetDefinition _datasetDefinition = (HIVPositiveDatasetDefinition) dataSetDefinition;
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		
-		if (_datasetDefinition.getEndDate() == null) {
-			_datasetDefinition.setEndDate(new Date());
-		}
-		
 		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(_datasetDefinition.getStartDate(),
 		    _datasetDefinition.getEndDate(), dataSet);
 		if (_dataSet != null)
 			return _dataSet;
 		
+		if (_datasetDefinition.getEndDate() == null) {
+			_datasetDefinition.setEndDate(new Date());
+		}
 		hivPositiveTrackingLineListQuery.generateReport(_datasetDefinition.getStartDate(), _datasetDefinition.getEndDate());
 		
 		Cohort cohort = hivPositiveTrackingLineListQuery.getBaseCohort();
@@ -83,6 +82,7 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		
 		HashMap<Integer, Object> planForNextStepHashMap = hivPositiveTrackingLineListQuery.getByResult(
 		    PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
+
 		HashMap<Integer, Object> finalOutcomeKnownDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
 		    FINAL_OUT_COME_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownHashMap = hivPositiveTrackingLineListQuery.getByResult(FINAL_OUT_COME,

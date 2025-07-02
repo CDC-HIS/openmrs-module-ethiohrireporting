@@ -58,14 +58,13 @@ public class TBPrevDatasetDefinitionEvaluator implements DataSetEvaluator {
 		
 		SimpleDataSet data = new SimpleDataSet(dataSetDefinition, evalContext);
 		
-		if (hdsd.getEndDate() == null) {
-			hdsd.setEndDate(new Date());
-		}
-		
 		SimpleDataSet _dataSet = EthiOhriUtil.isValidReportDateRange(hdsd.getStartDate(), hdsd.getEndDate(), data);
 		if (_dataSet != null)
 			return _dataSet;
 		
+		if (hdsd.getEndDate() == null) {
+			hdsd.setEndDate(new Date());
+		}
 		patientQuery = Context.getService(PatientQueryService.class);
 		lastFollowUp = encounterQuery.getLatestDateByFollowUpDate(null, new Date());
 		
