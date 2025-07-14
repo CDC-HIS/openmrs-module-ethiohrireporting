@@ -82,7 +82,7 @@ public class HivPositiveTrackingDatasetEvaluator implements DataSetEvaluator {
 		
 		HashMap<Integer, Object> planForNextStepHashMap = hivPositiveTrackingLineListQuery.getByResult(
 		    PLAN_FOR_NEXT_STEP_POSITIVE_TRACKING, cohort, encounter, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
-
+		
 		HashMap<Integer, Object> finalOutcomeKnownDateHashMap = hivPositiveTrackingLineListQuery.getObsValueDate(encounter,
 		    FINAL_OUT_COME_DATE, cohort, EncounterType.POSITIVE_TRACKING_ENCOUNTER_TYPE);
 		HashMap<Integer, Object> finalOutcomeKnownHashMap = hivPositiveTrackingLineListQuery.getByResult(FINAL_OUT_COME,

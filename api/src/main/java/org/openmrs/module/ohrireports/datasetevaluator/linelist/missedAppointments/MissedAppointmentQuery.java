@@ -63,7 +63,7 @@ public class MissedAppointmentQuery extends ObsElement {
 		sqlBuilder.append(" where ob.encounter_id in (:encounter) ");
 		sqlBuilder.append(" and ob.concept_id= ").append(conceptQuery(FollowUpConceptQuestions.NEXT_VISIT_DATE));
 		sqlBuilder.append(" and ob.person_id in (:personId) ");
-		sqlBuilder.append(" and DATEDIFF(:endDate,ob.value_datetime)>0");
+		sqlBuilder.append(" and DATEDIFF(:endDate,ob.value_datetime)>0 and ob.voided=0");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sqlBuilder.toString());
 		query.setParameterList("personId", baseCohort.getMemberIds());
