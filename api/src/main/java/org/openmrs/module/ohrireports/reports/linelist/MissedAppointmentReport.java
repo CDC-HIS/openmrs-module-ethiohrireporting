@@ -11,6 +11,7 @@ import org.openmrs.module.reporting.report.manager.ReportManager;
 import org.openmrs.module.reporting.report.manager.ReportManagerUtil;
 import org.springframework.stereotype.Component;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
@@ -37,7 +38,7 @@ public class MissedAppointmentReport implements ReportManager {
 	@Override
 	public List<Parameter> getParameters() {
 		
-		EthiopianDate date = EthiOhriUtil.getEthiopiaDate(Calendar.getInstance().getTime());
+		EthiopianDate date = EthiOhriUtil.getEthiopiaDate(Date.from(ZonedDateTime.now().toInstant()));
 		
 		Parameter endDate = new Parameter("endDate", "Reporting Date", String.class);
 		endDate.setDefaultValue(date.getMonth() + "/" + date.getDay() + "/" + date.getYear());
@@ -45,7 +46,7 @@ public class MissedAppointmentReport implements ReportManager {
 		
 		Parameter endDateGC = new Parameter("endDateGC", " ", Date.class);
 		endDateGC.setRequired(false);
-		endDateGC.setDefaultValue(Calendar.getInstance().getTime());
+		endDateGC.setDefaultValue(Date.from(ZonedDateTime.now().toInstant()));
 		
 		return Arrays.asList(endDate, endDateGC);
 	}

@@ -18,6 +18,9 @@ import org.openmrs.module.reporting.evaluation.EvaluationContext;
 import org.openmrs.module.reporting.evaluation.EvaluationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.ART_START_DATE;
@@ -35,7 +38,7 @@ public class MissedAppointmentDatasetEvaluator implements DataSetEvaluator {
 		SimpleDataSet dataSet = new SimpleDataSet(_datasetDefinition, evalContext);
 		
 		if (_datasetDefinition.getEndDate() == null) {
-			_datasetDefinition.setEndDate(new Date());
+			_datasetDefinition.setEndDate(Date.from(ZonedDateTime.now().toInstant()));
 		}
 		
 		appointmentQuery.generateReport(_datasetDefinition.getEndDate());
