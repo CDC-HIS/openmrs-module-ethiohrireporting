@@ -16,7 +16,7 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.constants.ReportType.COHORT;
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 
-@Component
+//@Component
 public class ChildCohortReport implements ReportManager {
 	
 	@Override
