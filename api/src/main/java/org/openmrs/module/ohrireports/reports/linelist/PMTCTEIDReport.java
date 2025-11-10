@@ -19,7 +19,7 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 
-@Component
+//@Component
 public class PMTCTEIDReport implements ReportManager {
 	
 	String[] param = { "Test Indication", "Rapid antibody result" };

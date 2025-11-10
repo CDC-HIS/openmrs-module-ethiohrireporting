@@ -30,7 +30,7 @@ import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.
 
 ;
 
-@Component
+//@Component
 public class TransferInOutReport implements ReportManager {
 	
 	public static String ti = "TI";

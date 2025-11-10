@@ -17,7 +17,7 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 
-@Component
+//@Component
 public class PEPReport implements ReportManager {
 	
 	public final static String PR_EP_STARTED = "3b4bc0b2-acbb-4fb5-82eb-6f0479915862";

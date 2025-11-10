@@ -19,7 +19,7 @@ import java.util.List;
 import static org.openmrs.module.ohrireports.constants.ETHIOHRIReportsConstants.REPORT_VERSION;
 import static org.openmrs.module.ohrireports.constants.ReportType.LINE_LIST_REPORT;
 
-@Component
+//@Component
 public class ARTPatientListReport implements ReportManager {
 	
 	@Override
