@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.openmrs.module.ohrireports.constants.ReportType.DATIM_REPORT_TESTING;
 
-@Component
+//@Component
 public class PMTCTFOReport implements ReportManager {
 	
 	@Override
