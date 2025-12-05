@@ -22,6 +22,8 @@ public class FollowUpConceptQuestions {
 	
 	public final static String REASON_FOR_ART_ELIGIBILITY = "613718f1-ecf2-4228-b9c2-6157d574bd0b";
 	
+	public final static String LMP_DATE = "30d8d278-5ace-4d01-b2f1-8efc28372070";
+	
 	public final static String FOLLOW_UP_DATE = "5c118396-52dc-4cac-8860-e6d8e4a7f296";
 	
 	public final static String REGIMEN = "6d7d0327-e1f8-4246-bfe5-be1e82d94b14";

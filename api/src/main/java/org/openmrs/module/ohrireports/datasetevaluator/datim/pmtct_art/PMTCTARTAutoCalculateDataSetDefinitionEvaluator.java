@@ -41,7 +41,7 @@ public class PMTCTARTAutoCalculateDataSetDefinitionEvaluator implements DataSetE
 			artQuery.setEndDate(hdsd.getEndDate());
 			
 			DataSetRow dataSet = new DataSetRow();
-			dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), artQuery.getPmtctARTCohort()
+			dataSet.addColumnValue(new DataSetColumn("Numerator", "Numerator", Integer.class), artQuery.getBaseCohort()
 			        .size());
 			set.addRow(dataSet);
 		}

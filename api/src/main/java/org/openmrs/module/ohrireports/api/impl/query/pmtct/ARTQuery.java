@@ -7,7 +7,6 @@ import org.openmrs.module.ohrireports.api.dao.PMTCTPatient;
 import org.openmrs.module.ohrireports.api.impl.PatientQueryImpDao;
 import org.openmrs.module.ohrireports.api.impl.query.EncounterQuery;
 import org.openmrs.module.ohrireports.constants.ConceptAnswer;
-import org.openmrs.module.ohrireports.constants.EncounterType;
 import org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions;
 import org.openmrs.module.ohrireports.constants.PMTCTConceptQuestions;
 import org.openmrs.module.ohrireports.datasetevaluator.hmis.HMISUtilies;
@@ -15,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static org.openmrs.module.ohrireports.constants.FollowUpConceptQuestions.LMP_DATE;
 
 @Component
 public class ARTQuery extends PatientQueryImpDao {
@@ -93,25 +94,58 @@ public class ARTQuery extends PatientQueryImpDao {
 	
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
-		latestFollowUpEncounter = encounterQuery.getAliveFollowUpEncounters(null, endDate);
-		baseEncounter = encounterQuery.getEncounters(
-		    Collections.singletonList(PMTCTConceptQuestions.PMTCT_OTZ_ENROLLMENT_DATE), startDate, endDate,
-		    EncounterType.PMTC_ENROLLMENT_ENCOUNTER_TYPE);
-		baseCohort = getCohort(baseEncounter);
+		latestFollowUpEncounter = encounterQuery.getAliveFollowUpEncounters(startDate, endDate);
+		/*	baseEncounter = encounterQuery.getEncounters(
+			    Collections.singletonList(PMTCTConceptQuestions.PMTCT_OTZ_ENROLLMENT_DATE), startDate, endDate,
+			    EncounterType.PMTC_ENROLLMENT_ENCOUNTER_TYPE);*/
+		baseCohort = getCohort(latestFollowUpEncounter);
+		
 		baseCohort = getByPregnantStatus();
-		pmtctARTCohort = getPMTCTARTCohort();
-		newOnARTPMTCTARTCohort = getNewOnArtCohort("F", startDate, endDate, pmtctARTCohort, latestFollowUpEncounter);
-		alreadyOnARTPMTCTARTCohort = HMISUtilies.getOuterUnion(pmtctARTCohort, newOnARTPMTCTARTCohort);
+		baseCohort = deduplicatedBaseOnLMP();
+		//		pmtctARTCohort = getPMTCTARTCohort();
+		newOnARTPMTCTARTCohort = getNewOnArtCohort("F", startDate, endDate, baseCohort, latestFollowUpEncounter);
+		alreadyOnARTPMTCTARTCohort = HMISUtilies.getOuterUnion(baseCohort, newOnARTPMTCTARTCohort);
+	}
+	
+	private Cohort deduplicatedBaseOnLMP() {
+		if (latestFollowUpEncounter == null || latestFollowUpEncounter.isEmpty()) {
+			return new Cohort();
+		}
+		StringBuilder stringBuilder = baseValueDateQuery(LMP_DATE);
+		stringBuilder.append(" AND ");
+		stringBuilder.append(VALUE_DATE_BASE_ALIAS_OBS).append("encounter_id in (:encounter_ids)");
+		stringBuilder.append(" AND ");
+		stringBuilder.append(VALUE_DATE_BASE_ALIAS_OBS).append("person_id in (:person_ids)");
+		
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(stringBuilder.toString());
+		query.setParameterList("encounter_ids", latestFollowUpEncounter);
+		query.setParameterList("person_ids", baseCohort.getMemberIds());
+		
+		HashMap<Integer, Object> hashMap = HMISUtilies.getDictionary(query);
+		Set<Integer> patientIds = baseCohort.getMemberIds();
+		for (Map.Entry<Integer, Object> entry : hashMap.entrySet()) {
+			if ((entry.getValue() instanceof Date)) {
+				Date date = (Date) entry.getValue();
+				if (!date.before(startDate) && !date.after(endDate)) {
+					continue;
+				}
+				
+				patientIds.remove(entry.getKey());
+				
+			}
+		}
+		
+		return new Cohort(patientIds);
+		
 	}
 	
 	public Cohort getByPregnantStatus() {
-		if (isCohortAndEncounterHasRecord())
+		/*if (isCohortAndEncounterHasRecord())
 			return new Cohort();
-		
-		StringBuilder sql = baseConceptQuery(FollowUpConceptQuestions.PREGNANCY_STATUS);
-		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + " value_coded = " + conceptQuery(ConceptAnswer.YES));
-		sql.append(" and " + CONCEPT_BASE_ALIAS_OBS + "encounter_id in (:latestEncounter) and " + CONCEPT_BASE_ALIAS_OBS
-		        + "person_id in (:persons)");
+		*/
+		StringBuilder sql = baseQuery(FollowUpConceptQuestions.PREGNANCY_STATUS);
+		sql.append(" and " + OBS_ALIAS + " value_coded = " + conceptQuery(ConceptAnswer.YES));
+		sql.append(" and " + OBS_ALIAS + "encounter_id in (:latestEncounter) and " + OBS_ALIAS + "person_id in (:persons)");
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sql.toString());
 		query.setParameterList("latestEncounter", latestFollowUpEncounter);
@@ -142,8 +176,8 @@ public class ARTQuery extends PatientQueryImpDao {
 	
 	public Cohort getCohortByPMTCTEnrollmentStatus(String PMTCTEnrollmentType) {
 		
-		if (isCohortAndEncounterHasRecord())
-			return new Cohort();
+		/*if (!isCohortAndEncounterHasRecord())
+			return new Cohort();*/
 		
 		String stringQuery = "select distinct person_id from obs where concept_id = "
 		        + conceptQuery(PMTCTConceptQuestions.PMTCT_STATUS_AT_ENROLLMENT) + " and value_coded = "

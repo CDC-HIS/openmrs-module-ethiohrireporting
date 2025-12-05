@@ -42,8 +42,8 @@ public class PMTCTARTDataSetDefinitionEvaluator implements DataSetEvaluator {
 		hdsd = (PMTCTARTDataSetDefinition) dataSetDefinition;
 		context = evalContext;
 		
-		artQuery.setStartDate(hdsd.getStartDate());
-		artQuery.setEndDate(hdsd.getEndDate());
+		/*artQuery.setStartDate(hdsd.getStartDate());
+		artQuery.setEndDate(hdsd.getEndDate());*/
 		
 		SimpleDataSet simpleDataSet = new SimpleDataSet(dataSetDefinition, evalContext);
 		

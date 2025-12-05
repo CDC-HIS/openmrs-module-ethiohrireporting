@@ -194,11 +194,13 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow row;
 		if (persons.isEmpty()) {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
-			    "Sex", "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
-			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
-			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
-			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
-			    "TB Treatment Discontinued Date")));
+			    "Sex", "ArtStartDateGC", "ArtStartDateEth", "followUpDate GC", "followUpDateEth", "followUpStatus",
+			    "Regimen", "ARV Dose Days", "Adherence", "Pregnant?", "Breastfeeding?", "On PMTCT?",
+			    "TB Screening Date GC.", "TB Screening Date EC.", "TB Screening Result", "Specimen Sent", "LF_LAM-result",
+			    "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult", "Active TB Diagnosed Date GC.",
+			    "Active TB Diagnosed Date EC.", "TB Treatment Start Date GC.", "TB Treatment Start Date EC.",
+			    "TB Treatment Status", "TB Treatment Completed Date GC.", "TB Treatment Completed Date EC.",
+			    "TB Treatment Discontinued Date GC.", "TB Treatment Discontinued Date EC.")));
 		}
 		int i = 1;
 		for (Person person : persons) {
@@ -214,11 +216,13 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow row;
 		if (persons.isEmpty()) {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
-			    "Sex", "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
-			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
-			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
-			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
-			    "TB Treatment Discontinued Date")));
+			    "Sex", "ArtStartDateGC", "ArtStartDateEth", "followUpDate GC", "followUpDateEth", "followUpStatus",
+			    "Regimen", "ARV Dose Days", "Adherence", "Pregnant?", "Breastfeeding?", "On PMTCT?",
+			    "TB Screening Date GC.", "TB Screening Date EC.", "TB Screening Result", "Specimen Sent", "LF_LAM-result",
+			    "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult", "Active TB Diagnosed Date GC.",
+			    "Active TB Diagnosed Date EC.", "TB Treatment Start Date GC.", "TB Treatment Start Date EC.",
+			    "TB Treatment Status", "TB Treatment Completed Date GC.", "TB Treatment Completed Date EC.",
+			    "TB Treatment Discontinued Date GC.", "TB Treatment Discontinued Date EC.")));
 		}
 		int i = 1;
 		for (Person person : persons) {
@@ -234,11 +238,13 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		DataSetRow row;
 		if (persons.isEmpty()) {
 			data.addRow(LineListUtilities.buildEmptyRow(Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age",
-			    "Sex", "ArtStartDateEth", "followUpDateEth", "followUpStatus", "Regimen", "ARV Dose Days", "Adherence",
-			    "Pregnant?", "Breastfeeding?", "On PMTCT?", "TB Screening Date", "TB Screening Result", "Specimen Sent",
-			    "LF_LAM-result", "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult",
-			    "Active TB Diagnosed Date", "TB Treatment Start Date", "TB Treatment Status", "TB Treatment Completed Date",
-			    "TB Treatment Discontinued Date")));
+			    "Sex", "ArtStartDateGC", "ArtStartDateEth", "followUpDate GC", "followUpDateEth", "followUpStatus",
+			    "Regimen", "ARV Dose Days", "Adherence", "Pregnant?", "Breastfeeding?", "On PMTCT?",
+			    "TB Screening Date GC.", "TB Screening Date EC.", "TB Screening Result", "Specimen Sent", "LF_LAM-result",
+			    "Gene_Xpert-Result", "OtherTBDiagnosticTest", "OtherTBDiagnosticResult", "Active TB Diagnosed Date GC.",
+			    "Active TB Diagnosed Date EC.", "TB Treatment Start Date GC.", "TB Treatment Start Date EC.",
+			    "TB Treatment Status", "TB Treatment Completed Date GC.", "TB Treatment Completed Date EC.",
+			    "TB Treatment Discontinued Date GC.", "TB Treatment Discontinued Date EC.")));
 		}
 		int i = 1;
 		for (Person person : persons) {
@@ -265,7 +271,9 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		row.addColumnValue(new DataSetColumn("Age", "Age", Integer.class), person.getAge(_followUpDate));
 		row.addColumnValue(new DataSetColumn("DateOfBirth", "Date of birth", Date.class), person.getBirthdate());
 		row.addColumnValue(new DataSetColumn("Gender", "Sex", Integer.class), person.getGender());
+		row.addColumnValue(new DataSetColumn("ArtStartDateGC", "Art Start Date G.C", String.class), artStartDate);
 		row.addColumnValue(new DataSetColumn("ArtStartDateEth", "Art Start Date E.C", String.class), artEthiopianDate);
+		row.addColumnValue(new DataSetColumn("followUpDate GC", "FollowUp Date G.C", Date.class), _followUpDate);
 		row.addColumnValue(new DataSetColumn("followUpDateEth", "FollowUp Date E.C", String.class), followUpEthiopianDate);
 		row.addColumnValue(new DataSetColumn("followUpStatus", "FollowUp Status", String.class),
 		    followUpStatus.get(person.getPersonId()));
@@ -275,8 +283,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private void getTxTbScreening(DataSetRow row, Person person) {
-		Date tbScreeningETH = tbQueryLineList.getDate(tbScreeningDateHashMap.get(person.getPersonId()));
-		String tbScreeningEthiopianDate = tbQueryLineList.getEthiopianDate(tbScreeningETH);
+		Date tbScreeningGC = tbQueryLineList.getDate(tbScreeningDateHashMap.get(person.getPersonId()));
+		String tbScreeningEthiopianDate = tbQueryLineList.getEthiopianDate(tbScreeningGC);
 		Date tbActiveTreatmentStartDate = tbQueryLineList.getDate(tbActiveDate.get(person.getPersonId()));
 		Date tbTxStartDate = tbQueryLineList.getDate(tbTxStartDateDictionary.get(person.getPersonId()));
 		Date tbTXCompletedDate = tbQueryLineList.getDate(tbTreatmentCompletedDateDictionary.get(person.getPersonId()));
@@ -290,9 +298,9 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    pregnancyStatusHashMap.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("Breastfeeding?", "Breastfeeding?", String.class),
 		    breastfeedingStatusHashMap.get(person.getPersonId()));
-		
 		row.addColumnValue(new DataSetColumn("On PMTCT?", "On PMTCT?", String.class), "");
-		row.addColumnValue(new DataSetColumn("TB Screening Date", "TB Screening Date", String.class),
+		row.addColumnValue(new DataSetColumn("TB Screening Date GC.", "TB Screening Date GC.", String.class), tbScreeningGC);
+		row.addColumnValue(new DataSetColumn("TB Screening Date EC.", "TB Screening Date EC.", String.class),
 		    tbScreeningEthiopianDate);
 		row.addColumnValue(new DataSetColumn("TB Screening Result", "TB Screening Result", String.class),
 		    tbScreeningResultsHashMap.get(person.getPersonId()));
@@ -306,15 +314,23 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		    OtherDiagnosticTest.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("OtherTBDiagnosticResult", "Other TB Diagnostic Test Result", String.class),
 		    OtherDiagResult.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("Active TB Diagnosed Date", "Active TB Diagnosed Date", String.class),
+		row.addColumnValue(new DataSetColumn("Active TB Diagnosed Date GC.", "Active TB Diagnosed Date GC.", String.class),
+		    tbActiveTreatmentStartDate);
+		row.addColumnValue(new DataSetColumn("Active TB Diagnosed Date EC.", "Active TB Diagnosed Date EC.", String.class),
 		    tbQueryLineList.getEthiopianDate(tbActiveTreatmentStartDate));
-		row.addColumnValue(new DataSetColumn("TB Treatment Start Date", "TB Treatment Start Date", String.class),
+		row.addColumnValue(new DataSetColumn("TB Treatment Start Date GC.", "TB Treatment Start Date GC.", String.class),
+		    tbTxStartDate);
+		row.addColumnValue(new DataSetColumn("TB Treatment Start Date EC.", "TB Treatment Start Date EC.", String.class),
 		    tbQueryLineList.getEthiopianDate(tbTxStartDate));
 		row.addColumnValue(new DataSetColumn("TB Treatment Status", "TB Treatment Status", String.class),
 		    tbTreatmentStatus.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("TB Treatment Completed Date", "TB Treatment Completed Date", String.class),
-		    tbQueryLineList.getEthiopianDate(tbTXCompletedDate));
-		row.addColumnValue(new DataSetColumn("TB Treatment Discontinued Date", "TB Treatment Discontinued Date",
+		row.addColumnValue(new DataSetColumn("TB Treatment Completed Date GC.", "TB Treatment Completed Date GC.",
+		        String.class), tbTXCompletedDate);
+		row.addColumnValue(new DataSetColumn("TB Treatment Completed Date EC.", "TB Treatment Completed Date EC.",
+		        String.class), tbQueryLineList.getEthiopianDate(tbTXCompletedDate));
+		row.addColumnValue(new DataSetColumn("TB Treatment Discontinued Date GC.", "TB Treatment Discontinued Date GC.",
+		        String.class), tbTxDiscontinuedDate);
+		row.addColumnValue(new DataSetColumn("TB Treatment Discontinued Date EC.", "TB Treatment Discontinued Date EC.",
 		        String.class), tbQueryLineList.getEthiopianDate(tbTxDiscontinuedDate));
 	}
 	
@@ -334,17 +350,33 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 		row.addColumnValue(new DataSetColumn("Breastfeeding?", "Breastfeeding?", String.class),
 		    breastfeedingStatusHashMap.get(person.getPersonId()));
 		row.addColumnValue(new DataSetColumn("On PMTCT?", "On PMTCT?", String.class), "");
-		row.addColumnValue(new DataSetColumn("Active TB Diagnosed Date", "Active TB Diagnosed Date", String.class),
+		
+		row.addColumnValue(new DataSetColumn("Active TB Diagnosed Date GC.", "Active TB Diagnosed Date GC.", String.class),
+		    tbActiveTreatmentStartDate);
+		
+		row.addColumnValue(new DataSetColumn("Active TB Diagnosed Date EC.", "Active TB Diagnosed Date EC.", String.class),
 		    tbQueryLineList.getEthiopianDate(tbActiveTreatmentStartDate));
-		row.addColumnValue(new DataSetColumn("TB Treatment Start Date", "TB Treatment Start Date", String.class),
+		row.addColumnValue(new DataSetColumn("TB Treatment Start Date GC.", "TB Treatment Start Date GC.", String.class),
+		    tbTxStartDate);
+		
+		row.addColumnValue(new DataSetColumn("TB Treatment Start Date EC.", "TB Treatment Start Date EC. ", String.class),
 		    tbQueryLineList.getEthiopianDate(tbTxStartDate));
 		row.addColumnValue(new DataSetColumn("TB Treatment Status", "TB Treatment Status", String.class),
 		    tbTreatmentStatus.get(person.getPersonId()));
-		row.addColumnValue(new DataSetColumn("TB Treatment Completed Date", "TB Treatment Completed Date", String.class),
-		    tbQueryLineList.getEthiopianDate(tbTXCompletedDate));
-		row.addColumnValue(new DataSetColumn("TB Treatment Discontinued Date", "TB Treatment Discontinued Date",
+		row.addColumnValue(new DataSetColumn("TB Treatment Completed Date GC.", "TB Treatment Completed Date GC.",
+		        String.class), tbTXCompletedDate);
+		row.addColumnValue(new DataSetColumn("TB Treatment Completed Date EC.", "TB Treatment Completed Date EC.",
+		        String.class), tbQueryLineList.getEthiopianDate(tbTXCompletedDate));
+		
+		row.addColumnValue(new DataSetColumn("TB Treatment Discontinued Date GC", "TB Treatment Discontinued Date GC",
+		        String.class), tbTxDiscontinuedDate);
+		
+		row.addColumnValue(new DataSetColumn("TB Treatment Discontinued Date", "TB Treatment Discontinued Date EC.",
 		        String.class), tbQueryLineList.getEthiopianDate(tbTxDiscontinuedDate));
-		row.addColumnValue(new DataSetColumn("TB Screening Date", "TB Screening Date", String.class),
+		
+		row.addColumnValue(new DataSetColumn("TB Screening Date GC.", "TB Screening Date GC.", String.class),
+		    tbScreeningDate);
+		row.addColumnValue(new DataSetColumn("TB Screening Date EC.", "TB Screening Date EC.", String.class),
 		    tbQueryLineList.getEthiopianDate(tbScreeningDate));
 		row.addColumnValue(new DataSetColumn("TB Screening Result", "TB Screening Result", String.class),
 		    tbScreeningResultsHashMap.get(person.getPersonId()));
@@ -368,8 +400,8 @@ public class TXTBDataSetDefinitionEvaluator implements DataSetEvaluator {
 	}
 	
 	private List<String> arrayListOfBaseEmptyColumn() {
-		return Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex", "ART Start Date in E.C",
-		    "FollowUp Date E.C", "Regimen", "FollowUp Status");
+		return Arrays.asList("#", "GUID", "Patient Name", "MRN", "UAN", "Age", "Sex", "ART Start Date in G.C",
+		    "ART Start Date in E.C", "FollowUp Date G.C", "FollowUp Date E.C", "Regimen", "FollowUp Status");
 	}
 	
 }
